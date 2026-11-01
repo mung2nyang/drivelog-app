@@ -58,18 +58,6 @@ test('엄격 기본값: 등록 안 한 표·동작·서버 함수는 기다리�
   assert.deepEqual(callsOf('vehicles', 'delete')[0].ops, [['eq', 'id', 901]])
 })
 
-test('allowUnregistered: 등록 안 한 호출도 예전처럼 읽기는 빈 목록, 나머지는 빈 성공', async () => {
-  const { fakeSupabase } = createFakeSupabase({ allowUnregistered: true })
-  assert.deepEqual(await fakeSupabase.from('vehicles').select('id'), { data: [], error: null })
-  for (const query of [
-    fakeSupabase.from('vehicles').upsert({ id: 1 }),
-    fakeSupabase.from('vehicles').insert({ id: 1 }),
-    fakeSupabase.from('vehicles').update({ id: 1 }).eq('id', 1),
-    fakeSupabase.from('vehicles').delete().eq('id', 1),
-    fakeSupabase.rpc('is_admin'),
-  ]) assert.deepEqual(await query, { data: null, error: null })
-})
-
 test('기존 동작 그대로: 응답 함수가 eq·gte·lte·range 조건을 받고 update는 넘긴 줄도 받는다', async () => {
   const { fakeSupabase, handlers, countOf } = createFakeSupabase()
   /** @type {Array<import('../../testSupport/fakeSupabaseClient.js').EqFilters>} */

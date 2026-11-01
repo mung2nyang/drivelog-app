@@ -8,7 +8,7 @@ import assert from 'node:assert/strict'
 import { mock, test } from 'node:test'
 import { clientRowsFor, createFakeSupabase, vehicleRowsFor, wait } from '../testSupport/fakeSupabaseClient.js'
 
-const { fakeSupabase, handlers, resetHandlers, emptyOkHandlers, callCounts } = createFakeSupabase()
+const { fakeSupabase, handlers, resetHandlers, emptyOkHandlers, callCounts } = createFakeSupabase({ allowUnregistered: true })
 fakeSupabase.auth.getSession = async () => ({
   data: { session: { user: { id: 'user-boot-nav', user_metadata: {}, phone: null } } },
   error: null,

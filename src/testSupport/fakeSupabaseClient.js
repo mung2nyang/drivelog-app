@@ -52,8 +52,8 @@ export function chainable(getResult, ops = []) {
   return api
 }
 
-/** @returns {{ fakeSupabase: { from: (table: string) => ReturnType<typeof chainable>, rpc: (fn: string, args?: import('../data/store/atomicPersist.ts').JsonValue) => Promise<FakeQueryResult>, auth: { signOut: () => Promise<{ error: null }> } }, handlers: FakeHandlers, callCounts: Record<string, number>, calls: Array<FakeCall>, callsOf: (table: string, method: string) => Array<FakeCall>, resetHandlers: () => void, countOf: (table: string, method: string) => number, emptyOkHandlers: () => FakeHandlers }} */
-export function createFakeSupabase() {
+/** @param {{ allowUnregistered?: boolean }} [options] @returns {{ fakeSupabase: { from: (table: string) => ReturnType<typeof chainable>, rpc: (fn: string, args?: import('../data/store/atomicPersist.ts').JsonValue) => Promise<FakeQueryResult>, auth: { signOut: () => Promise<{ error: null }> } }, handlers: FakeHandlers, callCounts: Record<string, number>, calls: Array<FakeCall>, callsOf: (table: string, method: string) => Array<FakeCall>, resetHandlers: () => void, countOf: (table: string, method: string) => number, emptyOkHandlers: () => FakeHandlers }} */
+export function createFakeSupabase({ allowUnregistered = false } = {}) {
   /** @type {FakeHandlers} */
   const handlers = {}
   /** @type {Record<string, number>} */
@@ -91,6 +91,13 @@ export function createFakeSupabase() {
     return callCounts[`${table}.${method}`] || 0
   }
 
+  // 등록 안 한 호출은 기다리는 곳에서 오류(allowUnregistered면 예전처럼 빈 성공).
+  /** @param {string} table @param {string} method @param {FakeQueryResult} ok @returns {FakeQueryResult} */
+  function unregistered(table, method, ok) {
+    if (allowUnregistered) return ok
+    throw new Error(`등록 안 한 호출: ${table}.${method}`)
+  }
+
   function emptyOkHandlers() {
     return {
       profiles: { select: () => ({ data: null, error: null }) },
@@ -107,26 +114,23 @@ export function createFakeSupabase() {
       const h = handlers[table] || {}
       return {
         /** @param {string} [columns] */
-        select: (columns) => { bump(table, 'select'); return chainable(h.select || (() => ({ data: [], error: null })), record(table, 'select', [columns])) },
+        select: (columns) => { bump(table, 'select'); return chainable(h.select || (() => unregistered(table, 'select', { data: [], error: null })), record(table, 'select', [columns])) },
         /** @param {import('../data/store/atomicPersist.ts').JsonValue} row @param {import('../data/store/atomicPersist.ts').JsonValue} [options] */
-        upsert: (row, options) => { bump(table, 'upsert'); return chainable(() => (h.upsert ? h.upsert(row, options) : { data: null, error: null }), record(table, 'upsert', [row, options])) },
+        upsert: (row, options) => { bump(table, 'upsert'); return chainable(() => (h.upsert ? h.upsert(row, options) : unregistered(table, 'upsert', { data: null, error: null })), record(table, 'upsert', [row, options])) },
         /** @param {import('../data/store/atomicPersist.ts').JsonValue} row */
-        insert: (row) => { bump(table, 'insert'); return chainable(() => (h.insert ? h.insert(row) : { data: null, error: null }), record(table, 'insert', [row])) },
+        insert: (row) => { bump(table, 'insert'); return chainable(() => (h.insert ? h.insert(row) : unregistered(table, 'insert', { data: null, error: null })), record(table, 'insert', [row])) },
         /** @param {import('../data/store/atomicPersist.ts').JsonValue} row */
-        update: (row) => { bump(table, 'update'); return chainable((filters) => (h.update ? h.update(row, filters) : { data: null, error: null }), record(table, 'update', [row])) },
-        delete: () => { bump(table, 'delete'); return chainable(h.delete || (() => ({ data: null, error: null })), record(table, 'delete', [])) },
+        update: (row) => { bump(table, 'update'); return chainable((filters) => (h.update ? h.update(row, filters) : unregistered(table, 'update', { data: null, error: null })), record(table, 'update', [row])) },
+        delete: () => { bump(table, 'delete'); return chainable(h.delete || (() => unregistered(table, 'delete', { data: null, error: null })), record(table, 'delete', [])) },
       }
     },
-    /**
-     * 슬라이스 A: upsert_driver_link_idempotent 등 RPC. handlers.rpc[fnName]가 있으면
-     * 그걸 부르고, 없으면 no-op { data: null, error: null }. countOf('rpc', fnName)로 카운트.
-     * @param {string} fnName @param {import('../data/store/atomicPersist.ts').JsonValue} [args]
-     */
+    // handlers.rpc[함수이름]이 있으면 그 답, 없으면 위와 같이 처리.
+    /** @param {string} fnName @param {import('../data/store/atomicPersist.ts').JsonValue} [args] */
     rpc(fnName, args) {
       bump('rpc', fnName)
       record('rpc', fnName, [args])
       const h = (handlers.rpc || {})[fnName]
-      return Promise.resolve().then(() => (h ? h(args) : { data: null, error: null }))
+      return Promise.resolve().then(() => (h ? h(args) : unregistered('rpc', fnName, { data: null, error: null })))
     },
     auth: { signOut: async () => ({ error: null }) },
   }

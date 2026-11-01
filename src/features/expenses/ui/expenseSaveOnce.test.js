@@ -10,7 +10,7 @@ import assert from 'node:assert/strict'
 import { mock, test } from 'node:test'
 import { createFakeSupabase } from '../../../testSupport/fakeSupabaseClient.js'
 
-const { fakeSupabase, handlers, resetHandlers, emptyOkHandlers, countOf } = createFakeSupabase()
+const { fakeSupabase, handlers, resetHandlers, emptyOkHandlers, countOf } = createFakeSupabase({ allowUnregistered: true })
 mock.module('../../../data/cloud/supabaseClient.ts', { namedExports: { supabase: fakeSupabase } })
 
 Reflect.set(globalThis, 'IS_REACT_ACT_ENVIRONMENT', true)

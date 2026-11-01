@@ -1,10 +1,13 @@
-// 가짜 서버가 받은 호출을 순서대로·조건까지 적어 두는지, 기존 filters·countOf는 그대로인지.
+// 가짜 서버가 받은 호출을 순서대로·조건까지 적어 두는지, 등록 안 한 호출은 오류인지, 기존 filters·countOf는 그대로인지.
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { createFakeSupabase } from '../../testSupport/fakeSupabaseClient.js'
 
+const ok = () => ({ data: null, error: null })
+
 test('호출 기록: 표·동작·넘긴 값·붙인 조건이 부른 순서대로 남는다', async () => {
-  const { fakeSupabase, calls, callsOf } = createFakeSupabase()
+  const { fakeSupabase, handlers, calls, callsOf } = createFakeSupabase()
+  Object.assign(handlers, { vehicles: { select: ok, delete: ok }, clients: { update: ok }, fuel_records: { upsert: ok } })
   await fakeSupabase.from('vehicles').select('id, number').in('id', [1, 2]).order('id', { ascending: true }).range(0, 999)
   await fakeSupabase.from('clients').update({ client_id: null }).eq('client_id', 7)
   await fakeSupabase.from('vehicles').delete().eq('id', 901).select('id')
@@ -19,7 +22,8 @@ test('호출 기록: 표·동작·넘긴 값·붙인 조건이 부른 순서대�
 })
 
 test('넘기지 않은 값은 기록에서 빠진다: select()·insert 한 개 인자·single()', async () => {
-  const { fakeSupabase, calls } = createFakeSupabase()
+  const { fakeSupabase, handlers, calls } = createFakeSupabase()
+  Object.assign(handlers, { profiles: { select: ok }, daily_logs: { insert: ok } })
   await fakeSupabase.from('profiles').select().eq('id', 'u1').single()
   await fakeSupabase.from('daily_logs').insert({ id: 1 })
   assert.deepEqual(calls[0], { table: 'profiles', method: 'select', args: [], ops: [['eq', 'id', 'u1'], ['single']] })
@@ -34,14 +38,36 @@ test('서버 함수(rpc) 호출도 이름·넘긴 값으로 남는다', async ()
   assert.equal(countOf('rpc', 'accept_invite'), 1)
 })
 
-test('resetHandlers는 기록·횟수·응답을 모두 비운다', async () => {
+test('resetHandlers는 기록·횟수·응답을 모두 비운다(비운 뒤 그 표는 등록 안 한 호출)', async () => {
   const { fakeSupabase, handlers, calls, resetHandlers, countOf } = createFakeSupabase()
   handlers.vehicles = { select: () => ({ data: [{ id: 1 }], error: null }) }
   await fakeSupabase.from('vehicles').select('id')
   resetHandlers()
   assert.equal(calls.length, 0)
   assert.equal(countOf('vehicles', 'select'), 0)
+  await assert.rejects(async () => fakeSupabase.from('vehicles').select('id'), { message: '등록 안 한 호출: vehicles.select' })
+})
+
+test('엄격 기본값: 등록 안 한 표·동작·서버 함수는 기다리는 곳에서 오류, 기록은 남는다', async () => {
+  const { fakeSupabase, handlers, callsOf } = createFakeSupabase()
+  handlers.vehicles = { select: () => ({ data: [], error: null }) }
+  await assert.rejects(async () => fakeSupabase.from('vehicles').delete().eq('id', 901), { message: '등록 안 한 호출: vehicles.delete' })
+  await assert.rejects(async () => fakeSupabase.from('clients').select('id'), { message: '등록 안 한 호출: clients.select' })
+  await assert.rejects(async () => fakeSupabase.rpc('is_admin'), { message: '등록 안 한 호출: rpc.is_admin' })
   assert.deepEqual(await fakeSupabase.from('vehicles').select('id'), { data: [], error: null })
+  assert.deepEqual(callsOf('vehicles', 'delete')[0].ops, [['eq', 'id', 901]])
+})
+
+test('allowUnregistered: 등록 안 한 호출도 예전처럼 읽기는 빈 목록, 나머지는 빈 성공', async () => {
+  const { fakeSupabase } = createFakeSupabase({ allowUnregistered: true })
+  assert.deepEqual(await fakeSupabase.from('vehicles').select('id'), { data: [], error: null })
+  for (const query of [
+    fakeSupabase.from('vehicles').upsert({ id: 1 }),
+    fakeSupabase.from('vehicles').insert({ id: 1 }),
+    fakeSupabase.from('vehicles').update({ id: 1 }).eq('id', 1),
+    fakeSupabase.from('vehicles').delete().eq('id', 1),
+    fakeSupabase.rpc('is_admin'),
+  ]) assert.deepEqual(await query, { data: null, error: null })
 })
 
 test('기존 동작 그대로: 응답 함수가 eq·gte·lte·range 조건을 받고 update는 넘긴 줄도 받는다', async () => {

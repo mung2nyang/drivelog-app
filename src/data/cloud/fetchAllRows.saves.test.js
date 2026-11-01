@@ -4,7 +4,7 @@ import assert from 'node:assert/strict'
 import { beforeEach, mock, test } from 'node:test'
 import { createFakeSupabase } from '../../testSupport/fakeSupabaseClient.js'
 
-const { fakeSupabase, handlers, resetHandlers, countOf, callsOf } = createFakeSupabase()
+const { fakeSupabase, handlers, resetHandlers, countOf, callsOf } = createFakeSupabase({ allowUnregistered: true })
 mock.module('./supabaseClient.ts', { namedExports: { supabase: fakeSupabase } })
 
 const { syncExpenseItemsForVehicle } = await import('../sync/syncExpenseItems.ts')

@@ -4,7 +4,7 @@ import assert from 'node:assert/strict'
 import { describe, mock, test } from 'node:test'
 import { createFakeSupabase } from '../../testSupport/fakeSupabaseClient.js'
 
-const { fakeSupabase, handlers, resetHandlers, emptyOkHandlers } = createFakeSupabase()
+const { fakeSupabase, handlers, resetHandlers, emptyOkHandlers } = createFakeSupabase({ allowUnregistered: true })
 mock.module('../cloud/supabaseClient.ts', { namedExports: { supabase: fakeSupabase } })
 
 const { buildClientRow } = await import('../cloud/cloudStorage.ts')

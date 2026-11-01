@@ -35,7 +35,7 @@ test('내 문의: 답변 있는 줄만, 본인 id로 묻고, 이상한 줄은 �
 
 test('내 문의: 서버 오류면 던진다', async () => {
   handlers.support_inquiries = { select: () => ({ data: null, error: { message: 'x' } }) }
-  await assert.rejects(fetchMyAnsweredInquiries('u-1'))
+  await assert.rejects(fetchMyAnsweredInquiries('u-1'), { message: 'x' })
 })
 
 test('관리자 요약: 대기 건수와 처음 만난(가장 최근) 대기 문의, 0건이면 null', async () => {
@@ -54,5 +54,5 @@ test('관리자 요약: 대기 건수와 처음 만난(가장 최근) 대기 문
 
 test('관리자 요약: 서버 오류(관리자 아님 등)면 던진다', async () => {
   handlers.rpc = { admin_list_support_inquiries: () => ({ data: null, error: { message: '관리자만 볼 수 있습니다.' } }) }
-  await assert.rejects(fetchPendingInquirySummary())
+  await assert.rejects(fetchPendingInquirySummary(), { message: '관리자만 볼 수 있습니다.' })
 })

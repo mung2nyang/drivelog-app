@@ -101,7 +101,7 @@ test('73-3: 앞 저장이 실패하면 그 변경만 빠지고, 뒤 저장은 �
   const second = savePracticeSettings(ownerKey, { platformOn: true })
   await wait(10)
   server.releases[0]?.()
-  await assert.rejects(() => first)
+  await assert.rejects(() => first, { message: 'profiles down' })
   await wait(10)
   assert.equal(server.sent.length, 2, '앞이 실패해도 뒤 저장은 이어서 한다')
   server.releases[1]?.()

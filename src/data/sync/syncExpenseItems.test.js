@@ -125,7 +125,7 @@ describe('syncExpenseItemsForVehicle — 로드맵 5-B-1 항목 단위 저장', 
 
   test('기타 넣기가 실패하면 정비 줄을 지우지 않는다', async () => {
     handlers.misc_expense_records.insert = () => ({ data: null, error: { message: 'insert down' } })
-    await assert.rejects(() => syncExpenseItemsForVehicle('driver-1', 'veh-1', [DRIVER_MAINT], [{ ...DRIVER_MAINT, kind: 'misc' }], {}))
+    await assert.rejects(() => syncExpenseItemsForVehicle('driver-1', 'veh-1', [DRIVER_MAINT], [{ ...DRIVER_MAINT, kind: 'misc' }], {}), { message: 'insert down' })
     assert.equal(countOf('maintenance_records', 'delete'), 0)
   })
 

@@ -32,7 +32,7 @@ describe('removeDayLogOnServer — 서버 함수 remove_day_log 한 번(지출�
 
   test('서버 함수가 오류를 돌려주면 던진다', async () => {
     handlers.rpc = { remove_day_log: () => ({ data: null, error: { message: 'down' } }) }
-    await assert.rejects(() => removeDayLogOnServer(700, '2026-10-10'))
+    await assert.rejects(() => removeDayLogOnServer(700, '2026-10-10'), { message: 'down' })
     assert.equal(countOf('rpc', 'remove_day_log'), 1)
   })
 })

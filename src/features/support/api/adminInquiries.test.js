@@ -45,7 +45,7 @@ describe('fetchAdminInquiries', () => {
 
   test('서버 오류면 던진다', async () => {
     handlers.rpc = { admin_list_support_inquiries: () => ({ data: null, error: { message: '관리자만 볼 수 있습니다.' } }) }
-    await assert.rejects(fetchAdminInquiries())
+    await assert.rejects(fetchAdminInquiries(), { message: '관리자만 볼 수 있습니다.' })
   })
 })
 

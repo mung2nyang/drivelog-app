@@ -13,7 +13,7 @@ import assert from 'node:assert/strict'
 import { mock, test } from 'node:test'
 import { clientRowsFor, createFakeSupabase, vehicleRowsFor, wait } from '../testSupport/fakeSupabaseClient.js'
 
-const { fakeSupabase, handlers, resetHandlers, countOf, emptyOkHandlers } = createFakeSupabase({ allowUnregistered: true })
+const { fakeSupabase, handlers, resetHandlers, countOf, emptyOkHandlers } = createFakeSupabase()
 fakeSupabase.auth.getSession = async () => ({
   data: { session: { user: { id: 'user-boot-nav', user_metadata: {}, phone: null } } },
   error: null,
@@ -38,7 +38,18 @@ handlers.profiles.select = () => ({ data: { id: 'user-boot-nav', name: '테스�
 handlers.clients.insert = () => ({ data: { id: `fake-client-${Math.random().toString(36).slice(2, 8)}` }, error: null })
 handlers.vehicles.insert = () => ({ data: { id: `fake-vehicle-${Math.random().toString(36).slice(2, 8)}` }, error: null })
 handlers.daily_logs = {
+  select: () => ({ data: [], error: null }),
   upsert: () => ({ data: { id: 9000 }, error: null }),
+}
+handlers.transport_details = { select: () => ({ data: [], error: null }) }
+handlers.support_inquiries = { select: () => ({ data: [], error: null }) }
+handlers.fuel_records = { select: () => ({ data: [], error: null }) }
+handlers.maintenance_records = { select: () => ({ data: [], error: null }) }
+handlers.misc_expense_records = { select: () => ({ data: [], error: null }) }
+handlers.rpc = {
+  is_admin: () => ({ data: null, error: null }),
+  settle_expired_driver_unlinks: () => ({ data: null, error: null }),
+  save_day_log: () => ({ data: null, error: null }),
 }
 
 globalThis.IS_REACT_ACT_ENVIRONMENT = true
@@ -351,6 +362,7 @@ test('Step 6 — 일지 디바운스 커밋 + 언마운트 flush + 빈 날 삭�
   const root = createTrackedRoot(container)
   const ownerKey = 'user-boot-nav'
   const dateKey = '2026-08-10'
+  handlers.rpc.remove_day_log = () => ({ data: null, error: null })
 
   try {
     await act(async () => {
@@ -711,6 +723,8 @@ test('재감사 FAIL 지적 6번 — 콜상세 폼을 열면 비용 폼이 닫�
 test('재감사 2차 FAIL 지적 2번 — 비용 저장이 그 사이 store에 추가된 다른 비용을 덮어쓰지 않는다', async () => {
   const ownerKey = 'user-boot-nav'
   const dateKey = '2026-08-21'
+  handlers.maintenance_records.insert = () => ({ data: null, error: null })
+  handlers.misc_expense_records.insert = () => ({ data: null, error: null })
   window.history.pushState({}, '', `/app/day/${dateKey}`)
   const container = document.createElement('div')
   document.body.appendChild(container)
@@ -1048,6 +1062,7 @@ test('알림 화면 — 알림 단추 → /app/notifications(옆 창 없음) →
 // 로그인 계정이 다크로 쓰다 로그아웃하면 로그인 화면도 다크 — 세션이 비고 주소가 아직 /app인 순간 비회원(라이트) 설정으로 덮지 않는다.
 test('로그인 계정 설정에서 다크 → 개인정보 [로그아웃] → 로그인 화면도 다크, 마지막 테마 기억도 dark', async () => {
   window.history.pushState({}, '', '/app/me/settings')
+  handlers.profiles.upsert = () => ({ data: null, error: null })
   const container = document.createElement('div')
   document.body.appendChild(container)
   const root = createTrackedRoot(container)

@@ -10,7 +10,7 @@ import assert from 'node:assert/strict'
 import { mock, test } from 'node:test'
 import { createFakeSupabase } from '../../../testSupport/fakeSupabaseClient.js'
 
-const { fakeSupabase, handlers, resetHandlers, emptyOkHandlers, countOf } = createFakeSupabase({ allowUnregistered: true })
+const { fakeSupabase, handlers, resetHandlers, emptyOkHandlers, countOf } = createFakeSupabase()
 mock.module('../../../data/cloud/supabaseClient.ts', { namedExports: { supabase: fakeSupabase } })
 
 Reflect.set(globalThis, 'IS_REACT_ACT_ENVIRONMENT', true)
@@ -58,6 +58,8 @@ function beginLoggedIn(ownerKey) {
     select: () => ({ data: { id: 'dl-1', work_date: DATE }, error: null }),
     upsert: () => ({ data: { id: 'dl-1' }, error: null }),
   }
+  handlers.fuel_records = { select: () => ({ data: [], error: null }) }
+  handlers.misc_expense_records = { select: () => ({ data: [], error: null }) }
   beginSessionEpoch(ownerKey, ownerKey)
   setHydration({ status: 'ready', userId: ownerKey, ownerKey })
   commitCars(ownerKey, [{ id: 'car-main', type: 'main', number: '12가3456', supabaseId: 800 }])

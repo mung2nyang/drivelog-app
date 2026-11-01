@@ -8,7 +8,7 @@ import assert from 'node:assert/strict'
 import { mock, test } from 'node:test'
 import { clientRowsFor, createFakeSupabase, vehicleRowsFor, wait } from '../testSupport/fakeSupabaseClient.js'
 
-const { fakeSupabase, handlers, resetHandlers, emptyOkHandlers, callCounts } = createFakeSupabase({ allowUnregistered: true })
+const { fakeSupabase, handlers, resetHandlers, emptyOkHandlers, callCounts } = createFakeSupabase()
 fakeSupabase.auth.getSession = async () => ({
   data: { session: { user: { id: 'user-boot-nav', user_metadata: {}, phone: null } } },
   error: null,
@@ -30,6 +30,12 @@ handlers.profiles.select = () => ({ data: { id: 'user-boot-nav', name: '테스�
 handlers.clients.insert = () => ({ data: { id: `fake-client-${Math.random().toString(36).slice(2, 8)}` }, error: null })
 handlers.vehicles.insert = () => ({ data: { id: `fake-vehicle-${Math.random().toString(36).slice(2, 8)}` }, error: null })
 handlers.daily_logs = { upsert: () => ({ data: { id: 9000 }, error: null }) }
+handlers.clients.update = () => ({ data: null, error: null })
+handlers.support_inquiries = { select: () => ({ data: [], error: null }) }
+handlers.fuel_records = { select: () => ({ data: [], error: null }) }
+handlers.maintenance_records = { select: () => ({ data: [], error: null }) }
+handlers.misc_expense_records = { select: () => ({ data: [], error: null }) }
+handlers.rpc = { is_admin: () => ({ data: null, error: null }), settle_expired_driver_unlinks: () => ({ data: null, error: null }) }
 
 const reactActEnv = /** @type {{ IS_REACT_ACT_ENVIRONMENT?: boolean }} */ (globalThis)
 reactActEnv.IS_REACT_ACT_ENVIRONMENT = true
@@ -72,6 +78,12 @@ function restoreDefaultHandlers() {
   handlers.clients.insert = () => ({ data: { id: `fake-client-${Math.random().toString(36).slice(2, 8)}` }, error: null })
   handlers.vehicles.insert = () => ({ data: { id: `fake-vehicle-${Math.random().toString(36).slice(2, 8)}` }, error: null })
   handlers.daily_logs = { upsert: () => ({ data: { id: 9000 }, error: null }) }
+  handlers.clients.update = () => ({ data: null, error: null })
+  handlers.support_inquiries = { select: () => ({ data: [], error: null }) }
+  handlers.fuel_records = { select: () => ({ data: [], error: null }) }
+  handlers.maintenance_records = { select: () => ({ data: [], error: null }) }
+  handlers.misc_expense_records = { select: () => ({ data: [], error: null }) }
+  handlers.rpc = { is_admin: () => ({ data: null, error: null }), settle_expired_driver_unlinks: () => ({ data: null, error: null }) }
 }
 
 test.afterEach(async () => {
@@ -309,6 +321,7 @@ test('일지에서 차량 관리로 가서 번호를 바꾸면 출처 날짜의 
     id: 'car-from-log', type: 'sub', number: oldNum, driverName: '남', driverPhone: '010-3131-3232', supabaseId: 3131,
   }])
   mirrorServerFromStore(ownerKey)
+  handlers.rpc.rename_and_save_sub_vehicle = () => ({ data: null, error: null })
   commitLogWorkData(ownerKey, oldNum, { [dateKey]: { isOff: false, fixedCount: 1 } })
   window.history.pushState({}, '', `/app/logs/${encodeURIComponent(oldNum)}/day/${dateKey}`)
   const { container, root } = await renderApp()
@@ -457,6 +470,8 @@ test('차량 insert 대기 중 번호를 바꿔도 서버 insert는 1회다', as
     error: null,
   })
   handlers.vehicles.update = () => ({ data: null, error: null })
+  handlers.daily_logs.select = () => ({ data: [], error: null })
+  handlers.transport_details = { select: () => ({ data: [], error: null }) }
   commitCars(ownerKey, [{ id: 'main-hold', type: 'main', number: '10하1010', supabaseId: 'main-already' }])
   window.history.pushState({}, '', '/app/cars')
   const { container, root } = await renderApp()

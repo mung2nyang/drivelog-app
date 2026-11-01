@@ -27,7 +27,7 @@ test('읽기: 차량·날짜로 1장, 형식 검사 후 돌려줌 / 없으면 nu
 
 test('읽기 실패는 던짐', async () => {
   handlers.daily_inspections = { select: () => ({ data: null, error: { message: 'down' } }) }
-  await assert.rejects(() => fetchDailyInspection('veh-1', '2026-10-01'))
+  await assert.rejects(() => fetchDailyInspection('veh-1', '2026-10-01'), { message: 'down' })
 })
 
 test('저장: 작성자 = 로그인 사용자, 점검자 이름, 조치 기록 빈칸이면 null, 차량+날짜 덮어쓰기', async () => {
@@ -106,11 +106,11 @@ test('지우기 막기: 로그인 안 함·서버 값 받는 중이면 서버를
   await assert.rejects(() => deleteDailyInspection(input), /로그인/)
   beginSessionEpoch('driver-1', 'owner-1')
   setHydration({ status: 'hydrating', userId: 'driver-1', ownerKey: 'owner-1' })
-  await assert.rejects(() => deleteDailyInspection(input))
+  await assert.rejects(() => deleteDailyInspection(input), { message: '아직 기록을 불러오는 중입니다. 잠시 후 다시 시도해 주세요.' })
   assert.equal(deletes, 0)
   setHydration({ status: 'ready', userId: 'driver-1', ownerKey: 'owner-1' })
   handlers.daily_inspections = { delete: () => { endCloudSession(); return { data: [{ id: 'a' }], error: null } } }
-  await assert.rejects(() => deleteDailyInspection(input))
+  await assert.rejects(() => deleteDailyInspection(input), { message: '세션이 바뀌어 남은 원격 작업을 중단합니다.' })
 })
 
 test('저장·지우기 성공 뒤에만 알림: 저장은 "있음", 지우기는 "없음", 실패·막힘은 알림 없음', async () => {
@@ -126,8 +126,8 @@ test('저장·지우기 성공 뒤에만 알림: 저장은 "있음", 지우기�
     beginSessionEpoch('driver-1', 'owner-1')
     setHydration({ status: 'ready', userId: 'driver-1', ownerKey: 'owner-1' })
     handlers.daily_inspections = { upsert: () => ({ data: null, error: { message: 'down' } }), delete: () => ({ data: [], error: null }) }
-    await assert.rejects(() => saveDailyInspection(save))
-    await assert.rejects(() => deleteDailyInspection(remove))
+    await assert.rejects(() => saveDailyInspection(save), { message: 'down' })
+    await assert.rejects(() => deleteDailyInspection(remove), { message: '일상점검표를 지우지 못했습니다.' })
     assert.deepEqual(changes, [], '실패하면 알림 없음')
     handlers.daily_inspections = { upsert: () => ({ data: null, error: null }), delete: () => ({ data: [{ id: 'a' }], error: null }) }
     await saveDailyInspection(save)

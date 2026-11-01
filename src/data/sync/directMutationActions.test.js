@@ -7,7 +7,7 @@ import assert from 'node:assert/strict'
 import { describe, mock, test } from 'node:test'
 import { createFakeSupabase, wait } from '../../testSupport/fakeSupabaseClient.js'
 
-const { fakeSupabase, handlers, resetHandlers, countOf, emptyOkHandlers } = createFakeSupabase()
+const { fakeSupabase, handlers, resetHandlers, countOf, callsOf, emptyOkHandlers } = createFakeSupabase()
 mock.module('../cloud/supabaseClient.ts', { namedExports: { supabase: fakeSupabase } })
 
 const {
@@ -116,6 +116,7 @@ describe('requestVehicleDeletion — 사용자 지시 10번 필수 시나리오'
     assert.deepEqual(readJsonKey('cars', ownerKey, []), cars)
     assert.deepEqual(getState().cars[ownerKey], [], 'Store에서도 사라져야 한다')
     assert.equal(countOf('vehicles', 'delete'), 1)
+    assert.deepEqual(callsOf('vehicles', 'delete')[0].ops, [['eq', 'id', 901], ['select', 'id']], '그 차량 한 줄만 지우고 지운 줄을 받아야 한다')
     assert.equal(result.failed, false)
     assert.equal(result.toast, '차량을 삭제했습니다.')
     endCloudSession()
@@ -353,6 +354,7 @@ describe('requestClientDeletion — 사용자 지시 10번 필수 시나리오',
     const result = await requestClientDeletion({ ownerKey, userId: 'user-1', clients, clientId: 'client-1' })
     assert.deepEqual(result.clients, [])
     assert.equal(countOf('clients', 'delete'), 1)
+    assert.deepEqual(callsOf('clients', 'delete')[0].ops, [['eq', 'id', 701], ['select', 'id']], '그 거래처 한 줄만 지우고 지운 줄을 받아야 한다')
     assert.deepEqual(getState().clients[ownerKey], [], 'Store에서도 사라져야 한다')
     assert.equal(result.failed, false)
     assert.match(result.toast, /거래처를 삭제했습니다/)
@@ -461,6 +463,9 @@ describe('requestDriverStatusChange / requestDriverDeletion — 슬라이스 B: 
 
     assert.deepEqual(result.drivers, expected)
     assert.equal(countOf('driver_links', 'update'), 1)
+    const [statusUpdate] = callsOf('driver_links', 'update')
+    assert.equal(/** @type {{ status?: string }} */ (statusUpdate.args[0]).status, 'linked')
+    assert.deepEqual(statusUpdate.ops, [['eq', 'id', 602]], '그 기사 줄만 바꿔야 한다')
     assert.equal(countOf('driver_links', 'insert'), 0, '새 행을 넣지 않는다')
     assert.deepEqual(getState().drivers[ownerKey], expected, 'Store에도 새 상태가 반영돼야 한다(4대 기준 2)')
     assert.deepEqual(readJsonKey('drivers', ownerKey, []), drivers, '로그인 성공은 drivers LS 미러를 쓰지 않는다')
@@ -479,6 +484,7 @@ describe('requestDriverStatusChange / requestDriverDeletion — 슬라이스 B: 
 
     assert.deepEqual(result.drivers, [])
     assert.equal(countOf('driver_links', 'delete'), 1)
+    assert.deepEqual(callsOf('driver_links', 'delete')[0].ops, [['eq', 'id', 610], ['select', 'id']], '그 초대 한 줄만 지우고 지운 줄을 받아야 한다')
     assert.deepEqual(getState().drivers[ownerKey], [], 'Store에서도 제거돼야 한다')
     assert.deepEqual(readJsonKey('drivers', ownerKey, []), drivers, '로그인 삭제는 drivers LS 미러를 쓰지 않는다')
     assert.match(result.toast, /초대를 삭제했습니다/)

@@ -4,7 +4,7 @@ import assert from 'node:assert/strict'
 import { beforeEach, mock, test } from 'node:test'
 import { createFakeSupabase } from '../../testSupport/fakeSupabaseClient.js'
 
-const { fakeSupabase, handlers, resetHandlers, countOf } = createFakeSupabase()
+const { fakeSupabase, handlers, resetHandlers, countOf, callsOf } = createFakeSupabase()
 mock.module('./supabaseClient.ts', { namedExports: { supabase: fakeSupabase } })
 
 const { syncExpenseItemsForVehicle } = await import('../sync/syncExpenseItems.ts')
@@ -73,4 +73,10 @@ test('I-1 점검표 차량 2대 1,300장 → 1,300장 모두 차량·날짜별�
   const byVehicle = await fetchVehiclesDailyInspections(['v1', 'v2'])
   assert.equal(Object.keys(byVehicle.v1 || {}).length, 650)
   assert.equal(Object.keys(byVehicle.v2 || {}).length, 650)
+  const reads = callsOf('daily_inspections', 'select')
+  assert.equal(reads.length, 2)
+  for (const read of reads) {
+    assert.deepEqual(read.ops.find((op) => op[0] === 'in'), ['in', 'vehicle_id', ['v1', 'v2']], '부탁한 차량만 읽어야 한다')
+    assert.deepEqual(read.ops.find((op) => op[0] === 'order'), ['order', 'id'], '쪽마다 같은 순서로 읽어야 빠지거나 겹치지 않는다')
+  }
 })

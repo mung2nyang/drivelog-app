@@ -5,7 +5,7 @@ import assert from 'node:assert/strict'
 import { beforeEach, mock, test } from 'node:test'
 import { createFakeSupabase } from '../../testSupport/fakeSupabaseClient.js'
 
-const { fakeSupabase, handlers, resetHandlers } = createFakeSupabase()
+const { fakeSupabase, handlers, resetHandlers, callsOf } = createFakeSupabase()
 mock.module('../cloud/supabaseClient.ts', { namedExports: { supabase: fakeSupabase } })
 
 const { fetchDailyInspection, saveDailyInspection } = await import('./dailyInspections.ts')
@@ -81,6 +81,7 @@ test('지우기: 차량·날짜로 지우고 지운 줄을 받는다', async () 
   handlers.daily_inspections = { delete: (f) => { filters.push(/** @type {import('../../testSupport/fakeSupabaseClient.js').EqFilters} */ (f)); return { data: [{ id: 'a' }], error: null } } }
   await deleteDailyInspection({ vehicleId: 'veh-1', workDate: '2026-10-25' })
   assert.deepEqual(filters, [{ vehicle_id: 'veh-1', work_date: '2026-10-25' }])
+  assert.deepEqual(callsOf('daily_inspections', 'delete')[0].ops.at(-1), ['select', 'id'], '지운 줄을 받아야 0줄 실패를 가린다')
 })
 
 test('지우기 실패: 서버 오류는 던지고, 0줄(권한 없음·이미 없음)은 "지우지 못했습니다"로 던진다', async () => {

@@ -8,29 +8,39 @@
 /** @typedef {(arg?: EqFilters | import('../data/store/atomicPersist.ts').JsonValue, extra?: EqFilters | import('../data/store/atomicPersist.ts').JsonValue) => FakeQueryResult | Promise<FakeQueryResult>} FakeHandler */
 /** @typedef {Record<string, Record<string, FakeHandler>>} FakeHandlers */
 /** @typedef {(args?: import('../data/store/atomicPersist.ts').JsonValue) => FakeQueryResult | Promise<FakeQueryResult>} FakeRpcHandler */
+/** @typedef {Array<import('../data/store/atomicPersist.ts').JsonValue>} FakeOp 조건 이름과 넘긴 값 */
+/** @typedef {{ table: string, method: string, args: Array<import('../data/store/atomicPersist.ts').JsonValue>, ops: Array<FakeOp> }} FakeCall */
 
 /**
  * @param {(filters: EqFilters) => FakeQueryResult | Promise<FakeQueryResult>} getResult
+ * @param {Array<FakeOp>} [ops] 붙인 조건을 순서대로 적어 둘 곳
  */
-export function chainable(getResult) {
+export function chainable(getResult, ops = []) {
   /** @type {EqFilters} */
   const filters = {}
+  /** @param {string} name @param {Array<import('../data/store/atomicPersist.ts').JsonValue|undefined>} args */
+  const note = (name, args) => { ops.push([name, ...args.filter((arg) => arg !== undefined)]) }
   const api = {
-    select: () => api,
+    /** @param {string} [columns] */
+    select: (columns) => { note('select', [columns]); return api },
     /** @param {string} column @param {string|number} value */
-    eq: (column, value) => { filters[column] = value; return api },
-    neq: () => api,
+    eq: (column, value) => { note('eq', [column, value]); filters[column] = value; return api },
     /** @param {string} column @param {string|number} value */
-    gte: (column, value) => { filters[column + '>='] = value; return api },
+    neq: (column, value) => { note('neq', [column, value]); return api },
     /** @param {string} column @param {string|number} value */
-    lte: (column, value) => { filters[column + '<='] = value; return api },
-    in: () => api,
-    order: () => api,
-    limit: () => api,
+    gte: (column, value) => { note('gte', [column, value]); filters[column + '>='] = value; return api },
+    /** @param {string} column @param {string|number} value */
+    lte: (column, value) => { note('lte', [column, value]); filters[column + '<='] = value; return api },
+    /** @param {string} column @param {Array<string|number>} values */
+    in: (column, values) => { note('in', [column, values]); return api },
+    /** @param {string} column @param {{ ascending?: boolean }} [options] */
+    order: (column, options) => { note('order', [column, options]); return api },
+    /** @param {number} count */
+    limit: (count) => { note('limit', [count]); return api },
     /** @param {number} from @param {number} to */
-    range: (from, to) => { filters['range'] = `${from}-${to}`; return api },
-    maybeSingle: () => api,
-    single: () => api,
+    range: (from, to) => { note('range', [from, to]); filters['range'] = `${from}-${to}`; return api },
+    maybeSingle: () => { note('maybeSingle', []); return api },
+    single: () => { note('single', []); return api },
     /**
      * @param {(value: FakeQueryResult) => FakeQueryResult} [onFulfilled]
      * @param {(reason: Error) => FakeQueryResult} [onRejected]
@@ -42,16 +52,32 @@ export function chainable(getResult) {
   return api
 }
 
-/** @returns {{ fakeSupabase: { from: (table: string) => ReturnType<typeof chainable>, rpc: (fn: string, args?: import('../data/store/atomicPersist.ts').JsonValue) => Promise<FakeQueryResult>, auth: { signOut: () => Promise<{ error: null }> } }, handlers: FakeHandlers, callCounts: Record<string, number>, resetHandlers: () => void, countOf: (table: string, method: string) => number, emptyOkHandlers: () => FakeHandlers }} */
+/** @returns {{ fakeSupabase: { from: (table: string) => ReturnType<typeof chainable>, rpc: (fn: string, args?: import('../data/store/atomicPersist.ts').JsonValue) => Promise<FakeQueryResult>, auth: { signOut: () => Promise<{ error: null }> } }, handlers: FakeHandlers, callCounts: Record<string, number>, calls: Array<FakeCall>, callsOf: (table: string, method: string) => Array<FakeCall>, resetHandlers: () => void, countOf: (table: string, method: string) => number, emptyOkHandlers: () => FakeHandlers }} */
 export function createFakeSupabase() {
   /** @type {FakeHandlers} */
   const handlers = {}
   /** @type {Record<string, number>} */
   const callCounts = {}
+  /** 받은 호출을 순서대로: 표·동작·넘긴 값·붙인 조건 @type {Array<FakeCall>} */
+  const calls = []
 
   function resetHandlers() {
     Object.keys(handlers).forEach((key) => delete handlers[key])
     Object.keys(callCounts).forEach((key) => delete callCounts[key])
+    calls.length = 0
+  }
+
+  /** @param {string} table @param {string} method @param {Array<import('../data/store/atomicPersist.ts').JsonValue|undefined>} args @returns {Array<FakeOp>} */
+  function record(table, method, args) {
+    /** @type {FakeCall} */
+    const call = { table, method, args: args.filter((arg) => arg !== undefined), ops: [] }
+    calls.push(call)
+    return call.ops
+  }
+
+  /** @param {string} table @param {string} method */
+  function callsOf(table, method) {
+    return calls.filter((call) => call.table === table && call.method === method)
   }
 
   /** @param {string} table @param {string} method */
@@ -80,14 +106,15 @@ export function createFakeSupabase() {
     from(table) {
       const h = handlers[table] || {}
       return {
-        select: () => { bump(table, 'select'); return chainable(h.select || (() => ({ data: [], error: null }))) },
+        /** @param {string} [columns] */
+        select: (columns) => { bump(table, 'select'); return chainable(h.select || (() => ({ data: [], error: null })), record(table, 'select', [columns])) },
         /** @param {import('../data/store/atomicPersist.ts').JsonValue} row @param {import('../data/store/atomicPersist.ts').JsonValue} [options] */
-        upsert: (row, options) => { bump(table, 'upsert'); return chainable(() => (h.upsert ? h.upsert(row, options) : { data: null, error: null })) },
+        upsert: (row, options) => { bump(table, 'upsert'); return chainable(() => (h.upsert ? h.upsert(row, options) : { data: null, error: null }), record(table, 'upsert', [row, options])) },
         /** @param {import('../data/store/atomicPersist.ts').JsonValue} row */
-        insert: (row) => { bump(table, 'insert'); return chainable(() => (h.insert ? h.insert(row) : { data: null, error: null })) },
+        insert: (row) => { bump(table, 'insert'); return chainable(() => (h.insert ? h.insert(row) : { data: null, error: null }), record(table, 'insert', [row])) },
         /** @param {import('../data/store/atomicPersist.ts').JsonValue} row */
-        update: (row) => { bump(table, 'update'); return chainable((filters) => (h.update ? h.update(row, filters) : { data: null, error: null })) },
-        delete: () => { bump(table, 'delete'); return chainable(h.delete || (() => ({ data: null, error: null }))) },
+        update: (row) => { bump(table, 'update'); return chainable((filters) => (h.update ? h.update(row, filters) : { data: null, error: null }), record(table, 'update', [row])) },
+        delete: () => { bump(table, 'delete'); return chainable(h.delete || (() => ({ data: null, error: null })), record(table, 'delete', [])) },
       }
     },
     /**
@@ -97,13 +124,14 @@ export function createFakeSupabase() {
      */
     rpc(fnName, args) {
       bump('rpc', fnName)
+      record('rpc', fnName, [args])
       const h = (handlers.rpc || {})[fnName]
       return Promise.resolve().then(() => (h ? h(args) : { data: null, error: null }))
     },
     auth: { signOut: async () => ({ error: null }) },
   }
 
-  return { fakeSupabase, handlers, callCounts, resetHandlers, countOf, emptyOkHandlers }
+  return { fakeSupabase, handlers, callCounts, calls, callsOf, resetHandlers, countOf, emptyOkHandlers }
 }
 
 /** @param {number} ms */

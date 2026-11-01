@@ -7,7 +7,7 @@ import assert from 'node:assert/strict'
 import { describe, mock, test } from 'node:test'
 import { createFakeSupabase, wait } from '../../testSupport/fakeSupabaseClient.js'
 
-const { fakeSupabase, handlers, resetHandlers, countOf, callsOf, emptyOkHandlers } = createFakeSupabase({ allowUnregistered: true })
+const { fakeSupabase, handlers, resetHandlers, countOf, callsOf, emptyOkHandlers } = createFakeSupabase()
 mock.module('../cloud/supabaseClient.ts', { namedExports: { supabase: fakeSupabase } })
 
 const {
@@ -210,6 +210,7 @@ describe('requestVehicleDeletion — 사용자 지시 10번 필수 시나리오'
     assert.equal(countOf('vehicles', 'delete'), 0)
 
     setHydration({ status: 'ready', userId: 'user-1', ownerKey })
+    handlers.vehicles.delete = () => ({ data: null, error: null })
     const retryResult = await requestVehicleDeletion({ ownerKey, userId: 'user-1', cars: blockedResult.cars, vehicleId: 'car-1' })
 
     assert.deepEqual(retryResult.cars, [])
@@ -350,6 +351,8 @@ describe('requestClientDeletion — 사용자 지시 10번 필수 시나리오',
     const clients = [{ id: 'client-1', companyName: '한진', supabaseId: 701 }]
     writeJsonKey('clients', ownerKey, clients)
     handlers.clients = { delete: () => ({ data: [{ id: 701 }], error: null }) }
+    handlers.transport_details = { update: () => ({ data: null, error: null }) }
+    handlers.tax_invoices.update = () => ({ data: null, error: null })
 
     const result = await requestClientDeletion({ ownerKey, userId: 'user-1', clients, clientId: 'client-1' })
     assert.deepEqual(result.clients, [])
@@ -367,6 +370,8 @@ describe('requestClientDeletion — 사용자 지시 10번 필수 시나리오',
     const clients = [{ id: 'client-1', companyName: '한진', supabaseId: 702 }]
     writeJsonKey('clients', ownerKey, clients)
     handlers.clients = { delete: () => { throw new Error('network down') } }
+    handlers.transport_details = { update: () => ({ data: null, error: null }) }
+    handlers.tax_invoices.update = () => ({ data: null, error: null })
 
     const result = await requestClientDeletion({ ownerKey, userId: 'user-1', clients, clientId: 'client-1' })
 
@@ -384,6 +389,8 @@ describe('requestClientDeletion — 사용자 지시 10번 필수 시나리오',
     const clients = [{ id: 'client-1', companyName: '한진', supabaseId: 703 }]
     writeJsonKey('clients', ownerKey, clients)
     handlers.clients = { delete: () => ({ data: [], error: null }) }
+    handlers.transport_details = { update: () => ({ data: null, error: null }) }
+    handlers.tax_invoices.update = () => ({ data: null, error: null })
 
     const result = await requestClientDeletion({ ownerKey, userId: 'user-1', clients, clientId: 'client-1' })
 
@@ -458,6 +465,7 @@ describe('requestDriverStatusChange / requestDriverDeletion — 슬라이스 B: 
     const drivers = asDrivers([{ id: 'drv-1', name: '기사', supabaseId: 602, status: 'pending' }])
     writeJsonKey('drivers', ownerKey, drivers)
     const expected = [{ id: 'drv-1', name: '기사', supabaseId: 602, status: 'linked' }]
+    handlers.driver_links.update = () => ({ data: null, error: null })
 
     const result = await requestDriverStatusChange({ ownerKey, userId: 'user-1', drivers, driverId: 'drv-1', status: 'linked', cloud: true })
 

@@ -4,7 +4,7 @@ import assert from 'node:assert/strict'
 import { describe, mock, test } from 'node:test'
 import { createFakeSupabase } from '../../testSupport/fakeSupabaseClient.js'
 
-const { fakeSupabase, handlers, resetHandlers, emptyOkHandlers } = createFakeSupabase({ allowUnregistered: true })
+const { fakeSupabase, handlers, resetHandlers, emptyOkHandlers } = createFakeSupabase()
 mock.module('../cloud/supabaseClient.ts', { namedExports: { supabase: fakeSupabase } })
 
 const { buildClientRow } = await import('../cloud/cloudStorage.ts')
@@ -194,7 +194,15 @@ describe('Step 9 ① 슬라이스 C (개정): 기사↔차주 거래처 상호 �
         data: [{ id: 'veh-1', number: '55구1234', type: 'sub' }],
         error: null,
       }),
+      get_linked_owner_business_info: () => ({ data: null, error: null }),
     }
+    Object.assign(handlers, {
+      daily_logs: { select: () => ({ data: [], error: null }) },
+      transport_details: { select: () => ({ data: [], error: null }) },
+      fuel_records: { select: () => ({ data: [], error: null }) },
+      maintenance_records: { select: () => ({ data: [], error: null }) },
+      misc_expense_records: { select: () => ({ data: [], error: null }) },
+    })
 
     const snapshot = await buildEmployedDriverSnapshot({
       userId: 'driver-a',
@@ -253,6 +261,7 @@ describe('Step 9 ① 슬라이스 C (개정): 기사↔차주 거래처 상호 �
         error: null,
       }),
       get_assigned_vehicle_summary: () => ({ data: [], error: null }),
+      get_linked_owner_business_info: () => ({ data: null, error: null }),
     }
 
     const snapshot = await buildEmployedDriverSnapshot({

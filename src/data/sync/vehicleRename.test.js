@@ -4,7 +4,7 @@ import assert from 'node:assert/strict'
 import { describe, mock, test } from 'node:test'
 import { createFakeSupabase } from '../../testSupport/fakeSupabaseClient.js'
 
-const { fakeSupabase, handlers, resetHandlers, countOf, emptyOkHandlers } = createFakeSupabase({ allowUnregistered: true })
+const { fakeSupabase, handlers, resetHandlers, countOf, emptyOkHandlers } = createFakeSupabase()
 mock.module('../cloud/supabaseClient.ts', { namedExports: { supabase: fakeSupabase } })
 
 const { requestVehicleSave } = await import('./vehicleMutations.ts')
@@ -146,6 +146,7 @@ describe('66 기사 차량 번호 변경 — 묶인 것 옮기기', () => {
   test('R-4 로그인: 번호를 안 바꾸면 서버 함수 0회', async () => {
     const owner = 'own-r4'
     beginLoggedIn(owner)
+    handlers.vehicles.update = () => ({ data: null, error: null })
     seed(owner)
     const result = await requestVehicleSave({
       ownerKey: owner,
@@ -167,7 +168,12 @@ describe('66 기사 차량 번호 변경 — 묶인 것 옮기기', () => {
     /** @type {Array<import('../store/atomicPersist.ts').JsonValue>} */
     const fuelRows = []
     handlers.daily_logs = { select: () => ({ data: [], error: null }), upsert: () => ({ data: { id: 'dl-1' }, error: null }) }
-    handlers.fuel_records = { insert: (rows) => { fuelRows.push(...(Array.isArray(rows) ? rows : [rows ?? null])); return { data: null, error: null } } }
+    handlers.fuel_records = {
+      select: () => ({ data: [], error: null }),
+      insert: (rows) => { fuelRows.push(...(Array.isArray(rows) ? rows : [rows ?? null])); return { data: null, error: null } },
+    }
+    handlers.maintenance_records = { select: () => ({ data: [], error: null }) }
+    handlers.misc_expense_records = { select: () => ({ data: [], error: null }) }
     seed(owner)
     assert.equal((await rename(owner)).failed, false)
     await saveExpenses(owner, getState().expenses[owner])

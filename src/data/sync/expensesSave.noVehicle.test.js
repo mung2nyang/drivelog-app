@@ -4,7 +4,7 @@ import assert from 'node:assert/strict'
 import { afterEach, describe, mock, test } from 'node:test'
 import { createFakeSupabase } from '../../testSupport/fakeSupabaseClient.js'
 
-const { fakeSupabase, handlers, resetHandlers, countOf, emptyOkHandlers } = createFakeSupabase({ allowUnregistered: true })
+const { fakeSupabase, handlers, resetHandlers, countOf, emptyOkHandlers } = createFakeSupabase()
 mock.module('../cloud/supabaseClient.ts', { namedExports: { supabase: fakeSupabase } })
 
 const { beginSessionEpoch, endCloudSession } = await import('../cloud/cloudSession.ts')
@@ -45,6 +45,12 @@ describe('saveExpenseDraft — 저장할 서버 차량', () => {
 
   test('메인 차량 있는 차주는 지금처럼 서버에 넣고 목록에 더한다', async () => {
     seed('hv-owner', 'hv-owner', [{ id: 'car-main', type: 'main', number: '11가1111', supabaseId: 501 }])
+    Object.assign(handlers, {
+      daily_logs: { select: () => ({ data: [], error: null }), upsert: () => ({ data: null, error: null }) },
+      fuel_records: { select: () => ({ data: [], error: null }), insert: () => ({ data: null, error: null }) },
+      maintenance_records: { select: () => ({ data: [], error: null }) },
+      misc_expense_records: { select: () => ({ data: [], error: null }) },
+    })
     const message = await saveExpenseDraft('hv-owner', DRAFT, null)
     assert.equal(message, null)
     assert.equal(getState().expenses['hv-owner'].length, 1)

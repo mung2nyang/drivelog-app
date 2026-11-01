@@ -4,7 +4,7 @@ import assert from 'node:assert/strict'
 import { afterEach, describe, mock, test } from 'node:test'
 import { createFakeSupabase } from '../../testSupport/fakeSupabaseClient.js'
 
-const { fakeSupabase, handlers, resetHandlers, countOf, emptyOkHandlers } = createFakeSupabase({ allowUnregistered: true })
+const { fakeSupabase, handlers, resetHandlers, countOf, emptyOkHandlers } = createFakeSupabase()
 mock.module('../cloud/supabaseClient.ts', { namedExports: { supabase: fakeSupabase } })
 
 const { retryHydrate } = await import('./hydrate.ts')
@@ -50,6 +50,10 @@ describe('retryHydrate — 연동 확인', () => {
   test('연동 확인이 성공하고 차주 id가 그 칸과 같으면 기사 경로로 불러온다(차주 경로의 차량 표 읽기 0번)', async () => {
     const ownerKey = 'retry-owner-b'
     seedFailedDriverSession('retry-driver-b', ownerKey, { data: { id: 7, owner_id: ownerKey, driver_id: 'retry-driver-b', status: 'linked' }, error: null })
+    handlers.rpc = {
+      get_linked_owner_business_info: () => ({ data: null, error: null }),
+      get_assigned_vehicle_summary: () => ({ data: null, error: null }),
+    }
 
     await retryHydrate()
 

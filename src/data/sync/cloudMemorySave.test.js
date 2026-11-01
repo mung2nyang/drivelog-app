@@ -3,7 +3,7 @@ import assert from 'node:assert/strict'
 import { describe, mock, test } from 'node:test'
 import { createFakeSupabase } from '../../testSupport/fakeSupabaseClient.js'
 
-const { fakeSupabase, handlers, resetHandlers, countOf, emptyOkHandlers } = createFakeSupabase({ allowUnregistered: true })
+const { fakeSupabase, handlers, resetHandlers, countOf, emptyOkHandlers } = createFakeSupabase()
 mock.module('../cloud/supabaseClient.ts', { namedExports: { supabase: fakeSupabase } })
 
 const { beginSessionEpoch, endCloudSession } = await import('../cloud/cloudSession.ts')
@@ -133,9 +133,10 @@ describe('슬라이스 E — 로그인 프로필·설정·비용·계산서는 �
   test('savePracticeSettings throw: Store 단가 불변', async () => {
     const ownerKey = 'cms-settings-err'
     beginReady('user-1', ownerKey)
+    handlers.profiles.upsert = () => ({ data: null, error: null })
     await savePracticeSettings(ownerKey, { unitPrice: 100 })
     handlers.profiles = { upsert: () => ({ data: null, error: { message: 'profiles down' } }) }
-    await assert.rejects(() => savePracticeSettings(ownerKey, { unitPrice: 999 }))
+    await assert.rejects(() => savePracticeSettings(ownerKey, { unitPrice: 999 }), { message: 'profiles down' })
     assert.equal(settingsUnitPrice(getState().settings[ownerKey]), 100)
     endCloudSession()
   })
@@ -150,9 +151,9 @@ describe('슬라이스 E — 로그인 프로필·설정·비용·계산서는 �
       select: () => ({ data: [{ id: 10, work_date: '2026-08-01' }], error: null }),
       upsert: () => ({ data: { id: 10 }, error: null }),
     }
-    handlers.fuel_records = { delete: () => ({ data: null, error: null }), insert: () => ({ data: null, error: null }) }
-    handlers.maintenance_records = { delete: () => ({ data: null, error: null }), insert: () => ({ data: null, error: null }) }
-    handlers.misc_expense_records = { delete: () => ({ data: null, error: null }), insert: () => ({ data: null, error: null }) }
+    handlers.fuel_records = { select: () => ({ data: [], error: null }), delete: () => ({ data: null, error: null }), insert: () => ({ data: null, error: null }) }
+    handlers.maintenance_records = { select: () => ({ data: [], error: null }), delete: () => ({ data: null, error: null }), insert: () => ({ data: null, error: null }) }
+    handlers.misc_expense_records = { select: () => ({ data: [], error: null }), delete: () => ({ data: null, error: null }), insert: () => ({ data: null, error: null }) }
     /** @type {Array<import('../../domain/expenseTypes.ts').ExpenseItem>} */
     const next = [{ id: 'fuel-new', kind: 'fuel', date: '2026-08-01', name: '주유', cost: 1000 }]
 
@@ -177,9 +178,9 @@ describe('슬라이스 E — 로그인 프로필·설정·비용·계산서는 �
       select: () => ({ data: [{ id: 77, work_date: '2026-09-04' }], error: null }),
       upsert: () => ({ data: { id: 77 }, error: null }),
     }
-    handlers.fuel_records = { delete: () => ({ data: null, error: null }), insert: () => ({ data: null, error: null }) }
-    handlers.maintenance_records = { delete: () => ({ data: null, error: null }), insert: () => ({ data: null, error: null }) }
-    handlers.misc_expense_records = { delete: () => ({ data: null, error: null }), insert: () => ({ data: null, error: null }) }
+    handlers.fuel_records = { select: () => ({ data: [], error: null }), delete: () => ({ data: null, error: null }), insert: () => ({ data: null, error: null }) }
+    handlers.maintenance_records = { select: () => ({ data: [], error: null }), delete: () => ({ data: null, error: null }), insert: () => ({ data: null, error: null }) }
+    handlers.misc_expense_records = { select: () => ({ data: [], error: null }), delete: () => ({ data: null, error: null }), insert: () => ({ data: null, error: null }) }
     /** @type {Array<import('../../domain/expenseTypes.ts').ExpenseItem>} */
     const next = [{ id: 'fuel-driver-1', kind: 'fuel', date: '2026-09-04', name: '주유', cost: 5000 }]
     await saveExpenses(ownerKey, next)
@@ -231,8 +232,8 @@ describe('슬라이스 E — 로그인 프로필·설정·비용·계산서는 �
         return { data: null, error: null }
       },
     }
-    handlers.maintenance_records = { delete: () => ({ data: null, error: null }), insert: () => ({ data: null, error: null }) }
-    handlers.misc_expense_records = { delete: () => ({ data: null, error: null }), insert: () => ({ data: null, error: null }) }
+    handlers.maintenance_records = { select: () => ({ data: [], error: null }), delete: () => ({ data: null, error: null }), insert: () => ({ data: null, error: null }) }
+    handlers.misc_expense_records = { select: () => ({ data: [], error: null }), delete: () => ({ data: null, error: null }), insert: () => ({ data: null, error: null }) }
     return events
   }
 
@@ -350,7 +351,7 @@ describe('슬라이스 E — 로그인 프로필·설정·비용·계산서는 �
     handlers.daily_logs = { select: () => ({ data: null, error: { message: 'daily down' } }) }
     /** @type {Array<import('../../domain/expenseTypes.ts').ExpenseItem>} */
     const attempted = [{ id: 'new', kind: 'fuel', date: '2026-08-01', name: '주유', cost: 2 }]
-    await assert.rejects(() => saveExpenses(ownerKey, attempted))
+    await assert.rejects(() => saveExpenses(ownerKey, attempted), { message: 'daily down' })
     assert.equal(firstItemId(getState().expenses[ownerKey]), 'keep')
     endCloudSession()
   })
@@ -362,7 +363,7 @@ describe('슬라이스 E — 로그인 프로필·설정·비용·계산서는 �
     commitCars(ownerKey, [{ id: 'car-1', type: 'main', number: '11가1111', supabaseId: 501 }])
     commitClients(ownerKey, [{ id: 'c1', companyName: '거래', supabaseId: 8 }])
     writeJsonKey('invoices', ownerKey, [{ id: 'old-inv' }])
-    handlers.tax_invoices = { insert: () => ({ data: { id: 99 }, error: null }) }
+    handlers.tax_invoices = { select: () => ({ data: [], error: null }), insert: () => ({ data: { id: 99 }, error: null }) }
     const draft = {
       id: 'inv-1', clientName: '거래', carNumber: '11가1111', monthKey: '2026-08',
       supplyAmount: 10000, taxAmount: 1000, totalAmount: 11000, status: 'draft',
@@ -384,10 +385,10 @@ describe('슬라이스 E — 로그인 프로필·설정·비용·계산서는 �
     commitCars(ownerKey, [{ id: 'car-1', type: 'main', number: '11가1111', supabaseId: 501 }])
     const previous = [{ id: 'keep-inv', clientName: '거래', carNumber: '11가1111' }]
     commitInvoices(ownerKey, previous)
-    handlers.tax_invoices = { insert: () => ({ data: null, error: { message: 'tax down' } }) }
+    handlers.tax_invoices = { select: () => ({ data: [], error: null }), insert: () => ({ data: null, error: { message: 'tax down' } }) }
     await assert.rejects(() => saveInvoices(ownerKey, [{
       id: 'new-inv', clientName: '거래', carNumber: '11가1111', monthKey: '2026-08',
-    }]))
+    }]), { message: 'tax down' })
     assert.equal(firstItemId(getState().invoices[ownerKey]), 'keep-inv')
     endCloudSession()
   })

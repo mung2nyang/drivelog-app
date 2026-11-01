@@ -4,7 +4,7 @@ import assert from 'node:assert/strict'
 import { afterEach, describe, mock, test } from 'node:test'
 import { createFakeSupabase } from '../../testSupport/fakeSupabaseClient.js'
 
-const { fakeSupabase, handlers, resetHandlers, countOf, emptyOkHandlers } = createFakeSupabase({ allowUnregistered: true })
+const { fakeSupabase, handlers, resetHandlers, countOf, emptyOkHandlers } = createFakeSupabase()
 mock.module('../cloud/supabaseClient.ts', { namedExports: { supabase: fakeSupabase } })
 
 const { beginSessionEpoch, endCloudSession } = await import('../cloud/cloudSession.ts')
@@ -50,6 +50,8 @@ function seedMoveToMain(ownerKey, insertError = null) {
     },
     delete: (filters) => { events.push(`fuel.delete:${filterValue(filters, 'id')}`); return { data: null, error: null } },
   }
+  handlers.maintenance_records = { select: () => ({ data: [], error: null }) }
+  handlers.misc_expense_records = { select: () => ({ data: [], error: null }) }
   return events
 }
 
@@ -72,7 +74,7 @@ describe('saveExpenses — 지우기는 모든 칸 넣기·고치기 뒤', () =>
     seedMoveToMain(ownerKey, { error: { message: 'insert down' } })
     const { vehicleNumber: _vehicleNumber, ...moved } = SUB_ITEM
 
-    await assert.rejects(() => saveExpenses(ownerKey, [moved]))
+    await assert.rejects(() => saveExpenses(ownerKey, [moved]), { message: 'insert down' })
 
     assert.equal(countOf('fuel_records', 'delete'), 0)
     assert.deepEqual(getState().expenses[ownerKey], [SUB_ITEM])

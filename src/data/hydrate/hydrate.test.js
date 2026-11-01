@@ -3,7 +3,7 @@ import assert from 'node:assert/strict'
 import { describe, mock, test } from 'node:test'
 import { createFakeSupabase, wait } from '../../testSupport/fakeSupabaseClient.js'
 
-const { fakeSupabase, handlers, resetHandlers, countOf, emptyOkHandlers } = createFakeSupabase({ allowUnregistered: true })
+const { fakeSupabase, handlers, resetHandlers, countOf, emptyOkHandlers } = createFakeSupabase()
 mock.module('../cloud/supabaseClient.ts', { namedExports: { supabase: fakeSupabase } })
 
 const { hydrateFromSupabase, retryHydrate } = await import('./hydrate.ts')
@@ -12,10 +12,13 @@ const { getState } = await import('../store/app-store.ts')
 const { readJsonKey, writeJsonKey } = await import('../store/persist.ts')
 const { commitDrivers } = await import('../store/commitHelpers.ts')
 
+// 불러오기마다 부르는 기한 지난 연동 정리 함수(빈 성공).
+const settleOk = () => ({ rpc: { settle_expired_driver_unlinks: () => ({ data: null, error: null }) } })
+
 describe('hydrateFromSupabase — 조회 실패는 전부 failed로, 부분 반영 없음', () => {
   test('profiles 조회가 실패하면 status가 failed로 남고, 로컬/store는 그대로다', async () => {
     resetHandlers()
-    Object.assign(handlers, emptyOkHandlers())
+    Object.assign(handlers, emptyOkHandlers(), settleOk())
     handlers.profiles = { select: () => ({ data: null, error: { message: 'profiles down' } }) }
     const ownerKey = 'audit4-profiles-fail'
     writeJsonKey('cars', ownerKey, [{ id: 'seed-car', number: '11가1111' }])
@@ -29,7 +32,7 @@ describe('hydrateFromSupabase — 조회 실패는 전부 failed로, 부분 반�
 
   test('vehicles 조회가 실패하면 failed로 남고 cars 로컬 값은 바뀌지 않는다', async () => {
     resetHandlers()
-    Object.assign(handlers, emptyOkHandlers())
+    Object.assign(handlers, emptyOkHandlers(), settleOk())
     handlers.vehicles = { select: () => ({ data: null, error: { message: 'vehicles down' } }) }
     const ownerKey = 'audit4-vehicles-fail'
     writeJsonKey('cars', ownerKey, [{ id: 'seed-car-2', number: '22나2222' }])
@@ -42,7 +45,7 @@ describe('hydrateFromSupabase — 조회 실패는 전부 failed로, 부분 반�
 
   test('clients 조회가 실패하면 failed로 남고 clients 로컬 값은 바뀌지 않는다', async () => {
     resetHandlers()
-    Object.assign(handlers, emptyOkHandlers())
+    Object.assign(handlers, emptyOkHandlers(), settleOk())
     handlers.clients = { select: () => ({ data: null, error: { message: 'clients down' } }) }
     const ownerKey = 'audit4-clients-fail'
     writeJsonKey('clients', ownerKey, [{ id: 'seed-client', companyName: '테스트거래처' }])
@@ -55,7 +58,7 @@ describe('hydrateFromSupabase — 조회 실패는 전부 failed로, 부분 반�
 
   test('driver_links 조회가 실패하면 failed로 남고 drivers 로컬 값은 바뀌지 않는다', async () => {
     resetHandlers()
-    Object.assign(handlers, emptyOkHandlers())
+    Object.assign(handlers, emptyOkHandlers(), settleOk())
     handlers.driver_links = { select: () => ({ data: null, error: { message: 'driver_links down' } }) }
     const ownerKey = 'audit4-driverlinks-fail'
     writeJsonKey('drivers', ownerKey, [{ id: 'seed-driver', inviteCode: '123456' }])
@@ -68,7 +71,7 @@ describe('hydrateFromSupabase — 조회 실패는 전부 failed로, 부분 반�
 
   test('tax_invoices 조회가 실패하면 failed로 남고 invoices 로컬 값은 바뀌지 않는다', async () => {
     resetHandlers()
-    Object.assign(handlers, emptyOkHandlers())
+    Object.assign(handlers, emptyOkHandlers(), settleOk())
     handlers.tax_invoices = { select: () => ({ data: null, error: { message: 'tax_invoices down' } }) }
     const ownerKey = 'audit4-taxinvoices-fail'
     writeJsonKey('invoices', ownerKey, [{ id: 'seed-invoice' }])
@@ -81,7 +84,7 @@ describe('hydrateFromSupabase — 조회 실패는 전부 failed로, 부분 반�
 
   test('transport_details 조회가 실패하면 callDetails가 []로 지워지지 않고 failed로 남는다 (핵심 회귀 테스트)', async () => {
     resetHandlers()
-    Object.assign(handlers, emptyOkHandlers())
+    Object.assign(handlers, emptyOkHandlers(), settleOk())
     const ownerKey = 'audit4-transport-fail'
     handlers.vehicles = { select: () => ({ data: [{ id: 501, type: 'main', number: '33다3333', raw: {} }], error: null }) }
     handlers.daily_logs = { select: () => ({ data: [{ work_date: '2026-08-01', is_off: false, fixed_count: 1, raw: {} }], error: null }) }
@@ -100,12 +103,12 @@ describe('hydrateFromSupabase — 조회 실패는 전부 failed로, 부분 반�
 describe('hydrate 재시도 — failed → 로컬 편집 → retry → ready', () => {
   test('재시도 중에도 아직 서버에 못 보낸 로컬 편집은 서버 값으로 덮이지 않는다', async () => {
     resetHandlers()
-    Object.assign(handlers, emptyOkHandlers())
+    Object.assign(handlers, emptyOkHandlers(), settleOk())
     const ownerKey = 'audit4-retry-flow'
     const userId = 'user-retry-flow'
 
     handlers.vehicles = { select: () => ({ data: null, error: { message: 'first attempt fails' } }) }
-    await assert.rejects(() => hydrateFromSupabase(userId, ownerKey))
+    await assert.rejects(() => hydrateFromSupabase(userId, ownerKey), /hydrate 조회 실패: vehicles/)
     assert.equal(getState().hydration.status, 'failed')
 
     writeJsonKey('profile', ownerKey, { name: '로컬에서 편집한 이름' })
@@ -124,7 +127,7 @@ describe('hydrate 재시도 — failed → 로컬 편집 → retry → ready', (
 describe('hydrateFromSupabase — single-flight + stale 세대 보호', () => {
   test('StrictMode식 동시 2회 호출에서도 profiles 조회는 한 번만 나가고 조기 ready가 없다', async () => {
     resetHandlers()
-    Object.assign(handlers, emptyOkHandlers())
+    Object.assign(handlers, emptyOkHandlers(), settleOk())
     const ownerKey = 'audit4-strictmode'
     const userId = 'user-strictmode'
 
@@ -143,7 +146,7 @@ describe('hydrateFromSupabase — single-flight + stale 세대 보호', () => {
 describe('실패 주입 — hydrate 도중 로그아웃', () => {
   test('로그아웃 도중 이전 hydrate가 나중에 성공해도 idle 상태와 이전 계정 데이터를 store/localStorage에 반영하지 않는다', async () => {
     resetHandlers()
-    Object.assign(handlers, emptyOkHandlers())
+    Object.assign(handlers, emptyOkHandlers(), settleOk())
     const ownerKey = 'audit4-logout-stale'
     const userId = 'user-logout-stale'
 
@@ -169,7 +172,7 @@ describe('실패 주입 — hydrate 도중 로그아웃', () => {
 describe('사용자 지시 6번 — 로그아웃 후 같은 owner로 즉시 재로그인', () => {
   test('로그아웃 시점에 아직 진행 중이던 이전 hydrate에 재로그인이 합류하지 않고 새로 실행된다', async () => {
     resetHandlers()
-    Object.assign(handlers, emptyOkHandlers())
+    Object.assign(handlers, emptyOkHandlers(), settleOk())
     const ownerKey = 'audit4-relogin-same-owner'
     const userId = 'user-relogin-same-owner'
 
@@ -204,7 +207,7 @@ describe('사용자 지시 6번 — 로그아웃 후 같은 owner로 즉시 재�
 describe('실패 주입 — hydrate 도중 owner(계정) 변경', () => {
   test('hydrate A가 진행 중인데 다른 owner의 hydrate B가 시작되면, A가 늦게 성공해도 B의 ready 상태/데이터를 덮지 않는다', async () => {
     resetHandlers()
-    Object.assign(handlers, emptyOkHandlers())
+    Object.assign(handlers, emptyOkHandlers(), settleOk())
     const ownerA = 'audit4-switch-owner-a'
     const ownerB = 'audit4-switch-owner-b'
 
@@ -235,7 +238,7 @@ describe('실패 주입 — hydrate 도중 owner(계정) 변경', () => {
 describe('hydrate 종료 시 hydrating에 남지 않는다', () => {
   test('조회 중 세대만 올라가면 스냅샷은 버리고 이 세대 슬롯은 ready로 닫는다', async () => {
     resetHandlers()
-    Object.assign(handlers, emptyOkHandlers())
+    Object.assign(handlers, emptyOkHandlers(), settleOk())
     const ownerKey = 'audit-hydrate-stale-close'
     const userId = 'user-hydrate-stale-close'
 
@@ -260,7 +263,7 @@ describe('hydrate 종료 시 hydrating에 남지 않는다', () => {
 describe('hydrate — 옛 보낼 편지함 기록은 보내지 않고 지운다 (로드맵 88)', () => {
   test('옛 편지함 키가 있어도 기사·차량은 서버 병합 결과 그대로, 키는 지워진다', async () => {
     resetHandlers()
-    Object.assign(handlers, emptyOkHandlers())
+    Object.assign(handlers, emptyOkHandlers(), settleOk())
     const ownerKey = 'roadmap88-legacy-outbox'
     const userId = 'user-roadmap88-legacy-outbox'
     const outboxKey = `reactPracticeMutationOutbox:${ownerKey}`
@@ -269,6 +272,13 @@ describe('hydrate — 옛 보낼 편지함 기록은 보내지 않고 지운다 
     commitDrivers(ownerKey, [{ id: 'local-driver-1', supabaseId: 700, inviteCode: '123456', status: 'pending', name: '기사' }])
     handlers.vehicles = { select: () => ({ data: [{ id: 900, type: 'main', number: '77가7777', raw: {} }], error: null }) }
     handlers.driver_links = { select: () => ({ data: [{ id: 700, invite_code: '123456', status: 'pending', vehicle_id: null, assignment_start: '2026-08-01', assignment_end: null }], error: null }) }
+    Object.assign(handlers, {
+      daily_logs: { select: () => ({ data: [], error: null }) },
+      transport_details: { select: () => ({ data: [], error: null }) },
+      fuel_records: { select: () => ({ data: [], error: null }) },
+      maintenance_records: { select: () => ({ data: [], error: null }) },
+      misc_expense_records: { select: () => ({ data: [], error: null }) },
+    })
     localStorage.setItem(outboxKey, JSON.stringify([
       { id: 'op-1', ownerKey, userId, resourceType: 'vehicle', resourceId: '900', kind: 'tombstone', operation: 'delete', payload: {}, sessionEpoch: 0, createdAt: '2026-10-01T00:00:00.000Z' },
       { id: 'op-2', ownerKey, userId, resourceType: 'driverLink', resourceId: 'local-driver-1', kind: 'mutation', operation: 'updateStatus', payload: { supabaseId: 700, status: 'linked' }, sessionEpoch: 0, createdAt: '2026-10-01T00:00:00.000Z' },
@@ -290,7 +300,7 @@ describe('hydrate — 옛 보낼 편지함 기록은 보내지 않고 지운다 
 describe('hydrate — 레거시 fuel raw는 스키마 throw 없이 ready로 닫힌다', () => {
   test('fuel_records.raw에 비용 객체 extra 키가 있어도 status는 ready다', async () => {
     resetHandlers()
-    Object.assign(handlers, emptyOkHandlers())
+    Object.assign(handlers, emptyOkHandlers(), settleOk())
     const ownerKey = 'hydrate-fuel-coerce-ready'
     const userId = 'user-hydrate-fuel-coerce-ready'
     handlers.vehicles = { select: () => ({ data: [{ id: 501, type: 'main', number: '11가1111', raw: {} }], error: null }) }
@@ -308,6 +318,11 @@ describe('hydrate — 레거시 fuel raw는 스키마 throw 없이 ready로 닫�
         error: null,
       }),
     }
+    Object.assign(handlers, {
+      transport_details: { select: () => ({ data: [], error: null }) },
+      maintenance_records: { select: () => ({ data: [], error: null }) },
+      misc_expense_records: { select: () => ({ data: [], error: null }) },
+    })
 
     await hydrateFromSupabase(userId, ownerKey)
     assert.equal(getState().hydration.status, 'ready')
@@ -323,7 +338,7 @@ describe('hydrate — 레거시 fuel raw는 스키마 throw 없이 ready로 닫�
 describe('슬라이스 E — hydrate는 LS 업무 밑바탕을 쓰지 않고 프로필·설정을 Store에 넣는다', () => {
   test('서버 vehicles가 비면 LS cars를 Store에 올리지 않고 LS 키도 지우지 않는다', async () => {
     resetHandlers()
-    Object.assign(handlers, emptyOkHandlers())
+    Object.assign(handlers, emptyOkHandlers(), settleOk())
     const ownerKey = 'hydrate-e-ls-cars'
     const userId = 'user-hydrate-e-ls-cars'
     const seeded = [{ id: 'ls-car', number: '11가1111', type: 'main', supabaseId: 1 }]
@@ -339,7 +354,7 @@ describe('슬라이스 E — hydrate는 LS 업무 밑바탕을 쓰지 않고 프
 
   test('프로필·설정은 서버 행이 Store이고 hydrate가 LS profile/settings 키를 덮지 않는다', async () => {
     resetHandlers()
-    Object.assign(handlers, emptyOkHandlers())
+    Object.assign(handlers, emptyOkHandlers(), settleOk())
     const ownerKey = 'hydrate-e-profile-settings'
     const userId = 'user-hydrate-e-profile-settings'
     writeJsonKey('profile', ownerKey, { name: 'LS이름' })
@@ -364,7 +379,7 @@ describe('슬라이스 E — hydrate는 LS 업무 밑바탕을 쓰지 않고 프
 
   test('settings LS 파싱 실패를 빈 설정으로 오인해 다른 업무 키를 지우지 않는다', async () => {
     resetHandlers()
-    Object.assign(handlers, emptyOkHandlers())
+    Object.assign(handlers, emptyOkHandlers(), settleOk())
     const ownerKey = 'hydrate-e-settings-parse'
     const userId = 'user-hydrate-e-settings-parse'
     const seededCars = [{ id: 'keep-car', number: '22나2222' }]
@@ -382,7 +397,7 @@ describe('슬라이스 E — hydrate는 LS 업무 밑바탕을 쓰지 않고 프
 describe('Step 9 슬라이스 A — hydrate가 기사 차량 daily_logs도 logId별로 병합한다', () => {
   test('main·sub 각각 vehicle_id로 조회해 workLogs.main / workLogs[번호]에 넣는다', async () => {
     resetHandlers()
-    Object.assign(handlers, emptyOkHandlers())
+    Object.assign(handlers, emptyOkHandlers(), settleOk())
     const ownerKey = 'hydrate-sub-daylogs'
     const userId = 'user-hydrate-sub-daylogs'
     handlers.vehicles = {
@@ -405,7 +420,12 @@ describe('Step 9 슬라이스 A — hydrate가 기사 차량 daily_logs도 logId
         return { data: [], error: null }
       },
     }
-    handlers.transport_details = { select: () => ({ data: [], error: null }) }
+    Object.assign(handlers, {
+      transport_details: { select: () => ({ data: [], error: null }) },
+      fuel_records: { select: () => ({ data: [], error: null }) },
+      maintenance_records: { select: () => ({ data: [], error: null }) },
+      misc_expense_records: { select: () => ({ data: [], error: null }) },
+    })
 
     await hydrateFromSupabase(userId, ownerKey)
     assert.equal(getState().hydration.status, 'ready')
@@ -420,7 +440,7 @@ describe('Step 9 슬라이스 A — hydrate가 기사 차량 daily_logs도 logId
 describe('로드맵 5-A — 서브차량 정비/주유/기타 불러오기', () => {
   test('5-B-2: 미연동·연동 서브 칸 모두 차주 목록(차량 표시·id 중복 제거)으로, 읽기 전용 기사 내역은 비운다', async () => {
     resetHandlers()
-    Object.assign(handlers, emptyOkHandlers())
+    Object.assign(handlers, emptyOkHandlers(), settleOk())
     const ownerKey = 'hydrate-5a-sub-expenses'
     const userId = 'user-hydrate-5a'
     handlers.vehicles = {
@@ -449,6 +469,12 @@ describe('로드맵 5-A — 서브차량 정비/주유/기타 불러오기', () 
         return { data: [], error: null }
       },
     }
+    Object.assign(handlers, {
+      daily_logs: { select: () => ({ data: [], error: null }) },
+      transport_details: { select: () => ({ data: [], error: null }) },
+      maintenance_records: { select: () => ({ data: [], error: null }) },
+      misc_expense_records: { select: () => ({ data: [], error: null }) },
+    })
 
     await hydrateFromSupabase(userId, ownerKey)
     assert.equal(getState().hydration.status, 'ready')
@@ -474,7 +500,7 @@ function pageLikeServer(rows, filters) {
 describe('67-A hydrate — 1,000줄 넘는 기록도 끝까지 불러온다', () => {
   test('H-1 메인 차량 콜 상세 1,200건 → Store에 1,200건 전부', async () => {
     resetHandlers()
-    Object.assign(handlers, emptyOkHandlers())
+    Object.assign(handlers, emptyOkHandlers(), settleOk())
     const ownerKey = 'hydrate-67a-transport'
     handlers.vehicles = { select: () => ({ data: [{ id: 601, type: 'main', number: '11가1111', raw: { id: 'c-main' } }], error: null }) }
     const days = Array.from({ length: 30 }, (_, i) => `2026-07-${String(i + 1).padStart(2, '0')}`)
@@ -483,6 +509,11 @@ describe('67-A hydrate — 1,000줄 넘는 기록도 끝까지 불러온다', ()
       work_date: days[i % 30], sequence: Math.floor(i / 30), raw: { id: `t-${i}`, fare: '1000', client: '한진' },
     }))
     handlers.transport_details = { select: (filters) => pageLikeServer(transport, /** @type {Record<string, string|number>} */ (filters)) }
+    Object.assign(handlers, {
+      fuel_records: { select: () => ({ data: [], error: null }) },
+      maintenance_records: { select: () => ({ data: [], error: null }) },
+      misc_expense_records: { select: () => ({ data: [], error: null }) },
+    })
 
     await hydrateFromSupabase('user-67a-transport', ownerKey)
     const main = getState().workLogs[ownerKey]?.main || {}
@@ -494,13 +525,19 @@ describe('67-A hydrate — 1,000줄 넘는 기록도 끝까지 불러온다', ()
 
   test('H-2 메인 차량 주유 1,500건 → Store 지출 1,500건 전부', async () => {
     resetHandlers()
-    Object.assign(handlers, emptyOkHandlers())
+    Object.assign(handlers, emptyOkHandlers(), settleOk())
     const ownerKey = 'hydrate-67a-fuel'
     handlers.vehicles = { select: () => ({ data: [{ id: 602, type: 'main', number: '11가1111', raw: { id: 'c-main' } }], error: null }) }
     const fuel = Array.from({ length: 1500 }, (_, i) => ({
       work_date: '2026-07-01', sequence: i, cost_amount: 1000, raw: { id: `f-${i}`, date: '2026-07-01', cost: 1000 },
     }))
     handlers.fuel_records = { select: (filters) => pageLikeServer(fuel, /** @type {Record<string, string|number>} */ (filters)) }
+    Object.assign(handlers, {
+      daily_logs: { select: () => ({ data: [], error: null }) },
+      transport_details: { select: () => ({ data: [], error: null }) },
+      maintenance_records: { select: () => ({ data: [], error: null }) },
+      misc_expense_records: { select: () => ({ data: [], error: null }) },
+    })
 
     await hydrateFromSupabase('user-67a-fuel', ownerKey)
     const expenses = getState().expenses[ownerKey] || []

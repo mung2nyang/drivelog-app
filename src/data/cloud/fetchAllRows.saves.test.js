@@ -4,7 +4,7 @@ import assert from 'node:assert/strict'
 import { beforeEach, mock, test } from 'node:test'
 import { createFakeSupabase } from '../../testSupport/fakeSupabaseClient.js'
 
-const { fakeSupabase, handlers, resetHandlers, countOf, callsOf } = createFakeSupabase({ allowUnregistered: true })
+const { fakeSupabase, handlers, resetHandlers, countOf, callsOf } = createFakeSupabase()
 mock.module('./supabaseClient.ts', { namedExports: { supabase: fakeSupabase } })
 
 const { syncExpenseItemsForVehicle } = await import('../sync/syncExpenseItems.ts')
@@ -45,6 +45,8 @@ beforeEach(() => {
     update: (_row, filters) => { events.push(`update:${String(filters && typeof filters === 'object' && !Array.isArray(filters) ? filters.id : '')}`); return { data: null, error: null } },
     delete: (filters) => { events.push(`delete:${String(filters && typeof filters === 'object' && !Array.isArray(filters) ? filters.id : '')}`); return { data: null, error: null } },
   }
+  handlers.maintenance_records = { select: () => ({ data: [], error: null }) }
+  handlers.misc_expense_records = { select: () => ({ data: [], error: null }) }
 })
 
 test('E-1 연동 차량 지출 1,200건 중 1,100번째를 고치면 update 1건·insert 0건', async () => {

@@ -4,7 +4,7 @@ import assert from 'node:assert/strict'
 import { afterEach, describe, mock, test } from 'node:test'
 import { createFakeSupabase } from '../../testSupport/fakeSupabaseClient.js'
 
-const { fakeSupabase, handlers, resetHandlers, countOf, emptyOkHandlers } = createFakeSupabase({ allowUnregistered: true })
+const { fakeSupabase, handlers, resetHandlers, countOf, emptyOkHandlers } = createFakeSupabase()
 mock.module('../cloud/supabaseClient.ts', { namedExports: { supabase: fakeSupabase } })
 
 const { saveInvoices } = await import('./invoicesSave.ts')
@@ -22,6 +22,7 @@ function seedRenamable(ownerKey) {
   resetHandlers()
   Object.assign(handlers, emptyOkHandlers())
   handlers.tax_invoices = { insert: () => ({ data: { id: 9101 }, error: null }), update: () => ({ data: null, error: null }) }
+  handlers.rpc = { rename_and_save_sub_vehicle: () => ({ data: null, error: null }) }
   beginSessionEpoch(ownerKey, ownerKey)
   setHydration({ status: 'ready', userId: ownerKey, ownerKey })
   const subCar = { id: 'car-sub', type: 'sub', number: OLD, supabaseId: 801, driverName: '김기사' }
@@ -46,6 +47,7 @@ describe('기사 차량 번호 바꾸기 뒤 세금계산서', () => {
 
     const renamed = await requestVehicleSave({ ownerKey, cars: getState().cars[ownerKey], draft: { ...subCar, number: NEW }, editingId: 'car-sub', userId: ownerKey })
     assert.equal(renamed.failed, false, `차량 번호 바꾸기 실패: ${renamed.toast}`)
+    handlers.tax_invoices.select = () => ({ data: [], error: null })
 
     const items = [
       ...(getState().invoices[ownerKey] || []),

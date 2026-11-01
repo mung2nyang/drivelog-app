@@ -44,7 +44,7 @@ async function performRestoreSessionOnBoot(retryMs) {
     await hydrateFromSupabase(userId, ownerKey, { employedDriver: !!session.linkedOwnerId })
     return { session, hydrateError: false, needsProfile }
   } catch (error) {
-    console.error('[boot] hydrate 실패, 로컬 데이터로 계속합니다.', error)
+    console.error('[boot] hydrate 실패, 서버 기록 없이 계속합니다.', error)
     return { session, hydrateError: true, needsProfile }
   }
 }

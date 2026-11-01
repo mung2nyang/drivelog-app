@@ -52,7 +52,7 @@ export default function HydrationRetryBanner() {
 
   return (
     <div style={bannerStyle} role="alert">
-      <span>서버에서 기록을 불러오지 못했습니다. 이 휴대폰에 있는 기록으로 계속 쓸 수 있습니다.</span>
+      <span>서버에서 기록을 불러오지 못했습니다. 지금 보이는 기록은 빠져 있을 수 있으니 [다시 시도]를 눌러 주세요.</span>
       <button type="button" style={buttonStyle} onClick={handleRetry} disabled={retrying}>
         {retrying ? '다시 시도하는 중…' : '다시 시도'}
       </button>

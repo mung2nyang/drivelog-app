@@ -21,6 +21,6 @@ export function buildDriverInviteSmsHref({
   }
   const trimmedName = name.trim()
   const trimmedVehicle = vehicleNumber.trim()
-  const message = `[운행일지] 안녕하세요, ${ownerDisplayName}입니다.${trimmedName ? ` ${trimmedName}기사님,` : ''}\n${trimmedVehicle ? `[${trimmedVehicle}] 차량 ` : ''}소속 기사 연동 초대 코드입니다.\n\n▶ 초대 코드: ${formatInviteCode(code)}\n\n운행일지 앱 실행 후 [마이페이지 > 소속 연결]에서 위 코드를 입력해 주세요. (초대 저장 후 7일 동안 사용할 수 있습니다)`
+  const message = `[운행일지] 안녕하세요, ${ownerDisplayName}입니다.${trimmedName ? ` ${trimmedName}기사님,` : ''}\n${trimmedVehicle ? `[${trimmedVehicle}] 차량 ` : ''}소속 기사 연동 초대 코드입니다.\n\n▶ 초대 코드: ${formatInviteCode(code)}\n\n운행일지 앱 실행 후 [마이페이지 > 초대 코드 입력]에서 위 코드를 입력해 주세요. (초대 저장 후 7일 동안 사용할 수 있습니다)`
   return { href: buildSmsHref(trimmedPhone, message, userAgent) }
 }

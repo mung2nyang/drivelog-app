@@ -64,6 +64,8 @@ describe('초대 문자', () => {
     const body = decodeURIComponent(result.href.split('body=')[1])
     assert.match(body, /초대 코드: A2B3C-4D5E6/)
     assert.match(body, /7일 동안/)
+    assert.ok(body.includes('[마이페이지 > 초대 코드 입력]'), '실제 버튼 이름으로 안내')
+    assert.equal(body.includes('소속 연결'), false)
   })
 })
 

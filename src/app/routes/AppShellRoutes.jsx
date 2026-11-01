@@ -91,8 +91,8 @@ export default function AppShellRoutes({
       <Route path="drivers/:linkId" element={<LinkedDriverManagementPage onBack={() => navigate(-1)} onOpenMenu={onOpenMenu} />} />
       <Route path="drivers" element={<DriverConnectionPage navigate={navigate} onBack={() => goBack('/app/me')} />} />
       <Route path="revenue" element={<RevenuePage onOpenMenu={onOpenMenu} />} />
-      <Route path="support" element={<CustomerCenterPage onGoAuth={onGoAuth} onBack={() => goBack('/app')} onOpenMenu={onOpenMenu} initialTab={params.get('tab') === 'my' ? 'myInquiries' : 'faq'} />} />
-      <Route path="admin/inquiries" element={<AdminInquiriesPage onBack={() => goBack('/app/me')} onOpenMenu={onOpenMenu} />} />
+      <Route path="support" element={<CustomerCenterPage onGoAuth={onGoAuth} onBack={() => goBack(backTarget)} onOpenMenu={onOpenMenu} initialTab={params.get('tab') === 'my' ? 'myInquiries' : 'faq'} />} />
+      <Route path="admin/inquiries" element={<AdminInquiriesPage onBack={() => goBack(backTarget)} onOpenMenu={onOpenMenu} />} />
       <Route path="notice" element={<NoticePage onBack={() => goBack(backTarget)} onOpenMenu={onOpenMenu} />} />
       <Route path="message-settings" element={<MessageSettingsPage onBack={() => goBack(backTarget)} />} />
       <Route path="notifications" element={<NotificationsPage onBack={() => navigate(-1)} onOpenMenu={onOpenMenu} onOpenPage={(/** @type {string} */ page) => goToPage(page)} />} />

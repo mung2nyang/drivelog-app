@@ -66,8 +66,34 @@ jobs:
         with:
           path: react-app/dist
 
+  # 로컬 Supabase에 운영 구조를 만들고 DB 권한 시험을 돌린다. 실패하면 배포하지 않는다.
+  db-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: react-app
+    env:
+      SUPABASE_CLI_VERSION: 2.122.0
+    steps:
+      - name: react-app 받기
+        uses: actions/checkout@v7
+        with:
+          path: react-app
+
+      - name: Supabase 로컬 도구 받기
+        run: |
+          curl -fsSL "https://github.com/supabase/cli/releases/download/v${SUPABASE_CLI_VERSION}/supabase_${SUPABASE_CLI_VERSION}_linux_amd64.tar.gz" | tar -xz -C "$RUNNER_TEMP" supabase
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+
+      - name: 로컬 Supabase 띄우기
+        run: supabase start
+
+      - name: 시작점 넣고 DB 시험 돌리기
+        run: bash scripts/ci-db-test.sh
+
   deploy:
-    needs: verify
+    needs: [verify, db-test]
     if: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
     runs-on: ubuntu-latest
     permissions:

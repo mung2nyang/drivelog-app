@@ -46,8 +46,8 @@ declare
   link_again uuid := gen_random_uuid();
   log_a uuid := gen_random_uuid();
   copied_car uuid;
-  code_a text := gen_random_uuid()::text;
-  code_again text := gen_random_uuid()::text;
+  code_a text := 'M2N3P4Q5R6';
+  code_again text := 'M7N8P9Q2R3';
   day_a date := (now() at time zone 'Asia/Seoul')::date - 10;
   target text;
   n bigint;

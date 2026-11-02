@@ -68,11 +68,12 @@ jobs:
           DENO_NO_PACKAGE_JSON: '1'
         run: deno check --no-config supabase/functions/unbiseo-parse/index.ts supabase/functions/unbiseo-voice/index.ts supabase/functions/unbiseo-weather/index.ts
 
+      # 시험은 환경 값만 허용한다. 바깥 호출은 가짜라 인터넷 권한은 주지 않는다.
       - name: 서버 함수 시험 (deno test)
         if: ${{ !cancelled() }}
         env:
           DENO_NO_PACKAGE_JSON: '1'
-        run: deno test --no-config supabase/functions/tests/
+        run: deno test --no-config --allow-env supabase/functions/tests/
 
       # 배포용 준비는 앞 단계가 모두 성공한 main 에서만.
       - name: 깊은 주소 새로고침용 404.html

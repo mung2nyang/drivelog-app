@@ -1,0 +1,92 @@
+/* 미수금 운행 카드 본문: 날짜·경로·금액·기한·비고. */
+
+.receivable-item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.receivable-item-info {
+  margin-top: 2px;
+  color: var(--sub-text-color);
+  font-size: var(--fs-floor);
+  line-height: 1.4;
+}
+
+.receivable-item-amount {
+  flex-shrink: 0;
+  color: var(--primary-color);
+  font-size: var(--fs-3);
+  font-weight: var(--fw-black);
+  text-align: right;
+}
+
+.receivable-dday {
+  margin-top: 5px;
+  color: var(--primary-color);
+  font-size: var(--fs-floor);
+  font-weight: var(--fw-heavy);
+}
+
+.receivable-dday.overdue {
+  color: var(--sunday-color);
+}
+
+.receivable-detail-item {
+  margin-bottom: 9px;
+  padding: 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 15px;
+  background: var(--card-bg);
+  box-shadow: var(--shadow-sm);
+}
+
+.receivable-detail-item-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.receivable-detail-item-top time {
+  color: var(--sub-text-color);
+  font-size: var(--fs-floor);
+  font-weight: var(--fw-bold);
+}
+
+.receivable-detail-item-top strong {
+  color: var(--primary-color);
+  font-size: var(--fs-4);
+}
+
+.receivable-detail-route {
+  margin-top: 9px;
+  color: var(--text-color);
+  font-size: var(--fs-2);
+  font-weight: var(--fw-bold);
+}
+
+.receivable-detail-route span {
+  margin: 0 4px;
+  color: var(--sub-text-color);
+}
+
+.receivable-detail-due {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 7px;
+  color: var(--sub-text-color);
+  font-size: var(--fs-floor);
+}
+
+.receivable-detail-due b {
+  color: var(--primary-color);
+}
+
+.receivable-detail-remarks {
+  margin: 7px 0 0;
+  color: var(--sub-text-color);
+  font-size: var(--fs-floor);
+}

@@ -1,0 +1,115 @@
+/* 미수금 운행 카드의 입금 처리: 상태, 기록, 입금·부분 입금·되돌리기 버튼. */
+
+.receivable-payment-status {
+  margin-top: 9px;
+  color: var(--sunday-color);
+  font-size: var(--fs-floor);
+  font-weight: var(--fw-bold);
+}
+
+.receivable-payment-status.partial {
+  color: #d97706;
+}
+
+.receivable-payment-status .receivable-original-fare {
+  color: var(--sub-text-color);
+  font-weight: var(--fw-semibold);
+}
+
+.receivable-history-toggle-btn {
+  display: block;
+  margin-top: 6px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--primary-color);
+  font: inherit;
+  font-size: var(--fs-floor);
+  font-weight: var(--fw-bold);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.receivable-payment-history {
+  margin-top: 6px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: var(--input-bg);
+}
+
+.receivable-payment-history-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 2px 0;
+  color: var(--sub-text-color);
+  font-size: var(--fs-floor);
+}
+
+.receivable-item-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+  margin-top: 11px;
+}
+
+.receivable-item-actions .receivable-item-paid-btn,
+.receivable-item-actions .receivable-item-partial-btn,
+.receivable-item-actions .receivable-item-undo-btn {
+  display: inline-block;
+  width: auto;
+  margin: 0;
+  min-height: 30px;
+  padding: 5px 10px;
+  border-radius: 9px;
+  background: transparent;
+  font: inherit;
+  font-size: var(--fs-floor);
+  font-weight: var(--fw-heavy);
+  cursor: pointer;
+}
+
+.receivable-item-paid-btn {
+  border: 1px solid color-mix(in srgb, var(--primary-color) 38%, transparent);
+  color: var(--primary-color);
+}
+
+.receivable-item-partial-btn {
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+}
+
+.receivable-item-undo-btn {
+  border: 1px solid color-mix(in srgb, var(--sunday-color) 38%, transparent);
+  color: var(--sunday-color);
+}
+
+.receivable-partial-input-row {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.receivable-partial-input-row .clearable-input {
+  flex: 1;
+}
+
+.receivable-partial-input-row .input-box {
+  min-height: 36px;
+  padding: 6px 10px;
+  font-size: var(--fs-2);
+}
+
+.receivable-partial-confirm-btn {
+  min-height: var(--btn-height);
+  padding: 0 14px;
+  border: none;
+  border-radius: var(--btn-radius);
+  background: var(--primary-fill);
+  color: #fff;
+  font: inherit;
+  font-size: var(--btn-font-sm);
+  font-weight: var(--btn-weight);
+  cursor: pointer;
+}

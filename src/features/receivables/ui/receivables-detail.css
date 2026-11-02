@@ -1,0 +1,72 @@
+/* 미수금 상세 화면: 위 합계 요약과 아래 전부 입금 버튼. */
+
+.receivable-detail-summary {
+  margin-bottom: 18px;
+  padding: 18px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-card);
+  background: var(--card-bg);
+  box-shadow: var(--shadow-sm);
+}
+
+.receivable-detail-eyebrow {
+  color: var(--sub-text-color);
+  font-size: var(--fs-floor);
+  font-weight: var(--fw-bold);
+}
+
+.receivable-detail-summary h2 {
+  margin: 5px 0 15px;
+  color: var(--text-color);
+  font-size: var(--fs-7);
+}
+
+.receivable-detail-total {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.receivable-detail-total span {
+  color: var(--sub-text-color);
+  font-size: var(--fs-2);
+  font-weight: var(--fw-bold);
+}
+
+.receivable-detail-total strong {
+  color: var(--primary-color);
+  font-size: var(--fs-7);
+  font-weight: var(--fw-black);
+}
+
+.receivable-detail-meta {
+  margin-top: 8px;
+  color: var(--sub-text-color);
+  font-size: var(--fs-floor);
+  text-align: right;
+}
+
+.receivable-detail-footer {
+  position: sticky;
+  bottom: 10px;
+  padding-top: 8px;
+}
+
+.receivable-detail-all-paid {
+  width: 100%;
+  min-height: var(--btn-height);
+  border: 0;
+  border-radius: var(--btn-radius);
+  background: var(--primary-fill);
+  color: #fff;
+  font: inherit;
+  font-size: var(--btn-font);
+  font-weight: var(--btn-weight);
+  cursor: pointer;
+}
+
+.receivable-detail-all-paid:disabled {
+  opacity: 0.45;
+  cursor: default;
+}

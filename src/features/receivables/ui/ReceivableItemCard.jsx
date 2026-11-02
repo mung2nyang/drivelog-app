@@ -4,6 +4,8 @@ import { formatWorkMonth, getDdayLabel, receivableItemKey } from '../../../domai
 import CurrencyInput from '../../../shared/ui/CurrencyInput.jsx'
 import FieldError, { invalidProps } from '../../../shared/ui/FieldError.jsx'
 import { partialInputId } from '../hooks/useReceivablesActions.js'
+import './receivable-item-card.css'
+import './receivable-item-payment.css'
 
 /** @typedef {import('../../../domain/financeReceivables.ts').ReceivableItemLike} ReceivableItemLike */
 /** @typedef {import('../../../domain/callDetail.ts').PaymentLike} PaymentLike */

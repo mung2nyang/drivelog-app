@@ -33,7 +33,7 @@ jobs:
       - name: 의존성 설치
         run: npm ci
 
-      # 아래 5개는 하나가 실패해도 나머지를 계속 돌려서 전체 그림을 보여준다.
+      # 아래 검사들은 하나가 실패해도 나머지를 계속 돌려서 전체 그림을 보여준다.
       - name: 테스트 (npm test)
         if: ${{ !cancelled() }}
         timeout-minutes: 15
@@ -54,6 +54,25 @@ jobs:
       - name: 코드 검사 (npm run lint)
         if: ${{ !cancelled() }}
         run: npm run lint
+
+      # 서버 함수(운비서)는 Deno로 돈다. 앱의 package.json·tsconfig.json은 읽지 않게 한다.
+      - name: Deno 받기
+        if: ${{ !cancelled() }}
+        uses: denoland/setup-deno@v2.0.5
+        with:
+          deno-version: v2.9.7
+
+      - name: 서버 함수 타입 검사 (deno check)
+        if: ${{ !cancelled() }}
+        env:
+          DENO_NO_PACKAGE_JSON: '1'
+        run: deno check --no-config supabase/functions/unbiseo-parse/index.ts supabase/functions/unbiseo-voice/index.ts supabase/functions/unbiseo-weather/index.ts
+
+      - name: 서버 함수 시험 (deno test)
+        if: ${{ !cancelled() }}
+        env:
+          DENO_NO_PACKAGE_JSON: '1'
+        run: deno test --no-config supabase/functions/tests/
 
       # 배포용 준비는 앞 단계가 모두 성공한 main 에서만.
       - name: 깊은 주소 새로고침용 404.html

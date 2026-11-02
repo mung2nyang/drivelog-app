@@ -1,0 +1,20 @@
+# 알려진 보안 문제가 있는 라이브러리를 GitHub가 알리고 고치는 PR을 연다.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: monthly
+    # 판 올리기 PR은 받지 않고 보안 업데이트만, 한 PR로 묶는다.
+    open-pull-requests-limit: 0
+    groups:
+      security:
+        applies-to: security-updates
+        patterns: ['*']
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      actions:
+        patterns: ['*']

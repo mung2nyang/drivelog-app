@@ -17,6 +17,7 @@ import ReportShareModal from './ReportShareModal.jsx'
 import ConfirmModal from '../../../shared/ui/ConfirmModal.jsx'
 import PageHeader from '../../../shared/ui/PageHeader.jsx'
 import './report.css'
+import './report-pdf-export.css'
 import { useToast } from '../../../shared/hooks/useToast.js'
 import { useSession } from '../../../data/cloud/sessionContext.ts'
 

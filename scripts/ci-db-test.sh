@@ -23,7 +23,4 @@ for file in supabase/migrations/*.sql; do
   fi
 done
 
-for file in supabase/tests/*.sql; do
-  echo "시험: $file"
-  run_sql "$file"
-done
+supabase test db --debug

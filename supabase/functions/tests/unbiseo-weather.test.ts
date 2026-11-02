@@ -2,6 +2,7 @@
 import assert from 'node:assert/strict'
 import { baseOf, kstDate, summarizeDay } from '../unbiseo-weather/kma.ts'
 import type { Json } from '../unbiseo-weather/kma.ts'
+import { gridOf, readInput } from '../unbiseo-weather/handler.ts'
 
 const DAY = '2026-11-02'
 
@@ -60,4 +61,56 @@ Deno.test('묶기: 하늘은 가장 많이 나온 코드, 같으면 더 흐린 �
 Deno.test('묶기: 비눈 없음(0)만 있으면 없음, 다른 날 줄은 안 봄', () => {
   const items = [row('TMP', '10'), row('PTY', '0'), row('PTY', '0'), row('PTY', '3', '20261103')]
   assert.equal(summarizeDay(items, DAY)?.precip, 'none')
+})
+
+Deno.test('받기: 지역 이름만 받음(앞뒤 공백 뗌)', () => {
+  assert.deepEqual(readInput({ date: DAY, place: ' 평택 ' }), { date: DAY, place: '평택', grid: null })
+})
+
+Deno.test('받기: 격자 번호만 받음', () => {
+  assert.deepEqual(readInput({ date: DAY, nx: 62, ny: 114 }), { date: DAY, place: '', grid: { nx: 62, ny: 114 } })
+  assert.deepEqual(readInput({ date: DAY, nx: 149, ny: 253 })?.grid, { nx: 149, ny: 253 })
+})
+
+Deno.test('받기: 지역과 격자를 같이 보내거나 둘 다 없으면 거절', () => {
+  assert.equal(readInput({ date: DAY, place: '평택', nx: 62, ny: 114 }), null)
+  assert.equal(readInput({ date: DAY, place: '평택', nx: 62 }), null)
+  assert.equal(readInput({ date: DAY }), null)
+  assert.equal(readInput({ date: DAY, nx: 62 }), null)
+})
+
+Deno.test('받기: 격자 범위 밖·정수 아님은 거절', () => {
+  assert.equal(readInput({ date: DAY, nx: 0, ny: 114 }), null)
+  assert.equal(readInput({ date: DAY, nx: 150, ny: 114 }), null)
+  assert.equal(readInput({ date: DAY, nx: 62, ny: 254 }), null)
+  assert.equal(readInput({ date: DAY, nx: 62.5, ny: 114 }), null)
+})
+
+Deno.test('받기: 31자 지역·없는 날짜·객체 아님은 거절', () => {
+  assert.equal(readInput({ date: DAY, place: '가'.repeat(31) }), null)
+  assert.equal(readInput({ date: '2026-11-31', place: '평택' }), null)
+  assert.equal(readInput([{ date: DAY, place: '평택' }]), null)
+})
+
+Deno.test('지역 찾기: 줄인 이름·정식 이름', () => {
+  assert.deepEqual(gridOf('평택'), { nx: 62, ny: 114 })
+  assert.deepEqual(gridOf('경기도 평택시'), { nx: 62, ny: 114 })
+})
+
+Deno.test('지역 찾기: 시·도와 구는 띄어 써도 찾음', () => {
+  assert.deepEqual(gridOf('서울 강남구'), { nx: 61, ny: 126 })
+  assert.deepEqual(gridOf('부산 중구'), { nx: 97, ny: 74 })
+})
+
+Deno.test('지역 찾기: 한 시의 일반구들은 첫 구', () => {
+  assert.deepEqual(gridOf('수원'), { nx: 60, ny: 121 })
+})
+
+Deno.test('지역 찾기: 시·도만 말하면 시·도', () => {
+  assert.deepEqual(gridOf('서울'), { nx: 60, ny: 127 })
+})
+
+Deno.test('지역 찾기: 여러 곳에 있는 이름·표에 없는 이름은 못 찾음', () => {
+  assert.equal(gridOf('중구'), null)
+  assert.equal(gridOf('없는동네'), null)
 })

@@ -2,6 +2,7 @@
 import assert from 'node:assert/strict'
 import { readAiAnswer } from '../unbiseo-parse/answer.ts'
 import { dateTable, monthTable } from '../unbiseo-parse/grok.ts'
+import { readInput } from '../unbiseo-parse/handler.ts'
 import type { ParseInput } from '../unbiseo-parse/grok.ts'
 
 const TODAY = '2026-11-02'
@@ -216,4 +217,45 @@ Deno.test('달 표: 1월의 지난달은 작년 12월', () => {
   assert.match(table, /^지난달: 2026-12$/m)
   assert.match(table, /^작년: 2026$/m)
   assert.match(table, /^올해 달: 1월 2027-01, .*, 12월 2027-12$/m)
+})
+
+const BODY = { text: '어제 수원 화성 15만', today: TODAY, clientNames: ['한진'], routeNames: ['평택 → 용인'] }
+
+Deno.test('받기: 글 앞뒤 공백을 떼고 그대로 받음', () => {
+  assert.deepEqual(readInput({ ...BODY, text: '  어제 수원 화성 15만 ' }), BODY)
+})
+
+Deno.test('받기: 노선 칸이 없으면 빈 목록', () => {
+  assert.deepEqual(readInput({ text: BODY.text, today: TODAY, clientNames: BODY.clientNames })?.routeNames, [])
+})
+
+Deno.test('받기: 빈 글·301자 글은 거절, 300자는 받음', () => {
+  assert.equal(readInput({ ...BODY, text: '   ' }), null)
+  assert.equal(readInput({ ...BODY, text: '가'.repeat(301) }), null)
+  assert.equal(readInput({ ...BODY, text: '가'.repeat(300) })?.text.length, 300)
+})
+
+Deno.test('받기: 없는 날짜는 거절', () => {
+  assert.equal(readInput({ ...BODY, today: '2026-02-30' }), null)
+  assert.equal(readInput({ ...BODY, today: '11월 2일' }), null)
+})
+
+Deno.test('받기: 거래처 목록이 배열 아님·201개·51자 이름·글자 아님은 거절', () => {
+  assert.equal(readInput({ ...BODY, clientNames: '한진' }), null)
+  assert.equal(readInput({ ...BODY, clientNames: Array.from({ length: 201 }, (_, i) => `거래처${i}`) }), null)
+  assert.equal(readInput({ ...BODY, clientNames: ['가'.repeat(51)] }), null)
+  assert.equal(readInput({ ...BODY, clientNames: [7] }), null)
+  assert.equal(readInput({ ...BODY, clientNames: Array.from({ length: 200 }, (_, i) => `거래처${i}`) })?.clientNames.length, 200)
+})
+
+Deno.test('받기: 노선 목록 모양이 틀리면 거절', () => {
+  assert.equal(readInput({ ...BODY, routeNames: '평택 → 용인' }), null)
+  assert.equal(readInput({ ...BODY, routeNames: Array.from({ length: 31 }, (_, i) => `노선${i}`) }), null)
+  assert.equal(readInput({ ...BODY, routeNames: ['가'.repeat(61)] }), null)
+})
+
+Deno.test('받기: 객체가 아닌 요청은 거절', () => {
+  assert.equal(readInput([BODY]), null)
+  assert.equal(readInput('어제 수원 화성 15만'), null)
+  assert.equal(readInput(null), null)
 })

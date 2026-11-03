@@ -27,7 +27,7 @@ export type TaxInvoiceRecord = {
 }
 
 /**
- * app-store.js의 invoices 슬라이스가 실제로 담는 값.
+ * app-store.ts의 invoices 슬라이스가 실제로 담는 값.
  * domain/taxInvoices.ts(mergeTaxInvoiceRecords/applyInsertedTaxInvoiceId)와
  * domain/invoices.ts(persistInvoiceRecord)가 실제로 읽고 쓰는 필드만 얹은
  * TaxInvoiceRecord의 상위집합이다 — id는 두 함수 모두 키로 쓰므로 필수.

@@ -1,5 +1,5 @@
 // @ts-check
-// 달력 화면. 표시 월은 URL `?y=&m=` 쿼리(calendarViewDate.js)라 새로고침해도 남고, workData·settings는 store를 구독한다.
+// 달력 화면. 표시 월은 URL `?y=&m=` 쿼리(calendarViewDate.ts)라 새로고침해도 남고, workData·settings는 store를 구독한다.
 // logId가 있으면 서브 차량 달력(workData·paymentOn·수수료 게이트).
 import { useMemo } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'

@@ -54,7 +54,7 @@ export function monthSettlementSummary(workData: Record<string, DayRecordLike>, 
   let fare = 0
   let commissionTotal = 0
   let distanceKm = 0
-  // 부가세는 매출(financeOwnerDetail.ts)과 같은 규칙: 고정노선·파렛트는 날마다, 콜 상세는 건마다 반올림하고 면세면 0.
+  // 부가세는 매출(financeOwnerDetail.ts)과 같은 규칙: 고정노선·파렛트는 날마다, 콜 상세는 건마다 원 미만 버리고 면세면 0.
   let vat = 0
   let insuranceTotal = 0
   const fareByClient: Record<string, number> = {}
@@ -126,7 +126,7 @@ export function monthSettlementSummary(workData: Record<string, DayRecordLike>, 
   const maint = monthTotal(vehicleExpenses, 'maint', year, month)
   const fuel = monthTotal(vehicleExpenses, 'fuel', year, month)
   const misc = monthTotal(vehicleExpenses, 'misc', year, month)
-  // 콜 상세 산재보험료도 합계에서 뺀다(달력·홈·운송비 내역서 같음).
+  // 콜 상세 산재보험료도 합계에서 뺀다(달력·홈 같음, 운송비 내역서는 reportSummary.js에서 다시 더함).
   const total = fare + palletFare - commissionTotal - subCarComm - insuranceTotal + vat
 
   return {

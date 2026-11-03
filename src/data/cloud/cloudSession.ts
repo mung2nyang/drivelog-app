@@ -7,8 +7,8 @@ import { SESSION_CHANGED_FAIL } from '../../shared/utils/failureMessages.js'
 
 export type { AppSession, SessionCapture }
 
-// hydrate.js가 실제로 쓰는 singleFlight 키 형식과 반드시 같아야 한다(문자열 하나를
-// 공유하려고 새 모듈을 만들 만큼은 아니라고 판단해 복제했다 — hydrate.js가 이 파일을
+// hydrate.ts가 실제로 쓰는 singleFlight 키 형식과 반드시 같아야 한다(문자열 하나를
+// 공유하려고 새 모듈을 만들 만큼은 아니라고 판단해 복제했다 — hydrate.ts가 이 파일을
 // 이미 가져다 쓰므로 반대 방향으로 가져오면 순환 참조가 된다).
 function hydrateSingleFlightKey(ownerKey: string) {
   return `hydrate:${ownerKey}`

@@ -5,7 +5,7 @@ import { attachPendingWriteRetryListeners } from './pendingWriteRetryListeners.j
 
 /**
  * quota 초과 등으로 실패한 일지 자동 저장을
- * pendingWorkDataWrites.js 큐에서 컴포넌트 생애주기와 무관하게 계속 재시도한다.
+ * pendingWorkDataWrites.ts 큐에서 컴포넌트 생애주기와 무관하게 계속 재시도한다.
  * 큐가 비어 있으면 재시도 자체가 아무 일도 안 하므로 항상 마운트해도 된다.
  * @returns {null}
  */

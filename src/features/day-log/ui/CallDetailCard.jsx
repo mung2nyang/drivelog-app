@@ -12,7 +12,7 @@ import { useToast } from '../../../shared/hooks/useToast.js'
 
 /**
  * @param {Object} props
- * @param {CallDetailLike} props.item 콜상세 한 건(항상 id를 가진다 — domain/day-record.js의 getCallDetails 참고)
+ * @param {CallDetailLike} props.item 콜상세 한 건(항상 id를 가진다 — domain/day-record.ts의 getCallDetails 참고)
  * @param {PaymentSummary} props.payment
  * @param {Settings} props.settings
  * @param {ClientLike|undefined} props.client

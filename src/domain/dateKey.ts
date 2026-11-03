@@ -1,4 +1,4 @@
-// dateKey(`YYYY-MM-DD`)가 실제 있는 날짜인지 왕복 검증. durableStorage.js와 calendar.ts(라우팅)가
+// dateKey(`YYYY-MM-DD`)가 실제 있는 날짜인지 왕복 검증. durableStorage.ts와 calendar.ts(라우팅)가
 // 같은 함수를 써야 두 경로 판정이 어긋나지 않는다.
 const DATE_KEY_RE = /^\d{4}-\d{2}-\d{2}$/
 

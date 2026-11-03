@@ -1,5 +1,5 @@
 // @ts-check
-// 요일 헤더 + 날짜 셀. 셀 뱃지/휴무/미수는 여기서 calendarBadges.js로 미리 계산해 CalendarCell에 넘긴다.
+// 요일 헤더 + 날짜 셀. 셀 뱃지/휴무/미수는 여기서 calendarBadges.ts로 미리 계산해 CalendarCell에 넘긴다.
 import { dayExpenseBadgeLabel, dayHasUnpaid, dayWorkBadgeLabel } from '../../../domain/calendarBadges.ts'
 import { isOffDay } from '../../../domain/day-record.ts'
 import CalendarCell from './CalendarCell.jsx'

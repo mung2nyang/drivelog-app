@@ -28,10 +28,10 @@ button:not(:disabled):active { scale: 0.93; transition-duration: 0.12s, 0.12s; t
 @media (prefers-reduced-motion: reduce) {
   button:not(:disabled):active, .revenue-detail-head:not(:disabled):active { scale: none; opacity: 0.75; }
 }
-/* 로드맵 18-B: 버튼·링크·그림 길게 누르기 — 글자 선택·복사·미리보기 메뉴 안 뜨게(입력칸은 그대로). */
+/* 버튼·링크·그림 길게 누르기 — 글자 선택·복사·미리보기 메뉴 안 뜨게(입력칸은 그대로). */
 button, a, img { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
 
-/* 로드맵 18-A 화면 들어옴 효과(usePageTransition.js가 이름을 붙였다 뗌) — 들어가는 화면만 움직인다. */
+/* 화면 들어옴 효과(usePageTransition.js가 이름을 붙였다 뗌) — 들어가는 화면만 움직인다. */
 .page-enter-forward { animation: page-enter-forward 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
 .page-enter-back { animation: page-enter-back 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
 .page-enter-fade { animation: page-enter-fade 0.22s ease-out; }

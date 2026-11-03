@@ -42,7 +42,7 @@ export default function MainPageRoute({
     ? (cars[0]?.number || 'main')
     : logId
   const knownLog = logId === 'main' || cars.some((car) => car.number === logId)
-  // 운비서가 넘긴 운행·지출·고정 노선은 한 번만 — 받아서 넘기고 주소 상태에서 지운다(로드맵 24-B-2·24-C-2·24-F-2).
+  // 운비서가 넘긴 운행·지출·고정 노선은 한 번만 — 받아서 넘기고 주소 상태에서 지운다.
   const assistantCall = readAssistantCall(location.state)
   const assistantExpense = readAssistantExpense(location.state)
   const assistantFixed = readAssistantFixed(location.state)

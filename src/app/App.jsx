@@ -65,7 +65,7 @@ export default function App() {
     <SessionProvider value={sessionValue}>
       <PendingWriteRetryBridge />
 
-      {/* 로그인·처음 정보 입력 화면도 그리다 오류가 나면 빈 화면 대신 안내(로드맵 55). 로그인 뒤 화면은 AppShell 안쪽 안내가 먼저 잡는다. */}
+      {/* 로그인·처음 정보 입력 화면도 그리다 오류가 나면 빈 화면 대신 안내. 로그인 뒤 화면은 AppShell 안쪽 안내가 먼저 잡는다. */}
       <PageLoadErrorBoundary resetKey={location.pathname}>
       <Routes>
         <Route

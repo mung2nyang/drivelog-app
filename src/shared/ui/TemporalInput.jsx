@@ -1,5 +1,5 @@
 // @ts-check
-// 원본 ui-widgets.js initAppTemporalInputs 포팅 — 네이티브 date/time input을
+// 네이티브 date/time input을
 // 트리거 버튼 + document.body 포털 스크롤 컬럼 메뉴로 대체한다.
 // 부모 modal의 overflow:hidden을 벗어나야 해서 CalendarDateSelect(비-modal, absolute)와
 // 달리 포털 + position:fixed를 쓴다. 컬럼 렌더는 TemporalColumns.jsx로 분리.
@@ -22,7 +22,7 @@ const GAP = 7
  * @param {string} [props.min]
  * @param {string} [props.max]
  * @param {boolean} [props.disabled]
- * @param {boolean} [props.centered] 트리거 값을 가운데 정렬(원본 콜상세·정비·주유 공통 스타일).
+ * @param {boolean} [props.centered] 트리거 값을 가운데 정렬(콜 상세·지출 창이 씀).
  * @param {boolean} [props.invalid] 입력이 잘못된 칸 — 단추에 빨간 표시(FieldError.jsx)
  * @param {string} [props.describedBy] 칸 아래 오류 문구 id
  * @param {boolean} [props.clearable] 값이 있을 때 고르기 창에 [지우기](비워도 되는 칸만)

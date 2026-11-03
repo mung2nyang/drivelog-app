@@ -1,5 +1,5 @@
 // @ts-check
-// TemporalInput 메뉴의 연/월/일·시/분 스크롤 컬럼. 원본 ui-widgets.js renderDate/renderTime 포팅.
+// TemporalInput 메뉴의 연/월/일·시/분 스크롤 컬럼.
 import { daysInMonth, pad } from './temporalValue.js'
 
 /**

@@ -1,6 +1,6 @@
-/* 폼·컨트롤 공용(모달 토글·개인정보 폼 조각·설정 행·구간 토글·테마 토글·탭·헤더 아이콘 hover) — side-menu.css에서 분리. */
+/* 폼·컨트롤 공용(모달 토글·개인정보 폼 조각·설정 행·구간 토글·테마 토글·탭·헤더 아이콘 hover). */
 
-/* 모달 안 토글버튼 라운드 12px로 통일(이식 누락분, 원본 style.css:5672). */
+/* 모달 안 토글버튼 라운드 12px로 통일. */
 .modal-content .toggle-btn {
   min-height: 44px;
   border-radius: 12px;
@@ -137,7 +137,7 @@
   margin-bottom: 16px;
 }
 
-/* 마우스 있는 기기에서만 — 휴대폰은 누른 뒤 색이 남음(로드맵 18-C) */
+/* 마우스 있는 기기에서만 — 휴대폰은 누른 뒤 색이 남음 */
 @media (hover: hover) {
   .top-notification-btn.icon-btn:hover,
   .top-menu-btn.icon-btn:hover {

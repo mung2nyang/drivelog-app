@@ -1,5 +1,5 @@
 // @ts-check
-// 입력이 잘못된 칸 표시(로드맵 82) — 칸에는 "잘못됨"(aria-invalid, 빨간 테두리), 칸 바로 아래에 빨간 문구.
+// 입력이 잘못된 칸 표시 — 칸에는 "잘못됨"(aria-invalid, 빨간 테두리), 칸 바로 아래에 빨간 문구.
 
 /** @typedef {{ field: string, message: string }} FieldProblem */
 

@@ -9,7 +9,7 @@ import ConfirmModal from './ConfirmModal.jsx'
 
 /** @type {((pending: PendingConfirm) => void) | null} */
 let showConfirm = null
-// 떠 있는 질문을 "취소"로 닫는 길 — 창이 없으면 null(로드맵 63-C, 휴대폰 뒤로가기).
+// 떠 있는 질문을 "취소"로 닫는 길 — 창이 없으면 null(휴대폰 뒤로가기).
 /** @type {(() => void) | null} */
 let cancelOpen = null
 

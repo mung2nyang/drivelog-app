@@ -29,7 +29,7 @@ export function preloadSideMenuBanner() {
  * @param {(linkId: string) => void} [props.onOpenLinkedDriver]
  * @param {Array<SubLogMenuItem>} [props.subLogItems]
  * @param {(vehicleNumber: string) => void} [props.onOpenSubLog]
- * @param {boolean} [props.isAdmin] 관리자 계정이면 "설정" 칸에 "관리자"(로드맵 23-B)
+ * @param {boolean} [props.isAdmin] 관리자 계정이면 "설정" 칸에 "관리자"
  */
 export default function SideMenu({
   open, onClose, onSelect,

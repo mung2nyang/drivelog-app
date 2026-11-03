@@ -1,4 +1,4 @@
-/* 하단 네비게이션 전용 — main-calendar.css에서 옮김. BottomNav.jsx가 직접 import. */
+/* 하단 네비게이션 전용 — BottomNav.jsx가 직접 import. */
 
 .bottom-nav-bar {
   position: fixed;

@@ -71,10 +71,10 @@ export default function AppShell({ onBackToAuth, onGoAuth, onSessionUpdate }) {
   function navigate(to, options) {
     if (!confirmLeaveIfUnsafe()) return
     if (typeof to === 'number') { rawNavigate(to); return }
-    // 일지 입력 칸 붙잡기 기록(로드맵 63-B)은 먼저 빼고 이동한다 — 빈 일지 기록이 남지 않게.
+    // 일지 입력 칸 붙잡기 기록은 먼저 빼고 이동한다 — 빈 일지 기록이 남지 않게.
     popPanelGuardThen(() => rawNavigate(to, withFromLogState(location.pathname, to, options)))
   }
-  /** 아래 메뉴·← 이동(로드맵 63): 홈은 처음 기록으로 되감고, 그 밖엔 홈에서만 쌓고 나머진 교체. @param {string} to */
+  /** 아래 메뉴·← 이동: 홈은 처음 기록으로 되감고, 그 밖엔 홈에서만 쌓고 나머진 교체. @param {string} to */
   function moveTo(to) {
     popPanelGuardThen(() => moveNow(to))
   }

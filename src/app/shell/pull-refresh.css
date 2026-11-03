@@ -1,4 +1,4 @@
-/* 로드맵 21 당겨서 새로고침 표시(PullRefreshIndicator.jsx). 평소엔 화면 위 밖(top: -60px, 그림자까지)에 숨어 있음. */
+/* 당겨서 새로고침 표시(PullRefreshIndicator.jsx). 평소엔 화면 위 밖(top: -60px, 그림자까지)에 숨어 있음. */
 .pull-refresh {
   position: fixed;
   top: -60px;

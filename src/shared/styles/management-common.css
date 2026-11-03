@@ -1,4 +1,4 @@
-/* 관리형 화면 공용(화면 셸·카드·액션 아이콘 버튼·배지·빈 화면·추가 FAB) — side-menu.css에서 분리. */
+/* 관리형 화면 공용(화면 셸·카드·액션 아이콘 버튼·배지·빈 화면·추가 FAB). */
 
 .car-management-page,
 .client-management-page,
@@ -72,7 +72,7 @@
   font-weight: var(--fw-bold);
 }
 
-/* 마우스 있는 기기에서만 — 휴대폰은 누른 뒤 색이 남음(로드맵 18-C) */
+/* 마우스 있는 기기에서만 — 휴대폰은 누른 뒤 색이 남음 */
 @media (hover: hover) {
   .action-icon-btn:hover {
     background-color: var(--hover-bg);

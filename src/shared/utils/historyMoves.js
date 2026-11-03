@@ -1,5 +1,5 @@
 // @ts-check
-// 아래 메뉴·← 이동이 기록을 쌓지 않게 고른다(로드맵 63). 홈은 처음 기록으로 되감는다.
+// 아래 메뉴·← 이동이 기록을 쌓지 않게 고른다. 홈은 처음 기록으로 되감는다.
 
 /** @typedef {{ kind: 'push' } | { kind: 'replace' } | { kind: 'rewind', steps: number }} HistoryMove */
 
@@ -47,7 +47,7 @@ export function chooseMove({ from, to, idx, startedAtHome: atHome = startedAtHom
   return from === HOME ? { kind: 'push' } : { kind: 'replace' }
 }
 
-// 일지 입력 칸의 붙잡기 기록(로드맵 63-B). 조용히 뺄 때는 확인 창을 건너뛰게 표시한다.
+// 일지 입력 칸의 붙잡기 기록. 조용히 뺄 때는 확인 창을 건너뛰게 표시한다.
 let skipGuardPop = false
 
 /** 맨 위 기록이 입력 칸 붙잡기 기록인가. */

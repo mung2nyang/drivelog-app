@@ -1,5 +1,5 @@
 // @ts-check
-// App.jsx에서 분리한 세션/부트/토스트 state·이펙트·handleLogout(순수 구조 분리).
+// App.jsx가 쓰는 세션/부트/토스트 state·이펙트·handleLogout.
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { applyTheme } from '../data/sync/settingsSave.ts'

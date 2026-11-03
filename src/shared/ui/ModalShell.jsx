@@ -1,5 +1,5 @@
 // @ts-check
-// 창(팝업) 공용 껍데기 — 바깥 누름·Esc 닫기, 겹친 창은 맨 위만 Esc, 열 때·닫을 때 키보드 위치(로드맵 57).
+// 창(팝업) 공용 껍데기 — 바깥 누름·Esc 닫기, 겹친 창은 맨 위만 Esc, 열 때·닫을 때 키보드 위치.
 import { useEffect, useRef } from 'react'
 
 /** 지금 열린 창 순서(맨 뒤가 맨 위). 메모리에만 있다. @type {Array<object>} */

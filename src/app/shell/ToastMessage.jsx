@@ -1,5 +1,5 @@
 // @ts-check
-// 화면 아래 알림 — 실패 문구면 빨간 바탕·느낌표·바로 읽어 줌(로드맵 83), 문장마다 새 줄.
+// 화면 아래 알림 — 실패 문구면 빨간 바탕·느낌표·바로 읽어 줌, 문장마다 새 줄.
 import { isFailureMessage } from '../../shared/utils/failureMessages.js'
 
 /**

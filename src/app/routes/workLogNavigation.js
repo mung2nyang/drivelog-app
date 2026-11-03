@@ -12,7 +12,7 @@
  * 진입했으면 -1은 앱 밖으로 나갈 수 있으니 대신 달력(`/app/calendar`)으로 교체 이동한다 — 뒤로가기를
  * 다시 눌러도 일지로 재진입하지 않는다(replace라 히스토리에 일지 엔트리가 없다).
  * 서브 차량 일지(`logId !== 'main'`)는 `/app/logs/:번호` 달력으로 복귀한다.
- * 교체 이동은 일지 날짜의 달(`?y=&m=`, calendarViewDate.js)로 간다 — 없으면 오늘 달이 된다(로드맵 36).
+ * 교체 이동은 일지 날짜의 달(`?y=&m=`, calendarViewDate.js)로 간다 — 없으면 오늘 달이 된다.
  * @param {{ from?: string } | null | undefined} locationState
  * @param {string} [logId]
  * @param {string} [dateKey] `YYYY-MM-DD`

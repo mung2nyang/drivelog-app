@@ -1,4 +1,4 @@
-/* 화면 맨 위 줄 — 월 이동기·설정 헤더·아이콘 버튼(shared-controls.css에서 옮김). App.jsx가 shared-controls.css 바로 앞에 import. */
+/* 화면 맨 위 줄 — 월 이동기·설정 헤더·아이콘 버튼. App.jsx가 shared-controls.css 바로 앞에 import. */
 
 .date-navigator {
   display: inline-flex;
@@ -40,7 +40,7 @@
   stroke-linejoin: round;
 }
 
-/* 마우스 있는 기기에서만 — 휴대폰은 누른 뒤 색이 남음(로드맵 18-C) */
+/* 마우스 있는 기기에서만 — 휴대폰은 누른 뒤 색이 남음 */
 @media (hover: hover) {
   .arrow-btn:hover {
     color: var(--text-color);

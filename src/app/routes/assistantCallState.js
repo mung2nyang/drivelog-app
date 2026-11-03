@@ -1,5 +1,5 @@
 // @ts-check
-// 주소 상태로 넘어온 운비서 운행(로드맵 24-B-2)·지출(24-C-2)·고정 노선(24-F-2)·거래처(24-G-2, 읽기는 거래처 화면) — 칸마다 모양을 보고, 이상한 칸은 빈 칸으로.
+// 주소 상태로 넘어온 운비서 운행·지출·고정 노선·거래처(거래처는 거래처 화면이 읽음) — 칸마다 모양을 보고, 이상한 칸은 빈 칸으로.
 import { FUEL_TYPES, MAINT_CATEGORIES, MISC_CATEGORIES } from '../../domain/expenses.ts'
 
 const TEXT_MAX = 100

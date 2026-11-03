@@ -19,7 +19,7 @@
   cursor: pointer;
 }
 
-/* 마우스 있는 기기에서만 — 휴대폰은 누른 뒤 색이 남음(로드맵 18-C) */
+/* 마우스 있는 기기에서만 — 휴대폰은 누른 뒤 색이 남음 */
 @media (hover: hover) {
   .app-dropdown-trigger:hover { background-color: var(--hover-bg); }
 }
@@ -125,7 +125,7 @@
   outline-offset: -2px;
 }
 
-/* 입력이 잘못된 칸(로드맵 82) — 커서가 있어도 빨강이라 위 커서 표시보다 뒤에 둔다 */
+/* 입력이 잘못된 칸 — 커서가 있어도 빨강이라 위 커서 표시보다 뒤에 둔다 */
 .app-dropdown-boxed .app-dropdown-trigger[aria-invalid='true'] {
   border-color: var(--sunday-color);
   outline: 2px solid var(--sunday-color);

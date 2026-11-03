@@ -1,6 +1,6 @@
 /* 달력 화면 아래쪽 — 정산 카드·아이콘·미수 안내·차량 배너. 달력 판은 calendar-grid.css. */
 
-/* 원본 style.css #mainPage .summary-client-commission-* — .main-page 스코프 포팅 */
+/* 거래처 수수료 요약 줄(.summary-client-commission-*) — .main-page 안에서만 */
 .main-page .summary-client-commission-row {
   margin-top: -2px;
 }
@@ -76,7 +76,7 @@
   border-radius: 50%;
 }
 
-/* Step 9 슬라이스 B — 서브 차량 달력 모드 배너 */
+/* 서브 차량 달력 모드 배너 */
 .sub-car-log-banner {
   display: flex;
   align-items: center;

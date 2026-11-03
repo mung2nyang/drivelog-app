@@ -47,7 +47,7 @@ export function readExpense(row: { [key: string]: JsonValue }, today: string): U
   }
 }
 
-// 고정 노선 — 횟수 1~20(밖이면 1), 노선 이름은 보낸 것과 같은 길이 안만(로드맵 24-F-2).
+// 고정 노선 — 횟수 1~20(밖이면 1), 노선 이름은 보낸 것과 같은 길이 안만.
 export function readFixed(row: { [key: string]: JsonValue }, today: string): UnbiseoFixed {
   const count = row.count
   const route = text(row, 'route')
@@ -58,7 +58,7 @@ export function readFixed(row: { [key: string]: JsonValue }, today: string): Unb
   }
 }
 
-// 거래처 등록 — 이름은 꼭(50자), 그 밖은 서버(24-G-1)와 같은 범위 안일 때만, 아니면 빈 칸.
+// 거래처 등록 — 이름은 꼭(50자), 그 밖은 서버와 같은 범위 안일 때만, 아니면 빈 칸.
 export function readClient(row: { [key: string]: JsonValue }): UnbiseoClient | null {
   const name = text(row, 'name')
   if (!name || name.length > CLIENT_NAME_MAX) return null

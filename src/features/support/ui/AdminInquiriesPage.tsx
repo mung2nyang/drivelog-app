@@ -1,4 +1,4 @@
-// 관리자 화면 — 문의 목록·답변(로드맵 23-B). 관리자가 아니면 홈으로.
+// 관리자 화면 — 문의 목록·답변. 관리자가 아니면 홈으로.
 import { useEffect, useState } from 'react'
 import { Navigate } from 'react-router-dom'
 import PageHeader from '../../../shared/ui/PageHeader.jsx'

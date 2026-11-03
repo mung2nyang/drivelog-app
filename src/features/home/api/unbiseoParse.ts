@@ -1,4 +1,4 @@
-// 운비서 서버 함수(unbiseo-parse) 부르기 — 저장 없음, 실패는 쉬운 문구로(로드맵 24-B).
+// 운비서 서버 함수(unbiseo-parse) 부르기 — 저장 없음, 실패는 쉬운 문구로.
 import { FunctionsHttpError } from '@supabase/supabase-js'
 import type { JsonValue } from '../../../domain/jsonTypes.ts'
 import { supabase } from '../../../data/cloud/supabaseClient.ts'

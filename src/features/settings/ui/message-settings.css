@@ -1,4 +1,4 @@
-/* 메시지 설정 화면 — side-menu.css에서 이동(MessageSettingsPage 전용). */
+/* 메시지 설정 화면(MessageSettingsPage 전용). */
 
 .message-settings-section { margin-bottom: 10px; padding: 14px; border: 1px solid var(--border-color); border-radius: var(--radius-card); background: var(--card-bg); box-shadow: var(--shadow-sm); }
 .message-settings-heading { margin-bottom: 10px; }

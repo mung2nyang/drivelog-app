@@ -1,5 +1,5 @@
 // @ts-check
-// 홈 운비서 줄 — 마이크를 한 번 누르면 카드가 늘어나며 바로 듣고, 나머지를 누르면 글로 쓰는 칸이 열린다(로드맵 24-B). 이름 "운비서"는 임시.
+// 홈 운비서 줄 — 마이크를 한 번 누르면 카드가 늘어나며 바로 듣고, 나머지를 누르면 글로 쓰는 칸이 열린다. 이름 "운비서"는 임시.
 import { useState } from 'react'
 import { assetPath } from '../../../shared/utils/assetPath.js'
 import { useUnbiseo } from '../hooks/unbiseoContext.ts'

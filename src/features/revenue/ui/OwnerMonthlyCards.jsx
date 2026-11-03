@@ -55,7 +55,7 @@ function RevenueDetailRow({ label, amount, items, showDate = false }) {
 export default function OwnerMonthlyCards({ detail, scope, variant = 'owner' }) {
   const isDriverSelf = variant === 'driverSelf'
   const netTitle = isDriverSelf ? driverSelfNetProfitLabel(detail.income.settlement) : '당월 순이익'
-  // 기사 화면: 큰 숫자(실수령)가 어떻게 나왔는지 기사 몫·공제 줄로 보인다(로드맵 45).
+  // 기사 화면: 큰 숫자(실수령)가 어떻게 나왔는지 기사 몫·공제 줄로 보인다.
   const breakdown = isDriverSelf ? detail.income.settlement?.breakdown : undefined
 
   return (

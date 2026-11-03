@@ -10,7 +10,7 @@ const BANNER = assetPath('/images/banner_image.png')
 const STEP_SEQUENCE = [1, 2, 3, 4]
 
 /**
- * accountType prop은 App.jsx가 아직 넘기지만 9-A에서 분기 제거 — 시퀀스는 항상 STEP_SEQUENCE.
+ * accountType prop은 App.jsx가 아직 넘기지만 쓰지 않는다 — 시퀀스는 항상 STEP_SEQUENCE.
  * @param {Object} props
  * @param {string} [props.accountType]
  * @param {(wizard: OnboardingWizard) => void|Promise<void>} props.onFinish

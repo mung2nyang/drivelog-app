@@ -1,4 +1,4 @@
-// 운비서 목소리 함수(unbiseo-voice) 부르기 — 소리 파일만 받아 오고 저장하지 않는다(로드맵 24-E2).
+// 운비서 목소리 함수(unbiseo-voice) 부르기 — 소리 파일만 받아 오고 저장하지 않는다.
 import { supabase } from '../../../data/cloud/supabaseClient.ts'
 
 const TEXT_MAX = 300

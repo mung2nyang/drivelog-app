@@ -1,5 +1,5 @@
 // @ts-check
-// 8-C — 미수 목록·상세 라우트 경로 헬퍼(:client는 encodeURIComponent, :month는 YYYY-MM).
+// 미수 목록·상세 라우트 경로 헬퍼(:client는 encodeURIComponent, :month는 YYYY-MM).
 
 // search(`?back=mypage` 등)를 목록·상세 사이에서 계속 들고 다녀야 목록 뒤로가기가 들어온 곳으로 돌아간다.
 /** @param {string} client @param {string} monthKey @param {string} [search] */

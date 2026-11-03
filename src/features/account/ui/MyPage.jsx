@@ -101,7 +101,7 @@ export default function MyPage({ onOpen, onOpenMenu, onLinked }) {
   const employed = session?.accountType === 'employed_driver'
   const isOwner = !employed && drivers.length > 0
   const cloud = isCloudSession(session)
-  const canDownload = cloud // 차주·개인 회원은 다운로드·불러오기, 연동 기사는 일지 불러오기만(22-D), 비회원은 앱 설정 백업
+  const canDownload = cloud // 차주·개인 회원은 다운로드·불러오기, 연동 기사는 일지 불러오기만, 비회원은 앱 설정 백업
   const displayName = profile.name || (session?.name && session.name !== '비회원' ? session.name : '') || (!cloud ? '비회원' : employed ? '기사' : '대표자')
 
   return (

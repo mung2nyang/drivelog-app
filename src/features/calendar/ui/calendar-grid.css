@@ -76,7 +76,7 @@
 }
 
 @media (hover: hover) { .date-cell:hover:not(.empty):not(:disabled) { background-color: var(--hover-bg); } }
-.date-cell:not(:disabled):active { background-color: var(--hover-bg); scale: none; } /* 누르는 동안 색으로 표시(18-C) */
+.date-cell:not(:disabled):active { background-color: var(--hover-bg); scale: none; } /* 누르는 동안 색으로 표시 */
 
 /* 요일 줄 아래·주 사이 옅은 가로선(칸 사이 틈 가운데) */
 .day-header::after,
@@ -164,7 +164,7 @@
   position: relative;
 }
 
-/* 바닐라 style.css의 .unpaid-dot을 그대로 옮긴다 — 당일에 미수 콜상세가 있으면
+/* 당일에 미수 콜상세가 있으면
    셀 좌상단에 표시하는 점. */
 .unpaid-dot {
   position: absolute;

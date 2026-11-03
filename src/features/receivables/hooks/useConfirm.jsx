@@ -1,5 +1,5 @@
 // @ts-check
-// 8-C — ConfirmModal.jsx 패턴을 로컬 훅으로 추출(Context/Provider 없음).
+// ConfirmModal.jsx 패턴의 로컬 확인 창 훅(Context/Provider 없음).
 import { useCallback, useRef, useState } from 'react'
 import ConfirmModal from '../../../shared/ui/ConfirmModal.jsx'
 

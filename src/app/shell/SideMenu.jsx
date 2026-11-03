@@ -6,7 +6,7 @@ import { CarIcon, PeopleIcon, PersonIcon, GearIcon, FuelIcon, ChartIcon, DocIcon
 const BANNER_LIGHT = assetPath('/images/banner_image_Light.png')
 const BANNER_DARK = assetPath('/images/banner_image_dark.png')
 
-/** 지금 테마의 배너 하나만(숨긴 그림도 내려받음, 10-A) */
+/** 지금 테마의 배너 하나만(숨긴 그림도 내려받음) */
 export function sideMenuBannerSrc() {
   return document.documentElement.getAttribute('data-theme') === 'dark' ? BANNER_DARK : BANNER_LIGHT
 }

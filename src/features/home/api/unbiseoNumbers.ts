@@ -1,4 +1,4 @@
-// 운비서 질문의 숫자 — 매출·미수금 화면과 같은 함수를 그 순간 값으로 부른다(로드맵 24-D-2). 새 계산 없음.
+// 운비서 질문의 숫자 — 매출·미수금 화면과 같은 함수를 그 순간 값으로 부른다. 새 계산 없음.
 import { getOwnerMonthlyFinanceDetail, getReceivableItems, getTaxInvoiceSourceGroups } from '../../../domain/finance.ts'
 import { getDriverSelfMonthlyDetail } from '../../../domain/driverSelfRevenue.ts'
 import { dayFareTotal, expensesForVehicleDay } from '../../../domain/calendarBadges.ts'

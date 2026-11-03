@@ -1,4 +1,4 @@
-/* 거래처 전용 — side-menu.css에서 분리. ClientListPage 등 거래처 화면이 import.
+/* 거래처 전용 — ClientListPage 등 거래처 화면이 import.
    `.management-badge` 기본·`.tax-invoice`는 공용이라 management-common.css에 둠. */
 
 /* 거래처 수수료 입력 — 차량 등록 정산(매출제/월급제)과 같은 칩+입력(modal-form.css). */
@@ -125,7 +125,7 @@
   cursor: grabbing;
 }
 
-/* 거래처 폼 거래 옵션 문구 — side-menu.css에서 이동(ClientTradeFields 전용). */
+/* 거래처 폼 거래 옵션 문구(ClientTradeFields 전용). */
 .car-option-copy {
   min-width: 0;
   padding-right: 14px;

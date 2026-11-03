@@ -128,7 +128,7 @@ export function collectNotifications(ownerKey = 'guest', session = null) {
     }
   }
 
-  // 9-B-1: 로그인 계정에서 내 메인 차량 일상점검표가 꺼져 있으면 의무화 안내([바로 사용하기]·[다시 보지 않기]).
+  // 로그인 계정에서 내 메인 차량 일상점검표가 꺼져 있으면 의무화 안내([바로 사용하기]·[다시 보지 않기]).
   if (ownerKey !== 'guest' && !readOwnerSettings(ownerKey).dailyInspectionOn && !dismissed.has(DAILY_INSPECTION_NOTICE_ID)) {
     items.push({
       id: DAILY_INSPECTION_NOTICE_ID,

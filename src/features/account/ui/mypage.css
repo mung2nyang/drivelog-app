@@ -1,4 +1,4 @@
-/* 마이페이지 전용 스타일 — side-menu.css에서 옮김. MyPage.jsx가 직접 import한다. */
+/* 마이페이지 전용 스타일 — MyPage.jsx가 직접 import한다. */
 
 .mypage-profile-card {
   display: grid;

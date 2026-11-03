@@ -89,7 +89,7 @@ export function useReceivablesActions({
   /** @param {string} clientName @param {string} monthKey @param {boolean} stay */
   async function payGroup(clientName, monthKey, stay) {
     if (saving) return false
-    // 한 달치를 한 번에 바꾸고 되돌리기는 한 건씩이라 먼저 묻는다(로드맵 44).
+    // 한 달치를 한 번에 바꾸고 되돌리기는 한 건씩이라 먼저 묻는다.
     const items = groupItems(getReceivableItems(settings, workDataByLogId), clientName, monthKey)
     const amount = items.reduce((sum, item) => sum + item.remainingAmount, 0)
     const month = parseInt(monthKey.slice(5, 7), 10)

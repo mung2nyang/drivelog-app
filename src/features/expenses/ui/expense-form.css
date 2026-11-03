@@ -1,6 +1,6 @@
-/* 정비/주유/기타 공용 폼(ExpenseFormModal) — 원본 style.css:6620-6734 중
-   이 화면 관련분 포팅. maint/fuel/misc 세 종류가 컴포넌트 하나를 공유해서
-   여기 한 곳에만 둔다. 보리 지시(2026-09-14): 날짜 트리거 아이콘 삭제,
+/* 정비/주유/기타 공용 폼(ExpenseFormModal).
+   maint/fuel/misc 세 종류가 컴포넌트 하나를 공유해서
+   여기 한 곳에만 둔다. 날짜 트리거 아이콘 삭제,
    분류 칩 사각 라운드로, 결제방식은 세그먼트 컨트롤로. */
 
 .expense-form-content .app-temporal-icon {
@@ -73,7 +73,7 @@
   color: var(--sub-text-color);
 }
 
-/* 알약 버튼 — side-menu.css에서 이동(ExpenseFormModal 전용). 위 .expense-form-content 규칙 뒤에 둬야 활성 배경이 유지됨. */
+/* 알약 버튼(ExpenseFormModal 전용). 위 .expense-form-content 규칙 뒤에 둬야 활성 배경이 유지됨. */
 .pill-group {
   display: flex;
   flex-wrap: wrap;
@@ -110,7 +110,7 @@
   margin: 0;
 }
 
-/* 한 줄 입력 칸 아래 오류 문구(로드맵 82, FieldError.jsx)는 입력칸 아래 줄에 */
+/* 한 줄 입력 칸 아래 오류 문구(FieldError.jsx)는 입력칸 아래 줄에 */
 .expense-form-content .expense-inline-field > .field-error {
   grid-column: 2;
   margin-top: 0;

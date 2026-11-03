@@ -28,7 +28,7 @@ export default function useNotifications(ownerKey, session = null, refreshKey = 
   const dismissed = useSyncExternalStore(subscribe, () => getState().dismissedNotifications[ownerKey])
   // 일지 저장 실패 날짜(휴대폰, Store 밖)가 바뀌면 다시 센다.
   const failedVersion = useSyncExternalStore(subscribeFailedDayLogDates, failedDayLogDatesVersion)
-  // 문의 알림(로드맵 23-C)은 서버에서 물어 와 목록 맨 뒤에 붙인다.
+  // 문의 알림은 서버에서 물어 와 목록 맨 뒤에 붙인다.
   const inquiry = useInquiryNotices(refreshKey)
   return useMemo(
     () => [

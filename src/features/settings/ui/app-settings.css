@@ -1,6 +1,6 @@
-/* §13 앱 설정 전용 — side-menu.css K 블록(앱설정 프리셋)에서 분리.
+/* 앱 설정 전용.
    테마 버튼 아이콘 정렬 + 고정노선/운행횟수 프리셋 편집기(RunCountChips.jsx/
-   RoutePresetEditor.jsx, AppSettingsPage.jsx에서만 렌더) 전용 확인 후 이동. */
+   RoutePresetEditor.jsx, AppSettingsPage.jsx에서만 렌더) 전용. */
 
 .setting-item.fixed-route-preset-setting,
 .setting-item.run-count-preset-setting {
@@ -165,7 +165,7 @@
 .tree-line-group input:checked + .slider:before { transform: translateX(18px); }
 
 
-/* 9-B-1: "일상점검표 사용"은 세부 입력 카드 맨 위 한 줄 + 아래 구분선(피그마 앱 설정) */
+/* "일상점검표 사용"은 세부 입력 카드 맨 위 한 줄 + 아래 구분선(피그마 앱 설정) */
 .daily-inspection-switch {
   margin-bottom: 10px;
   padding-bottom: 10px;

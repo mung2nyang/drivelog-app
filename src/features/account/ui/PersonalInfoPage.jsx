@@ -25,7 +25,7 @@ const WITHDRAW_LINKED_MSG = '연동을 먼저 해제해야 탈퇴할 수 있습�
  * @param {() => void} [props.onBack]
  * @param {() => void} [props.onGoAuth]
  * @param {(() => void)} [props.onOpenMenu]
- * @param {(next: import('../../../data/sync/syncTypes.ts').AppSession) => void} [props.onUnlinked] 기사가 연동 해제를 확정했을 때(7-C-2)
+ * @param {(next: import('../../../data/sync/syncTypes.ts').AppSession) => void} [props.onUnlinked] 기사가 연동 해제를 확정했을 때
  */
 export default function PersonalInfoPage({ onBack, onGoAuth, onOpenMenu, onUnlinked }) {
   const { ownerKey, session } = useSession()

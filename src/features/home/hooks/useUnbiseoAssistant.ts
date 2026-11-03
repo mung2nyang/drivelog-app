@@ -1,4 +1,4 @@
-// 운비서 말하기·보내기 상태 — 앱 틀의 unbiseoContext가 하나만 만들어 홈 카드·떠 있는 줄이 같이 쓴다(로드맵 24-B).
+// 운비서 말하기·보내기 상태 — 앱 틀의 unbiseoContext가 하나만 만들어 홈 카드·떠 있는 줄이 같이 쓴다.
 import { useEffect, useRef, useState } from 'react'
 import { isCloudSession } from '../../../data/cloud/cloudSession.ts'
 import { useSession } from '../../../data/cloud/sessionContext.ts'
@@ -62,7 +62,7 @@ export default function useUnbiseoAssistant() {
     setText('')
     setAnswer(null)
   }
-  // 마이크로 말했을 때만 답을 소리로 — 듣기를 시작하면 읽던 것을 먼저 멈춘다(로드맵 24-E).
+  // 마이크로 말했을 때만 답을 소리로 — 듣기를 시작하면 읽던 것을 먼저 멈춘다.
   const voice = useSpeechOutput()
   const stopSpeaking = voice.stop
   const currentOwner = useRef(ownerKey)
@@ -75,7 +75,7 @@ export default function useUnbiseoAssistant() {
     void send(heard, true)
   })
   const speech = { ...input, start() { stopSpeaking(); input.start() } }
-  // 되묻기 화면이 알려 주는 지금 단계 — 화면이 있는 동안만 든다(로드맵 24-H-3).
+  // 되묻기 화면이 알려 주는 지금 단계 — 화면이 있는 동안만 든다.
   const step = useRef<UnbiseoStep | null>(null)
   const speakNext = useRef(false)
   function reportStep(next: UnbiseoStep | null) {

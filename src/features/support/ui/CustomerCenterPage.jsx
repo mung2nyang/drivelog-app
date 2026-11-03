@@ -47,7 +47,7 @@ function GuestLoginPrompt({ onGoAuth }) {
  * @param {() => void} [props.onBack]
  * @param {() => void} [props.onGoAuth]
  * @param {(() => void)} [props.onOpenMenu]
- * @param {SupportTab} [props.initialTab] 처음 탭(알림 "답변 도착"은 myInquiries, 로드맵 23-C)
+ * @param {SupportTab} [props.initialTab] 처음 탭(알림 "답변 도착"은 myInquiries)
  */
 export default function CustomerCenterPage({ onBack, onGoAuth, onOpenMenu, initialTab = 'faq' }) {
   const { session } = useSession()

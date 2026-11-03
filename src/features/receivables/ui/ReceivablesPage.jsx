@@ -1,5 +1,5 @@
 // @ts-check
-// 8-C — 미수 화면 라우트 셸. lazyPages.js 진입점은 이 파일 그대로(RevenuePage.jsx와 동일 관례).
+// 미수 화면 라우트 셸. lazyPages.js 진입점은 이 파일 그대로(RevenuePage.jsx와 동일 관례).
 import { Route, Routes } from 'react-router-dom'
 import ReceivablesListPage from './ReceivablesListPage.jsx'
 import ReceivablesDetailPage from './ReceivablesDetailPage.jsx'

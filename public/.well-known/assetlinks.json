@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "com.getdrivelog.app",
+        "sha256_cert_fingerprints": ["26:7F:1D:F1:2C:13:A4:C0:32:85:19:93:98:3F:73:A7:85:8E:9D:F7:2D:CE:88:44:B7:F1:04:36:8D:C5:4C:D8"]
+      }
+    }]

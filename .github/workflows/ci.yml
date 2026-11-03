@@ -85,6 +85,8 @@ jobs:
         uses: actions/upload-pages-artifact@v5
         with:
           path: react-app/dist
+          # 앱 연결 파일(.well-known)도 올린다.
+          include-hidden-files: true
 
   # 로컬 Supabase에 운영 구조를 만들고 DB 권한 시험을 돌린다. 실패하면 배포하지 않는다.
   db-test:

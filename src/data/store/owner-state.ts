@@ -6,10 +6,10 @@ import { CLOUD_MEMORY_ONLY_DOMAINS } from './batchWrites.ts'
 import { getCloudOwnerKey } from '../cloud/cloudSession.ts'
 import { dedupeCarsById } from '../../domain/cars.ts'
 import type { PersistDomain } from './persist.ts'
-import type { BatchEntry, DriverExpensesReplace } from './app-store.ts'
+import type { BatchEntry, DriverExpensesReplace, DriverHistoryReplace } from './app-store.ts'
 import type { KeyedWrite } from './atomicPersist.ts'
 import type { DayRecordLike } from '../../domain/dayRecordTypes.ts'
-import type { CarLike, FinanceSettings } from '../../domain/financeTypes.ts'
+import type { CarLike, DriverLinkLike, FinanceSettings } from '../../domain/financeTypes.ts'
 import type { ClientLike } from '../../domain/clientTypes.ts'
 import type { DriverExpenseItem, ExpenseItem } from '../../domain/expenseTypes.ts'
 import type { InvoiceLike } from '../../domain/financeTaxInvoiceEntries.ts'
@@ -81,6 +81,7 @@ export type OwnerSnapshot = {
   settings?: FinanceSettings
   expenses?: Array<ExpenseItem>
   driverExpenses?: Array<DriverExpenseItem> // 메모리 전용 — 있으면 통째 replace
+  driverHistory?: Array<DriverLinkLike>
   invoices?: Array<InvoiceLike>
   dismissedNotifications?: Array<string> // 닫은 알림 id
   workDataDeletedDates?: WorkDataTombstones // 빈 날 삭제 목록
@@ -114,10 +115,11 @@ export function replaceOwnerState(ownerKey: string, snapshot: OwnerSnapshot = {}
   const replaceDriverExpenses: DriverExpensesReplace | undefined = Array.isArray(snapshot.driverExpenses)
     ? { ownerKey, next: snapshot.driverExpenses }
     : undefined
-  if (!entries.length && !replaceDriverExpenses) return
+  const replaceDriverHistory: DriverHistoryReplace | undefined = Array.isArray(snapshot.driverHistory) ? { ownerKey, next: snapshot.driverHistory } : undefined
+  if (!entries.length && !replaceDriverExpenses && !replaceDriverHistory) return
   if (workLogs) {
-    commitBatch(entries, { persist, extraWrites, replaceWorkLogs: { ownerKey, next: workLogs }, replaceDriverExpenses })
+    commitBatch(entries, { persist, extraWrites, replaceWorkLogs: { ownerKey, next: workLogs }, replaceDriverExpenses, replaceDriverHistory })
     return
   }
-  commitBatch(entries, { persist, extraWrites, replaceDriverExpenses })
+  commitBatch(entries, { persist, extraWrites, replaceDriverExpenses, replaceDriverHistory })
 }

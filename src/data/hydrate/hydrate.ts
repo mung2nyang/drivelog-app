@@ -13,6 +13,7 @@ import {
   mergeCarsFromRows,
   mergeClientsFromRows,
   mergeDriversFromRows,
+  driverHistoryFromRows,
   mergeExpenseKind,
 } from './hydrateMerge.ts'
 import { mergeVehicleDayLogsFromServer } from './hydrateVehicleDayLogs.ts'
@@ -72,7 +73,7 @@ async function performHydrate(userId: string, ownerKey: string, myEpoch: number,
       })
       if (isSessionStillCurrent({ userId, ownerKey, epoch: myEpoch })) {
         // driverExpenses는 차주 hydrate 전용 — 소속기사 세션에서는 빈 배열로 replace(스테일 제거).
-        replaceOwnerState(ownerKey, { ...nextSnapshot, driverExpenses: [] }, { persist: false })
+        replaceOwnerState(ownerKey, { ...nextSnapshot, driverExpenses: [], driverHistory: [] }, { persist: false })
         finishHydration(myEpoch, { status: 'ready', userId, ownerKey })
         dropLegacyKeys(ownerKey)
       } else {
@@ -154,7 +155,7 @@ async function performHydrate(userId: string, ownerKey: string, myEpoch: number,
       workData: nextWorkData, workLogs: nextWorkLogs, cars: nextCars, clients: nextClients, drivers: nextDrivers,
       profile: nextProfile, settings: nextSettings,
       expenses: (ownerExpenses) as ExpenseItem[],
-      driverExpenses: nextDriverExpenses,
+      driverExpenses: nextDriverExpenses, driverHistory: driverHistoryFromRows(linksRes.data || [], nextCars),
       invoices: nextInvoices,
     }
 

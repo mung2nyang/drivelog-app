@@ -5,6 +5,7 @@ import {
   mergeCarsFromRows,
   mergeClientsFromRows,
   mergeDriversFromRows,
+  driverHistoryFromRows,
   mergeWorkDataFromRows,
   mergeExpenseKind,
   findMainCar,
@@ -398,5 +399,43 @@ describe('mergeExpenseKind', () => {
       replace,
     })
     assert.deepEqual(result, [{ kind: 'maint', id: 'keep' }, { kind: 'fuel', id: 'dup' }])
+  })
+})
+
+describe('driverHistoryFromRows — 해제된 예전 계약만 계산용 모양으로', () => {
+  /** @param {Array<import('./hydrateMergeTypes.ts').LocalCar>} c */
+  const asCars = (c) => c
+  /** @param {Array<import('./hydrateMergeTypes.ts').DriverLinkRow>} r */
+  const asRows = (r) => r
+  const cars = asCars([
+    { id: 'car-1', number: '11가1111', supabaseId: 700 },
+    { id: 'car-2', number: '22나2222', supabaseId: 701 },
+  ])
+
+  test('연동 중·초대 대기·해제가 섞여 있으면 해제 행만 시작일 순서로 담는다', () => {
+    const rows = asRows([
+      { id: 3, vehicle_id: 701, status: 'disconnected', assignment_start: '2026-09-10', assignment_end: '2026-09-20' },
+      { id: 4, vehicle_id: 700, status: 'linked', assignment_start: '2026-10-01' },
+      { id: 5, vehicle_id: 700, status: 'pending', assignment_start: '2026-10-05' },
+      { id: 1, vehicle_id: 700, status: 'disconnected', assignment_start: '2026-08-01', assignment_end: '2026-08-31' },
+    ])
+    assert.deepEqual(driverHistoryFromRows(rows, cars), [
+      { id: '1', vehicleNumber: '11가1111', assignmentStart: '2026-08-01', assignmentEnd: '2026-08-31', status: 'disconnected' },
+      { id: '3', vehicleNumber: '22나2222', assignmentStart: '2026-09-10', assignmentEnd: '2026-09-20', status: 'disconnected' },
+    ])
+  })
+
+  test('차량을 못 찾거나 시작일·끝난 날이 비면 뺀다', () => {
+    const rows = asRows([
+      { id: 1, vehicle_id: 999, status: 'disconnected', assignment_start: '2026-08-01', assignment_end: '2026-08-31' },
+      { id: 2, vehicle_id: 700, status: 'disconnected', assignment_end: '2026-08-31' },
+      { id: 3, vehicle_id: 700, status: 'disconnected', assignment_start: '2026-08-01' },
+    ])
+    assert.deepEqual(driverHistoryFromRows(rows, cars), [])
+  })
+
+  test('조회 결과가 배열이 아니면 빈 목록이다', () => {
+    assert.deepEqual(driverHistoryFromRows(null, cars), [])
+    assert.deepEqual(driverHistoryFromRows(undefined, cars), [])
   })
 })

@@ -492,3 +492,37 @@ describe('initializeOwnerFromPersist — 슬라이스 E 로그인 settings theme
     assert.deepEqual(getState().settings[owner], { theme: 'dark', unitPrice: 5000, callDetail: true })
   })
 })
+
+describe('replaceOwnerState — 해제된 예전 계약(driverHistory)', () => {
+  const history = [{ id: '1', vehicleNumber: '11가1111', assignmentStart: '2026-08-01', assignmentEnd: '2026-08-31', status: 'disconnected' }]
+
+  function ownerKeysInStorage(/** @type {string} */ owner) {
+    const keys = []
+    for (let i = 0; i < localStorage.length; i += 1) {
+      const key = localStorage.key(i)
+      if (key && key.includes(owner)) keys.push(key)
+    }
+    return keys
+  }
+
+  test('넘기면 통째로 바뀌고 휴대폰 저장소에는 아무 키도 안 생기며 알림은 1회다', () => {
+    const owner = 'replace-owner-driver-history'
+    replaceOwnerState(owner, { driverHistory: [{ id: 'old', status: 'disconnected' }] })
+    let notifyCount = 0
+    const unsub = subscribe(() => { notifyCount += 1 })
+    replaceOwnerState(owner, { driverHistory: history })
+    unsub()
+    assert.deepEqual(getState().driverHistory[owner], history)
+    assert.equal(notifyCount, 1)
+    assert.deepEqual(ownerKeysInStorage(owner), [])
+  })
+
+  test('빈 목록을 넘기면 빈 목록으로, 안 넘기면 그대로다', () => {
+    const owner = 'replace-owner-driver-history-keep'
+    replaceOwnerState(owner, { driverHistory: history })
+    replaceOwnerState(owner, { cars: [{ id: 'only-cars' }] })
+    assert.deepEqual(getState().driverHistory[owner], history)
+    replaceOwnerState(owner, { driverHistory: [] })
+    assert.deepEqual(getState().driverHistory[owner], [])
+  })
+})

@@ -1,5 +1,6 @@
 import { dedupeExpensesById } from '../../domain/expenses.ts'
 import type { DriverRecord } from '../../domain/driverTypes.ts'
+import type { DriverLinkLike } from '../../domain/financeTypes.ts'
 // hydrateFromSupabase의 순수 병합 함수(조회 → 검증 → 병합 → 커밋 중 병합만). localStorage/store는 쓰지 않는다. 타입 정본은 hydrateMergeTypes.ts.
 import type {
   DriverLinkRow, HydrateError, JsonRecord, LocalCar, LocalDriver, LocalProfile, ProfileRow, SupabaseQueryError,
@@ -70,6 +71,19 @@ export function mergeDriversFromRows(localDrivers: Array<LocalDriver>, mergedCar
   })
   // linkRows가 배열이면(빈 배열 포함) 서버가 정본 — 로컬로 되돌리면 방금 삭제한 기사가 hydrate 뒤 부활한다.
   return merged
+}
+
+/** 해제된 계약만 계산용 모양으로. 차량을 못 찾거나 기간이 비면 뺀다. */
+export function driverHistoryFromRows(linkRows: Array<DriverLinkRow> | null | undefined, cars: Array<LocalCar>): Array<DriverLinkLike> {
+  if (!Array.isArray(linkRows)) return []
+  const history: Array<DriverLinkLike> = []
+  for (const row of linkRows) {
+    if (row.status !== 'disconnected' || !row.assignment_start || !row.assignment_end) continue
+    const car = (cars || []).find((item) => item.supabaseId === row.vehicle_id)
+    if (!car?.number) continue
+    history.push({ id: String(row.id), vehicleNumber: car.number, assignmentStart: row.assignment_start, assignmentEnd: row.assignment_end, status: 'disconnected' })
+  }
+  return history.sort((a, b) => String(a.assignmentStart).localeCompare(String(b.assignmentStart)))
 }
 
 export function findMainCar(cars: Array<LocalCar>) {

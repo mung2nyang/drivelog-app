@@ -545,3 +545,70 @@ describe('67-A hydrate — 1,000줄 넘는 기록도 끝까지 불러온다', ()
     endCloudSession()
   })
 })
+
+describe('hydrate — 해제된 예전 계약은 기사 목록과 다른 칸에 담는다', () => {
+  const linkRows = [
+    { id: 9, vehicle_id: 802, status: 'linked', invite_code: '111111', assignment_start: '2026-09-01' },
+    { id: 7, vehicle_id: 802, status: 'disconnected', invite_code: '222222', assignment_start: '2026-08-01', assignment_end: '2026-08-31' },
+  ]
+  function ownerHandlers() {
+    resetHandlers()
+    Object.assign(handlers, emptyOkHandlers(), settleOk())
+    handlers.vehicles = { select: () => ({ data: [{ id: 802, type: 'sub', number: '22나2222', raw: { id: 'c-sub' } }], error: null }) }
+    handlers.driver_links = { select: () => ({ data: linkRows, error: null }) }
+    Object.assign(handlers, {
+      daily_logs: { select: () => ({ data: [], error: null }) },
+      transport_details: { select: () => ({ data: [], error: null }) },
+      fuel_records: { select: () => ({ data: [], error: null }) },
+      maintenance_records: { select: () => ({ data: [], error: null }) },
+      misc_expense_records: { select: () => ({ data: [], error: null }) },
+    })
+  }
+
+  test('차주 불러오기 뒤 drivers에는 해제 기록이 없고 driverHistory에는 있다', async () => {
+    ownerHandlers()
+    const ownerKey = 'hydrate-driver-history'
+    await hydrateFromSupabase('user-driver-history', ownerKey)
+    assert.equal(getState().hydration.status, 'ready')
+    assert.deepEqual((getState().drivers[ownerKey] || []).map((item) => item.supabaseId), [9])
+    assert.deepEqual(getState().driverHistory[ownerKey], [
+      { id: '7', vehicleNumber: '22나2222', assignmentStart: '2026-08-01', assignmentEnd: '2026-08-31', status: 'disconnected' },
+    ])
+    endCloudSession()
+  })
+
+  test('불러오는 사이 세션이 바뀌면 driverHistory도 반영하지 않는다', async () => {
+    ownerHandlers()
+    const ownerKey = 'hydrate-driver-history-stale'
+    const userId = 'user-driver-history-stale'
+    let release
+    const gate = new Promise((resolve) => { release = resolve })
+    handlers.driver_links = { select: () => gate.then(() => ({ data: linkRows, error: null })) }
+    const hydratePromise = hydrateFromSupabase(userId, ownerKey)
+    await wait(10)
+    beginSessionEpoch(userId, ownerKey)
+    release()
+    await hydratePromise
+    assert.equal(getState().driverHistory[ownerKey], undefined)
+    endCloudSession()
+  })
+
+  test('연동 기사 불러오기 뒤에는 빈 목록이다', async () => {
+    ownerHandlers()
+    const ownerKey = 'hydrate-driver-history-employed'
+    await hydrateFromSupabase('owner-user-driver-history', ownerKey)
+    assert.equal(getState().driverHistory[ownerKey]?.length, 1)
+    endCloudSession()
+
+    resetHandlers()
+    Object.assign(handlers, emptyOkHandlers())
+    handlers.rpc = {
+      get_linked_owner_business_info: () => ({ data: null, error: null }),
+      get_assigned_vehicle_summary: () => ({ data: [], error: null }),
+    }
+    await hydrateFromSupabase('driver-user-driver-history', ownerKey, { employedDriver: true })
+    assert.equal(getState().hydration.status, 'ready')
+    assert.deepEqual(getState().driverHistory[ownerKey], [])
+    endCloudSession()
+  })
+})

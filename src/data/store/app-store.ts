@@ -6,7 +6,7 @@ import { buildBatchWrites } from './batchWrites.ts'
 import type { KeyedWrite } from './atomicPersist.ts'
 import type { PersistDomain } from './persist.ts'
 import type { DayRecordLike } from '../../domain/dayRecordTypes.ts'
-import type { CarLike, FinanceSettings } from '../../domain/financeTypes.ts'
+import type { CarLike, DriverLinkLike, FinanceSettings } from '../../domain/financeTypes.ts'
 import type { ClientLike } from '../../domain/clientTypes.ts'
 import type { DriverExpenseItem, ExpenseItem } from '../../domain/expenseTypes.ts'
 import type { InvoiceLike } from '../../domain/financeTaxInvoiceEntries.ts'
@@ -35,6 +35,7 @@ export type AppStoreState = {
   settings: Record<string, FinanceSettings>
   expenses: Record<string, Array<ExpenseItem>>
   driverExpenses: Record<string, Array<DriverExpenseItem>> // 서브 차량 비용(메모리 전용, hydrate replace)
+  driverHistory: Record<string, Array<DriverLinkLike>> // 해제된 예전 계약(메모리 전용, hydrate replace) — 기사 급여 계산용
   invoices: Record<string, Array<InvoiceLike>>
   drivers: Record<string, Array<DriverRecord>>
   profile: Record<string, ProfileLike>
@@ -50,6 +51,7 @@ const state: AppStoreState = {
   settings: {},
   expenses: {},
   driverExpenses: {},
+  driverHistory: {},
   invoices: {},
   drivers: {},
   profile: {},
@@ -110,12 +112,14 @@ export type DriverExpensesReplace = {
   next: Array<DriverExpenseItem>
 }
 
+export type DriverHistoryReplace = { ownerKey: string, next: Array<DriverLinkLike> }
+
 /**
  * persist 성공 후에만 state/notify. extraWrites는 서브 로그 키처럼 persist 도메인 밖
  * 키를 같은 all-or-nothing에 넣는다.
  */
-export function commitBatch(entries: Array<BatchEntry>, options: { persist?: boolean, extraWrites?: Array<KeyedWrite>, mergeWorkLogs?: WorkLogsMerge, replaceWorkLogs?: WorkLogsReplace, replaceDriverExpenses?: DriverExpensesReplace } = {}): Array<DomainValue> {
-  const { persist = true, extraWrites = [], mergeWorkLogs, replaceWorkLogs, replaceDriverExpenses } = options
+export function commitBatch(entries: Array<BatchEntry>, options: { persist?: boolean, extraWrites?: Array<KeyedWrite>, mergeWorkLogs?: WorkLogsMerge, replaceWorkLogs?: WorkLogsReplace, replaceDriverExpenses?: DriverExpensesReplace, replaceDriverHistory?: DriverHistoryReplace } = {}): Array<DomainValue> {
+  const { persist = true, extraWrites = [], mergeWorkLogs, replaceWorkLogs, replaceDriverExpenses, replaceDriverHistory } = options
   // 로그인 세션이면 업무 도메인은 localStorage에 안 쓴다(Store 메모리만).
   const cloudOwnerKey = state.hydration.userId ? state.hydration.ownerKey : null
   const writes = [...buildBatchWrites(entries, { persist, cloudOwnerKey })]
@@ -136,6 +140,9 @@ export function commitBatch(entries: Array<BatchEntry>, options: { persist?: boo
   // driverExpenses는 PersistDomain 밖 — replace만(merge 없음). 빈 배열도 스테일 제거.
   if (replaceDriverExpenses) {
     state.driverExpenses = { ...state.driverExpenses, [replaceDriverExpenses.ownerKey]: replaceDriverExpenses.next }
+  }
+  if (replaceDriverHistory) {
+    state.driverHistory = { ...state.driverHistory, [replaceDriverHistory.ownerKey]: replaceDriverHistory.next }
   }
   notify()
   return entries.map((entry) => entry.value)

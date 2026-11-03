@@ -12,7 +12,7 @@ import type { DayRecordLike } from './day-record.ts'
 export type SupplierIdentity = { key?: string, biz?: SupplierBiz, carLabel?: string, carNumber?: string }
 export type DriverTrip = { type: 'call' | 'fixed', dateKey: string, client: string, loadLoc: string, unloadLoc: string, fare: number, vatExempt: boolean, platform?: string, distanceKm?: string | number, cargoTonnage?: string | number, paymentDueDate?: string, remarks?: string, fixedCount?: number, palletFare?: number }
 
-/** 거래처 매출 계산서 원천 그룹(메인 + 기사차량 운행분). 계산서 종류는 매출뿐(기사 매입·수수료 발행 삭제, 2026-10-02) — flow는 저장 id 호환용. logKey('main'|차량번호)를 넘기면 그 차량 운행분만(서류 발급 차량별, 세금계산서 정리 ②). */
+/** 거래처 매출 계산서 원천 그룹(메인 + 기사차량 운행분). 계산서 종류는 매출뿐(기사 매입·수수료 발행은 없앰) — flow는 저장 id 호환용. logKey('main'|차량번호)를 넘기면 그 차량 운행분만(서류 발급 차량별). */
 export function getTaxInvoiceSourceGroups(monthKey: string, flow: 'sales' = 'sales', settings: FinanceSettings = {}, workDataByLogId: WorkDataByLogId = {}, logKey?: string) {
   const cars = settings.cars || []
   if (flow !== 'sales') return []
@@ -94,7 +94,7 @@ export function getTaxInvoiceSourceGroups(monthKey: string, flow: 'sales' = 'sal
 
 // 고정노선(fixedCount)은 그날 기록에 금액이 없어 단가×횟수로 계산해야
 // 드릴다운 목록의 "고정" 트립 금액도 0이 아니게 나온다(getMonthlyDriverTotals와
-// 같은 공식, computeFixedRouteFare 재사용, 2026-09-17).
+// 같은 공식, computeFixedRouteFare 재사용).
 export function flattenLinkedDriverTrips(data: Record<string, DayRecordLike>, monthKey: string, link?: DriverLinkLike, settings: FinanceSettings = {}) {
   const fixedRouteClient = getFixedRouteClient(settings, link?.vehicleNumber)
   const fixedRouteOpts = {

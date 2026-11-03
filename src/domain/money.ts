@@ -19,7 +19,7 @@ export function formatCurrencyInput(value: JsonValue | undefined): string {
   return n ? n.toLocaleString('ko-KR') : ''
 }
 
-/** 금액 칸에 친 글자(소수점 포함)를 반올림한 쉼표 정수 글자로 — 첫 점만 소수점으로 본다(로드맵 43). */
+/** 금액 칸에 친 글자(소수점 포함)를 반올림한 쉼표 정수 글자로 — 첫 점만 소수점으로 본다. */
 export function roundCurrencyText(text: string | undefined): string {
   const raw = String(text ?? '').replace(/[^0-9.]/g, '')
   const dot = raw.indexOf('.')
@@ -29,7 +29,7 @@ export function roundCurrencyText(text: string | undefined): string {
   return n ? n.toLocaleString('ko-KR') : ''
 }
 
-// 운송료가 이 금액을 넘으면 저장 전에 한 번 묻는다(로드맵 43-C, 보리 결정 2026-10-14 — 운송료만).
+// 운송료가 이 금액을 넘으면 저장 전에 한 번 묻는다(운송료만).
 export const LARGE_FARE_LIMIT = 10000000
 
 /** @param text 쉼표 금액 글자 */

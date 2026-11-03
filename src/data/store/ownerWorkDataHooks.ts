@@ -1,4 +1,4 @@
-// ownerDataHooks.ts에서 분리한 일지(workData) 구독 훅 그룹 — 로직·주석 무변경 이동.
+// 일지(workData) 구독 훅 그룹.
 import { useSyncExternalStore } from 'react'
 import { getState, subscribe } from './app-store.ts'
 import type { DayRecordLike } from '../../domain/calendarBadges.ts'

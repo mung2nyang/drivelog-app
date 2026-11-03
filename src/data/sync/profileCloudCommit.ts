@@ -3,7 +3,7 @@ import { supabase } from '../cloud/supabaseClient.ts'
 import type { LocalProfile } from '../hydrate/hydrateMergeTypes.ts'
 import type { FinanceSettings } from '../../domain/financeTypes.ts'
 
-/** @param options 연동 기사(9-B-0): 사업자·계좌 칸은 화면에 보이는 차주 값이라 보내지 않는다(서버 행 그대로). */
+/** @param options 연동 기사: 사업자·계좌 칸은 화면에 보이는 차주 값이라 보내지 않는다(서버 행 그대로). */
 export async function upsertProfileOnSupabase(userId: string, profile: LocalProfile, settings: FinanceSettings, { ownFieldsOnly = false }: { ownFieldsOnly?: boolean } = {}) {
   const businessAndAccount = ownFieldsOnly ? {} : {
     business_name: profile.bizName || null,

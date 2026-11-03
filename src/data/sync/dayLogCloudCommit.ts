@@ -123,7 +123,7 @@ export async function commitMainDayLogToCloud({ ownerKey, logId, dateKey, previo
   }
 }
 
-/** 여러 dateKey를 순차 서버 커밋한다. 성공한 날짜만 Store에 부분 반영(8-B 일괄 미수). */
+/** 여러 dateKey를 순차 서버 커밋한다. 성공한 날짜만 Store에 부분 반영(일괄 미수). */
 export async function commitMainDayLogMapToCloud({ ownerKey, logId, dateKeys, previousData, nextData }: { ownerKey: string, logId: string, dateKeys: string[],
   previousData: Record<string, DayRecordLike>, nextData: Record<string, DayRecordLike> }): Promise<{ cloud: false } | { cloud: true, ok: boolean, partial: boolean,
   appliedDateKeys: string[], failedDateKeys: string[], toast: string | null }> {

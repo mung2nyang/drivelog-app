@@ -7,7 +7,7 @@ import type { DriverRecord } from './driverTypes.ts'
 export type CarRef = { number?: string, type?: string }
 export type DriverDraft = Pick<DriverRecord, 'name' | 'phone' | 'inviteCode' | 'vehicleNumber' | 'startDate' | 'endDate'> & { assignmentStart?: string, assignmentEnd?: string }
 
-// 10-S-2: 헷갈리는 0·O·1·I·L을 뺀 31종 10자리. 서버(0019)도 같은 형식만 받는다.
+// 헷갈리는 0·O·1·I·L을 뺀 31종 10자리. 서버(0019)도 같은 형식만 받는다.
 const INVITE_ALPHABET = '23456789ABCDEFGHJKMNPQRSTUVWXYZ'
 export const INVITE_CODE_PATTERN = /^[23456789ABCDEFGHJKMNPQRSTUVWXYZ]{10}$/
 

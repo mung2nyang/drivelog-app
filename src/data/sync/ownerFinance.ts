@@ -46,7 +46,7 @@ async function persistLogChange(ownerKey: string, logId: string, previous: Recor
   return { ok: true, applied: dateKeys.length, toast: null }
 }
 
-/** 미수 화면 쓰기 창구(8-B). */
+/** 미수 화면 쓰기 창구. */
 export async function persistReceivableWorkDataChange(ownerKey: string, nextWorkDataByLogId: WorkDataByLogId): Promise<{ ok: boolean, partial: boolean, toast: string | null }> {
   // 차량마다(메인 → 기사 차량) 서버에 있으면 서버 저장, 없으면 기기 저장. 실패한 차량에서 멈춘다.
   const logIds = ['main', ...Object.keys(nextWorkDataByLogId).filter((logId) => logId !== 'main')]

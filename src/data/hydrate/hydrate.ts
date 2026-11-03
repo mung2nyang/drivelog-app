@@ -177,7 +177,7 @@ async function performHydrate(userId: string, ownerKey: string, myEpoch: number,
   }
 }
 
-// 옛 보낼 편지함·변경 기록장 키는 보내지 않고 지운다 — 더 쓰지 않음(로드맵 88·89).
+// 옛 보낼 편지함·변경 기록장 키는 보내지 않고 지운다 — 더 쓰지 않음.
 function dropLegacyKeys(ownerKey: string) {
   try {
     localStorage.removeItem(`reactPracticeMutationOutbox:${ownerKey}`)

@@ -32,9 +32,9 @@ const SUB_CAR_SETTINGS = plain(v.strictObject({
 const SETTINGS = plain(v.strictObject({
   cars: opt(v.array(by(isPersistedCar))), clients: opt(v.array(by(isPersistedClient))), driverLinks: opt(v.array(DRIVER_LINK)),
   paymentOn: opt(bool), subPaymentOn: opt(bool), fixedOn: opt(bool), subFixedOn: opt(bool),
-  // defaultDriverSettlementMode: 옛 "계산서 처리 방식" 기본값(2026-10-02 삭제) — 옛 저장분 읽기용.
+  // defaultDriverSettlementMode: 옛 "계산서 처리 방식" 기본값(없앰) — 옛 저장분 읽기용.
   defaultDriverSettlementMode: opt(v.picklist(DRIVER_SETTLEMENT_MODES)),
-  // driverInvoiceBasis: 옛 기사 매입 계산서 기준(2026-10-02 삭제) — 옛 저장분 읽기용.
+  // driverInvoiceBasis: 옛 기사 매입 계산서 기준(없앰) — 옛 저장분 읽기용.
   driverInvoiceBasis: opt(v.picklist(DRIVER_INVOICE_BASES)),
   unitPrice: opt(stringOrNumber),
   bizName: opt(str), bizNumber: opt(str), bizRepresentative: opt(str), userName: opt(str),

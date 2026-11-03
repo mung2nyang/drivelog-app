@@ -10,7 +10,7 @@ import {
 import { driverShareBaseAmount, getMonthlyDriverClientCommission } from './driverShareBase.ts'
 import type { CarLike, DriverLinkLike, FinanceSettings, WorkDataByLogId } from './financeTypes.ts'
 
-// 기사 급여는 연동 중(linked) 계약 기간 안 운행만 센다(보리 결정 2026-10-13, 로드맵 41). 기간과 계약 밖 운송료를 줄 이름에 보여 준다.
+// 기사 급여는 연동 중(linked) 계약 기간 안 운행만 센다. 기간과 계약 밖 운송료를 줄 이름에 보여 준다.
 function activeLinkForCar(links: Array<DriverLinkLike>, car: CarLike): DriverLinkLike | null {
   return links.find((item) => item.status === 'linked' && (item.id === car.driverLinkId || item.vehicleNumber === car.number)) || null
 }

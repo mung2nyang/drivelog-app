@@ -126,7 +126,7 @@ export function monthSettlementSummary(workData: Record<string, DayRecordLike>, 
   const maint = monthTotal(vehicleExpenses, 'maint', year, month)
   const fuel = monthTotal(vehicleExpenses, 'fuel', year, month)
   const misc = monthTotal(vehicleExpenses, 'misc', year, month)
-  // 콜 상세 산재보험료도 합계에서 뺀다(로드맵 40, 달력·홈·운송비 내역서 같음).
+  // 콜 상세 산재보험료도 합계에서 뺀다(달력·홈·운송비 내역서 같음).
   const total = fare + palletFare - commissionTotal - subCarComm - insuranceTotal + vat
 
   return {

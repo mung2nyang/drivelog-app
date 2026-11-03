@@ -31,7 +31,7 @@ function applyServerRow(items: Array<DriverRecord>, idx: number, row: DriverLink
 }
 
 /**
- * 초대 이름·전화번호를 그 차량 기사 정보에도 — 불러올 때 차량 값이 먼저라 안 바꾸면 다시 켤 때 되돌아간다(원본과 같음).
+ * 초대 이름·전화번호를 그 차량 기사 정보에도 — 불러올 때 차량 값이 먼저라 안 바꾸면 다시 켤 때 되돌아간다.
  * 이미 같으면 저장하지 않는다. 서버 성공 뒤에만 화면에 반영한다.
  * @returns 차량 저장이 필요 없거나 성공하면 true
  */

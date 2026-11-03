@@ -44,7 +44,7 @@ export { PERSONAL_INFO_KEYS, BUSINESS_INFO_KEYS }
 const CAR = v.strictObject({
   number: str,
   id: opt(str), supabaseId: opt(stringOrNumber), tonnage: opt(str), type: opt(v.picklist(['main', 'sub'])),
-  // settlementMode: 옛 "계산서 처리 방식"(2026-10-02 삭제) — 옛 저장분 읽기용.
+  // settlementMode: 옛 "계산서 처리 방식"(없앰) — 옛 저장분 읽기용.
   settlementMode: opt(v.picklist(CAR_SETTLEMENT_MODES)),
   commEnabled: opt(bool), commType: opt(v.picklist(COMM_TYPES)), commission: opt(stringOrNumber),
   insuranceOn: opt(bool), withholdingOn: opt(bool), logEnabled: opt(bool), driverLinkEnabled: opt(bool), shareRevenueWithOwner: opt(bool), archived: opt(bool),

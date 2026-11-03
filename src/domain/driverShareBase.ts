@@ -1,4 +1,4 @@
-// 매출제 기사 몫의 기준 금액 — 차량마다 "운송료 전체"(기본) 또는 "거래처 수수료 뗀 뒤"(로드맵 61, 보리 결정 2026-10-18).
+// 매출제 기사 몫의 기준 금액 — 차량마다 "운송료 전체"(기본) 또는 "거래처 수수료 뗀 뒤".
 // 달력·매출 기사 급여·기사 관리 정산·연동 기사 본인 매출이 모두 이 함수로 기준 금액을 받는다.
 import { getFixedRouteClient, resolveFixedUnitPrice } from './clients.ts'
 import { getCallDetails, getFixedCount } from './day-record.ts'

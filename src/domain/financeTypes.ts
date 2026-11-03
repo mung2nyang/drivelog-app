@@ -20,7 +20,7 @@ export type CarLike = {
   withholdingOn?: boolean // 3.3% 사업소득세 원천징수 여부
   expenseRate?: string | number // 산재 월보수액 계산용 필요경비율(%)
   insuranceRate?: string | number // 산재보험료율(%), 0이면 산재 적용 제외
-  driverShareBase?: 'gross' | 'afterClientCommission' // 매출제 기사 몫 기준 — 운송료 전체(기본)/거래처 수수료 뗀 뒤(로드맵 61)
+  driverShareBase?: 'gross' | 'afterClientCommission' // 매출제 기사 몫 기준 — 운송료 전체(기본)/거래처 수수료 뗀 뒤
   logEnabled?: boolean
   driverLinkEnabled?: boolean
   shareRevenueWithOwner?: boolean
@@ -107,5 +107,5 @@ export type SubCarPracticeSettings = {
   platformOn: boolean
   distanceOn: boolean
   cargoTonnageOn: boolean
-  dailyInspectionOn?: boolean // 일상점검표 사용(9-B-1)
+  dailyInspectionOn?: boolean // 일상점검표 사용
 }

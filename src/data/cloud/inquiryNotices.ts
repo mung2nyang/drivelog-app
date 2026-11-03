@@ -1,4 +1,4 @@
-// 알림용 문의 읽기 — 내 문의 중 답변 온 것, 관리자면 답변 대기 건수(로드맵 23-C). 저장 없음.
+// 알림용 문의 읽기 — 내 문의 중 답변 온 것, 관리자면 답변 대기 건수. 저장 없음.
 import type { JsonValue } from '../../domain/jsonTypes.ts'
 import { supabase } from './supabaseClient.ts'
 

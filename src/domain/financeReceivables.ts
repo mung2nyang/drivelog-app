@@ -51,7 +51,7 @@ export function getReceivableItems(settings: FinanceSettings = {}, workDataByLog
         const detailId = resolveCallDetailId(detail)
         if (!detailId) return
         const paymentSummary = getDetailPaymentSummary(detail)
-        // 받을 돈이 남은 운행만 미수다 — 0원 운행·다 받은 운행은 뺀다(로드맵 42, 매출 미입금과 같은 기준).
+        // 받을 돈이 남은 운행만 미수다 — 0원 운행·다 받은 운행은 뺀다(매출 미입금과 같은 기준).
         if (paymentSummary.status === 'paid' || paymentSummary.remainingAmount <= 0) {
           return
         }

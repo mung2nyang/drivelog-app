@@ -22,7 +22,7 @@ export type SyncContext = {
   next: Array<ExpenseItem>
   workData: Record<string, JsonValue | undefined>
   idByDate: Map<string, string>
-  legacyVehicleId: string | number | null // 옛 항목이 잘못 쌓여 있을 수 있는 칸(차주 메인 차량, 5-B-2)
+  legacyVehicleId: string | number | null // 옛 항목이 잘못 쌓여 있을 수 있는 칸(차주 메인 차량)
   restoreMissing: boolean // 차주만 쓰는 칸(메인·미연동)이면 true
   deletes: Array<ExpenseRowRef>
 }

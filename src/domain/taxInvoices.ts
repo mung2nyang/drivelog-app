@@ -17,7 +17,7 @@ export type TaxInvoiceItemInput = {
   status?: string
 }
 
-/** tax_invoices 테이블 insert/update 행 (원본 finance-sync 10컬럼) */
+/** tax_invoices 테이블 insert/update 행 */
 export type TaxInvoiceRow = {
   user_id: string
   vehicle_id: string | number | null

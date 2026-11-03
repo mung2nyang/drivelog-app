@@ -26,7 +26,7 @@ export async function requestVehicleDeletion({ ownerKey, userId, cars, vehicleId
   if (ownerBlocked) return { cars, blocked: ownerBlocked, toast: ownerBlocked, failed: true, closeModal: false }
   const car = cars.find((item) => item.id === vehicleId)
   if (!car) return { cars, blocked: null, toast: null, failed: true, closeModal: false }
-  // 연동 중인 차량을 지우면 서버에서 연동 기록이 같이 지워지므로 먼저 막는다(로드맵 37).
+  // 연동 중인 차량을 지우면 서버에서 연동 기록이 같이 지워지므로 먼저 막는다.
   const drivers = getState().drivers[ownerKey] || []
   if (drivers.some((driver) => driver.status === 'linked' && driver.vehicleNumber === car.number)) {
     return { cars, blocked: LINKED_VEHICLE_TOAST, toast: LINKED_VEHICLE_TOAST, failed: true, closeModal: false }

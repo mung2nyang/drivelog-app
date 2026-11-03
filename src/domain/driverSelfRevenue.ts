@@ -38,7 +38,7 @@ export function getDriverSelfMonthlyDetail(monthKey: string, settings: FinanceSe
   let settlementTotal = 0
   let label = '기사 정산'
   let items: Array<{ date: string, label: string, amount: number }> = []
-  // 기사 화면에 공제 줄을 보이려고 넘긴다(로드맵 45) — 줄을 보일지는 차주 기사 관리(SettlementSummaryCard)와 같은 규칙.
+  // 기사 화면에 공제 줄을 보이려고 넘긴다 — 줄을 보일지는 차주 기사 관리(SettlementSummaryCard)와 같은 규칙.
   let breakdown = { amount: 0, insurance: 0, withholding: 0, showInsurance: false, showWithholding: false }
 
   if (assigned) {

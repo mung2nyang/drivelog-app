@@ -1,4 +1,4 @@
-// 달력 "월간 운송료 정산" 카드와 새 홈 "이번 달 정산 합계"가 같은 입력으로 같은 합계를 내도록 모은 훅(CalendarPage에서 옮김).
+// 달력 "월간 운송료 정산" 카드와 새 홈 "이번 달 정산 합계"가 같은 입력으로 같은 합계를 내도록 모은 훅.
 import { useMemo } from 'react'
 import { resolveLogSettings } from '../../domain/carSettingsScope.ts'
 import { getFixedRouteClient, resolveFixedUnitPrice } from '../../domain/clients.ts'

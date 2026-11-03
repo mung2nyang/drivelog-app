@@ -20,7 +20,7 @@ function text(value: JsonValue | undefined) {
   return typeof value === 'string' ? value.trim() : ''
 }
 
-/** 차량 → 입력폼 초기값. businessInfo가 없거나 sameAsOwner면 "내 사업자 정보와 동일"(원본 getCarBusinessInfo와 같음). */
+/** 차량 → 입력폼 초기값. businessInfo가 없거나 sameAsOwner면 "내 사업자 정보와 동일". */
 export function carToBusinessForm(car: CarLike | null | undefined): CarBusinessForm {
   const biz = car?.businessInfo
   const person = car?.personalInfo

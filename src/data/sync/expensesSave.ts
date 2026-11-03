@@ -52,7 +52,7 @@ export async function saveExpenses(ownerKey: string, items: Array<ExpenseItem>) 
     // 내가 알던 항목 = 저장 전 이 칸 항목 + 이번에 다른 칸으로 간 항목(이 칸에 남은 옛 줄을 지운다).
     const previous = [...(previousByLog.get(target.logId) || []), ...next.filter((item) => !ownIds.has(item.id))]
     const linked = target.mode === 'items'
-    // 연동 서브(5-B-2)는 메인 칸의 옛 항목을 옮겨 넣고, 차주만 쓰는 칸은 서버에서 빠진 항목을 다시 넣는다.
+    // 연동 서브는 메인 칸의 옛 항목을 옮겨 넣고, 차주만 쓰는 칸은 서버에서 빠진 항목을 다시 넣는다.
     deletes.push(...await upsertExpenseItemsForVehicle((userId) as string, target.vehicleId, previous, target.expenses, logs[target.logId] || {}, linked ? mainVehicleId : null, !linked))
   }
   await deleteExpenseRows(deletes)

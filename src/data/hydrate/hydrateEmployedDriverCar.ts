@@ -1,4 +1,3 @@
-// hydrateEmployedDriver.ts에서 분리.
 // 서버 RPC 행 → 화면용 차량 정보로 바꾸는 순수 변환만 담는다(네트워크 호출 없음).
 import { driverIncomeFieldsFromDraft } from '../../domain/driverIncomeDeductions.ts'
 import type { LocalCar } from './hydrateMergeTypes.ts'
@@ -23,7 +22,7 @@ export function carFromAssignedSummary(row: { id: string, number?: string, type?
       expenseRate: row.expense_rate ?? undefined,
       insuranceRate: row.insurance_rate ?? undefined,
     }),
-    // 매출제 기사 몫 기준(로드맵 61) — 서버 함수 0024부터 옴. 없거나 모르는 값이면 기본(운송료 전체).
+    // 매출제 기사 몫 기준 — 서버 함수 0024부터 옴. 없거나 모르는 값이면 기본(운송료 전체).
     driverShareBase: row.driver_share_base === 'afterClientCommission' ? 'afterClientCommission' : 'gross',
     infoType: 'existing',
     driverName: '',

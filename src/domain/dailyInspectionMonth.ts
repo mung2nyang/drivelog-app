@@ -36,7 +36,7 @@ export function inspectionMark({ dateKey, todayKey, isOff, items, itemKey }: { d
   return '미'
 }
 
-// 법정 서식 내보내기(9-D, 별지 제14호의5서식): 그 달 1~끝날 전체, 표기는 서식대로 ○/×/미.
+// 법정 서식 내보내기(별지 제14호의5서식): 그 달 1~끝날 전체, 표기는 서식대로 ○/×/미.
 export type MonthInspection = { items: InspectionItems, actionNote: string, inspectorName: string }
 
 /** @param month 0부터 */

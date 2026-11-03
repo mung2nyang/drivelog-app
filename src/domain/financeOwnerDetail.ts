@@ -59,7 +59,7 @@ export function getOwnerMonthlyFinanceDetail(monthKey: string, scope = 'owner', 
           const amount = count * fixedUnitPrice
           fareByClient.set(fixedClientLabel, (fareByClient.get(fixedClientLabel) || 0) + amount)
           vatAmount += vatOf(amount)
-          // 고정노선도 거래처 수수료를 뗀다(달력 monthSettlement와 같은 함수, 로드맵 39).
+          // 고정노선도 거래처 수수료를 뗀다(달력 monthSettlement와 같은 함수).
           const fixedComm = getFixedRouteCommissionAmount(fixedRouteClientForTotals, amount, count)
           if (fixedComm > 0) commissionByClient.set(fixedClientLabel, (commissionByClient.get(fixedClientLabel) || 0) + fixedComm)
         }
@@ -88,7 +88,7 @@ export function getOwnerMonthlyFinanceDetail(monthKey: string, scope = 'owner', 
           const commission = getCallDetailCommissionAmount(detail, fare, settings)
           if (commission > 0) commissionByClient.set(clientLabel, (commissionByClient.get(clientLabel) || 0) + commission)
 
-          // 콜 상세 산재보험료는 수입에서 뺀다(로드맵 40, 달력 callInsuranceTotal과 같은 값).
+          // 콜 상세 산재보험료는 수입에서 뺀다(달력 callInsuranceTotal과 같은 값).
           const insurance = parseCurrencyValue(detail?.insuranceFee)
           if (insurance > 0) insuranceByClient.set(clientLabel, (insuranceByClient.get(clientLabel) || 0) + insurance)
 

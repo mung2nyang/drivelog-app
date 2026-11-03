@@ -23,7 +23,7 @@ const INVOICE = plain(v.strictObject({
   supplyAmount: opt(finiteNumber), taxAmount: opt(finiteNumber), totalAmount: opt(finiteNumber), count: opt(finiteNumber),
   vehicleNumbers: opt(v.array(str)),
   supplierBiz: opt(SUPPLIER_BIZ),
-  // 옛 기사 매입 계산서 칸(2026-10-02 삭제) — 옛 저장분 읽기용으로만 받아 줌.
+  // 옛 기사 매입 계산서 칸(없앰) — 옛 저장분 읽기용으로만 받아 줌.
   grossAmount: opt(finiteNumber), commissionAmount: opt(finiteNumber), insuranceAmount: opt(finiteNumber), netAmount: opt(finiteNumber),
 }))
 

@@ -32,7 +32,7 @@ function toDailyInspection(row: { items?: JsonValue, action_note?: JsonValue, in
   }
 }
 
-/** 저장(차량+날짜 덮어쓰기). 작성자 = 로그인 사용자, 점검자 이름 = 저장 순간 이름(9-A 결정 4). */
+/** 저장(차량+날짜 덮어쓰기). 작성자 = 로그인 사용자, 점검자 이름 = 저장 순간 이름. */
 export async function saveDailyInspection({ vehicleId, workDate, items, actionNote, inspectorName }: { vehicleId: string | number, workDate: string, items: InspectionItems, actionNote: string, inspectorName: string }) {
   const userId = getCloudUserId()
   if (!userId) throw new Error('로그인 후 저장할 수 있습니다.')
@@ -66,7 +66,7 @@ export async function deleteDailyInspection({ vehicleId, workDate }: { vehicleId
 }
 
 /**
- * 서류 발급 한 달 표(9-C-1): 그 차량·그 달 점검표를 날짜별로 한 번에 읽음(9-D: 법정 서식용 점검자·조치 기록 포함).
+ * 서류 발급 한 달 표: 그 차량·그 달 점검표를 날짜별로 한 번에 읽음(법정 서식용 점검자·조치 기록 포함).
  * @param month 0부터
  */
 export async function fetchMonthDailyInspections(vehicleId: string | number, year: number, month: number): Promise<Record<string, DailyInspection>> {

@@ -44,6 +44,6 @@ async function saveSettingsNow(ownerKey: string, patch?: SettingsPatch) {
 export function applyTheme(theme?: 'light' | 'dark') {
   if (theme === 'dark') document.documentElement.setAttribute('data-theme', 'dark')
   else document.documentElement.removeAttribute('data-theme')
-  // 10-L: 다음에 앱 파일이 오기 전 로딩 화면 색(index.html)용 — 화면 색만 기억, 못 써도 무시.
+  // 다음에 앱 파일이 오기 전 로딩 화면 색(index.html)용 — 화면 색만 기억, 못 써도 무시.
   try { localStorage.setItem('lastTheme', theme === 'dark' ? 'dark' : 'light') } catch { /* 무시 */ }
 }

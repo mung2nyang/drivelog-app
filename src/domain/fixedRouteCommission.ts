@@ -1,4 +1,4 @@
-// 고정노선 운행의 거래처 수수료 — 달력·매출이 같이 쓰는 정본(보리 확인 2026-10-13: 고정노선에도 등록된 수수료를 뗀다).
+// 고정노선 운행의 거래처 수수료 — 달력·매출이 같이 쓰는 정본 — 고정노선에도 등록된 수수료를 뗀다.
 import { parseCurrencyValue } from './money.ts'
 import type { ClientLike } from './clientTypes.ts'
 

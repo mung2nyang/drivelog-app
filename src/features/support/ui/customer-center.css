@@ -11,7 +11,7 @@
 .faq-item { position: relative; display: grid; grid-template-columns: 1fr auto; align-items: center; width: 100%; padding: 17px 16px; overflow: hidden; border: 1px solid var(--border-color); border-radius: 16px; color: var(--text-color); background: var(--card-bg); text-align: left; font: inherit; cursor: pointer; }
 .faq-item span { font-size: var(--fs-4); font-weight: var(--fw-bold); }
 .faq-item i { color: var(--primary-color); font-size: var(--fs-7); font-style: normal; }
-.support-detail { display: none; grid-column: 1 / -1; margin-top: 14px; padding-top: 13px; border-top: 1px solid var(--border-color); color: var(--sub-text-color); font-size: var(--fs-3); font-weight: var(--fw-medium); line-height: 1.6; }
+.support-detail { display: none; grid-column: 1 / -1; margin-top: 14px; padding-top: 13px; border-top: 1px solid var(--border-color); color: var(--sub-text-color); font-size: var(--fs-3); font-weight: var(--fw-medium); line-height: 1.6; word-break: keep-all; overflow-wrap: anywhere; }
 .faq-item.open .support-detail { display: block; }
 .support-panel-empty { padding: 32px 16px; border: 1px solid var(--border-color); border-radius: 16px; color: var(--sub-text-color); font-size: var(--fs-3); text-align: center; display: grid; gap: 12px; justify-items: center; }
 .inquiry-form { display: grid; gap: 14px; padding: 20px; border: 1px solid var(--border-color); border-radius: var(--radius-card); background: var(--card-bg); }

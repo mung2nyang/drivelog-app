@@ -28,7 +28,7 @@ test('운비서 하루 이용 횟수 공지가 제목(날짜)로 보이고, 누�
     assert.ok(!items[0].classList.contains('open'))
     await act(async () => { /** @type {HTMLElement} */ (items[0]).click() })
     assert.ok(items[0].classList.contains('open'))
-    assert.equal(items[0].querySelector('.support-detail')?.textContent, '2026년 11월 11일부터 AI 운비서는 계정마다 하루 20번까지 쓸 수 있습니다. 횟수는 매일 밤 12시(한국 시각)에 리셋 됩니다.')
+    assert.equal(items[0].querySelector('.support-detail')?.textContent, '2026년 11월 11일부터 AI 운비서는 계정마다 하루 20번까지 쓸 수 있습니다. 횟수는 매일 밤 12시(한국 시각)\u2060에 리셋 됩니다.')
   } finally {
     await act(async () => { root.unmount() })
     container.remove()

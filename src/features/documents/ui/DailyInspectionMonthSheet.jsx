@@ -1,6 +1,6 @@
 // @ts-check
-// 서류 발급 [일상점검표] 탭(9-C-1, 피그마 "서류 발급" 1번): 달 이동(위 화면이 줌) + 서류 탭 + 8일 구간 탭 + 머리 칸 + 외관·상태·기타 표(O/X/미, 오늘 이후 빈칸).
-// 그 달 점검표는 서버에서 한 번에 읽고(보기만), 휴무는 그 차량 일지에서 읽는다. 표 아래 내보내기(법정 서식, 9-D).
+// 서류 발급 [일상점검표] 탭(피그마 "서류 발급" 1번): 달 이동(위 화면이 줌) + 서류 탭 + 8일 구간 탭 + 머리 칸 + 외관·상태·기타 표(O/X/미, 오늘 이후 빈칸).
+// 그 달 점검표는 서버에서 한 번에 읽고(보기만), 휴무는 그 차량 일지에서 읽는다. 표 아래 내보내기(법정 서식).
 import { useEffect, useMemo, useState } from 'react'
 import { DAILY_INSPECTION_SECTIONS } from '../../../domain/dailyInspectionItems.ts'
 import { RANGE_LABELS, dateKeyOf, initialRangeIndex, inspectionMark, rangeDays } from '../../../domain/dailyInspectionMonth.ts'

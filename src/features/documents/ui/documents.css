@@ -1,4 +1,4 @@
-/* 서류 발급(9-C-1·9-C-2, 피그마 "서류 발급"): 서류 종류 탭·운송비 내역서 [전체][세부내역] 탭·날짜 구간 탭·머리 칸·일상점검표 표. 새 클래스만. */
+/* 서류 발급(피그마 "서류 발급"): 서류 종류 탭·운송비 내역서 [전체][세부내역] 탭·날짜 구간 탭·머리 칸·일상점검표 표. 새 클래스만. */
 /* 탭 줄은 앱 공용 두 칸 선택(.segment-control)·차량 선택칩과 같은 모양: 회색 바탕 + 안쪽 둥근 칸, 테두리 없음. */
 .doc-tabs,
 .doc-scope-tabs,
@@ -122,7 +122,7 @@
   cursor: pointer;
 }
 
-/* 9-C-2: 위 카드 안 탭 줄(달 이동 아래) 마지막 줄 간격, 운송비 내역서 아래 버튼 카드. */
+/* 위 카드 안 탭 줄(달 이동 아래) 마지막 줄 간격, 운송비 내역서 아래 버튼 카드. */
 .report-top-card .doc-scope-tabs:last-child,
 .report-top-card .doc-range-tabs:last-child {
   margin-bottom: 0;
@@ -156,7 +156,7 @@
   margin: 0;
 }
 
-/* 9-D: 일상점검표 내보내기 안내 문구(법정 서식 표는 legal-form.css). */
+/* 일상점검표 내보내기 안내 문구(법정 서식 표는 legal-form.css). */
 .doc-export-notice {
   margin: 8px 4px 0;
   color: var(--sub-text-color);

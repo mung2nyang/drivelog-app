@@ -1,4 +1,4 @@
-/* 콜 목록 컨테이너·일일 합계 — main-calendar.css에서 옮김. CallDetailList.jsx가 직접 import. */
+/* 콜 목록 컨테이너·일일 합계 — CallDetailList.jsx가 직접 import. */
 
 .work-log-page .call-detail-daily-summary {
   margin-top: 9px;

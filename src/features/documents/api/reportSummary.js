@@ -25,7 +25,7 @@ import {
 /** @typedef {ReturnType<typeof readOwnerProfile>} ProfileLike */
 
 /**
- * 리포트 요약 중간 일자별 표 행(원본 buildReportPage workList 규칙).
+ * 리포트 요약 중간 일자별 표 행.
  * @param {Record<string, DayRecordLike>|null|undefined} workData
  * @param {number} year
  * @param {number} monthIndex

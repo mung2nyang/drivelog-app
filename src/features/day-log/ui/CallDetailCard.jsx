@@ -25,7 +25,7 @@ export default function CallDetailCard({ item, payment, settings, client, onEdit
   const showToast = useToast()
   const fare = parseCurrencyValue(item.fare)
   const unpaid = payment.status !== 'paid'
-  // 받을 돈이 없는 0원 운행은 미수가 아니라 결제 단추를 안 보인다(로드맵 62, 미수 목록과 같은 기준).
+  // 받을 돈이 없는 0원 운행은 미수가 아니라 결제 단추를 안 보인다(미수 목록과 같은 기준).
   const nothingToCollect = unpaid && payment.remainingAmount <= 0
   const distance = parseFloat(item.distanceKm || '') || 0
   const specs = [

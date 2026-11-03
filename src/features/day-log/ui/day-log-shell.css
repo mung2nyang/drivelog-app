@@ -1,4 +1,4 @@
-/* 일지 셸(페이지·섹션·휴무 오버라이드·콜/지출 추가 버튼) — main-calendar.css에서 옮김.
+/* 일지 셸(페이지·섹션·휴무 오버라이드·콜/지출 추가 버튼).
    DayLogPage.jsx가 fixed-route.css·day-log.css보다 먼저 import. */
 
 .work-log-page {
@@ -181,7 +181,7 @@
   font-weight: var(--fw-bold);
 }
 
-/* 연동 해제 때 복사된 날(7-D)의 배정 차량 표시 — 제목 다음 줄 가운데. 그날은 제목이 두 줄이라 합계 자리만큼 여백을 더 둔다. */
+/* 연동 해제 때 복사된 날의 배정 차량 표시 — 제목 다음 줄 가운데. 그날은 제목이 두 줄이라 합계 자리만큼 여백을 더 둔다. */
 .assigned-vehicle-tag {
   display: block;
   color: var(--sub-text-color);

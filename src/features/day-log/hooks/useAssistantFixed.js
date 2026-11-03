@@ -1,5 +1,5 @@
 // @ts-check
-// 운비서가 넘긴 고정 노선을 그 날짜 일지에 한 번 더한다 — 노선 칩·횟수 칸과 같은 동작(로드맵 24-F-2).
+// 운비서가 넘긴 고정 노선을 그 날짜 일지에 한 번 더한다 — 노선 칩·횟수 칸과 같은 동작.
 import { useEffect, useRef, useState } from 'react'
 import { useToast } from '../../../shared/hooks/useToast.js'
 

@@ -1,5 +1,5 @@
 // @ts-check
-// 입력 칸이 열린 동안 붙잡기 기록을 1장 쌓아, 휴대폰 뒤로가기도 ← 처럼 먼저 묻는다(로드맵 63-B).
+// 입력 칸이 열린 동안 붙잡기 기록을 1장 쌓아, 휴대폰 뒤로가기도 ← 처럼 먼저 묻는다.
 import { useEffect, useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { panelGuardOnTop, popPanelGuardThen, takeGuardSkip } from '../../../shared/utils/historyMoves.js'
@@ -34,7 +34,7 @@ export default function usePanelBackGuard(open, confirmLeave, leave) {
     if (!pushedRef.current || panelGuardOnTop()) return
     pushedRef.current = false
     if (takeGuardSkip()) return
-    // 묻는 동안에도 붙잡기 기록을 먼저 다시 쌓아, 창이 뜬 채 뒤로가기는 창만 닫는다(로드맵 63-C).
+    // 묻는 동안에도 붙잡기 기록을 먼저 다시 쌓아, 창이 뜬 채 뒤로가기는 창만 닫는다.
     pushGuard()
     if (confirmDialogOpen()) { cancelConfirmDialog(); return }
     void latest.current.confirmLeave().then((ok) => {

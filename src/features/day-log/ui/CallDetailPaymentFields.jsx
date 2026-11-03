@@ -1,5 +1,5 @@
 // @ts-check
-// 콜상세 입력의 돈 관련 칸(계산서·입금 예정일, 부가세 없음, 산재보험료) — CallDetailForm에서 분리.
+// 콜상세 입력의 돈 관련 칸(계산서·입금 예정일, 부가세 없음, 산재보험료).
 import CurrencyInput from '../../../shared/ui/CurrencyInput.jsx'
 import TemporalInput from '../../../shared/ui/TemporalInput.jsx'
 import './call-detail-payment.css'

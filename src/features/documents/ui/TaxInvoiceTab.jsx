@@ -1,5 +1,5 @@
 // @ts-check
-// 서류 발급 [세금계산서] 탭(세금계산서 정리 ②, 옛 TaxInvoicePage 몸통): 거래처 매출 계산서를 그 차량(logKey) 것만 + 엑셀 저장.
+// 서류 발급 [세금계산서] 탭: 거래처 매출 계산서를 그 차량(logKey) 것만 + 엑셀 저장.
 // 달은 서류 발급이 주고, 위 카드 = 달 이동 → 서류 탭 줄 → [작성 전][발급 완료].
 import { useMemo, useState } from 'react'
 import { getTaxInvoiceFlowMeta } from '../../../domain/finance.ts'

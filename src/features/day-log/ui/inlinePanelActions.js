@@ -36,7 +36,7 @@ export function bindInlinePanelActions(dispatch, expenseForm, callPanel) {
       dispatch({ type: 'closeCallForm' })
       expenseForm.openKindPick()
     },
-    // 입력 칸이 열린 채 나가면 [저장] 전 입력이 사라지므로 먼저 확인한다(로드맵 36, 앱 확인 창).
+    // 입력 칸이 열린 채 나가면 [저장] 전 입력이 사라지므로 먼저 확인한다(앱 확인 창).
     /** @returns {Promise<boolean>} true면 나가도 된다. */
     async confirmLeaveOpenPanel() {
       if (!callPanel.callFormOpen && !expenseForm.modalOpen) return true

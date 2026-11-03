@@ -10,7 +10,7 @@ export function dash(value) {
 }
 
 /**
- * 월간 운송비 내역서 PDF 파일명(원본 downloadPDF 요약 분기와 동일, 월은 0-based monthIndex).
+ * 월간 운송비 내역서 PDF 파일명(월은 0-based monthIndex).
  * @param {number} year
  * @param {number} monthIndex 0=1월 … 11=12월
  */

@@ -1,4 +1,4 @@
-/* 원본 style.css:3280-3281 포팅 — 콜상세 거래처 "+ 추가" 버튼. */
+/* 콜상세 거래처 "+ 추가" 버튼. */
 .call-client-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;

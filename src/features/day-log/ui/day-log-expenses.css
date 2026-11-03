@@ -1,4 +1,4 @@
-/* 일지 정비/주유/기타 카드·선택창 — main-calendar.css에서 옮김. DayLogExpenses.jsx가 직접 import. */
+/* 일지 정비/주유/기타 카드·선택창 — DayLogExpenses.jsx가 직접 import. */
 
 .work-log-page .maint-fuel-item {
   padding: 11px 10px 9px;
@@ -84,7 +84,7 @@
   font-weight: var(--fw-heavy);
 }
 
-/* 일지 비용 위젯 기본 규칙 — side-menu.css에서 이동(day-log 전용). */
+/* 일지 비용 위젯 기본 규칙(day-log 전용). */
 .compact-add-btn {
   min-height: 36px;
   padding: 4px 10px;

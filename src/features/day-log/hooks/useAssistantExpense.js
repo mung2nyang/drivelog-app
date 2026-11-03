@@ -1,5 +1,5 @@
 // @ts-check
-// 운비서가 넘긴 지출로 그 종류 지출 창을 채워 한 번 연다(로드맵 24-C-2). 저장은 지금 지출 창 그대로.
+// 운비서가 넘긴 지출로 그 종류 지출 창을 채워 한 번 연다. 저장은 지금 지출 창 그대로.
 import { useEffect, useRef, useState } from 'react'
 
 /** @typedef {{ type: 'maint'|'fuel'|'misc', cost: number|null, name: string, category: string, fuelType: string, payment: string, cancelOff: boolean }} AssistantExpense */

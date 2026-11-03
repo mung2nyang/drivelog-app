@@ -83,7 +83,7 @@ export function durationSuffix(detail) {
 }
 
 /**
- * 운송료가 1,000만원을 넘으면 저장 전에 한 번 묻는다(로드맵 43-C, 앱 확인 창). 넘지 않으면 바로 true.
+ * 운송료가 1,000만원을 넘으면 저장 전에 한 번 묻는다(앱 확인 창). 넘지 않으면 바로 true.
  * @param {string|number|undefined} fare 쉼표 금액 글자
  * @returns {Promise<boolean>} true면 저장해도 된다.
  */

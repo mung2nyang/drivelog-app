@@ -33,7 +33,7 @@ export function buildTaxInvoiceWorkbook(ExcelJS, item, settings, profile, monthK
     bizItem: item.clientBizItem || '',
     email: item.clientEmail || '',
   }
-  // 매출 계산서만(2026-10-02): 공급자 = 차주(또는 그 차량 사업자), 공급받는 자 = 거래처.
+  // 매출 계산서만: 공급자 = 차주(또는 그 차량 사업자), 공급받는 자 = 거래처.
   const supplier = companyParty
   const buyer = otherParty
   const issueDate = item.issueDate || `${monthKey}-01`

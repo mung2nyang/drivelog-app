@@ -1,5 +1,5 @@
 // @ts-check
-// 일상점검표 보내기(9-D): 운송비 내역서와 같은 공용 창 — 문자 받는 사람은 문자 앱에서 직접 고름.
+// 일상점검표 보내기: 운송비 내역서와 같은 공용 창 — 문자 받는 사람은 문자 앱에서 직접 고름.
 import ShareFileModal from './ShareFileModal.jsx'
 
 /**

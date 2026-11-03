@@ -1,6 +1,6 @@
-/* LinkedDriverManagementPage — 바닐라 linked-driver 프로필·칩·계산서 카드.
+/* LinkedDriverManagementPage — 프로필·칩·계산서 카드.
    DriverConnectionPage/BillingSettingsPage 몫은 driver-connection.css/
-   billing-settings.css로 분리(§15 슬라이스 A). */
+   billing-settings.css에 있다. */
 .linked-driver-profile-card {
   display: flex;
   align-items: center;
@@ -122,7 +122,7 @@
   flex-wrap: wrap;
   gap: 6px;
 }
-/* 보리 검증 지적(2026-09-17) — "N건 · 차량번호"를 거래처명과 굵기 통일 */
+/* "N건 · 차량번호"를 거래처명과 굵기 통일 */
 .linked-driver-client-head-row span {
   font-weight: var(--fw-bold);
 }
@@ -155,7 +155,7 @@
   color: var(--sub-text-color);
 }
 
-/* 원본 style.css 2153·6954행 — 이관 시 누락된 배경카드 복원(§15 슬라이스 A) */
+/* 기사 목록 배경 카드 */
 .driver-list-section {
   margin-top: 12px;
   padding: 18px;

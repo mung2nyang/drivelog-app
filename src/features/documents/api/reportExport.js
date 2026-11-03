@@ -2,7 +2,7 @@
 
 /**
  * @param {HTMLElement} element
- * @param {'portrait'|'landscape'} [orientation] 넘기면 그 방향 A4 너비로 그림(9-D 법정 서식 = 가로)
+ * @param {'portrait'|'landscape'} [orientation] 넘기면 그 방향 A4 너비로 그림(법정 서식 = 가로)
  * @returns {Promise<HTMLCanvasElement>}
  */
 async function renderReportCanvas(element, orientation) {
@@ -49,7 +49,7 @@ export async function createReportImageFile(element, baseName, { orientation } =
 /**
  * @param {HTMLElement} element
  * @param {string} baseName
- * @param {{ orientation?: 'portrait'|'landscape' }} [options] 안 넘기면 세로(일상점검표 법정 서식은 가로, 9-D)
+ * @param {{ orientation?: 'portrait'|'landscape' }} [options] 안 넘기면 세로(일상점검표 법정 서식은 가로)
  * @returns {Promise<File>}
  */
 export async function createReportPdfFile(element, baseName, { orientation = 'portrait' } = {}) {

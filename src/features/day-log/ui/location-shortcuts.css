@@ -1,4 +1,4 @@
-/* 원본 style.css:3259-3264 포팅 — 칩 전용. call-detail-form.css(§6 초과)에 넣지 않음. */
+/* 상차지/하차지 즐겨찾기 칩 전용. call-detail-form.css(§6 초과)에 넣지 않음. */
 .location-shortcuts {
   grid-column: 1 / -1;
   display: flex;

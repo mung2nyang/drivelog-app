@@ -1,4 +1,4 @@
-/* 문자 양식 선택창 전용 — main-calendar.css에서 옮김. MessageTemplateSheet.jsx가 직접 import. */
+/* 문자 양식 선택창 전용 — MessageTemplateSheet.jsx가 직접 import. */
 
 .message-template-overlay {
   position: fixed;

@@ -1,4 +1,4 @@
-/* 일지 고정노선·파렛트·빠른노선 칩 — main-calendar.css에서 옮김. DayLogPage.jsx가 day-log.css 직전에 import. */
+/* 일지 고정노선·파렛트·빠른노선 칩 — DayLogPage.jsx가 day-log.css 직전에 import. */
 
 /* 한 줄 입력(라벨·입력칸, 단위는 칸 안) */
 .fixed-route-input-row {

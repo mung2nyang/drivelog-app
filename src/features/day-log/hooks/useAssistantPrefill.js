@@ -1,5 +1,5 @@
 // @ts-check
-// 운비서가 넘긴 운행으로 일지의 새 입력 창을 채워 연다(로드맵 24-B-2·3-A·3-B). 저장은 지금 입력 창 그대로.
+// 운비서가 넘긴 운행으로 일지의 새 입력 창을 채워 연다. 저장은 지금 입력 창 그대로.
 import { useEffect, useRef, useState } from 'react'
 
 /** @typedef {{ loadLoc: string, unloadLoc: string, fare: number|null, client: string, cancelOff: boolean }} AssistantCall */

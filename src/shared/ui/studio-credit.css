@@ -1,0 +1,10 @@
+/* 만든 곳 표시 "© Studio Bori" — StudioCredit.jsx가 import. 연한 회색 작은 Jua 글씨. */
+.studio-credit {
+  margin: 28px 0 0;
+  color: var(--sub-text-color);
+  opacity: 0.6;
+  font-family: 'Jua', sans-serif;
+  font-size: var(--fs-2);
+  font-weight: var(--fw-regular);
+  text-align: center;
+}

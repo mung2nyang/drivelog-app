@@ -9,7 +9,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  margin: -24px 0 52px;
+  margin: -24px 0 36px;
 }
 
 .auth-logo-img { height: 60px; width: auto; object-fit: contain; }
@@ -95,4 +95,4 @@
   word-break: keep-all;
 }
 
-.auth-intro-term { color: var(--accent-soft-color); font-weight: var(--fw-semibold); }
+.auth-intro-term { color: var(--accent-soft-color); font-weight: var(--fw-semibold); text-decoration: none; }

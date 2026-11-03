@@ -3,6 +3,8 @@ import { assetPath } from '../../../shared/utils/assetPath.js'
 import './auth-intro.css'
 
 const BANNER = assetPath('/images/banner_image.png')
+const TERMS_URL = assetPath('/terms.html')
+const PRIVACY_URL = assetPath('/privacy.html')
 
 /** 구글 공식 4색 G 로고(변형 금지 — 구글 로그인 버튼 규칙). */
 function GoogleLogo() {
@@ -17,7 +19,7 @@ function GoogleLogo() {
 }
 
 /**
- * 첫 화면: 소개 문구, 구글 로그인(처음이면 /welcome 기본 정보 → 첫 설정)과 비회원 시작, 약관 안내(링크 없음).
+ * 첫 화면: 소개 문구, 구글 로그인(처음이면 /welcome 기본 정보 → 첫 설정)과 비회원 시작, 약관 안내(문서 이름은 새 탭 링크).
  * @param {Object} props
  * @param {() => void} [props.onGuest]
  * @param {() => void} [props.onGoogle]
@@ -32,9 +34,9 @@ export default function AuthIntroView({ onGuest, onGoogle, busy = false }) {
             <img src={BANNER} alt="" className="auth-logo-img" />
             <span className="auth-logo-text">운행일지</span>
           </div>
-          <p className="auth-intro-eyebrow">간편한 화물 차량 운행 관리</p>
+          <p className="auth-intro-eyebrow">운행부터 정산까지 한 곳에서</p>
           <div className="auth-heading-box">
-            <h1>운행 기록을<br />간편하게 관리하세요</h1>
+            <h1>손에 딱 맞춘<br />간편한 운행 장부</h1>
             <p className="auth-desc-text">매일의 운행 내역을 쉽고 빠르게 기록해 보세요.</p>
           </div>
         </div>
@@ -52,9 +54,8 @@ export default function AuthIntroView({ onGuest, onGoogle, busy = false }) {
           </button>
           <button type="button" className="auth-guest-btn" onClick={onGuest}>비회원으로 시작하기</button>
           <p className="auth-intro-terms">
-            최초 로그인 시 <span className="auth-intro-term">서비스 이용약관</span> 및{' '}
-            <span className="auth-intro-term">개인정보 처리방침</span>,{' '}
-            <span className="auth-intro-term">위치기반서비스 이용약관</span>에 동의하는 것으로 간주합니다.
+            최초 로그인 시 <a className="auth-intro-term" href={TERMS_URL} target="_blank" rel="noopener noreferrer">서비스 이용약관</a> 및{' '}
+            <a className="auth-intro-term" href={PRIVACY_URL} target="_blank" rel="noopener noreferrer">개인정보 처리방침</a>에 동의하는 것으로 간주합니다.
           </p>
         </div>
       </div>

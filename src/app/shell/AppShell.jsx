@@ -13,6 +13,7 @@ import PageLoadErrorBoundary from './PageLoadErrorBoundary.jsx'
 import HydrationRetryBanner from './HydrationRetryBanner.jsx'
 import OfflineBanner from './OfflineBanner.jsx'
 import { ConfirmDialogHost } from '../../shared/ui/confirmDialog.jsx'
+import StudioCredit from '../../shared/ui/StudioCredit.jsx'
 import AppShellRoutes from '../routes/AppShellRoutes.jsx'
 import useBackToExit from './useBackToExit.js'
 import usePageTransition from './usePageTransition.js'
@@ -174,6 +175,7 @@ export default function AppShell({ onBackToAuth, onGoAuth, onSessionUpdate }) {
         </Suspense>
         </PageLoadErrorBoundary>
       </div>
+      <StudioCredit />
       {location.pathname !== '/app' && <UnbiseoDock />}
       <BottomNav active={activeNav} onSelect={selectTab} />
       <PullRefreshIndicator />

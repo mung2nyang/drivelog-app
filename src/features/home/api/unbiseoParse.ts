@@ -34,6 +34,7 @@ export const LOGIN_NEEDED = '로그인이 필요합니다.'
 export const BAD_INPUT = '입력 내용이 너무 길거나 비어 있어요. 300자 이내로 다시 입력해 주세요.'
 export const NOT_UNDERSTOOD = '내용을 이해하지 못했어요. 다시 말씀해 주세요.'
 export const TRY_LATER = '잠시 뒤 다시 시도해 주세요.'
+export const USED_UP = '오늘 운비서를 모두 썼어요. 내일 다시 써 주세요.'
 
 /** 서버가 돌려준 값 → 화면용. 모양이 틀리면 알아듣지 못함. */
 export function readAnswer(data: JsonValue | undefined, today: string): UnbiseoResult {
@@ -101,6 +102,16 @@ function messageForStatus(status: number): string {
   return TRY_LATER
 }
 
+/** 429 답에 실린 하루 한도로 문구를 만든다 — 숫자를 못 읽으면 숫자 없이. */
+async function usedUpMessage(response: Response): Promise<string> {
+  try {
+    const limit = record(await response.json())?.limit
+    return typeof limit === 'number' && Number.isInteger(limit) && limit > 0 ? `오늘 운비서를 ${limit}번 모두 썼어요. 내일 다시 써 주세요.` : USED_UP
+  } catch {
+    return USED_UP
+  }
+}
+
 export async function requestUnbiseoParse(input: { text: string, today: string, clientNames: Array<string>, routeNames?: Array<string> }): Promise<UnbiseoResult> {
   const said = input.text.trim()
   if (!said || said.length > TEXT_MAX) return { kind: 'error', message: BAD_INPUT }
@@ -109,8 +120,9 @@ export async function requestUnbiseoParse(input: { text: string, today: string, 
       body: { text: said, today: input.today, clientNames: clientNamesForAi(input.clientNames), ...(input.routeNames?.length ? { routeNames: input.routeNames } : {}) },
     })
     if (error) {
-      const status = error instanceof FunctionsHttpError && error.context instanceof Response ? error.context.status : 0
-      return { kind: 'error', message: messageForStatus(status) }
+      const response = error instanceof FunctionsHttpError && error.context instanceof Response ? error.context : null
+      if (response?.status === 429) return { kind: 'error', message: await usedUpMessage(response) }
+      return { kind: 'error', message: messageForStatus(response?.status ?? 0) }
     }
     return readAnswer(data, input.today)
   } catch {

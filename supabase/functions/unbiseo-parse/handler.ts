@@ -11,6 +11,8 @@ const CLIENTS_MAX = 200
 const CLIENT_NAME_MAX = 50
 const NOT_UNDERSTOOD = '알아듣지 못했습니다. 다시 말해 주세요.'
 const TRY_LATER = '잠시 뒤 다시 시도해 주세요.'
+const DAILY_LIMIT = 20
+const USED_UP = `오늘 운비서를 ${DAILY_LIMIT}번 모두 썼어요. 내일 다시 써 주세요.`
 const CORS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -39,14 +41,32 @@ export function readInput(body: Json): ParseInput | null {
   return { text, today: row.today, clientNames, routeNames }
 }
 
+function bearer(req: Request): string {
+  return (req.headers.get('Authorization') || '').replace(/^Bearer\s+/i, '').trim()
+}
+
 /** 요청 머리의 로그인 표로 Supabase에 누구인지 묻는다. 앱 공개 키만으로는 사용자가 없어 null. */
 async function signedInUserId(req: Request): Promise<string | null> {
-  const token = (req.headers.get('Authorization') || '').replace(/^Bearer\s+/i, '').trim()
+  const token = bearer(req)
   const url = Deno.env.get('SUPABASE_URL')
   const key = publishableKey()
   if (!token || !url || !key) return null
   const { data, error } = await createClient(url, key, { auth: { persistSession: false } }).auth.getUser(token)
   return error || !data.user ? null : data.user.id
+}
+
+/** 그 회원의 오늘(한국 날짜) 횟수를 1 센다 — 한도 안이면 true, 넘었으면 false, 셀 수 없으면 null. */
+async function countToday(req: Request): Promise<boolean | null> {
+  const url = Deno.env.get('SUPABASE_URL')
+  const key = publishableKey()
+  if (!url || !key) return null
+  const client = createClient(url, key, { auth: { persistSession: false }, global: { headers: { Authorization: `Bearer ${bearer(req)}` } } })
+  try {
+    const { data, error } = await client.rpc('use_unbiseo', { p_kind: 'parse', p_limit: DAILY_LIMIT })
+    return error || typeof data !== 'boolean' ? null : data
+  } catch {
+    return null
+  }
 }
 
 /** 함수 기본 값의 공개 키 — SUPABASE_ANON_KEY, 없으면 새 이름(SUPABASE_PUBLISHABLE_KEYS의 default). */
@@ -74,6 +94,12 @@ export async function handleRequest(req: Request): Promise<Response> {
   }
   const input = readInput(body)
   if (!input) return reply(400, { error: '요청 모양이 맞지 않습니다.' })
+  const allowed = await countToday(req)
+  if (allowed === null) {
+    console.error('[unbiseo-parse] count_failed')
+    return reply(503, { error: TRY_LATER })
+  }
+  if (!allowed) return reply(429, { error: USED_UP, limit: DAILY_LIMIT })
   try {
     const raw = await askAi(input)
     const answer = raw === null ? null : readAiAnswer(raw, input)

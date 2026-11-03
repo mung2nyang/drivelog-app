@@ -5,6 +5,7 @@ export type Outcome = { response: Response, urls: Array<string>, requests: Array
 
 export const TOKEN = 'fake-user-token'
 export const USER_URL = 'https://fake.supabase.test/auth/v1/user'
+export const LIMIT_URL = 'https://fake.supabase.test/rest/v1/rpc/use_unbiseo'
 export const ENV: { [name: string]: string | null } = {
   SUPABASE_URL: 'https://fake.supabase.test',
   SUPABASE_ANON_KEY: 'fake-anon-key',
@@ -33,7 +34,7 @@ function setEnv(values: { [name: string]: string | null }) {
   }
 }
 
-/** 가짜를 깔고 함수를 한 번 부른 뒤 되돌린다. 답이 없는 주소는 네트워크 실패로 던지고 urls에 남는다. */
+/** 가짜를 깔고 함수를 한 번 부른 뒤 되돌린다. 하루 횟수는 기본 한도 안. 답이 없는 주소는 네트워크 실패로 던지고 urls에 남는다. */
 export async function callWith(handler: Handler, request: Request, answers: { [url: string]: Answer } = {}, env: { [name: string]: string | null } = {}): Promise<Outcome> {
   const values = { ...ENV, ...env }
   const before = Object.fromEntries(Object.keys(values).map((name) => [name, Deno.env.get(name) ?? null]))
@@ -50,7 +51,7 @@ export async function callWith(handler: Handler, request: Request, answers: { [u
     const url = new URL(sent.url)
     urls.push(url.origin + url.pathname)
     requests.push(sent)
-    const answer = { [USER_URL]: signedIn, ...answers }[url.origin + url.pathname]
+    const answer = { [USER_URL]: signedIn, [LIMIT_URL]: () => Response.json(true), ...answers }[url.origin + url.pathname]
     return answer ? Promise.resolve().then(() => answer(sent)) : Promise.reject(new TypeError(`가짜에 없는 주소: ${url.origin}${url.pathname}`))
   }
   console.log = keep

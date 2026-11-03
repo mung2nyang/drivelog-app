@@ -3,9 +3,15 @@ import { useState } from 'react'
 import PageHeader from '../../../shared/ui/PageHeader.jsx'
 import './customer-center.css'
 
-// 실제 공지는 출시 때 추가(임시 글 삭제, 문구 정리 1).
+// 새 공지는 맨 앞에 추가.
 /** @type {Array<{ title: string, date: string, body: string }>} */
-const NOTICES = []
+const NOTICES = [
+  {
+    title: '운비서 하루 이용 횟수 안내',
+    date: '2026.11.04',
+    body: '2026년 11월 11일부터 AI 운비서는 계정마다 하루 20번까지 쓸 수 있습니다. 횟수는 매일 밤 12시(한국 시각)에 리셋 됩니다.',
+  },
+]
 
 /**
  * @param {Object} props

@@ -4,7 +4,7 @@ import { handleRequest as parse } from '../unbiseo-parse/handler.ts'
 import { handleRequest as voice } from '../unbiseo-voice/handler.ts'
 import { handleRequest as weather } from '../unbiseo-weather/handler.ts'
 import { kstDate } from '../unbiseo-weather/kma.ts'
-import { callWith, post, TOKEN, USER_URL } from './fakes.ts'
+import { callWith, LIMIT_URL, post, TOKEN, USER_URL } from './fakes.ts'
 import type { Answer, Handler } from './fakes.ts'
 
 const CHAT_URL = 'https://api.x.ai/v1/chat/completions'
@@ -89,9 +89,9 @@ flow('말 읽기: AI 운행 답이면 200과 운행 칸, AI에 키와 문장을 
   const { response, urls, requests } = await callWith(parse, post(PARSE_BODY), { [CHAT_URL]: chat(CALL) })
   assert.equal(response.status, 200)
   assert.deepEqual(await response.json(), { kind: 'call', call: { date: '2026-11-01', loadLoc: '수원', unloadLoc: '화성', fare: 150000, client: '' } })
-  assert.deepEqual(urls, [USER_URL, CHAT_URL])
-  assert.equal(requests[1].headers.get('Authorization'), 'Bearer fake-xai-key')
-  assert.ok((await requests[1].text()).includes(SAID))
+  assert.deepEqual(urls, [USER_URL, LIMIT_URL, CHAT_URL])
+  assert.equal(requests[2].headers.get('Authorization'), 'Bearer fake-xai-key')
+  assert.ok((await requests[2].text()).includes(SAID))
 })
 
 flow('말 읽기: 잘린 답(length)·JSON 아닌 답은 502', async () => {
@@ -108,14 +108,14 @@ flow('말 읽기: AI 500·연결 실패는 503', async () => {
     const { response, urls } = await callWith(parse, post(PARSE_BODY), { [CHAT_URL]: answer })
     assert.equal(response.status, 503)
     assert.deepEqual(await response.json(), TRY_LATER)
-    assert.deepEqual(urls, [USER_URL, CHAT_URL])
+    assert.deepEqual(urls, [USER_URL, LIMIT_URL, CHAT_URL])
   }
 })
 
 flow('말 읽기: AI 키가 없으면 503, AI를 안 부름', async () => {
   const { response, urls } = await callWith(parse, post(PARSE_BODY), { [CHAT_URL]: chat(CALL) }, { XAI_API_KEY: null })
   assert.equal(response.status, 503)
-  assert.deepEqual(urls, [USER_URL])
+  assert.deepEqual(urls, [USER_URL, LIMIT_URL])
 })
 
 flow('목소리: 소리를 받으면 200 octet-stream, 같은 바이트', async () => {

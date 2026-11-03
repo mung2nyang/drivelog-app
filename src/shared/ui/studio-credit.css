@@ -8,3 +8,8 @@
   font-weight: var(--fw-regular);
   text-align: center;
 }
+
+/* 홈 화면에서만 위 카드와 더 띄운다. */
+.page-transition:has(.home-page) + .studio-credit {
+  margin-top: 100px;
+}

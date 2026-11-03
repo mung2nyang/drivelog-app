@@ -16,6 +16,9 @@ body:not(.account-flow-active) {
   text-align: center;
 }
 
+/* 모든 화면 공용 아래 여백 — 화면마다 따로 두지 않는다. */
+.page { padding-bottom: 92px; }
+
 /* 운비서 버튼(unbiseo-dock.css, 60px)이 떠 있는 동안만 그만큼 더 — 화면 끝 내용이 버튼에 가리지 않게. */
 .container.main-app-container:has(.unbiseo-dock) { padding-bottom: calc(108px + 60px); }
 

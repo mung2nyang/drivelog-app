@@ -1,6 +1,5 @@
 /* 알림 화면(NotificationsPage 전용) — 스위치 카드 + 알림 목록. 색은 공용 변수만. */
 .notifications-page {
-  padding-bottom: 110px;
   text-align: left;
 }
 

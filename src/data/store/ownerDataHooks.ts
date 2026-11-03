@@ -90,6 +90,11 @@ export {
 } from './ownerDriverExpensesHooks.ts'
 
 export {
+  readOwnerDriverHistory,
+  useOwnerDriverHistory,
+} from './ownerDriverHistoryHooks.ts'
+
+export {
   readOwnerWorkData,
   readOwnerLogWorkData,
   useOwnerWorkData,

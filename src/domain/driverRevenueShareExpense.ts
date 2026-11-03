@@ -10,7 +10,7 @@ import {
 import { driverShareBaseAmount, getMonthlyDriverClientCommission } from './driverShareBase.ts'
 import type { CarLike, DriverLinkLike, FinanceSettings, WorkDataByLogId } from './financeTypes.ts'
 
-// 기사 급여는 연동 중(linked) 계약 기간 안 운행만 센다. 기간과 계약 밖 운송료를 줄 이름에 보여 준다.
+// 기사 급여는 계약 기간 안만 센다. 해제된 예전 계약은 "이전 기사" 줄로, 겹친 날은 뒤 계약 몫.
 function activeLinkForCar(links: Array<DriverLinkLike>, car: CarLike): DriverLinkLike | null {
   return links.find((item) => item.status === 'linked' && (item.id === car.driverLinkId || item.vehicleNumber === car.number)) || null
 }
@@ -21,10 +21,60 @@ function shortDate(dateKey: string | undefined) {
   return m && d ? `${m}/${d}` : ''
 }
 
+/** @param dateKey `YYYY-MM-DD` → 하루 전 `YYYY-MM-DD` */
+function dayBefore(dateKey: string) {
+  const [y, m, d] = dateKey.split('-').map(Number)
+  return new Date(Date.UTC(y, m - 1, d - 1)).toISOString().slice(0, 10)
+}
+
 function driverLabel(car: CarLike, link: DriverLinkLike | null) {
   const name = car.driverName || getShortCarNum(car.number)
   if (!link) return name
   return `${name} (${shortDate(link.assignmentStart)}~${shortDate(link.assignmentEnd)})`
+}
+
+function previousContracts(settings: FinanceSettings, car: CarLike, link: DriverLinkLike | null): Array<DriverLinkLike & { assignmentStart: string, assignmentEnd: string }> {
+  const history = (Array.isArray(settings?.driverHistory) ? settings.driverHistory : [])
+    .filter((item) => item.vehicleNumber === car.number && item.assignmentStart && item.assignmentEnd)
+  const starts = history.map((item) => String(item.assignmentStart)).concat(link?.assignmentStart ? [link.assignmentStart] : [])
+  return history.map((item) => {
+    const start = String(item.assignmentStart)
+    const end = String(item.assignmentEnd)
+    const nextStart = starts.filter((value) => value > start).sort()[0]
+    return { ...item, assignmentStart: start, assignmentEnd: nextStart && nextStart <= end ? dayBefore(nextStart) : end }
+  }).filter((item) => item.assignmentEnd >= item.assignmentStart).sort((a, b) => a.assignmentStart.localeCompare(b.assignmentStart))
+}
+
+type DriverPayLine = { label: string, note: string, share: number }
+
+/** 차량 하나의 기사 급여 줄들 — 이전 기사(시작일 순) 다음 지금 기사. */
+function driverPayLines(monthKey: string, settings: FinanceSettings, car: CarLike, workDataByLogId: WorkDataByLogId): Array<DriverPayLine> {
+  const links = Array.isArray(settings?.driverLinks) ? settings.driverLinks : []
+  const link = activeLinkForCar(links, car)
+  const carData = getDriverCarWorkData(car, workDataByLogId)
+  const shareOf = (period: DriverLinkLike | null) => {
+    const totals = getMonthlyDriverTotals(carData, monthKey, period, settings, car.number)
+    const base = driverShareBaseAmount(car, totals.grossAmount, getMonthlyDriverClientCommission(carData, monthKey, period, settings, car.number))
+    return { gross: totals.grossAmount, share: calculateDriverVehicleCommission(car, base) }
+  }
+  const current = shareOf(link)
+  if (car.driverPayMode === 'salary') return [{ label: driverLabel(car, link), note: '', share: current.share }]
+
+  const past = previousContracts(settings, car, link).map((period) => ({ period, ...shareOf(period) }))
+  const lines: Array<DriverPayLine> = past.map(({ period, share }) => ({
+    label: `이전 기사 (${shortDate(period.assignmentStart)}~${shortDate(period.assignmentEnd)})`,
+    note: '',
+    share,
+  }))
+  const pastGross = past.reduce((sum, item) => sum + item.gross, 0)
+  const pastShare = past.reduce((sum, item) => sum + item.share, 0)
+  if (link) {
+    const outside = shareOf(null).gross - current.gross - pastGross
+    lines.push({ label: driverLabel(car, link), note: outside > 0 ? `, 계약 밖 운송료 ${outside.toLocaleString('ko-KR')}원 제외` : '', share: current.share })
+  } else {
+    lines.push({ label: driverLabel(car, null), note: '', share: current.share - pastShare })
+  }
+  return lines
 }
 
 /**
@@ -33,7 +83,6 @@ function driverLabel(car: CarLike, link: DriverLinkLike | null) {
  */
 export function getMonthlyDriverRevenueShareExpense(monthKey: string, settings: FinanceSettings, subCars: Array<CarLike>, workDataByLogId: WorkDataByLogId = {}): { total: number, items: Array<{ date: string, label: string, amount: number }> } {
   const monthStart = `${monthKey}-01`
-  const links = Array.isArray(settings?.driverLinks) ? settings.driverLinks : []
   const items: Array<{ date: string, label: string, amount: number }> = []
   let total = 0
 
@@ -42,21 +91,11 @@ export function getMonthlyDriverRevenueShareExpense(monthKey: string, settings: 
     if (car.driverPayMode === 'salary') continue
     if (car.driverPayMode && car.driverPayMode !== 'revenue') continue
 
-    const link = activeLinkForCar(links, car)
-    const carData = getDriverCarWorkData(car, workDataByLogId)
-    const totals = getMonthlyDriverTotals(carData, monthKey, link, settings, car.number)
-    const base = driverShareBaseAmount(car, totals.grossAmount, getMonthlyDriverClientCommission(carData, monthKey, link, settings, car.number))
-    const amount = calculateDriverVehicleCommission(car, base)
-    if (amount <= 0) continue
-
-    const outside = link ? getMonthlyDriverTotals(carData, monthKey, null, settings, car.number).grossAmount - totals.grossAmount : 0
-    const outsideNote = outside > 0 ? `, 계약 밖 운송료 ${outside.toLocaleString('ko-KR')}원 제외` : ''
-    items.push({
-      date: monthStart,
-      label: `${driverLabel(car, link)}${outsideNote}`,
-      amount,
-    })
-    total += amount
+    for (const line of driverPayLines(monthKey, settings, car, workDataByLogId)) {
+      if (line.share <= 0) continue
+      items.push({ date: monthStart, label: `${line.label}${line.note}`, amount: line.share })
+      total += line.share
+    }
   }
 
   return { total, items: items.sort((a, b) => a.date.localeCompare(b.date)) }
@@ -65,23 +104,18 @@ export function getMonthlyDriverRevenueShareExpense(monthKey: string, settings: 
 /** 산재보험료 차주 부담분(월) — 기사 정산액(매출제 몫·월급제 월급) 기준. 산재 적용 토글이 꺼진 차량은 총액 전부가 차주 몫이다. */
 export function getMonthlyDriverInsuranceOwnerShare(monthKey: string, settings: FinanceSettings, subCars: Array<CarLike>, workDataByLogId: WorkDataByLogId = {}): { total: number, items: Array<{ date: string, label: string, amount: number }> } {
   const monthStart = `${monthKey}-01`
-  const links = Array.isArray(settings?.driverLinks) ? settings.driverLinks : []
   const items: Array<{ date: string, label: string, amount: number }> = []
   let total = 0
 
   for (const car of subCars || []) {
     if (car.driverPayMode && car.driverPayMode !== 'salary' && car.driverPayMode !== 'revenue') continue
 
-    const link = activeLinkForCar(links, car)
-    const carData = getDriverCarWorkData(car, workDataByLogId)
-    const totals = getMonthlyDriverTotals(carData, monthKey, link, settings, car.number)
-    const base = driverShareBaseAmount(car, totals.grossAmount, getMonthlyDriverClientCommission(carData, monthKey, link, settings, car.number))
-    const commission = calculateDriverVehicleCommission(car, base)
-    const amount = getDriverIncomeDeductions(car, getDriverSettlementAmount(car, commission)).insuranceOwnerShare
-    if (amount <= 0) continue
-
-    items.push({ date: monthStart, label: `${driverLabel(car, link)} 산재보험(차주 부담)`, amount })
-    total += amount
+    for (const line of driverPayLines(monthKey, settings, car, workDataByLogId)) {
+      const amount = getDriverIncomeDeductions(car, getDriverSettlementAmount(car, line.share)).insuranceOwnerShare
+      if (amount <= 0) continue
+      items.push({ date: monthStart, label: `${line.label} 산재보험(차주 부담)`, amount })
+      total += amount
+    }
   }
 
   return { total, items: items.sort((a, b) => a.date.localeCompare(b.date)) }

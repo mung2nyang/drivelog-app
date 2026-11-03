@@ -63,6 +63,7 @@ export type FinanceSettings = {
   cars?: Array<CarLike>
   clients?: Array<ClientLike>
   driverLinks?: Array<DriverLinkLike>
+  driverHistory?: Array<DriverLinkLike> // 해제된 예전 계약 — 기사 급여 "이전 기사" 줄용
   paymentOn?: boolean
   subPaymentOn?: boolean
   fixedOn?: boolean

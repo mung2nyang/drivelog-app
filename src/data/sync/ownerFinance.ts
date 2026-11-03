@@ -6,6 +6,7 @@ import { commitLogWorkData } from '../store/commitHelpers.ts'
 import {
   readOwnerCars,
   readOwnerClients,
+  readOwnerDriverHistory,
   readOwnerDrivers,
   readOwnerLogWorkData,
   readOwnerProfile,
@@ -101,6 +102,7 @@ export function buildFinanceSettings(ownerKey = 'guest') {
       assignmentEnd: driver.endDate,
       status: driver.status,
     })),
+    driverHistory: readOwnerDriverHistory(ownerKey),
   }
 }
 

@@ -213,3 +213,73 @@ describe('기사 급여·산재 차주 몫 — 차량 전용 고정 노선 단�
     assert.equal(result.total, getDriverIncomeDeductions(shareCar, detail.commissionAmount).insuranceOwnerShare)
   })
 })
+
+describe('기사 급여 이전 기사 줄 — 해제된 예전 계약 기간분', () => {
+  /** @type {import('./financeTypes.ts').CarLike} */
+  const car = { type: 'sub', number: '22가2222', driverName: '테스트2', driverPayMode: 'revenue', commEnabled: true, commType: 'percent', commission: '20', insuranceOn: true, driverIncomeType: 'business', shareRevenueWithOwner: true }
+  const work = {
+    '22가2222': {
+      '2026-10-05': { callDetails: [{ id: 'a', client: 'A', fare: 400000 }] },
+      '2026-10-12': { callDetails: [{ id: 'b', client: 'A', fare: 300000 }] },
+    },
+  }
+  const linked = { id: 'l1', vehicleNumber: '22가2222', assignmentStart: '2026-10-12', status: 'linked' }
+  /**
+   * @param {Array<import('./financeTypes.ts').DriverLinkLike>} driverLinks
+   * @param {Array<import('./financeTypes.ts').DriverLinkLike>} driverHistory
+   * @param {import('./financeTypes.ts').CarLike} [target]
+   */
+  const settingsOf = (driverLinks, driverHistory, target = car) => ({ cars: [target], driverLinks, driverHistory })
+  /** @param {string} start @param {string} end @param {string} [plate] */
+  const past = (start, end, plate = '22가2222') => ({ id: `h-${start}`, vehicleNumber: plate, assignmentStart: start, assignmentEnd: end, status: 'disconnected' })
+
+  test('해제 9/1~10/11 + 연동 중 10/12~: 이전 기사 줄과 지금 기사 줄, 계약 밖 운송료에서 이전 기사분이 빠진다', () => {
+    const result = getMonthlyDriverRevenueShareExpense('2026-10', settingsOf([linked], [past('2026-09-01', '2026-10-11')]), [car], work)
+    assert.deepEqual(result.items.map((item) => [item.label, item.amount]), [
+      ['이전 기사 (9/1~10/11)', 80000],
+      ['테스트2 (10/12~)', 60000],
+    ])
+    assert.equal(result.total, 140000)
+  })
+
+  test('같은 날(10/12) 해제·재연동: 10/12 운송료는 지금 기사 줄에만, 이전 기사 이름은 그 전날까지', () => {
+    const result = getMonthlyDriverRevenueShareExpense('2026-10', settingsOf([linked], [past('2026-09-01', '2026-10-12')]), [car], work)
+    assert.deepEqual(result.items.map((item) => [item.label, item.amount]), [
+      ['이전 기사 (9/1~10/11)', 80000],
+      ['테스트2 (10/12~)', 60000],
+    ])
+  })
+
+  test('연동 중 계약이 없으면 이전 기사 줄 + 나머지 날 차량 기사 이름 줄, 두 줄 합은 해제 기록이 없을 때와 같다', () => {
+    const without = getMonthlyDriverRevenueShareExpense('2026-10', settingsOf([], []), [car], work)
+    const result = getMonthlyDriverRevenueShareExpense('2026-10', settingsOf([], [past('2026-10-01', '2026-10-10')]), [car], work)
+    assert.deepEqual(result.items.map((item) => [item.label, item.amount]), [
+      ['이전 기사 (10/1~10/10)', 80000],
+      ['테스트2', 60000],
+    ])
+    assert.equal(result.total, without.total)
+  })
+
+  test('다른 달·다른 차량의 해제 기록은 줄을 만들지 않는다', () => {
+    const result = getMonthlyDriverRevenueShareExpense('2026-10', settingsOf([linked], [past('2026-08-01', '2026-08-31'), past('2026-10-01', '2026-10-11', '33가3333')]), [car], work)
+    assert.deepEqual(result.items.map((item) => [item.label, item.amount]), [['테스트2 (10/12~), 계약 밖 운송료 400,000원 제외', 60000]])
+  })
+
+  test('월급제 차량은 해제 기록이 있어도 산재 차주 몫이 지금과 같다', () => {
+    /** @type {import('./financeTypes.ts').CarLike} */
+    const salaryCar = { ...car, driverPayMode: 'salary', driverSalaryAmount: '2,000,000' }
+    const without = getMonthlyDriverInsuranceOwnerShare('2026-10', settingsOf([linked], [], salaryCar), [salaryCar], work)
+    const result = getMonthlyDriverInsuranceOwnerShare('2026-10', settingsOf([linked], [past('2026-09-01', '2026-10-11')], salaryCar), [salaryCar], work)
+    assert.deepEqual(result, without)
+    assert.equal(result.items.length, 1)
+  })
+
+  test('산재 차주 몫도 이전 기사 줄로 나뉜다 — 기사 몫 80,000원·60,000원 각각 계산', () => {
+    // 80,000 → 월보수액 55,600 × 1.8% = 1,000(차주 500), 60,000 → 41,700 × 1.8% = 750(차주 375)
+    const result = getMonthlyDriverInsuranceOwnerShare('2026-10', settingsOf([linked], [past('2026-09-01', '2026-10-11')]), [car], work)
+    assert.deepEqual(result.items.map((item) => [item.label, item.amount]), [
+      ['이전 기사 (9/1~10/11) 산재보험(차주 부담)', 500],
+      ['테스트2 (10/12~) 산재보험(차주 부담)', 375],
+    ])
+  })
+})

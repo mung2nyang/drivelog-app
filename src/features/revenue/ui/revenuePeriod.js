@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react'
 import { shiftMonth } from '../../../domain/calendar.ts'
 import { buildFinanceSettings } from '../../../data/sync/ownerFinance.ts'
-import { useOwnerCars, useOwnerDrivers, useOwnerProfile, useOwnerSettings } from '../../../data/store/ownerDataHooks.ts'
+import { useOwnerCars, useOwnerDriverHistory, useOwnerDrivers, useOwnerProfile, useOwnerSettings } from '../../../data/store/ownerDataHooks.ts'
 import { monthKeyOf } from './revenueFormat.js'
 
 /** 년 매출이면 1년, 월 매출이면 1달씩 옮긴다. */
@@ -26,13 +26,15 @@ export function useRevenueFinanceSettings(ownerKey) {
   const practiceSettings = useOwnerSettings(ownerKey)
   const profile = useOwnerProfile(ownerKey)
   const drivers = useOwnerDrivers(ownerKey)
+  const driverHistory = useOwnerDriverHistory(ownerKey)
   return useMemo(() => {
     void cars
     void practiceSettings
     void profile
     void drivers
+    void driverHistory
     return buildFinanceSettings(ownerKey)
-  }, [ownerKey, cars, practiceSettings, profile, drivers])
+  }, [ownerKey, cars, practiceSettings, profile, drivers, driverHistory])
 }
 
 /**

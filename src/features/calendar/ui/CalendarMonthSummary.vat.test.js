@@ -54,6 +54,21 @@ test('부가세가 0이어도 부가세 제외 합계 줄이 보이고 두 합�
   }
 })
 
+test('큰 합계 아래 구분선은 맨 처음 나오는 지출 줄에만 — 정비비가 없으면 주유비, 그것도 없으면 통행료/기타', async () => {
+  for (const [expense, first] of /** @type {Array<[Record<string, number>, string]>} */ ([
+    [{ maint: 5000, fuel: 3000, misc: 1000 }, '차량 정비비'], [{ fuel: 3000, misc: 1000 }, '차량 주유비'], [{ misc: 1000 }, '통행료/기타'], [{}, ''],
+  ])) {
+    const { container, cleanup } = await render({ ...SUMMARY, ...expense })
+    try {
+      const lined = [...container.querySelectorAll('.summary-expense-first')]
+      assert.deepEqual(lined.map((row) => (row.textContent || '').replace(/[\d,]+원$/, '').trim()), first ? [first] : [])
+      if (first) assert.equal(/** @type {HTMLElement} */ (lined[0]).style.paddingTop, '8px')
+    } finally {
+      await cleanup()
+    }
+  }
+})
+
 test('합계 (i) 설명: 부가세 제외는 수수료·산재보험료를 뺀 금액, 포함은 부가세를 더한 금액', async () => {
   const { container, cleanup } = await render(SUMMARY)
   try {

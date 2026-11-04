@@ -40,6 +40,11 @@ function subCarCommInfo(label, base) {
  */
 export default function CalendarMonthSummary({ paymentOn, unpaidTotal, summary, distanceOn = false }) {
   const clientNames = Object.keys(summary.fareByClient || {})
+  // 지출 줄 중 맨 처음 나오는 줄 위에만 구분선.
+  const firstExpense = summary.maint > 0 ? 'maint' : summary.fuel > 0 ? 'fuel' : 'misc'
+  const expenseRow = (/** @type {string} */ kind, /** @type {string} */ color) => (kind === firstExpense
+    ? { className: 'summary-row summary-expense-first', style: { marginTop: 8, paddingTop: 8, color } }
+    : { className: 'summary-row', style: { color } })
   return (
     <>
       {paymentOn && unpaidTotal > 0 && (
@@ -133,10 +138,7 @@ export default function CalendarMonthSummary({ paymentOn, unpaidTotal, summary, 
         <SummaryInfoToggle className="summary-row total" label={<>합계 <span className="summary-total-vat">(부가세 포함)</span></>} value={formatWon(summary.total)} infoName="합계" info={TOTAL_INFO} />
 
         {summary.maint > 0 && (
-          <div
-            className="summary-row summary-expense-first"
-            style={{ marginTop: 8, paddingTop: 8, color: 'var(--sunday-color)' }}
-          >
+          <div {...expenseRow('maint', 'var(--sunday-color)')}>
             <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
               <svg className="inline-icon sm" viewBox="0 0 24 24">
                 <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
@@ -147,7 +149,7 @@ export default function CalendarMonthSummary({ paymentOn, unpaidTotal, summary, 
           </div>
         )}
         {summary.fuel > 0 && (
-          <div className="summary-row" style={{ color: 'var(--primary-color)' }}>
+          <div {...expenseRow('fuel', 'var(--primary-color)')}>
             <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
               <svg className="inline-icon sm" viewBox="0 0 24 24" aria-hidden="true">
                 <line x1="3" x2="15" y1="22" y2="22"></line>
@@ -161,7 +163,7 @@ export default function CalendarMonthSummary({ paymentOn, unpaidTotal, summary, 
           </div>
         )}
         {summary.misc > 0 && (
-          <div className="summary-row" style={{ color: 'var(--sunday-color)' }}>
+          <div {...expenseRow('misc', 'var(--sunday-color)')}>
             <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
               <svg className="inline-icon sm" viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M3 6h18M3 12h18M3 18h18"></path>

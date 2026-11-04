@@ -6,3 +6,6 @@
   line-height: 1.5;
   text-align: left;
 }
+
+/* 펼친 (i) 안내가 창 안에 다 들어오게 버튼 위를 넓힌다 */
+.invite-redeem-modal .modal-btns { margin-top: 44px; }

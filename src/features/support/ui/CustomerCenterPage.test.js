@@ -67,6 +67,33 @@ describe('CustomerCenterPage — 고객센터 진입·FAQ·1:1 문의', () => {
     }
   })
 
+  test('FAQ 맨 뒤 기사 연동 질문 5개 — 누르면 답이 펼쳐진다', async () => {
+    const container = document.createElement('div')
+    document.body.appendChild(container)
+    const root = createRoot(container)
+    try {
+      await act(async () => {
+        root.render(React.createElement(CustomerCenterPage, { onBack: () => {} }))
+      })
+      const items = [...container.querySelectorAll('.faq-item')]
+      assert.deepEqual(items.slice(-5).map((el) => el.querySelector('span')?.textContent), [
+        '연동 기사와 미연동 기사는 무엇이 다른가요?',
+        '기사님을 연동하려면 어떻게 하나요?',
+        '연동하면 차주는 무엇을 볼 수 있나요?',
+        '연동을 해제하면 기록은 어떻게 되나요?',
+        '기사 연동은 무료인가요?',
+      ])
+      const unlink = /** @type {HTMLElement} */ (items[items.length - 2])
+      await act(async () => { unlink.click() })
+      assert.ok(unlink.classList.contains('open'))
+      assert.ok(unlink.querySelector('.support-detail')?.textContent?.includes('상대가 동의하거나 3일이 지나면 해제됩니다.'))
+      assert.equal(items[items.length - 1].querySelector('.support-detail')?.textContent, '네, 무료입니다.')
+    } finally {
+      await act(async () => { root.unmount() })
+      container.remove()
+    }
+  })
+
   test('게스트 세션이면 1:1 문의 폼을 마운트하지 않고 로그인 안내만 보인다', async () => {
     const { container, root } = await openSupportTab({ guestMode: true, name: '비회원' }, '1:1')
     try {

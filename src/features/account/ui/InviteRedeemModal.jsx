@@ -5,10 +5,16 @@ import { redeemDriverInviteCode } from '../../../data/sync/driverLinkRpc.ts'
 import { buildCloudAppSession, ownerKeyFromSession } from '../../../data/cloud/appSession.ts'
 import { hydrateFromSupabase } from '../../../data/hydrate/hydrate.ts'
 import ClearableInput from '../../../shared/ui/ClearableInput.jsx'
+import InfoTip from '../../../shared/ui/InfoTip.jsx'
 import './InviteRedeemModal.css'
 import ModalShell from '../../../shared/ui/ModalShell.jsx'
 import { useToast } from '../../../shared/hooks/useToast.js'
 import { useSession } from '../../../data/cloud/sessionContext.ts'
+
+const LINKED_INFO = `일지는 차주님이 배정한 차량으로 기록되고, 계약기간 안 날짜만 기록할 수 있습니다.
+개인정보의 사업자 정보와 정산 계좌는 차주님이 입력한 값이 보이고, 고칠 수 없습니다.
+앱 설정은 기사님 것 그대로입니다.
+해제는 마이페이지 → 개인정보에서 요청하고, 차주님이 동의하거나 3일이 지나면 해제됩니다. 연동 중에는 탈퇴할 수 없습니다.`
 
 /**
  * @param {{ onClose: () => void, onLinked: (session: AppSession) => void }} props
@@ -50,7 +56,7 @@ export default function InviteRedeemModal({ onClose, onLinked }) {
       <div className="modal-title">초대 코드 입력</div>
       <p className="invite-redeem-note">
         차주에게 전달받은 초대 코드를 입력해 주세요.<br />
-        연동이 완료되면 기사님이 입력한 운행 및 매출 내역이 차주와 공유됩니다.
+        연동이 완료되면 기사님이 입력한 운행 및 매출 내역이 차주와 공유됩니다. <InfoTip name="연동하면 바뀌는 것" info={LINKED_INFO} />
       </p>
       <div className="form-group">
         <label htmlFor="driverInviteCode">초대 코드</label>

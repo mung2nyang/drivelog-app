@@ -60,7 +60,7 @@ export default function CallDetailForm({
   const vatPreview = !fareNumber
     ? ''
     : draft.vatExempt
-      ? '면세 거래에는 부가가치세가 부과되지 않습니다.'
+      ? '부가세 0원'
       : `부가세 포함 ${(fareNumber + vatOf(fareNumber)).toLocaleString('ko-KR')}원`
   const selectedClient = clients.find((item) => item.companyName === draft.client)
   const paymentGuide = selectedClient
@@ -153,9 +153,7 @@ export default function CallDetailForm({
             <span className="suffix">원</span>
           </div>
         </div>
-        <CallVatExemptRow draft={draft} setDraft={setDraft} />
-        <p className="billing-settings-note">부가가치세가 포함된 금액이라면 1.1로 나눈 공급가액을 입력해 주세요. (예: 110,000원 → 100,000원)</p>
-        {vatPreview && <p className="billing-settings-note vat-preview">{vatPreview}</p>}
+        <CallVatExemptRow draft={draft} setDraft={setDraft} preview={vatPreview} />
       </div>
       {settings.paymentOn && <CallDetailPaymentFields draft={draft} setDraft={setDraft} paymentGuide={paymentGuide} />}
       {settings.timeOn && (

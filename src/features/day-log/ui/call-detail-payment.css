@@ -1,10 +1,24 @@
-/* 콜상세 돈 관련 칸 중 새로 만든 모양 — 운송료 아래 작은 "부가세 없음(면세)" 체크 칸. */
+/* 콜상세 돈 관련 칸 중 새로 만든 모양 — 운송료 아래 한 줄: 작은 "부가세 없음(면세)" 체크 칸 + (i) + 오른쪽 끝 미리보기. */
+.call-vat-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 4px 0 2px;
+}
+
+.call-vat-preview {
+  margin-left: auto;
+  color: var(--sub-text-color);
+  font-size: var(--fs-floor);
+  line-height: 1.4;
+  text-align: right;
+}
+
 .call-vat-check {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   min-height: 32px;
-  margin: 4px 0 2px;
   color: var(--sub-text-color);
   font-size: var(--fs-2);
   font-weight: var(--fw-semibold);

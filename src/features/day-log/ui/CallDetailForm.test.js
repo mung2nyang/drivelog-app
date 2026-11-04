@@ -104,6 +104,30 @@ test('부가세 포함 미리보기는 원 미만 버림 — 15,555원이면 17,
   } finally { await view.cleanup() }
 })
 
+test('부가세 미리보기는 면세 체크와 같은 줄 오른쪽, 면세면 "부가세 0원", 공급가액 안내는 (i) 속에만', async () => {
+  const view = await mount({ value: { fare: '100,000', client: '' } })
+  const exempt = await mount({ value: { fare: '100,000', client: '', vatExempt: true } })
+  try {
+    const row = view.container.querySelector('.call-vat-row')
+    assert.ok(row?.querySelector('#callVatExempt'))
+    assert.equal(row?.querySelector('.call-vat-preview')?.textContent, '부가세 포함 110,000원')
+    assert.equal(exempt.container.querySelector('.call-vat-row .call-vat-preview')?.textContent, '부가세 0원')
+    assert.equal((view.container.textContent || '').includes('1.1로 나눈'), false, '접힌 상태에서는 안내 문장이 안 보인다')
+  } finally { await view.cleanup(); await exempt.cleanup() }
+})
+
+test('면세 옆 (i)를 누르면 공급가액 안내가 펼쳐지고 면세 체크는 그대로다', async () => {
+  const view = await mount({ value: { fare: '100,000', client: '' } })
+  try {
+    const button = /** @type {HTMLButtonElement|null} */ (view.container.querySelector('.call-vat-row button[aria-label="부가세 입력 설명 보기"]'))
+    assert.ok(button)
+    await act(async () => { button.click() })
+    assert.equal(view.container.querySelector('.call-vat-row .summary-info-text')?.textContent,
+      '부가가치세가 포함된 금액이라면 1.1로 나눈 공급가액을 입력해 주세요. (예: 110,000원 → 100,000원)')
+    assert.equal(/** @type {HTMLInputElement|null} */ (view.container.querySelector('#callVatExempt'))?.checked, false)
+  } finally { await view.cleanup() }
+})
+
 describe('운송료 1,000만원 초과 저장 확인(로드맵 43-C)', () => {
   /** @param {string} fare @param {boolean} answer */
   async function clickSave(fare, answer) {

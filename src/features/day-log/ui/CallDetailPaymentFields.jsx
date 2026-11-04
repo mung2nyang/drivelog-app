@@ -2,9 +2,11 @@
 // 콜상세 입력의 돈 관련 칸(계산서·입금 예정일, 부가세 없음, 산재보험료).
 import CurrencyInput from '../../../shared/ui/CurrencyInput.jsx'
 import TemporalInput from '../../../shared/ui/TemporalInput.jsx'
+import InfoTip from '../../../shared/ui/InfoTip.jsx'
 import './call-detail-payment.css'
 
 const RECEIPT_PRESETS = ['전자', '일반', '카드', '현금', '송금']
+const VAT_INPUT_INFO = '부가가치세가 포함된 금액이라면 1.1로 나눈 공급가액을 입력해 주세요. (예: 110,000원 → 100,000원)'
 
 /** @typedef {typeof import('./callDetailFormHelpers.js').emptyDraft} CallDetailDraft 폼 입력 중 초안(CallDetailForm 상태와 같은 모양) */
 
@@ -54,16 +56,21 @@ export function CallInsuranceFeeField({ draft, setDraft }) {
 }
 
 /**
- * 운송료 바로 아래 작은 "부가세 없음(면세)" 체크 칸 — 드물게 쓰는 설정이라 토글 대신 작게.
+ * 운송료 바로 아래 한 줄 — 작은 "부가세 없음(면세)" 체크 칸 + (i) 공급가액 안내 + 오른쪽 끝 부가세 미리보기.
  * @param {Object} props
  * @param {CallDetailDraft} props.draft
  * @param {(next: CallDetailDraft) => void} props.setDraft
+ * @param {string} props.preview 운송료가 없으면 빈 글
  */
-export function CallVatExemptRow({ draft, setDraft }) {
+export function CallVatExemptRow({ draft, setDraft, preview }) {
   return (
-    <label className="call-vat-check" htmlFor="callVatExempt">
-      <input id="callVatExempt" type="checkbox" checked={draft.vatExempt} onChange={(e) => setDraft({ ...draft, vatExempt: e.target.checked })} />
-      <span>부가세 없음(면세)</span>
-    </label>
+    <div className="call-vat-row">
+      <label className="call-vat-check" htmlFor="callVatExempt">
+        <input id="callVatExempt" type="checkbox" checked={draft.vatExempt} onChange={(e) => setDraft({ ...draft, vatExempt: e.target.checked })} />
+        <span>부가세 없음(면세)</span>
+      </label>
+      <InfoTip name="부가세 입력" info={VAT_INPUT_INFO} />
+      {preview && <span className="call-vat-preview">{preview}</span>}
+    </div>
   )
 }

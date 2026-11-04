@@ -147,10 +147,6 @@
   line-height: 1.4;
 }
 
-.work-log-page .billing-settings-note.vat-preview {
-  text-align: right;
-}
-
 .work-log-page .call-detail-form-actions {
   gap: 8px;
   margin-top: 10px;

@@ -1,4 +1,4 @@
-// 로드맵 24-B-1 — 운비서 카드: 누르면 늘어남, 줄 마이크 한 번에 듣기, 글로 보내기 → 내가 한 말·결과 글, 비회원은 안 부름.
+// 로드맵 24-B-1 — 운비서 카드: 누르면 늘어남, 줄 마이크 한 번에 듣기, 글로 보내기 → 결과 글, 비회원은 안 부름.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 
@@ -89,7 +89,7 @@ test('로그인: 받아쓰기 없는 브라우저면 마이크 버튼 없이 글
   } finally { await view.cleanup() }
 })
 
-test('글로 보내기: 거래처 이름·오늘을 같이 보내고, 내가 한 말과 운행 결과 문장을 보인다', async () => {
+test('글로 보내기: 거래처 이름·오늘을 같이 보내고, 내가 한 말 줄 없이 운행 결과 문장을 보인다', async () => {
   commitClients('u-assistant', [{ id: 'c1', companyName: '한진' }, { id: 'c2', companyName: '롯데' }])
   reply = async () => ({ data: { kind: 'call', call: { date: '2026-10-21', loadLoc: '수원', unloadLoc: '화성', fare: 150000, client: '' } }, error: null })
   const view = await mount('u-assistant', CLOUD)
@@ -98,7 +98,7 @@ test('글로 보내기: 거래처 이름·오늘을 같이 보내고, 내가 한
     await view.send()
     assert.equal(calls.length, 1)
     assert.deepEqual(calls[0], { name: 'unbiseo-parse', body: { text: '어제 수원 화성 15만', today: todayWorkLogSelection(new Date()).dateKey, clientNames: ['한진', '롯데'] } })
-    assert.equal(view.container.querySelector('.home-assistant-said')?.textContent, '내가 한 말: 어제 수원 화성 15만')
+    assert.equal(view.container.querySelector('.home-assistant-said'), null, '내가 한 말 줄 없음')
     assert.equal(view.container.querySelector('.home-assistant-result')?.textContent, '10월 21일 수원 → 화성, 150,000원으로 기록할게요.')
   } finally { await view.cleanup() }
 })
@@ -339,7 +339,7 @@ test('지출 + 연동 기사 계약 기간 밖: 일지와 같은 안내 두 줄,
 })
 
 // 로드맵 24-D-2 — 질문은 앱이 화면과 같은 계산으로 낸 답 문장, 버튼 없음.
-test('질문: 내가 한 말 + 매출 화면과 같은 숫자의 답 문장, 버튼 없음 · 짧은 기간·그 밖은 안내', async () => {
+test('질문: 매출 화면과 같은 숫자의 답 문장, 버튼 없음 · 짧은 기간·그 밖은 안내', async () => {
   const owner = 'u-assistant-question'
   const thisMonth = todayWorkLogSelection(new Date()).dateKey.slice(0, 7)
   commitWorkData(owner, { [`${thisMonth}-01`]: { callDetails: [{ id: 'q-1', client: '한진', fare: '150,000' }, { id: 'q-2', client: '롯데', fare: '50,000' }] } })
@@ -350,7 +350,7 @@ test('질문: 내가 한 말 + 매출 화면과 같은 숫자의 답 문장, 버
     reply = ask({ type: 'trips', period: { unit: 'month', value: thisMonth } })
     await view.type('이번 달 몇 번 뛰었어')
     await view.send()
-    assert.equal(view.container.querySelector('.home-assistant-said')?.textContent, '내가 한 말: 이번 달 몇 번 뛰었어')
+    assert.equal(view.container.querySelector('.home-assistant-said'), null, '내가 한 말 줄 없음')
     assert.equal(result(), `${Number(thisMonth.slice(5))}월 운행은 2회입니다.`)
     assert.equal(view.container.querySelector('.home-assistant-action'), null)
     assert.equal(view.container.querySelector('.home-assistant-enable'), null)
@@ -379,8 +379,8 @@ test('연동 기사 질문: 기사 본인 매출 화면 이름(정산액)', asyn
   } finally { await view.cleanup() }
 })
 
-// 로드맵 24-E — 마이크로 말했을 때만 답을 소리로, [멈추기], 마이크를 다시 누르면 읽던 것 먼저 멈춤.
-test('읽어 주기: 말로 보낸 답만 읽고, [멈추기]·다시 듣기·글로 보내기는 읽지 않거나 멈춘다', async () => {
+// 마이크로 말했을 때만 답을 소리로, 멈춤 버튼은 없고 마이크를 다시 누르면 읽던 것 먼저 멈춤.
+test('읽어 주기: 말로 보낸 답만 읽고, [멈추기] 버튼 없이 다시 듣기·글로 보내기는 읽지 않거나 멈춘다', async () => {
   let last = null
   window.webkitSpeechRecognition = class {
     constructor() { last = this }
@@ -409,30 +409,20 @@ test('읽어 주기: 말로 보낸 답만 읽고, [멈추기]·다시 듣기·�
     assert.equal(synth.spoken.length, 1, 'xAI 소리를 못 받으면 휴대폰 목소리')
     assert.equal(synth.spoken[0].text, '10월 21일 주유, 80,000원으로 기록할게요.')
     assert.equal(synth.spoken[0].lang, 'ko-KR')
-    assert.ok(stopButton(), '읽는 동안 [멈추기]')
-    let before = synth.cancels
-    await act(async () => { stopButton().click() })
-    assert.equal(synth.cancels, before + 1)
-    assert.equal(stopButton(), undefined)
+    assert.equal(stopButton(), undefined, '읽는 동안에도 [멈추기] 없음')
 
     await say('주유 8만원')
     assert.equal(synth.spoken.length, 2)
-    before = synth.cancels
+    const before = synth.cancels
     await act(async () => { mic().click() })
     assert.equal(synth.cancels, before + 1, '듣기를 시작하면 읽던 것을 먼저 멈춤')
     assert.ok(mic().classList.contains('listening'))
-    assert.equal(stopButton(), undefined)
     await act(async () => { last.onend() })
 
     await view.type('주유 8만원')
     await view.send()
     assert.equal(synth.spoken.length, 2, '글로 보낸 답은 읽지 않음')
     assert.equal(calls.filter((call) => call.name === 'unbiseo-voice').length, 2, '글로 보낸 답은 목소리도 안 부름')
-    assert.equal(stopButton(), undefined)
-
-    await say('주유 8만원')
-    await act(async () => { synth.spoken[2].onend() })
-    assert.equal(stopButton(), undefined, '다 읽으면 [멈추기]가 사라짐')
   } finally {
     await view.cleanup()
     delete window.webkitSpeechRecognition
@@ -545,7 +535,7 @@ test('날씨: 기다리는 동안 문구·입력 잠김, 받아 온 뒤 날씨 �
     await server.release()
     assert.equal(view.container.querySelector('.home-assistant-result')?.textContent, SAID)
     assert.equal(view.container.querySelector('.home-assistant-input')?.disabled, false)
-    assert.equal(view.container.querySelector('.home-assistant-said')?.textContent, '내가 한 말: 오늘 평택 날씨 어때')
+    assert.equal(view.container.querySelector('.home-assistant-said'), null, '내가 한 말 줄 없음')
     assert.deepEqual(calls.map((call) => call.name), ['unbiseo-parse', 'unbiseo-weather'], '글로 보낸 답은 목소리를 안 부름')
     assert.deepEqual(calls[1].body, { date: todayWorkLogSelection(new Date()).dateKey, place: '평택' })
     assert.equal(view.container.querySelector('.home-assistant-action'), null, '버튼 없음')

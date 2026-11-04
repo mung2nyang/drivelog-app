@@ -184,7 +184,7 @@ test('같은 대화: 홈 카드에서 받은 결과가 다른 화면의 카드�
     await view.click(view.button('달력', view.container.querySelector('.bottom-nav-bar') || undefined))
     await waitUntil(() => !!view.dock())
     await view.click(view.dock()?.querySelector('.unbiseo-dock-fab'))
-    assert.equal(view.dock()?.querySelector('.home-assistant-said')?.textContent, '내가 한 말: 어제 수원 화성 15만')
+    assert.equal(view.dock()?.querySelector('.home-assistant-said'), null, '내가 한 말 줄 없음')
     assert.equal(view.dock()?.querySelector('.home-assistant-result')?.textContent, '10월 21일 수원 → 화성, 150,000원으로 기록할게요.')
   } finally { await view.cleanup() }
 })

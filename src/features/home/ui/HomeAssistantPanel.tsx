@@ -1,4 +1,4 @@
-// 운비서 카드가 늘어난 부분 — 글 칸, 내가 한 말과 알아들은 내용을 글로 보여 준다. 문장은 앱이 만든다.
+// 운비서 카드가 늘어난 부분 — 글 칸과 알아들은 내용을 글로 보여 준다. 문장은 앱이 만든다.
 import type { FormEvent } from 'react'
 import { TEXT_MAX } from '../api/unbiseoParse.ts'
 import type { UnbiseoRecord } from '../api/unbiseoParse.ts'
@@ -9,7 +9,7 @@ type OpenCallOptions = { cancelOff: boolean }
 type Props = { assistant: UnbiseoAssistant, onOpenCall?: (record: UnbiseoRecord, options: OpenCallOptions) => void }
 
 export default function HomeAssistantPanel({ assistant, onOpenCall }: Props) {
-  const { loggedIn, text, setText, busy, answer, send, reportStep, speech, speaking, stopSpeaking, callDetailOn, fixedOn, enabling, enableSetting, saving, saveInspection, periodNotice, dayOff } = assistant
+  const { loggedIn, text, setText, busy, answer, send, reportStep, speech, callDetailOn, fixedOn, enabling, enableSetting, saving, saveInspection, periodNotice, dayOff } = assistant
   const record = answer?.call ?? answer?.expense ?? answer?.fixed ?? answer?.client ?? answer?.dayOff
   const isCall = !!answer?.call
   const isFixed = !!answer?.fixed
@@ -73,9 +73,7 @@ export default function HomeAssistantPanel({ assistant, onOpenCall }: Props) {
       {speech.error && <p className="home-assistant-note">{speech.error}</p>}
       {answer && (
         <div className="home-assistant-answer" aria-live="polite">
-          <p className="home-assistant-said">내가 한 말: {answer.said}</p>
           <p className="home-assistant-result">{answer.sentence}</p>
-          {speaking && <button type="button" className="home-assistant-action" onClick={stopSpeaking}>멈추기</button>}
           {record && actionFor(record)}
           {/* 점검표는 [저장하기]로 바로 저장한다(저장 중 잠금). */}
           {answer.inspection && <button type="button" className="home-assistant-action" disabled={saving} onClick={() => void saveInspection()}>저장하기</button>}

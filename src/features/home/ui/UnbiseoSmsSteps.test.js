@@ -128,7 +128,7 @@ test('직접 고르기: 건마다 체크, 하나 이상 골라야 [다음], 고�
 })
 
 // 로드맵 24-H-3 — 묻는 중에 말·글이 지금 보이는 버튼 하나와 맞으면 그 버튼을 누른 것과 같다(서버를 부르지 않음).
-test('말로 고르기: 거래처 → 달 → 문구 번호, 서버는 처음 한 번만, 내가 한 말은 첫 말, 글 칸은 비움', async () => {
+test('말로 고르기: 거래처 → 달 → 문구 번호, 서버는 처음 한 번만, 글 칸은 비움', async () => {
   const view = await ask({})
   const start = calls.length
   try {
@@ -141,7 +141,7 @@ test('말로 고르기: 거래처 → 달 → 문구 번호, 서버는 처음 �
     assert.equal(view.notes()[0], '대한(2건, 1,199,999원) · 5월분 전체(1건, 200,000원) · 미수금 안내')
     assert.ok(view.open())
     assert.equal(calls.length, start, '고르는 동안 서버를 부르지 않음')
-    assert.equal(view.container.querySelector('.home-assistant-said')?.textContent, '내가 한 말: 미수금 문자 보내줘')
+    assert.equal(view.container.querySelector('.home-assistant-said'), null, '내가 한 말 줄 없음')
     reply = async () => ({ data: null, error: { message: 'x' } })
     await view.type('문자 열어')
     assert.equal(calls.length, start + 1, '마지막 단계에서는 [문자 열기]를 말로 열지 않고 서버로')
@@ -173,7 +173,7 @@ test('말로 고르기: 전체·직접, 체크 목록에서는 서버로, 안 �
     await none.type('어제 수원 화성 15만')
     assert.equal(calls.length, before + 2, '안 맞으면 서버로')
     assert.deepEqual(none.choices(), [], '새 답이 오면 되묻기 카드가 사라짐')
-    assert.equal(none.container.querySelector('.home-assistant-said')?.textContent, '내가 한 말: 어제 수원 화성 15만')
+    assert.equal(none.container.querySelector('.home-assistant-said'), null, '내가 한 말 줄 없음')
   } finally { await none.cleanup() }
 })
 

@@ -1,7 +1,7 @@
 // @ts-check
 // 달력 화면. 표시 월은 URL `?y=&m=` 쿼리(calendarViewDate.ts)라 새로고침해도 남고, workData·settings는 store를 구독한다.
 // logId가 있으면 서브 차량 달력(workData·paymentOn·수수료 게이트).
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { buildCalendarCells, getYearOptions } from '../../../domain/calendar.ts'
 import { searchParamsForViewDate, viewDateFromSearchParams } from '../../../domain/calendarViewDate.ts'
@@ -12,6 +12,7 @@ import CalendarGrid from './CalendarGrid.jsx'
 import CalendarMonthSummary from './CalendarMonthSummary.jsx'
 import CalendarSubLogBanner from './CalendarSubLogBanner.jsx'
 import useMonthSettlement from '../../../data/store/useMonthSettlement.ts'
+import { recallViewMonth, rememberViewMonth } from '../../../data/store/viewMonthMemory.ts'
 import './calendar-grid.css'
 import './calendar.css'
 import { useSession } from '../../../data/cloud/sessionContext.ts'
@@ -33,10 +34,14 @@ export default function CalendarPage({
   const { ownerKey } = useSession()
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
-  const viewDate = useMemo(() => viewDateFromSearchParams(searchParams), [searchParams])
+  // 주소에 달이 없으면(아래 탭·홈 버튼) 앱이 켜진 동안 마지막에 본 달.
+  const viewDate = useMemo(() => (searchParams.has('y') || searchParams.has('m')
+    ? viewDateFromSearchParams(searchParams)
+    : recallViewMonth('calendar', ownerKey)?.viewDate ?? new Date()), [searchParams, ownerKey])
   const year = viewDate.getFullYear()
   const month = viewDate.getMonth()
   const isMain = logId === 'main'
+  useEffect(() => { rememberViewMonth('calendar', ownerKey, new Date(year, month, 1)) }, [ownerKey, year, month])
 
   const { workData, settings, inputMode, unitPrice, palletPrice, expenses, summary } = useMonthSettlement({
     ownerKey, logId, clientScopeKey, year, month,

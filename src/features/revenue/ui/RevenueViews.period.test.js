@@ -85,6 +85,25 @@ test('차주 매출: 달·해 이동, 년 매출 12줄·합계, 손해 달·합�
   } finally { await view.cleanup() }
 })
 
+test('보던 달·탭 기억: 지난달·년 매출로 둔 채 떠났다 오면 그대로, 앱을 다시 켜면 이번 달·월 매출', async () => {
+  const { forgetViewMonths } = await import('../../../data/store/viewMonthMemory.ts')
+  const ownerKey = 'revenue-month-memory'
+  const first = await mount(OwnerRevenueView, ownerKey)
+  await first.press('이전 달')
+  const lastMonth = first.picked()
+  await first.cleanup()
+  const again = await mount(OwnerRevenueView, ownerKey)
+  assert.equal(again.picked(), lastMonth)
+  await again.press('년 매출')
+  await again.cleanup()
+  const yearly = await mount(OwnerRevenueView, ownerKey)
+  assert.ok(yearly.container.querySelector('.revenue-year-list'), '년 매출 그대로')
+  await yearly.cleanup()
+  forgetViewMonths()
+  const restarted = await mount(OwnerRevenueView, ownerKey)
+  try { assert.equal(restarted.picked(), `${YEAR}년 ${MONTH + 1}월`) } finally { await restarted.cleanup() }
+})
+
 test('연동 기사 매출: 달·해 이동, 년 매출 12줄·합계, 범위 탭 없음', async () => {
   const ownerKey = 'revenue-58b-driver'
   commitCars(ownerKey, [{ id: 'c-sub', type: 'sub', number: '22가2222' }])

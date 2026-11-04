@@ -6,7 +6,8 @@ import InfoTip from '../../../shared/ui/InfoTip.jsx'
 import './call-detail-payment.css'
 
 const RECEIPT_PRESETS = ['전자', '일반', '카드', '현금', '송금']
-const VAT_INPUT_INFO = '부가가치세가 포함된 금액이라면 1.1로 나눈 공급가액을 입력해 주세요. (예: 110,000원 → 100,000원)'
+// 예시는 줄 안 나뉘는 띄어쓰기로 한 덩어리.
+const VAT_INPUT_INFO = '부가가치세가 포함된 금액이라면 1.1로 나눈 공급가액을 입력해 주세요.\n(예:\u00a0110,000원\u00a0→\u00a0100,000원)'
 
 /** @typedef {typeof import('./callDetailFormHelpers.js').emptyDraft} CallDetailDraft 폼 입력 중 초안(CallDetailForm 상태와 같은 모양) */
 

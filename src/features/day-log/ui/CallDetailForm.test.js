@@ -123,7 +123,7 @@ test('면세 옆 (i)를 누르면 공급가액 안내가 펼쳐지고 면세 체
     assert.ok(button)
     await act(async () => { button.click() })
     assert.equal(view.container.querySelector('.call-vat-row .summary-info-text')?.textContent,
-      '부가가치세가 포함된 금액이라면 1.1로 나눈 공급가액을 입력해 주세요. (예: 110,000원 → 100,000원)')
+      '부가가치세가 포함된 금액이라면 1.1로 나눈 공급가액을 입력해 주세요.\n(예:\u00a0110,000원\u00a0→\u00a0100,000원)', '예시는 괄호 앞에서 줄을 바꾸고 안에서는 안 나뉜다')
     assert.equal(/** @type {HTMLInputElement|null} */ (view.container.querySelector('#callVatExempt'))?.checked, false)
   } finally { await view.cleanup() }
 })

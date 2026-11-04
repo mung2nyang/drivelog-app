@@ -8,6 +8,14 @@ export function hasMainCar(cars: Array<CarLike> | null | undefined) {
   return (cars || []).some((car) => car.type === 'main')
 }
 
+/** 기사 차량(연동, 미연동 합쳐)은 차주 한 명당 이 대수까지만 새로 등록한다. 이미 넘은 계정은 그대로 둔다. */
+export const MAX_DRIVER_CARS = 3
+export const DRIVER_CAR_LIMIT_MESSAGE = `기사 차량은 연동, 미연동 합쳐 최대 ${MAX_DRIVER_CARS}대까지 등록할 수 있습니다.`
+
+export function canAddDriverCar(cars: Array<CarLike> | null | undefined) {
+  return (cars || []).filter((car) => car.type === 'sub').length < MAX_DRIVER_CARS
+}
+
 /**
  * 같은 id는 한 번만 남긴다(먼저 나온 항목). hydrate가 서버 행 + 미동기화 로컬을
  * 이어 붙일 때 같은 raw.id가 두 번 들어가면 React key 경고가 난다.

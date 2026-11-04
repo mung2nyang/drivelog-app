@@ -6,7 +6,8 @@ import PageHeader from '../../../shared/ui/PageHeader.jsx'
 import CarFormModal from './CarFormModal.jsx'
 import CarListItem from './CarListItem.jsx'
 import useCarListActions from '../hooks/useCarListActions.js'
-import { hasMainCar } from '../../../domain/cars.ts'
+import { DRIVER_CAR_LIMIT_MESSAGE, canAddDriverCar, hasMainCar } from '../../../domain/cars.ts'
+import { useToast } from '../../../shared/hooks/useToast.js'
 import { NEW_DRIVER_INCOME_DRAFT, driverIncomeDraftFromCar } from '../../../domain/driverIncomeDeductions.ts'
 import { resolveDriverShareBase } from '../../../domain/driverShareBase.ts'
 import { getCloudUserId, isCloudSession } from '../../../data/cloud/cloudSession.ts'
@@ -37,6 +38,7 @@ export default function CarListPage({ onBack, onOpenMenu }) {
   const { ownerKey, session } = useSession()
   const cars = useOwnerCars(ownerKey)
   const drivers = useOwnerDrivers(ownerKey)
+  const showToast = useToast()
   const viewerIsEmployedDriver = session?.accountType === 'employed_driver'
   const cloud = isCloudSession(session) || !!getCloudUserId()
   const [modalOpen, setModalOpen] = useState(false)
@@ -45,8 +47,12 @@ export default function CarListPage({ onBack, onOpenMenu }) {
   const actions = useCarListActions({ ownerKey, cars, drivers, cloud, draft, editingId, closeModal: () => setModalOpen(false) })
 
   function openAdd() {
-    setEditingId(null)
     const type = hasMainCar(cars) ? 'sub' : 'main'
+    if (type === 'sub' && !canAddDriverCar(cars)) {
+      showToast?.(DRIVER_CAR_LIMIT_MESSAGE)
+      return
+    }
+    setEditingId(null)
     setDraft({
       ...emptyDraft,
       type,

@@ -60,11 +60,11 @@ test('두 탭 설명 옆 (i)를 누르면 연동, 미연동 안내가 펼쳐진�
     const linkText = await openTip('기사 연동')
     assert.ok(linkText.startsWith('기사님이 자기 휴대폰에서 로그인해 이 차량 운행일지를 직접 씁니다.'))
     assert.ok(linkText.includes('마이페이지 → 초대 코드 입력'))
-    assert.ok(linkText.includes('계약기간 밖 날짜는 기록할 수 없습니다.'))
+    assert.ok(linkText.endsWith('계약기간 밖 날짜는 기록할 수 없습니다.\n기사 차량은 연동, 미연동 합쳐 최대 3대까지 등록할 수 있습니다.'))
     await render('log')
     const logText = await openTip('운행일지')
     assert.ok(logText.startsWith('기사님이 앱을 쓰지 않을 때 고릅니다.'))
-    assert.ok(logText.includes('정산은 연동 기사와 똑같이 계산됩니다.'))
+    assert.ok(logText.endsWith('정산은 연동 기사와 똑같이 계산됩니다.\n기사 차량은 연동, 미연동 합쳐 최대 3대까지 등록할 수 있습니다.'))
   } finally {
     root.unmount()
     container.remove()

@@ -2,7 +2,7 @@
 // 차량 저장·연동 해제·삭제 흐름(서버 요청 순서·알림 문구).
 import { useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { validateDriverLinkFields } from '../../../domain/cars.ts'
+import { DRIVER_CAR_LIMIT_MESSAGE, canAddDriverCar, validateDriverLinkFields } from '../../../domain/cars.ts'
 import { requestVehicleSave } from '../../../data/sync/vehicleMutations.ts'
 import { requestDriverDeletion, requestVehicleDeletion } from '../../../data/sync/directMutationActions.ts'
 import { requestDriverUnlinkAction } from '../../../data/sync/driverUnlink.ts'
@@ -41,6 +41,10 @@ export default function useCarListActions({ ownerKey, cars, drivers, cloud, draf
   }
 
   async function save() {
+    if (!editingId && draft.type === 'sub' && !canAddDriverCar(cars)) {
+      showToast?.(DRIVER_CAR_LIMIT_MESSAGE)
+      return
+    }
     if (cloud && draft.type === 'sub' && draft.connectMode === 'link') {
       const err = validateDriverLinkFields(draft.driverName, draft.driverPhone)
       if (err) { showToast?.(err); return }

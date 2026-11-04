@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { describe, test } from 'node:test'
-import { checkCarDraft, dedupeCarsById, upsertCar, validateDriverLinkFields } from './cars.ts'
+import { MAX_DRIVER_CARS, canAddDriverCar, checkCarDraft, dedupeCarsById, upsertCar, validateDriverLinkFields } from './cars.ts'
 
 describe('차량 저장 — 기사명·정산·수수료', () => {
   test('차량번호 중복은 거절한다', () => {
@@ -217,5 +217,16 @@ describe('dedupeCarsById', () => {
     ])
     assert.equal(next.length, 1)
     assert.equal(next[0].id, id)
+  })
+})
+
+describe('기사 차량 대수 제한', () => {
+  test('기사 차량이 3대 미만이면 더 추가할 수 있다 — 메인 차량은 세지 않는다', () => {
+    const subs = (/** @type {number} */ n) => Array.from({ length: n }, (_, i) => ({ number: `${i}`, type: 'sub' }))
+    assert.equal(canAddDriverCar(null), true)
+    assert.equal(canAddDriverCar([{ number: 'm', type: 'main' }, ...subs(2)]), true)
+    assert.equal(canAddDriverCar([{ number: 'm', type: 'main' }, ...subs(3)]), false)
+    assert.equal(canAddDriverCar(subs(4)), false)
+    assert.equal(MAX_DRIVER_CARS, 3)
   })
 })

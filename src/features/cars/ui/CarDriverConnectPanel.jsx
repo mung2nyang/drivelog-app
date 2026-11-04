@@ -1,15 +1,18 @@
 // @ts-check
 /** @typedef {import('../../../domain/driverTypes.ts').DriverRecord} DriverRecord */
 import { formatInviteCode, generateInviteCode } from '../../../domain/drivers.ts'
+import { DRIVER_CAR_LIMIT_MESSAGE } from '../../../domain/cars.ts'
 import InfoTip from '../../../shared/ui/InfoTip.jsx'
 import '../../drivers/ui/driver-connection.css'
 
 const LINK_INFO = `기사님이 자기 휴대폰에서 로그인해 이 차량 운행일지를 직접 씁니다.
 [코드 생성]으로 만든 초대 코드를 기사님께 보내면, 기사님이 마이페이지 → 초대 코드 입력에 넣어 연동합니다.
 차주님은 메뉴의 "(기사 이름) 기사 관리"에서 정산 요약을 봅니다. 일지는 기사님만 고칠 수 있습니다.
-계약기간 밖 날짜는 기록할 수 없습니다.`
+계약기간 밖 날짜는 기록할 수 없습니다.
+${DRIVER_CAR_LIMIT_MESSAGE}`
 const LOG_INFO = `기사님이 앱을 쓰지 않을 때 고릅니다. 차주님이 이 차량 운행일지를 대신 씁니다.
-메뉴의 "(기사 이름) 기사 관리" → [운행일지]에서 기록하고, 정산은 연동 기사와 똑같이 계산됩니다.`
+메뉴의 "(기사 이름) 기사 관리" → [운행일지]에서 기록하고, 정산은 연동 기사와 똑같이 계산됩니다.
+${DRIVER_CAR_LIMIT_MESSAGE}`
 
 /**
  * 서브차량 "기사 연동 / 운행일지" 패널.

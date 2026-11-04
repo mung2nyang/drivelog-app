@@ -207,3 +207,76 @@ test('옛 건당 기사 차량은 수수료 빈 칸으로 열리고 기사 몫 �
     await view.cleanup()
   }
 })
+
+/** @param {string} ownerKey @param {number} subCount */
+function seedSubCars(ownerKey, subCount) {
+  beginSessionEpoch(ownerKey, ownerKey)
+  commitCars(ownerKey, [
+    { id: 'car-main', number: '11가1111', type: 'main' },
+    ...Array.from({ length: subCount }, (_, i) => ({ id: `car-sub-${i}`, number: `2${i}나000${i}`, type: 'sub', driverName: `기사${i}` })),
+  ])
+  commitDrivers(ownerKey, [])
+}
+
+const LIMIT_TOAST = '기사 차량은 연동, 미연동 합쳐 최대 3대까지 등록할 수 있습니다.'
+
+test('기사 차량이 3대면 [+ 추가]를 눌러도 창이 안 열리고 대수 제한 알림만 뜬다', async () => {
+  seedSubCars('flow-limit-3', 3)
+  const view = await render('flow-limit-3')
+  try {
+    await view.click(view.button('+ 추가'))
+    assert.equal(view.button('저장'), undefined, '등록 창이 안 열림')
+    assert.deepEqual(view.toasts, [LIMIT_TOAST])
+  } finally {
+    await view.cleanup()
+  }
+})
+
+test('기사 차량이 2대면 [+ 추가]로 기사 등록 창이 열리고, 메인 차량이 없으면 차량 등록 창이 열린다', async () => {
+  seedSubCars('flow-limit-2', 2)
+  const view = await render('flow-limit-2')
+  try {
+    await view.click(view.button('+ 추가'))
+    assert.equal(view.container.querySelector('.modal-title')?.textContent?.trim(), '기사 등록')
+    assert.deepEqual(view.toasts, [])
+  } finally {
+    await view.cleanup()
+  }
+  beginSessionEpoch('flow-limit-0', 'flow-limit-0')
+  commitCars('flow-limit-0', [])
+  commitDrivers('flow-limit-0', [])
+  const empty = await render('flow-limit-0')
+  try {
+    await empty.click(empty.button('+ 추가'))
+    assert.equal(empty.container.querySelector('.modal-title')?.textContent?.trim(), '차량 등록')
+  } finally {
+    await empty.cleanup()
+  }
+})
+
+test('기사 등록 창을 연 사이 기사 차량이 3대가 되면 [저장]해도 저장하지 않고 대수 제한 알림', async () => {
+  seedSubCars('flow-limit-race', 2)
+  const view = await render('flow-limit-race')
+  try {
+    await view.click(view.button('+ 추가'))
+    /** @param {string} id @param {string} value */
+    const type = async (id, value) => {
+      const input = /** @type {HTMLInputElement} */ (view.container.querySelector(`#${id}`))
+      const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set
+      await act(async () => { setter?.call(input, value); input.dispatchEvent(new window.Event('input', { bubbles: true })) })
+    }
+    await type('newCarNumber', '99라9999')
+    await type('newDriverName', '새기사')
+    await act(async () => {
+      commitCars('flow-limit-race', [
+        { id: 'car-main', number: '11가1111', type: 'main' },
+        ...Array.from({ length: 3 }, (_, i) => ({ id: `car-sub-${i}`, number: `2${i}나000${i}`, type: 'sub' })),
+      ])
+    })
+    await view.click(view.button('저장'))
+    assert.deepEqual(calls, [], '차량 저장 요청 없음')
+    assert.deepEqual(view.toasts, [LIMIT_TOAST])
+  } finally {
+    await view.cleanup()
+  }
+})

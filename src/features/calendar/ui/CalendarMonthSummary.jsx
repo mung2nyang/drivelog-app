@@ -7,7 +7,7 @@ import SummaryInfoToggle from '../../../shared/ui/SummaryInfoToggle.jsx'
  * @typedef {ReturnType<typeof import('../../../domain/monthSettlement.ts').monthSettlementSummary>} MonthSettlementSummary
  */
 
-const TOTAL_INFO = '합계는 운송료와 파렛트 회수 청구액에 부가세를 더하고 수수료를 뺀 금액입니다. 아래 정비비, 주유비, 통행료는 이 합계에서 차감하지 않은 이번 달 차량 지출입니다.'
+const TOTAL_INFO = '부가세 제외 합계는 운송료와 파렛트 회수 청구액에서 수수료와 산재보험료를 뺀 금액이고, 부가세 포함 합계는 여기에 부가세를 더한 금액입니다. 아래 정비비, 주유비, 통행료는 이 합계에서 차감하지 않은 이번 달 차량 지출입니다.'
 
 /** 수수료 설정 표시: "10%"는 그대로, 금액은 "건당 5,000원" @param {string} setting */
 function perTripSetting(setting) {
@@ -122,11 +122,15 @@ export default function CalendarMonthSummary({ paymentOn, unpaidTotal, summary, 
             <span className="summary-value">- {formatWon(summary.insuranceTotal)}</span>
           </div>
         )}
+        <div className="summary-row summary-subtotal">
+          <span>합계 (부가세 제외)</span>
+          <span className="summary-value">{formatWon(summary.total - summary.vat)}</span>
+        </div>
         <div className="summary-row">
           <span>부가세 (공급가액 기준 10%)</span>
           <span className="summary-value">{formatWon(summary.vat)}</span>
         </div>
-        <SummaryInfoToggle className="summary-row total" label="합계" value={formatWon(summary.total)} infoName="합계" info={TOTAL_INFO} />
+        <SummaryInfoToggle className="summary-row total" label={<>합계 <span className="summary-total-vat">(부가세 포함)</span></>} value={formatWon(summary.total)} infoName="합계" info={TOTAL_INFO} />
 
         {summary.maint > 0 && (
           <div

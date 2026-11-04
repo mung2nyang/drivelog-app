@@ -28,6 +28,11 @@
   border-bottom-left-radius: 11px;
 }
 
+/* 메인 정산 카드 부가세 제외 합계 줄 */
+.main-page .summary-subtotal { font-weight: var(--fw-bold); }
+/* 좁으면 "(부가세 포함)"이 통째로 다음 줄로 */
+.main-page .summary-total-vat { white-space: nowrap; font-size: var(--fs-6); }
+
 /* 메인 정산 카드 합계 아래 구분선 — 얇은 실선(합계 위 선은 shared-controls.css) */
 .main-page .summary-expense-first {
   border-top: 1px solid color-mix(in srgb, var(--border-color) 82%, transparent);

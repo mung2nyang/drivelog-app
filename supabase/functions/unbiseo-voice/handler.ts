@@ -10,6 +10,8 @@ const TIMEOUT_MS = 15000
 // 말소리라 낮은 비트레이트로 — 파일이 작아 휴대폰에서 빨리 받는다.
 const OUTPUT_FORMAT = { codec: 'mp3', sample_rate: 24000, bit_rate: 32000 }
 const TRY_LATER = '잠시 뒤 다시 시도해 주세요.'
+const DAILY_LIMIT = 20
+const USED_UP = `오늘 운비서를 ${DAILY_LIMIT}번 모두 썼어요. 내일 다시 써 주세요.`
 const CORS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -27,14 +29,32 @@ export function readText(body: Json): string | null {
   return text && text.length <= TEXT_MAX ? text : null
 }
 
-// 로그인 확인은 unbiseo-parse와 같은 방식 — 함수끼리 파일을 나눠 쓸 수 없어 따로 둔다.
+function bearer(req: Request): string {
+  return (req.headers.get('Authorization') || '').replace(/^Bearer\s+/i, '').trim()
+}
+
+// 로그인 확인·횟수 세기는 unbiseo-parse와 같은 방식 — 함수끼리 파일을 나눠 쓸 수 없어 따로 둔다.
 async function signedInUserId(req: Request): Promise<string | null> {
-  const token = (req.headers.get('Authorization') || '').replace(/^Bearer\s+/i, '').trim()
+  const token = bearer(req)
   const url = Deno.env.get('SUPABASE_URL')
   const key = publishableKey()
   if (!token || !url || !key) return null
   const { data, error } = await createClient(url, key, { auth: { persistSession: false } }).auth.getUser(token)
   return error || !data.user ? null : data.user.id
+}
+
+/** 그 회원의 오늘(한국 날짜) 목소리 횟수를 1 센다 — 한도 안이면 true, 넘었으면 false, 셀 수 없으면 null. */
+async function countToday(req: Request): Promise<boolean | null> {
+  const url = Deno.env.get('SUPABASE_URL')
+  const key = publishableKey()
+  if (!url || !key) return null
+  const client = createClient(url, key, { auth: { persistSession: false }, global: { headers: { Authorization: `Bearer ${bearer(req)}` } } })
+  try {
+    const { data, error } = await client.rpc('use_unbiseo', { p_kind: 'voice', p_limit: DAILY_LIMIT })
+    return error || typeof data !== 'boolean' ? null : data
+  } catch {
+    return null
+  }
 }
 
 function publishableKey(): string | null {
@@ -84,6 +104,12 @@ export async function handleRequest(req: Request): Promise<Response> {
   }
   const text = readText(body)
   if (!text) return reply(400, { error: '요청 모양이 맞지 않습니다.' })
+  const allowed = await countToday(req)
+  if (allowed === null) {
+    console.error('[unbiseo-voice] count_failed')
+    return reply(503, { error: TRY_LATER })
+  }
+  if (!allowed) return reply(429, { error: USED_UP, limit: DAILY_LIMIT })
   const startedAt = Date.now()
   const sound = await askVoice(text)
   // 비용 세기용 — 글자 수·걸린 시간·성공 여부만, 문장은 남기지 않는다.

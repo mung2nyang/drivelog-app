@@ -21,7 +21,8 @@ function releaseSound(reading: Reading) {
   reading.url = ''
 }
 
-export default function useSpeechOutput() {
+/** onUsedUp: 하루 목소리 횟수를 다 썼을 때 안내 문구를 띄우는 곳(소리는 내지 않는다). */
+export default function useSpeechOutput(onUsedUp?: (message: string) => void) {
   const [speaking, setSpeaking] = useState(false)
   const currentRef = useRef<Reading | null>(null)
   const supported = engine() !== null || canPlayAudio()
@@ -65,6 +66,7 @@ export default function useSpeechOutput() {
     const sound = canPlayAudio() ? requestUnbiseoVoice(sentence) : Promise.resolve(null)
     void sound.then((blob) => {
       if (currentRef.current !== reading) return
+      if (blob && !(blob instanceof Blob)) { end(reading); onUsedUp?.(blob.usedUp); return }
       if (!blob) { speakOnDevice(sentence, reading); return }
       reading.url = URL.createObjectURL(blob)
       const audio = new window.Audio(reading.url)
@@ -73,7 +75,7 @@ export default function useSpeechOutput() {
       audio.onerror = () => speakOnDevice(sentence, reading)
       audio.play().catch(() => speakOnDevice(sentence, reading))
     })
-  }, [stop, end, speakOnDevice])
+  }, [stop, end, speakOnDevice, onUsedUp])
 
   useEffect(() => () => {
     const reading = currentRef.current

@@ -6,7 +6,7 @@ import { mock, test } from 'node:test'
 
 /** @type {Array<string>} */
 const asked = []
-/** @type {(text: string) => Promise<Blob|null>} */
+/** @type {(text: string) => Promise<Blob|{ usedUp: string }|null>} */
 let voice = async () => null
 mock.module('../api/unbiseoVoice.ts', { namedExports: { requestUnbiseoVoice: (/** @type {string} */ text) => { asked.push(text); return voice(text) } } })
 
@@ -48,10 +48,11 @@ function removeFakes() {
   asked.length = 0
 }
 
-async function mount() {
+/** @param {(message: string) => void} [onUsedUp] */
+async function mount(onUsedUp) {
   const latest = { current: null }
   function Harness() {
-    latest.current = useSpeechOutput()
+    latest.current = useSpeechOutput(onUsedUp)
     return null
   }
   const container = document.createElement('div')
@@ -105,6 +106,22 @@ test('xAI 소리를 못 받으면(오류·5초 넘음) 휴대폰 목소리로 �
     assert.equal(synth.spoken[0].lang, 'ko-KR')
     await act(async () => { synth.spoken[0].onend() })
     assert.equal(view.latest.current.speaking, false)
+  } finally {
+    await view.unmount()
+    removeFakes()
+  }
+})
+
+test('하루 목소리 횟수를 다 쓰면 소리·휴대폰 목소리 없이 안내 문구만 한 번', async () => {
+  const synth = installFakeSynth()
+  const audio = installFakeAudio()
+  const shown = []
+  voice = async () => ({ usedUp: '오늘 운비서를 20번 모두 썼어요. 내일 다시 써 주세요.' })
+  const view = await mount((message) => { shown.push(message) })
+  try {
+    await act(async () => { view.latest.current.speak('10월 매출은 0원입니다.'); await flush() })
+    assert.deepEqual([audio.played.length, synth.spoken.length, view.latest.current.speaking], [0, 0, false])
+    assert.deepEqual(shown, ['오늘 운비서를 20번 모두 썼어요. 내일 다시 써 주세요.'])
   } finally {
     await view.unmount()
     removeFakes()

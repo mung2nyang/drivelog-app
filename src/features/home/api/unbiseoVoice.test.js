@@ -39,6 +39,13 @@ test('빈 문장·301자는 부르지 않는다', async () => {
   assert.equal(calls.length, 0)
 })
 
+test('하루 횟수를 다 쓰면(429) 서버 한도로 안내 문구, 숫자를 못 읽으면 숫자 없이', async () => {
+  reply = async () => ({ data: null, error: new FunctionsHttpError(new Response('{"error":"x","limit":20}', { status: 429 })) })
+  assert.deepEqual(await requestUnbiseoVoice('답'), { usedUp: '오늘 운비서를 20번 모두 썼어요. 내일 다시 써 주세요.' })
+  reply = async () => ({ data: null, error: new FunctionsHttpError(new Response('{}', { status: 429 })) })
+  assert.deepEqual(await requestUnbiseoVoice('답'), { usedUp: '오늘 운비서를 모두 썼어요. 내일 다시 써 주세요.' })
+})
+
 test('오류(401·503)·시간 넘김(던짐)·소리 아님·빈 소리는 없음', async () => {
   for (const status of [401, 503]) {
     reply = async () => ({ data: null, error: new FunctionsHttpError(new Response('{}', { status })) })

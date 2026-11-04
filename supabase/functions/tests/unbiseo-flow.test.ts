@@ -123,8 +123,8 @@ flow('목소리: 소리를 받으면 200 octet-stream, 같은 바이트', async 
   assert.equal(response.status, 200)
   assert.equal(response.headers.get('Content-Type'), 'application/octet-stream')
   assert.deepEqual([...new Uint8Array(await response.arrayBuffer())], [1, 2, 3])
-  assert.deepEqual(urls, [USER_URL, TTS_URL])
-  assert.equal(requests[1].headers.get('Authorization'), 'Bearer fake-xai-key')
+  assert.deepEqual(urls, [USER_URL, LIMIT_URL, TTS_URL])
+  assert.equal(requests[2].headers.get('Authorization'), 'Bearer fake-xai-key')
 })
 
 flow('목소리: AI 500·빈 소리는 503', async () => {
@@ -138,7 +138,7 @@ flow('목소리: AI 500·빈 소리는 503', async () => {
 flow('목소리: AI 키가 없으면 503, AI를 안 부름', async () => {
   const { response, urls } = await callWith(voice, post(VOICE_BODY), {}, { XAI_API_KEY: null })
   assert.equal(response.status, 503)
-  assert.deepEqual(urls, [USER_URL])
+  assert.deepEqual(urls, [USER_URL, LIMIT_URL])
 })
 
 flow('날씨: 어제는 past, 3일 뒤는 tooFar, 없는 동네는 noPlace, 기상청을 안 부름', async () => {

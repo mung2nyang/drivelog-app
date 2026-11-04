@@ -103,7 +103,7 @@ function messageForStatus(status: number): string {
 }
 
 /** 429 답에 실린 하루 한도로 문구를 만든다 — 숫자를 못 읽으면 숫자 없이. */
-async function usedUpMessage(response: Response): Promise<string> {
+export async function usedUpMessage(response: Response): Promise<string> {
   try {
     const limit = record(await response.json())?.limit
     return typeof limit === 'number' && Number.isInteger(limit) && limit > 0 ? `오늘 운비서를 ${limit}번 모두 썼어요. 내일 다시 써 주세요.` : USED_UP

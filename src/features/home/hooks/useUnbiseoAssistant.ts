@@ -63,7 +63,7 @@ export default function useUnbiseoAssistant() {
     setAnswer(null)
   }
   // 마이크로 말했을 때만 답을 소리로 — 듣기를 시작하면 읽던 것을 먼저 멈춘다.
-  const voice = useSpeechOutput()
+  const voice = useSpeechOutput(showToast)
   const stopSpeaking = voice.stop
   const currentOwner = useRef(ownerKey)
   useEffect(() => {

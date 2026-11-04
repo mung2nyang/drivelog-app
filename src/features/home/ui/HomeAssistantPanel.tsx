@@ -23,9 +23,17 @@ export default function HomeAssistantPanel({ assistant, onOpenCall }: Props) {
     void send(text)
   }
 
-  // 버튼 자리는 하나만 — 계약 기간 밖 → 휴무 버튼 → 고정 노선·콜 상세 꺼짐 → 휴무 → [기록하기] 순서.
+  async function turnOn(record: UnbiseoRecord) {
+    if (isFixed) {
+      void enableSetting({ fixedOn: true })
+      return
+    }
+    if (await enableSetting({ callDetail: true }) && !dayOff) onOpenCall?.(record, { cancelOff: false })
+  }
+
+  // 버튼 자리는 하나만 — 계약 기간 밖 → 휴무 버튼 → 기능 꺼짐 → 휴무 → 고정 노선 [기록하기] 순서. 운행·지출·거래처는 버튼 없이 바로 연다.
   function actionFor(record: UnbiseoRecord) {
-    if (answer?.client) return <button type="button" className="home-assistant-action" onClick={() => onOpenCall?.(record, { cancelOff: false })}>등록하기</button>
+    if (answer?.client) return null
     if (periodNotice) {
       return (
         <div className="home-assistant-enable" role="status">
@@ -40,7 +48,7 @@ export default function HomeAssistantPanel({ assistant, onOpenCall }: Props) {
       return (
         <div className="home-assistant-enable">
           <p className="home-assistant-note">{isFixed ? '고정 노선 기능이 꺼져 있어요. 켤까요?' : '운행 세부 입력 기능이 꺼져 있어요. 켤까요?'}</p>
-          <button type="button" className="home-assistant-action" disabled={enabling} onClick={() => void enableSetting(isFixed ? { fixedOn: true } : { callDetail: true })}>켜기</button>
+          <button type="button" className="home-assistant-action" disabled={enabling} onClick={() => void turnOn(record)}>켜기</button>
         </div>
       )
     }
@@ -52,7 +60,8 @@ export default function HomeAssistantPanel({ assistant, onOpenCall }: Props) {
         </div>
       )
     }
-    return <button type="button" className="home-assistant-action" onClick={() => onOpenCall?.(record, { cancelOff: false })}>기록하기</button>
+    if (isFixed) return <button type="button" className="home-assistant-action" onClick={() => onOpenCall?.(record, { cancelOff: false })}>기록하기</button>
+    return null
   }
 
   return (

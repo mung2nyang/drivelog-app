@@ -20,6 +20,12 @@ mock.module('../../../data/sync/dailyInspections.ts', {
     hasAnyDailyInspection: async () => false,
   },
 })
+// 앱 설정 저장은 진짜를 쓰고, 실패만 흉내 낼 수 있게.
+const realSettingsSave = await import('../../../data/sync/settingsSave.ts')
+const settingsSave = { error: null }
+mock.module('../../../data/sync/settingsSave.ts', {
+  namedExports: { ...realSettingsSave, savePracticeSettings: async (...args) => { if (settingsSave.error) throw settingsSave.error; return realSettingsSave.savePracticeSettings(...args) } },
+})
 
 globalThis.IS_REACT_ACT_ENVIRONMENT = true
 
@@ -43,7 +49,7 @@ const calls = []
 let reply = async () => ({ data: null, error: null })
 supabase.functions = { invoke: async (name, options) => { calls.push({ name, body: options.body }); return reply() } }
 const toasts = []
-beforeEach(() => { calls.length = 0; toasts.length = 0; reply = async () => ({ data: null, error: null }) })
+beforeEach(() => { calls.length = 0; toasts.length = 0; settingsSave.error = null; reply = async () => ({ data: null, error: null }) })
 
 const CLOUD = { userId: 'u-assistant', name: '보리', accountType: 'owner' }
 
@@ -189,11 +195,12 @@ test('비회원이 줄 마이크를 누르면 카드만 열려 로그인 안내,
   }
 })
 
-// 로드맵 24-B-2 — 운행 결과 아래 [기록하기], "콜 상세"가 꺼져 있으면 [켜기] 먼저.
+// 운행은 버튼 없이 바로 넘기고, "콜 상세"가 꺼져 있으면 [켜기] 먼저.
 const CALL_REPLY = async () => ({ data: { kind: 'call', call: { date: '2026-10-21', loadLoc: '수원', unloadLoc: '화성', fare: 150000, client: '한진' } }, error: null })
+const CALL_HEARD = { date: '2026-10-21', loadLoc: '수원', unloadLoc: '화성', fare: 150000, client: '한진' }
 const actionButton = (container, label) => [...container.querySelectorAll('.home-assistant-action')].find((el) => el.textContent === label)
 
-test('콜 상세 켜짐: 운행 결과 아래 [기록하기] — 누르면 알아들은 운행을 그대로 넘긴다', async () => {
+test('콜 상세 켜짐: 버튼 없이 보내자마자 알아들은 운행을 그대로 넘긴다', async () => {
   commitSettings('u-assistant-on', normalizeSettings({ callDetail: true }))
   reply = CALL_REPLY
   const opened = []
@@ -202,25 +209,71 @@ test('콜 상세 켜짐: 운행 결과 아래 [기록하기] — 누르면 알�
     await view.type('어제 수원 화성 15만 한진')
     await view.send()
     assert.equal(view.container.querySelector('.home-assistant-enable'), null)
-    await act(async () => { actionButton(view.container, '기록하기').click() })
-    assert.deepEqual(opened, [{ call: { date: '2026-10-21', loadLoc: '수원', unloadLoc: '화성', fare: 150000, client: '한진' }, options: { cancelOff: false } }])
+    assert.equal(view.container.querySelector('.home-assistant-action'), null, '[기록하기] 없음')
+    assert.deepEqual(opened, [{ call: CALL_HEARD, options: { cancelOff: false } }])
   } finally { await view.cleanup() }
 })
 
-test('콜 상세 꺼짐: "켤까요?" + [켜기] → 앱 설정의 콜 상세가 켜지고 그 자리에 [기록하기]', async () => {
+test('바로 넘긴 답은 카드를 접었다 펴거나 설정이 바뀌어도 다시 넘기지 않는다', async () => {
+  commitSettings('u-assistant-once', normalizeSettings({ callDetail: true }))
+  reply = CALL_REPLY
+  const opened = []
+  const view = await mount('u-assistant-once', { ...CLOUD, userId: 'u-assistant-once' }, { props: { onOpenAssistantCall: (call, options) => opened.push({ call, options }) } })
+  try {
+    await view.type('어제 수원 화성 15만 한진')
+    await view.send()
+    const toggle = view.container.querySelector('.home-assistant-toggle')
+    await act(async () => { toggle.click() })
+    await act(async () => { toggle.click() })
+    await act(async () => { commitSettings('u-assistant-once', normalizeSettings({ callDetail: false })) })
+    await act(async () => { commitSettings('u-assistant-once', normalizeSettings({ callDetail: true })) })
+    assert.equal(opened.length, 1)
+    await view.send()
+    assert.equal(opened.length, 2, '다시 보내면 새 답이라 한 번 더')
+  } finally { await view.cleanup() }
+})
+
+test('콜 상세 꺼짐: "켤까요?" + [켜기] → 앱 설정의 콜 상세가 켜지고 바로 넘긴다', async () => {
   commitSettings('u-assistant-off', normalizeSettings({ callDetail: false }))
   reply = CALL_REPLY
-  const view = await mount('u-assistant-off', CLOUD, { props: { onOpenAssistantCall: () => {} } })
+  const opened = []
+  const view = await mount('u-assistant-off', CLOUD, { props: { onOpenAssistantCall: (call, options) => opened.push({ call, options }) } })
   try {
     await view.type('어제 수원 화성 15만')
     await view.send()
-    assert.equal(actionButton(view.container, '기록하기'), undefined)
+    assert.deepEqual(opened, [], '꺼져 있으면 넘기지 않음')
     assert.equal(view.container.querySelector('.home-assistant-enable .home-assistant-note')?.textContent, '운행 세부 입력 기능이 꺼져 있어요. 켤까요?')
     await act(async () => { actionButton(view.container, '켜기').click() })
     await act(async () => { await new Promise((resolve) => setTimeout(resolve, 0)) })
     assert.equal(readOwnerSettings('u-assistant-off').callDetail, true)
-    assert.ok(actionButton(view.container, '기록하기'))
+    assert.deepEqual(opened, [{ call: CALL_HEARD, options: { cancelOff: false } }])
+    assert.equal(view.container.querySelector('.home-assistant-action'), null, '[기록하기] 없음')
     assert.equal(view.container.querySelector('.home-assistant-enable'), null)
+  } finally { await view.cleanup() }
+})
+
+test('콜 상세 [켜기]: 저장이 실패하면 알림만, 넘기지 않는다 · 그날 휴무면 [휴무 취소하고 기록]', async () => {
+  const owner = 'u-assistant-off-fail'
+  commitSettings(owner, normalizeSettings({ callDetail: false }))
+  reply = CALL_REPLY
+  const opened = []
+  const view = await mount(owner, { ...CLOUD, userId: owner }, { props: { onOpenAssistantCall: (call, options) => opened.push({ call, options }) } })
+  try {
+    await view.type('어제 수원 화성 15만')
+    await view.send()
+    settingsSave.error = new Error('x')
+    await act(async () => { actionButton(view.container, '켜기').click() })
+    await act(async () => { await new Promise((resolve) => setTimeout(resolve, 0)) })
+    assert.deepEqual(toasts, [SERVER_SAVE_FAIL])
+    assert.deepEqual(opened, [])
+    assert.ok(actionButton(view.container, '켜기'), '[켜기] 그대로')
+    settingsSave.error = null
+    await act(async () => { commitWorkData(owner, { '2026-10-21': { isOff: true } }) })
+    await act(async () => { actionButton(view.container, '켜기').click() })
+    await act(async () => { await new Promise((resolve) => setTimeout(resolve, 0)) })
+    assert.equal(readOwnerSettings(owner).callDetail, true)
+    assert.deepEqual(opened, [], '휴무면 넘기지 않음')
+    assert.ok(actionButton(view.container, '휴무 취소하고 기록'))
   } finally { await view.cleanup() }
 })
 
@@ -251,31 +304,35 @@ async function askAs(ownerKey, session, date, opened = []) {
   return view
 }
 
-test('연동 기사 + 계약 시작 전·끝난 뒤 날짜: 일지와 같은 안내 두 줄, 버튼 없음', async () => {
+test('연동 기사 + 계약 시작 전·끝난 뒤 날짜: 일지와 같은 안내 두 줄, 버튼 없음, 넘기지 않음', async () => {
   commitDrivers('u-assistant-driver', [{ id: 'link-1', name: '김기사', phone: '', vehicleNumber: '34나5678', startDate: '2026-10-05', endDate: '2026-10-25', status: 'linked' }])
-  let view = await askAs('u-assistant-driver', DRIVER, '2026-10-01')
+  const opened = []
+  let view = await askAs('u-assistant-driver', DRIVER, '2026-10-01', opened)
   try {
     const notes = [...view.container.querySelectorAll('.home-assistant-enable .home-assistant-note')].map((el) => el.textContent)
     assert.deepEqual(notes, ['계약기간 전 날짜입니다.', '10월 5일부터 기록할 수 있습니다.'])
     assert.equal(view.container.querySelector('.home-assistant-action'), null)
   } finally { await view.cleanup() }
-  view = await askAs('u-assistant-driver', DRIVER, '2026-10-26')
+  view = await askAs('u-assistant-driver', DRIVER, '2026-10-26', opened)
   try {
     const notes = [...view.container.querySelectorAll('.home-assistant-enable .home-assistant-note')].map((el) => el.textContent)
     assert.deepEqual(notes, ['계약기간이 끝난 날짜입니다.', '10월 25일까지 기록할 수 있습니다.'])
     assert.equal(view.container.querySelector('.home-assistant-action'), null)
   } finally { await view.cleanup() }
-  view = await askAs('u-assistant-driver', DRIVER, '2026-10-10')
+  assert.deepEqual(opened, [], '기간 밖이면 넘기지 않음')
+  view = await askAs('u-assistant-driver', DRIVER, '2026-10-10', opened)
   try {
-    assert.ok(actionButton(view.container, '기록하기'), '기간 안이면 그대로')
+    assert.equal(opened.length, 1, '기간 안이면 바로 넘김')
   } finally { await view.cleanup() }
 })
 
-test('차주는 연동 기사 줄이 있어도 기간 안내 없이 [기록하기]', async () => {
+test('차주는 연동 기사 줄이 있어도 기간 안내 없이 바로 넘긴다', async () => {
   commitDrivers('u-assistant-owner', [{ id: 'link-1', name: '김기사', phone: '', vehicleNumber: '34나5678', startDate: '2026-10-05', endDate: '', status: 'linked' }])
-  const view = await askAs('u-assistant-owner', { userId: 'u-assistant-owner', name: '보리', accountType: 'owner' }, '2026-10-01')
+  const opened = []
+  const view = await askAs('u-assistant-owner', { userId: 'u-assistant-owner', name: '보리', accountType: 'owner' }, '2026-10-01', opened)
   try {
-    assert.ok(actionButton(view.container, '기록하기'))
+    assert.equal(view.container.querySelector('.home-assistant-enable'), null)
+    assert.equal(opened.length, 1)
   } finally { await view.cleanup() }
 })
 
@@ -292,10 +349,10 @@ test('그날 휴무: "휴무를 취소하고 운행을 기록할까요?" + [휴�
   } finally { await view.cleanup() }
 })
 
-// 로드맵 24-C-2 — 지출 결과 아래도 같은 자리에 [기록하기]·휴무·기간 안내(콜 상세 꺼짐은 운행만).
+// 지출도 운행처럼 바로 넘기고, 휴무·기간 안내는 같은 자리(콜 상세 꺼짐은 운행만).
 const expenseOn = (date) => async () => ({ data: { kind: 'expense', expense: { ...EXPENSE_FUEL, date } }, error: null })
 
-test('지출: 콜 상세가 꺼져 있어도 [기록하기] — 누르면 알아들은 지출을 그대로 넘긴다', async () => {
+test('지출: 콜 상세가 꺼져 있어도 버튼 없이 보내자마자 알아들은 지출을 그대로 넘긴다', async () => {
   commitSettings('u-assistant-expense', normalizeSettings({ callDetail: false }))
   reply = expenseOn('2026-10-21')
   const opened = []
@@ -304,7 +361,7 @@ test('지출: 콜 상세가 꺼져 있어도 [기록하기] — 누르면 알아
     await view.type('어제 주유 8만원')
     await view.send()
     assert.equal(view.container.querySelector('.home-assistant-enable'), null, '켜기 안내 없음')
-    await act(async () => { actionButton(view.container, '기록하기').click() })
+    assert.equal(view.container.querySelector('.home-assistant-action'), null, '[기록하기] 없음')
     assert.deepEqual(opened, [{ record: { ...EXPENSE_FUEL, date: '2026-10-21' }, options: { cancelOff: false } }])
   } finally { await view.cleanup() }
 })
@@ -482,8 +539,8 @@ test('고정 노선 꺼짐: "켤까요?" + [켜기] → 앱 설정의 고정 노
   } finally { await view.cleanup() }
 })
 
-// 로드맵 24-G-2 — 거래처 등록: 문장 + [등록하기], 이미 있는 이름이면 문장만.
-test('거래처 등록: 문장 아래 [등록하기] — 누르면 들은 거래처를 넘긴다, 이미 있는 이름이면 버튼 없이 알림', async () => {
+// 거래처 등록: 새 이름은 바로 넘기고, 이미 있는 이름이면 문장만.
+test('거래처 등록: 버튼 없이 보내자마자 들은 거래처를 넘긴다, 이미 있는 이름이면 넘기지 않고 알림', async () => {
   const owner = 'u-assistant-client'
   commitClients(owner, [{ id: 'c1', companyName: '롯데' }])
   const heard = { name: '한진', manager: '김철수', phone: '010-1234-5678', paymentTerm: 'next_month_end', paymentTermValue: null, commType: 'percent', commValue: 5 }
@@ -494,8 +551,7 @@ test('거래처 등록: 문장 아래 [등록하기] — 누르면 들은 거래
     await view.type('거래처 등록 한진 김철수 010-1234-5678 익월 말일 수수료 5%')
     await view.send()
     assert.equal(view.container.querySelector('.home-assistant-result')?.textContent, '한진을 거래처로 등록할게요. (담당자 김철수, 010-1234-5678, 다음 달 말일 정산, 수수료 5%)')
-    assert.equal(actionButton(view.container, '기록하기'), undefined)
-    await act(async () => { actionButton(view.container, '등록하기').click() })
+    assert.equal(view.container.querySelector('.home-assistant-action'), null, '[등록하기] 없음')
     assert.deepEqual(opened, [{ record: heard, options: { cancelOff: false } }])
 
     reply = async () => ({ data: { kind: 'client', client: { ...heard, name: '롯데' } }, error: null })
@@ -503,6 +559,7 @@ test('거래처 등록: 문장 아래 [등록하기] — 누르면 들은 거래
     await view.send()
     assert.equal(view.container.querySelector('.home-assistant-result')?.textContent, '롯데는 이미 등록된 거래처예요.')
     assert.equal(view.container.querySelector('.home-assistant-action'), null, '버튼 없음')
+    assert.equal(opened.length, 1, '이미 있는 이름은 넘기지 않음')
   } finally { await view.cleanup() }
 })
 

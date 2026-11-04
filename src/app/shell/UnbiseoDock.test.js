@@ -1,4 +1,4 @@
-// 로드맵 24-B-3-B — 홈이 아닌 화면에서 아래 메뉴 위 오른쪽에 떠 있는 운비서 캐릭터 버튼(수정 2). 홈 카드와 같은 대화, [기록하기]면 작게 하고 일지로.
+// 로드맵 24-B-3-B — 홈이 아닌 화면에서 아래 메뉴 위 오른쪽에 떠 있는 운비서 캐릭터 버튼(수정 2). 홈 카드와 같은 대화, 운행·지출은 알아들으면 바로 작게 하고 일지로.
 // 앱 틀(AppShell)을 그대로 그려 아래 메뉴로 화면을 옮긴다. 입력 칸 붙잡기가 브라우저 기록을 보므로 BrowserRouter.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
@@ -189,12 +189,11 @@ test('같은 대화: 홈 카드에서 받은 결과가 다른 화면의 카드�
   } finally { await view.cleanup() }
 })
 
-test('카드에서 [기록하기] → 그 날짜 일지에 채운 입력 창, 다시 작은 버튼', async () => {
+test('카드에서 보내면 버튼 없이 그 날짜 일지에 채운 입력 창, 다시 작은 버튼', async () => {
   replies = [callReply('수원', '화성')]
   const view = await renderShell('dock-open', '/app/revenue')
   try {
     await view.askDock('어제 수원 화성 15만')
-    await view.click(view.button('기록하기', view.dock() || undefined))
     await view.waitForLoad('수원')
     assert.equal(window.location.pathname, `/app/day/${DATE}`)
     assert.equal(view.dock()?.querySelector('.home-assistant-panel'), null, '작게')
@@ -209,19 +208,16 @@ test('이미 그 날짜 일지: 입력 창이 열려 있으면 확인 창 먼저
   const view = await renderShell('dock-same-day', '/app/revenue')
   try {
     await view.askDock('어제 수원 화성 15만')
-    await view.click(view.button('기록하기', view.dock() || undefined))
     await view.waitForLoad('수원')
     assert.equal(view.value('callLoadLoc'), '수원')
 
     await view.askDock('어제 평택 용인 15만')
-    await view.click(view.button('기록하기', view.dock() || undefined))
     await waitUntil(() => !!view.container.textContent?.includes('저장하지 않은 입력이 있습니다'))
     assert.ok(view.container.textContent?.includes('저장하지 않은 입력이 있습니다'))
     await view.click(view.button('계속 입력'))
     assert.equal(view.value('callLoadLoc'), '수원', '[계속 입력]이면 채우지 않음')
 
     await view.askDock('어제 평택 용인 15만')
-    await view.click(view.button('기록하기', view.dock() || undefined))
     await waitUntil(() => !!view.button('나가기'))
     await view.click(view.button('나가기'))
     await view.waitForLoad('평택')
@@ -237,7 +233,6 @@ test('이미 그 날짜 일지, 열린 입력 칸 없음: 확인 없이 바로 �
   try {
     assert.equal(view.container.querySelector('#callLoadLoc'), null)
     await view.askDock('어제 평택 용인 15만')
-    await view.click(view.button('기록하기', view.dock() || undefined))
     await view.waitForLoad('평택')
     assert.ok(!view.container.textContent?.includes('저장하지 않은 입력이 있습니다'))
     assert.equal(view.value('callLoadLoc'), '평택')
@@ -268,21 +263,19 @@ test('받아쓰기 되는 휴대폰: 버튼을 한 번 누르면 카드가 열�
   }
 })
 
-// 로드맵 24-C-2 — 지출도 같은 길: [기록하기] → 그 날짜 일지의 지출 창, 이미 열려 있으면 확인 창 먼저.
+// 지출도 같은 길: 보내면 바로 그 날짜 일지의 지출 창, 이미 열려 있으면 확인 창 먼저.
 const expenseReply = (/** @type {'fuel'|'misc'} */ type, /** @type {number} */ cost) => ({ data: { kind: 'expense', expense: { date: DATE, type, cost, name: type === 'misc' ? '통행료' : '', category: type === 'misc' ? '통행료' : '', fuelType: type === 'fuel' ? '주유' : '', payment: '' } } })
 
-test('지출 [기록하기] → 그 날짜 일지의 지출 창, 같은 날짜에서 또 넘기면 확인 창 [나가기] 뒤 새로 채움', async () => {
+test('지출: 보내면 바로 그 날짜 일지의 지출 창, 같은 날짜에서 또 넘기면 확인 창 [나가기] 뒤 새로 채움', async () => {
   replies = [expenseReply('fuel', 120000), expenseReply('misc', 5000)]
   const view = await renderShell('dock-expense', '/app/revenue')
   try {
     await view.askDock('어제 경유 12만원')
-    await view.click(view.button('기록하기', view.dock() || undefined))
     await waitUntil(() => view.value('expenseCost') === '120,000')
     assert.equal(window.location.pathname, `/app/day/${DATE}`)
     assert.equal(view.dock()?.querySelector('.home-assistant-panel'), null, '작게')
 
     await view.askDock('어제 통행료 5천원')
-    await view.click(view.button('기록하기', view.dock() || undefined))
     await waitUntil(() => !!view.button('나가기'))
     await view.click(view.button('나가기'))
     await waitUntil(() => view.value('expenseCost') === '5,000')

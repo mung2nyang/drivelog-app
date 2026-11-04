@@ -136,16 +136,19 @@ export default function useUnbiseoAssistant() {
   }
 
   // 앱 설정 화면의 "콜 상세"·"고정 노선" 켜기와 같은 값을 저장한다.
-  async function enableSetting(patch: { callDetail: true } | { fixedOn: true }) {
-    if (enabling) return
+  async function enableSetting(patch: { callDetail: true } | { fixedOn: true }): Promise<boolean> {
+    if (enabling) return false
     setEnabling(true)
+    let saved = true
     try {
       await savePracticeSettings(ownerKey, patch)
     } catch (error) {
       console.error('설정 저장 실패:', error)
       showToast(SERVER_SAVE_FAIL)
+      saved = false
     }
     setEnabling(false)
+    return saved
   }
 
   // [저장하기] — 저장 중엔 잠그고, 그 사이 계정이 바뀌거나 다른 말을 보냈으면 결과를 붙이지 않는다.

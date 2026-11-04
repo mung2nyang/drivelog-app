@@ -12,7 +12,10 @@
   font-size: var(--fs-floor);
   line-height: 1.4;
   text-align: right;
+  word-break: keep-all; /* 좁으면 낱말 사이에서만 꺾임 */
 }
+
+.call-vat-check span { white-space: nowrap; }
 
 .call-vat-check {
   display: inline-flex;

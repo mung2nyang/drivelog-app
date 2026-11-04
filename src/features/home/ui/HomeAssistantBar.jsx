@@ -29,7 +29,6 @@ export default function HomeAssistantBar() {
           </span>
           <span className="home-assistant-copy">
             <strong className="home-assistant-name">AI 운비서</strong>
-            <span className="home-assistant-hint">운비서에게 무엇이든 물어보세요</span>
           </span>
         </button>
         {speech.supported && (

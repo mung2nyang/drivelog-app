@@ -50,17 +50,9 @@
 
 .home-assistant-name {
   color: var(--text-color);
-  font-size: var(--fs-4);
-  font-weight: var(--fw-heavy);
-}
-
-.home-assistant-hint {
-  overflow: hidden;
-  color: var(--sub-text-color);
-  font-size: var(--fs-3);
-  font-weight: var(--fw-bold);
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  font-family: 'Jua', sans-serif;
+  font-size: var(--fs-7);
+  font-weight: var(--fw-regular);
 }
 
 .home-assistant-panel {
@@ -134,8 +126,7 @@
   cursor: default;
 }
 
-.home-assistant-note,
-.home-assistant-said {
+.home-assistant-note {
   margin: 0;
   color: var(--sub-text-color);
   font-size: var(--fs-3);

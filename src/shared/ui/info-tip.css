@@ -63,6 +63,8 @@
   line-height: 1.5;
   text-align: left;
   white-space: pre-line;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
 }
 
 /* 카드 위 꼬리 — (i) 가운데를 가리킨다 */

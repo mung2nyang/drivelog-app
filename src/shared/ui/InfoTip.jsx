@@ -16,6 +16,9 @@ function rightLimit(/** @type {HTMLElement} */ card) {
   return limit
 }
 
+// 괄호에 붙은 한글에서 줄이 꺾이지 않게 이음 문자를 넣는다.
+const joinParen = (/** @type {string} */ text) => text.replace(/(?<=[가-힣])\(/g, '\u2060(').replace(/\)(?=[가-힣])/g, ')\u2060')
+
 /**
  * @param {Object} props
  * @param {string} props.name 화면 읽기용 이름(예: "합계")
@@ -60,7 +63,7 @@ export default function InfoTip({ name, info }) {
           className="summary-info-text"
           style={/** @type {import('react').CSSProperties} */ ({ '--shift': '-9999px' })}
         >
-          {info}
+          {joinParen(info)}
         </span>
       )}
     </span>

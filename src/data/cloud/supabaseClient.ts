@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { routerBasename } from '../../shared/utils/routerBasename.js'
+import { isNativeApp, signInWithGoogleNative } from './nativeGoogleSignIn.ts'
 
 // 원래 앱 supabase-config.js와 같은 공개 주소/키입니다.
 // (브라우저에 보여도 되는 공개 키. 비밀 열쇠가 아닙니다.)
@@ -19,8 +20,10 @@ export function getSupabaseAuthErrorMessage(error: { message?: string } | null |
 /**
  * 구글 화면으로 갔다가 앱의 /auth로 돌아온다 — 돌아온 뒤 로그인은 부트 복원(boot.js)이 이어받는다.
  * prompt: select_account — 브라우저가 기억한 계정으로 바로 넘어가지 않고 매번 계정을 고르게 한다.
+ * 안드로이드 앱 안에서는 구글이 웹뷰 로그인을 막아 계정 선택 창으로 로그인한다.
  */
 export async function signInWithGoogle() {
+  if (isNativeApp()) return signInWithGoogleNative(supabase.auth)
   return supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {

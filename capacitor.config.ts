@@ -12,6 +12,12 @@ const config: CapacitorConfig = {
   android: {
     backgroundColor: '#121212',
   },
+  plugins: {
+    // 앱 안 구글 로그인만 쓴다. 나머지 로그인은 앱에 넣지 않는다.
+    SocialLogin: {
+      providers: { google: true, facebook: false, apple: false, twitter: false },
+    },
+  },
 }
 
 export default config

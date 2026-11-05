@@ -17,6 +17,7 @@
   "dependencies": {
     "@capacitor/android": "^8.6.0",
     "@capacitor/core": "^8.6.0",
+    "@capacitor/filesystem": "^8.1.5",
     "@capgo/capacitor-social-login": "^8.7.6",
     "@supabase/supabase-js": "^2.112.3",
     "@use-gesture/react": "^10.3.1",

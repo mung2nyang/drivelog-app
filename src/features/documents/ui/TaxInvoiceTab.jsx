@@ -131,8 +131,8 @@ export default function TaxInvoiceTab({ logKey, viewDate, onChangeMonth, tabs })
       return
     }
     try {
-      await exportTaxInvoiceExcel(item, settings, profile, monthKey)
-      showToast?.('세금계산서 엑셀 파일을 저장했습니다.')
+      const hint = await exportTaxInvoiceExcel(item, settings, profile, monthKey)
+      showToast?.(`세금계산서 엑셀 파일을 저장했습니다.${hint}`)
     } catch (error) {
       console.error('세금계산서 엑셀 저장 실패:', error)
       showToast?.('엑셀 저장에 실패했습니다.')

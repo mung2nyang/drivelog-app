@@ -3,6 +3,7 @@
 import { useRef, useState } from 'react'
 import { applyGuestBackupData, buildGuestBackupData, getLastBackupAt, markBackupDone } from '../../../data/sync/guestBackup.ts'
 import { useToast } from '../../../shared/hooks/useToast.js'
+import { saveFileToDevice } from '../../../shared/utils/saveFile.ts'
 
 const BACKUP_UPLOAD_ICON = (
   <svg className="inline-icon sm" viewBox="0 0 24 24" aria-hidden="true">
@@ -33,25 +34,14 @@ export default function AppSettingsBackupSection() {
   const fileInputRef = useRef(/** @type {HTMLInputElement|null} */ (null))
   const [lastBackupAt, setLastBackupAt] = useState(() => getLastBackupAt())
 
-  function handleExport() {
+  async function handleExport() {
     try {
       const data = buildGuestBackupData()
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json;charset=utf-8' })
+      const hint = await saveFileToDevice(blob, `운송내역_백업_${new Date().toISOString().slice(0, 10)}.json`)
       markBackupDone()
       setLastBackupAt(getLastBackupAt())
-      const json = JSON.stringify(data, null, 2)
-      const blob = new Blob([json], { type: 'application/json;charset=utf-8' })
-      if (typeof URL.createObjectURL === 'function') {
-        const url = URL.createObjectURL(blob)
-        const a = document.createElement('a')
-        const todayStr = new Date().toISOString().slice(0, 10)
-        a.href = url
-        a.download = `운송내역_백업_${todayStr}.json`
-        document.body.appendChild(a)
-        a.click()
-        a.remove()
-        setTimeout(() => URL.revokeObjectURL(url), 1000)
-      }
-      showToast?.('백업 파일을 저장했습니다.')
+      showToast?.(`백업 파일을 저장했습니다.${hint}`)
     } catch (error) {
       console.error('백업 내보내기 실패:', error)
       showToast?.('백업 파일 생성에 실패했습니다.')
@@ -95,7 +85,7 @@ export default function AppSettingsBackupSection() {
       </p>
       <div className="last-backup-status">{formatBackupStatus(lastBackupAt)}</div>
       <div className="backup-btn-group">
-        <button type="button" className="backup-btn" onClick={handleExport}>
+        <button type="button" className="backup-btn" onClick={() => { void handleExport() }}>
           {BACKUP_UPLOAD_ICON} 백업 저장하기
         </button>
         <button type="button" className="backup-btn" onClick={() => fileInputRef.current?.click()}>

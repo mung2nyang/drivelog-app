@@ -1,4 +1,5 @@
 // @ts-check
+import { saveFileToDevice } from '../../../shared/utils/saveFile.ts'
 
 /**
  * @param {HTMLElement} element
@@ -82,14 +83,7 @@ export async function buildReportExportFile(element, type, baseName) {
   }
 }
 
-/** 만든 파일을 링크로 내려받기. @param {File} file */
+/** 만든 파일을 휴대폰에 저장 — 알림 끝에 붙일 위치 안내를 돌려준다. @param {File} file */
 export function downloadFile(file) {
-  const url = URL.createObjectURL(file)
-  const link = document.createElement('a')
-  link.download = file.name
-  link.href = url
-  document.body.appendChild(link)
-  link.click()
-  link.remove()
-  setTimeout(() => URL.revokeObjectURL(url), 1000)
+  return saveFileToDevice(file, file.name)
 }

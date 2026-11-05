@@ -8,6 +8,7 @@ import { addInspectionPicks, applyMemberRestore, planMemberRestore } from '../ap
 import { describeRestoreCounts } from '../api/memberRestoreRecords.js'
 import ModalShell from '../../../shared/ui/ModalShell.jsx'
 import { useToast } from '../../../shared/hooks/useToast.js'
+import { saveFileToDevice } from '../../../shared/utils/saveFile.ts'
 import { useSession } from '../../../data/cloud/sessionContext.ts'
 
 /** @typedef {import('../api/memberRestore.js').RestorePlan} RestorePlan */
@@ -18,14 +19,7 @@ const SUB_TEXT_STYLE = { ...TEXT_STYLE, marginTop: 10, color: 'var(--sub-text-co
 /** @param {Record<string, JsonValue|undefined>} data */
 function saveJsonFile(data) {
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json;charset=utf-8' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `운송내역_백업_${new Date().toISOString().slice(0, 10)}.json`
-  document.body.appendChild(a)
-  a.click()
-  a.remove()
-  setTimeout(() => URL.revokeObjectURL(url), 1000)
+  return saveFileToDevice(blob, `운송내역_백업_${new Date().toISOString().slice(0, 10)}.json`)
 }
 
 /**
@@ -49,8 +43,8 @@ export default function DataDownloadModal({ onClose, employed = false }) {
     }
     setBusy(true)
     try {
-      saveJsonFile(await buildMemberBackupData(ownerKey))
-      showToast?.('데이터 파일을 저장했습니다.')
+      const hint = await saveJsonFile(await buildMemberBackupData(ownerKey))
+      showToast?.(`데이터 파일을 저장했습니다.${hint}`)
       onClose()
     } catch (error) {
       console.error('데이터 다운로드 실패:', error)

@@ -17,8 +17,8 @@ export default function useFileDownload(buildFile, logLabel) {
     if (saving) return
     setSaving(type)
     try {
-      downloadFile(await buildFile(type))
-      showToast?.(type === 'pdf' ? 'PDF를 저장했습니다.' : '이미지를 저장했습니다.')
+      const hint = await downloadFile(await buildFile(type))
+      showToast?.(`${type === 'pdf' ? 'PDF를 저장했습니다.' : '이미지를 저장했습니다.'}${hint}`)
     } catch (error) {
       console.error(`${logLabel} 내보내기 실패:`, error)
       showToast?.(type === 'pdf' ? 'PDF 저장에 실패했습니다. 다시 시도해 주세요.' : '이미지 저장에 실패했습니다.')

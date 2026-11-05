@@ -1,6 +1,7 @@
 // @ts-check
 import { getTaxInvoiceFlowMeta } from '../../../domain/financeTaxInvoiceEntries.ts'
 import { buildTaxInvoiceWorkbook } from './taxInvoiceExcelBuilder.js'
+import { saveFileToDevice } from '../../../shared/utils/saveFile.ts'
 
 /** @typedef {import('../../../domain/financeTaxInvoiceEntries.ts').InvoiceLike} InvoiceLike */
 /** @typedef {import('../../../domain/financeTypes.ts').FinanceSettings} FinanceSettings */
@@ -25,14 +26,6 @@ export async function exportTaxInvoiceExcel(item, settings, profile, monthKey) {
   const ExcelJS = /** @type {typeof import('exceljs')} */ (mod.default || mod)
   const workbook = buildTaxInvoiceWorkbook(ExcelJS, item, settings, profile, monthKey)
   const buffer = await workbook.xlsx.writeBuffer()
-  const url = URL.createObjectURL(new Blob([buffer], {
-    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-  }))
-  const link = document.createElement('a')
-  link.href = url
-  link.download = buildTaxInvoiceExcelFileName(monthKey, item)
-  document.body.appendChild(link)
-  link.click()
-  link.remove()
-  setTimeout(() => URL.revokeObjectURL(url), 1000)
+  const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+  return saveFileToDevice(blob, buildTaxInvoiceExcelFileName(monthKey, item))
 }

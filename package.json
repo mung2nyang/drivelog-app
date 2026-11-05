@@ -15,6 +15,8 @@
     "test:app": "node --experimental-test-module-mocks --test-timeout=60000 --test \"src/app/**/*.test.js\" \"src/shared/**/*.test.js\" \"src/features/**/*.test.js\""
   },
   "dependencies": {
+    "@capacitor/android": "^8.6.0",
+    "@capacitor/core": "^8.6.0",
     "@supabase/supabase-js": "^2.112.3",
     "@use-gesture/react": "^10.3.1",
     "exceljs": "^4.4.0",
@@ -25,6 +27,8 @@
     "valibot": "^1.5.0"
   },
   "devDependencies": {
+    "@capacitor/assets": "^4.0.0",
+    "@capacitor/cli": "^8.6.0",
     "@swc/core": "^1.16.18",
     "@types/jsdom": "^30.0.0",
     "@types/node": "^26.4.0",

@@ -17,6 +17,11 @@ const config: CapacitorConfig = {
     SocialLogin: {
       providers: { google: true, facebook: false, apple: false, twitter: false },
     },
+    // 휴대폰 알림창 맨 위 흰색 트럭 아이콘과, 알림 안에서 칠해지는 앱 색.
+    LocalNotifications: {
+      smallIcon: 'ic_stat_notice',
+      iconColor: '#2b6cb0',
+    },
   },
 }
 

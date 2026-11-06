@@ -15,6 +15,7 @@ import { PendingWriteRetryBridge } from './providers.jsx'
 import AuthRoute from './routes/AuthRoute.jsx'
 import AppShell from './shell/AppShell.jsx'
 import useAppBackButton from './shell/useAppBackButton.js'
+import useDeviceNotices from '../features/notifications/hooks/useDeviceNotices.ts'
 import RequireSession from './routes/RequireSession.jsx'
 import { applyOnboardingWizard } from '../data/sync/onboardingFinish.ts'
 import { GUEST_APP_SESSION, setGuestModePersisted } from './guestSessionPersist.js'
@@ -58,6 +59,7 @@ export default function App() {
   } = useAppSession()
   const sessionValue = useMemo(() => ({ session, ownerKey }), [session, ownerKey])
   useAppBackButton(showToast)
+  useDeviceNotices(ownerKey, session, booting)
 
   if (bootLinkFailed) return <BootRetryScreen />
   if (guestLoadFailed) return <LoadFailScreen />

@@ -1,6 +1,7 @@
-// xAI 목소리를 먼저, 못 받으면 휴대폰 기본 목소리로 읽는다.
+// xAI 목소리를 먼저, 못 받으면 휴대폰 기본 목소리로 읽는다(앱이면 안드로이드 목소리).
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { requestUnbiseoVoice } from '../api/unbiseoVoice.ts'
+import { isApp, speakInApp, stopSpeakingInApp } from './appSpeech.ts'
 
 /** 읽기 한 번 — 소리를 받는 동안·트는 동안 같은 것을 가리킨다. */
 type Reading = { audio: HTMLAudioElement | null, url: string, onDevice: boolean }
@@ -14,6 +15,11 @@ function canPlayAudio(): boolean {
   return typeof window !== 'undefined' && typeof window.Audio === 'function' && typeof URL.createObjectURL === 'function'
 }
 
+function cancelOnDevice() {
+  if (isApp()) void stopSpeakingInApp()
+  else engine()?.cancel()
+}
+
 function releaseSound(reading: Reading) {
   reading.audio?.pause()
   reading.audio = null
@@ -25,7 +31,7 @@ function releaseSound(reading: Reading) {
 export default function useSpeechOutput(onUsedUp?: (message: string) => void) {
   const [speaking, setSpeaking] = useState(false)
   const currentRef = useRef<Reading | null>(null)
-  const supported = engine() !== null || canPlayAudio()
+  const supported = isApp() || engine() !== null || canPlayAudio()
 
   const end = useCallback((reading: Reading) => {
     releaseSound(reading)
@@ -40,16 +46,19 @@ export default function useSpeechOutput(onUsedUp?: (message: string) => void) {
     setSpeaking(false)
     if (!reading) return
     releaseSound(reading)
-    if (reading.onDevice) engine()?.cancel()
+    if (reading.onDevice) cancelOnDevice()
   }, [])
 
   // 소리를 못 받았거나 못 틀었으면 휴대폰 목소리로 — 한 번만.
   const speakOnDevice = useCallback((sentence: string, reading: Reading) => {
     if (reading.onDevice) return
-    const synth = engine()
+    const app = isApp()
+    const synth = app ? null : engine()
     releaseSound(reading)
-    if (!synth || currentRef.current !== reading) { end(reading); return }
+    if ((!app && !synth) || currentRef.current !== reading) { end(reading); return }
     reading.onDevice = true
+    if (app) { void speakInApp(sentence).then(() => end(reading)); return }
+    if (!synth) return
     const utterance = new window.SpeechSynthesisUtterance(sentence)
     utterance.lang = 'ko-KR'
     utterance.onend = () => end(reading)
@@ -58,7 +67,7 @@ export default function useSpeechOutput(onUsedUp?: (message: string) => void) {
   }, [end])
 
   const speak = useCallback((sentence: string) => {
-    if (!sentence || (!engine() && !canPlayAudio())) return
+    if (!sentence || (!isApp() && !engine() && !canPlayAudio())) return
     stop()
     const reading: Reading = { audio: null, url: '', onDevice: false }
     currentRef.current = reading
@@ -82,7 +91,7 @@ export default function useSpeechOutput(onUsedUp?: (message: string) => void) {
     currentRef.current = null
     if (!reading) return
     releaseSound(reading)
-    if (reading.onDevice) engine()?.cancel()
+    if (reading.onDevice) cancelOnDevice()
   }, [])
 
   return { supported, speaking, speak, stop }

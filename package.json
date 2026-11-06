@@ -15,11 +15,13 @@
     "test:app": "node --experimental-test-module-mocks --test-timeout=60000 --test \"src/app/**/*.test.js\" \"src/shared/**/*.test.js\" \"src/features/**/*.test.js\""
   },
   "dependencies": {
+    "@capacitor-community/text-to-speech": "^8.0.2",
     "@capacitor/android": "^8.6.0",
     "@capacitor/core": "^8.6.0",
     "@capacitor/filesystem": "^8.1.5",
     "@capacitor/share": "^8.0.3",
     "@capgo/capacitor-social-login": "^8.7.6",
+    "@capgo/capacitor-speech-recognition": "^8.4.6",
     "@supabase/supabase-js": "^2.112.3",
     "@use-gesture/react": "^10.3.1",
     "exceljs": "^4.4.0",

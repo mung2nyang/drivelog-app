@@ -1,5 +1,6 @@
-// 휴대폰 크롬 받아쓰기(한국어). 지원 안 하면 글로만 쓴다.
+// 휴대폰 크롬 받아쓰기(한국어), 앱이면 안드로이드 받아쓰기. 지원 안 하면 글로만 쓴다.
 import { useEffect, useRef, useState } from 'react'
+import { isApp, listenInApp, stopListeningInApp, type AppListenFailure } from './appSpeech.ts'
 
 type Recognizer = {
   lang: string
@@ -25,6 +26,8 @@ function recognizerCtor(): RecognizerCtor | null {
   return typeof ctor === 'function' ? ctor : null
 }
 
+const APP_FAILURE_MESSAGE: Record<AppListenFailure, string> = { denied: MIC_DENIED, silent: NO_SPEECH, failed: SPEECH_FAILED }
+
 function errorMessage(code: string): string {
   if (code === 'not-allowed' || code === 'service-not-allowed') return MIC_DENIED
   if (code === 'no-speech') return NO_SPEECH
@@ -36,13 +39,36 @@ export default function useSpeechInput(onFinal: (text: string) => void) {
   const [listening, setListening] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const recognizerRef = useRef<Recognizer | null>(null)
+  // 앱에서 듣는 한 번 — 화면이 사라지면 비워서 늦게 온 결과를 버린다.
+  const appListenRef = useRef<object | null>(null)
   const onFinalRef = useRef(onFinal)
-  const supported = recognizerCtor() !== null
+  const supported = isApp() || recognizerCtor() !== null
 
   useEffect(() => { onFinalRef.current = onFinal })
-  useEffect(() => () => { recognizerRef.current?.abort() }, [])
+  useEffect(() => () => {
+    recognizerRef.current?.abort()
+    if (!appListenRef.current) return
+    appListenRef.current = null
+    void stopListeningInApp()
+  }, [])
+
+  function startInApp() {
+    if (appListenRef.current) return
+    const listen = {}
+    appListenRef.current = listen
+    setError(null)
+    setListening(true)
+    void listenInApp().then((result) => {
+      if (appListenRef.current !== listen) return
+      appListenRef.current = null
+      setListening(false)
+      if ('text' in result) onFinalRef.current(result.text)
+      else setError(APP_FAILURE_MESSAGE[result.failure])
+    })
+  }
 
   function start() {
+    if (isApp()) { startInApp(); return }
     const Ctor = recognizerCtor()
     if (!Ctor || recognizerRef.current) return
     const recognizer = new Ctor()
@@ -73,6 +99,7 @@ export default function useSpeechInput(onFinal: (text: string) => void) {
   }
 
   function stop() {
+    if (isApp()) { void stopListeningInApp(); return }
     recognizerRef.current?.stop()
   }
 

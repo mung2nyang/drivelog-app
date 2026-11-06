@@ -126,6 +126,8 @@ test('앱: 듣는 중 멈추기는 안드로이드 받아쓰기를 멈추고, �
   const view = await mount(() => useSpeechInput((text) => { heard.push(text) }))
   await act(async () => { view.latest.current.start(); await flush() })
   assert.equal(view.latest.current.listening, true)
+  // 듣기가 실제로 시작된 뒤에 멈춘다(권한 묻기를 거쳐 늦게 닿는다).
+  await waitFor(() => calls.includes('start:ko-KR'))
   await act(async () => { view.latest.current.stop() })
   await waitFor(() => calls.at(-1) === 'stop')
   assert.equal(calls.at(-1), 'stop')

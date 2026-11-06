@@ -2,6 +2,7 @@
 // 사이드메뉴 구성·동작. 아이콘 그림은 side-menu/SideMenuIcons.jsx.
 import { assetPath } from '../../shared/utils/assetPath.js'
 import { CarIcon, PeopleIcon, PersonIcon, GearIcon, FuelIcon, ChartIcon, DocIcon, TruckIcon, SupportIcon, AdminIcon } from './side-menu/SideMenuIcons.jsx'
+import useSideMenuBackGuard from './useSideMenuBackGuard.js'
 
 const BANNER_LIGHT = assetPath('/images/banner_image_Light.png')
 const BANNER_DARK = assetPath('/images/banner_image_dark.png')
@@ -37,6 +38,7 @@ export default function SideMenu({
   subLogItems = [], onOpenSubLog,
   isAdmin = false,
 }) {
+  useSideMenuBackGuard(open, onClose)
   if (!open) return null
   const banner = sideMenuBannerSrc()
 

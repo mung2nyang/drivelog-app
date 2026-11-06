@@ -5,6 +5,8 @@ import './report-pdf-export.css'
 import ModalShell from '../../../shared/ui/ModalShell.jsx'
 import { buildSmsHref } from '../../../domain/smsHref.ts'
 import { useToast } from '../../../shared/hooks/useToast.js'
+import { saveFileToDevice } from '../../../shared/utils/saveFile.ts'
+import { shareFileFromDevice } from '../../../shared/utils/shareFile.ts'
 
 /** @param {'pdf'|'image'} type */
 const formatLabel = (type) => (type === 'image' ? '이미지' : 'PDF')
@@ -32,14 +34,10 @@ export default function ShareFileModal({
     try {
       showToast?.(`카카오톡으로 보낼 ${formatLabel(type)}를 준비하고 있습니다.`)
       const file = await buildFile(type)
-      const nav = /** @type {Navigator & { canShare?: (data: { files: Array<File> }) => boolean }} */ (navigator)
-      if (!nav.share || (nav.canShare && !nav.canShare({ files: [file] }))) {
-        showToast?.(unsupportedToast)
-        return
-      }
-      await nav.share({ files: [file], title: shareTitle, text: kakaoText })
+      const shared = await shareFileFromDevice(file, { title: shareTitle, text: kakaoText })
+      if (!shared) showToast?.(unsupportedToast)
     } catch (error) {
-      if (error instanceof Error && error.name !== 'AbortError') {
+      if (error instanceof Error) {
         console.error(`카카오톡 ${logLabel} 공유 실패:`, error)
         showToast?.('카카오톡 파일 공유에 실패했습니다.')
       }
@@ -54,23 +52,15 @@ export default function ShareFileModal({
       return
     }
     onClose()
-    let fileUrl = ''
     try {
       showToast?.(`문자로 보낼 ${formatLabel(type)}를 저장하고 있습니다.`)
       const file = await buildFile(type)
-      fileUrl = URL.createObjectURL(file)
-      const link = document.createElement('a')
-      link.download = file.name
-      link.href = fileUrl
-      document.body.appendChild(link)
-      link.click()
-      link.remove()
+      const hint = await saveFileToDevice(file, file.name)
+      if (hint) showToast?.(`문자에 붙일 파일을 저장했습니다.${hint}`)
       window.location.href = buildSmsHref(target.phone, target.message, navigator.userAgent)
     } catch (error) {
       console.error(`문자용 ${logLabel} 저장 실패:`, error)
       showToast?.('문자용 파일 저장에 실패했습니다.')
-    } finally {
-      if (fileUrl) setTimeout(() => URL.revokeObjectURL(fileUrl), 1000)
     }
   }
 

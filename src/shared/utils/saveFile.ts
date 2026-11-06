@@ -15,7 +15,7 @@ function downloadByLink(blob: Blob, name: string) {
   setTimeout(() => URL.revokeObjectURL(url), 1000)
 }
 
-async function blobToBase64(blob: Blob) {
+export async function blobToBase64(blob: Blob) {
   const bytes = new Uint8Array(await blob.arrayBuffer())
   let binary = ''
   for (let i = 0; i < bytes.length; i += 0x8000) {

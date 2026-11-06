@@ -2,6 +2,7 @@
 // 설치 앱에서 화면 맨 위를 당기면 우리 표시가 내려오고, 충분히 당겼다 놓으면(저장 확인 후) 화면 전체 다시 불러오기.
 // 상태는 표시 부품(PullRefreshIndicator) 안에서만 바뀌게 — 손가락 움직임마다 앱 전체가 다시 그려지지 않게.
 import { useEffect, useRef, useState } from 'react'
+import { Capacitor } from '@capacitor/core'
 import { confirmReloadIfUnsaved } from '../../data/sync/durableWriteGuard.ts'
 
 export const PULL_MAX = 90 // 표시가 내려오는 최대 거리(px)
@@ -41,7 +42,9 @@ export function releasePull(distance, confirm, reload) {
   return true
 }
 
+// Capacitor 앱도 설치 앱으로 본다(앱 화면은 display-mode가 browser).
 function isStandalone() {
+  if (Capacitor.isNativePlatform()) return true
   try {
     return window.matchMedia('(display-mode: standalone)').matches
   } catch {

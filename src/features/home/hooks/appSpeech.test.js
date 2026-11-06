@@ -46,6 +46,11 @@ const { default: useSpeechOutput } = await import('./useSpeechOutput.ts')
 
 const flush = () => new Promise((resolve) => { setTimeout(resolve, 0) })
 
+/** 플러그인을 그때 불러와서 느린 컴퓨터에서는 한 번 기다려서는 모자란다 — 조건이 맞을 때까지 최대 50번. @param {() => boolean} check */
+async function waitFor(check) {
+  for (let i = 0; i < 50 && !check(); i += 1) await act(async () => { await flush() })
+}
+
 function reset() {
   permission = 'granted'
   listen = async () => ({ matches: ['오늘 수원에서 화성 15만원'] })
@@ -74,7 +79,8 @@ test('앱: 마이크 권한을 묻고 한국어로 들은 뒤 받아쓴 글자�
   const view = await mount(() => useSpeechInput((text) => { heard.push(text) }))
   try {
     assert.equal(view.latest.current.supported, true)
-    await act(async () => { view.latest.current.start(); await flush() })
+    await act(async () => { view.latest.current.start() })
+    await waitFor(() => !view.latest.current.listening)
     assert.deepEqual(calls, ['permission', 'start:ko-KR'])
     assert.deepEqual(heard, ['오늘 수원에서 화성 15만원'])
     assert.equal(view.latest.current.listening, false)
@@ -89,18 +95,22 @@ test('앱: 권한 거절·못 알아들음·그 밖의 실패는 웹과 같은 �
   const view = await mount(() => useSpeechInput((text) => { heard.push(text) }))
   try {
     permission = 'denied'
-    await act(async () => { view.latest.current.start(); await flush() })
+    await act(async () => { view.latest.current.start() })
+    await waitFor(() => !view.latest.current.listening)
     assert.equal(view.latest.current.error, MIC_DENIED)
     assert.equal(calls.includes('start:ko-KR'), false)
     permission = 'granted'
     listen = async () => { throw new Error('No match') }
-    await act(async () => { view.latest.current.start(); await flush() })
+    await act(async () => { view.latest.current.start() })
+    await waitFor(() => !view.latest.current.listening)
     assert.equal(view.latest.current.error, NO_SPEECH)
     listen = async () => ({ matches: [] })
-    await act(async () => { view.latest.current.start(); await flush() })
+    await act(async () => { view.latest.current.start() })
+    await waitFor(() => !view.latest.current.listening)
     assert.equal(view.latest.current.error, NO_SPEECH)
     listen = async () => { throw new Error('Network error') }
-    await act(async () => { view.latest.current.start(); await flush() })
+    await act(async () => { view.latest.current.start() })
+    await waitFor(() => !view.latest.current.listening)
     assert.equal(view.latest.current.error, SPEECH_FAILED)
     assert.deepEqual(heard, [])
   } finally { await view.unmount() }
@@ -116,11 +126,12 @@ test('앱: 듣는 중 멈추기는 안드로이드 받아쓰기를 멈추고, �
   const view = await mount(() => useSpeechInput((text) => { heard.push(text) }))
   await act(async () => { view.latest.current.start(); await flush() })
   assert.equal(view.latest.current.listening, true)
-  await act(async () => { view.latest.current.stop(); await flush() })
+  await act(async () => { view.latest.current.stop() })
+  await waitFor(() => calls.at(-1) === 'stop')
   assert.equal(calls.at(-1), 'stop')
   await view.unmount()
   finish({ matches: ['늦게 온 말'] })
-  await flush()
+  await waitFor(() => heard.length > 0)
   assert.deepEqual(heard, [])
 })
 
@@ -129,13 +140,16 @@ test('앱: xAI 소리를 못 받으면 안드로이드 목소리로 한국어 �
   const view = await mount(() => useSpeechOutput())
   try {
     assert.equal(view.latest.current.supported, true)
-    await act(async () => { view.latest.current.speak('10월 매출은 0원입니다.'); await flush() })
+    await act(async () => { view.latest.current.speak('10월 매출은 0원입니다.') })
+    await waitFor(() => !view.latest.current.speaking)
     assert.deepEqual(spoken, [{ text: '10월 매출은 0원입니다.', lang: 'ko-KR' }])
     assert.equal(view.latest.current.speaking, false)
     speakHangs = true
-    await act(async () => { view.latest.current.speak('다시 읽기'); await flush() })
+    await act(async () => { view.latest.current.speak('다시 읽기') })
+    await waitFor(() => spoken.length === 2)
     assert.equal(view.latest.current.speaking, true)
-    await act(async () => { view.latest.current.stop(); await flush() })
+    await act(async () => { view.latest.current.stop() })
+    await waitFor(() => calls.at(-1) === 'speak-stop')
     assert.equal(view.latest.current.speaking, false)
     assert.equal(calls.at(-1), 'speak-stop')
   } finally { await view.unmount() }

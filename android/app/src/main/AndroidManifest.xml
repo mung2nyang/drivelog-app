@@ -22,6 +22,10 @@
             </intent-filter>
         </activity>
 
+        <!-- 서버가 보내는 알림도 휴대폰 예약 알림과 같은 흰 트럭 아이콘·앱 색으로 보인다. -->
+        <meta-data android:name="com.google.firebase.messaging.default_notification_icon" android:resource="@drawable/ic_stat_notice" />
+        <meta-data android:name="com.google.firebase.messaging.default_notification_color" android:resource="@color/notice_color" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"

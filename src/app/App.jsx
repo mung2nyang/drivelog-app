@@ -57,7 +57,7 @@ export default function App() {
     handleLogout,
   } = useAppSession()
   const sessionValue = useMemo(() => ({ session, ownerKey }), [session, ownerKey])
-  useAppBackButton()
+  useAppBackButton(showToast)
 
   if (bootLinkFailed) return <BootRetryScreen />
   if (guestLoadFailed) return <LoadFailScreen />

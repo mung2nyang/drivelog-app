@@ -1,4 +1,4 @@
-// 앱(Capacitor C-5) 뒤로가기 — 앞 기록이 있으면 크롬처럼 뒤로, 없으면 앱 닫기. 앱도 설치 앱으로 봐서 홈 종료 안내·당겨 새로고침이 켜짐.
+// 앱(Capacitor C-5) 뒤로가기 — 앞 기록이 있으면 크롬처럼 뒤로, 없으면 1번은 종료 안내·4초 안 1번 더면 앱 닫기. 홈 붙잡기 기록은 앱에서 안 쌓음, 당겨 새로고침은 켜짐.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 
@@ -37,7 +37,7 @@ const { act } = React
 const { BrowserRouter } = await import('react-router-dom')
 const { withToast } = await import('../../testSupport/withToast.js')
 const { default: useAppBackButton } = await import('./useAppBackButton.js')
-const { default: useBackToExit } = await import('./useBackToExit.js')
+const { default: useBackToExit, EXIT_HINT } = await import('./useBackToExit.js')
 const { default: usePullToRefresh } = await import('./usePullToRefresh.js')
 
 const flush = () => new Promise((resolve) => { setTimeout(resolve, 0) })
@@ -66,20 +66,20 @@ async function mount(useHook) {
   return async () => { await act(async () => { root.unmount() }) }
 }
 
-test('앱: 뒤로가기는 앞 기록이 있으면 history.back, 없으면 앱 닫기, 화면이 사라지면 듣기를 뗀다', async () => {
+test('앱: 뒤로가기는 앞 기록이 있으면 history.back, 화면이 사라지면 듣기를 뗀다', async () => {
   reset()
   let backs = 0
+  /** @type {string[]} */
+  const toasts = []
   const spy = mock.method(window.history, 'back', () => { backs += 1 })
-  const unmount = await mount(useAppBackButton)
+  const unmount = await mount(() => { useAppBackButton((message) => { toasts.push(message) }) })
   try {
     await waitFor(() => listeners.length === 1)
     assert.equal(listeners.length, 1)
     listeners[0]({ canGoBack: true })
     assert.equal(backs, 1)
     assert.equal(exits, 0)
-    listeners[0]({ canGoBack: false })
-    assert.equal(backs, 1)
-    assert.equal(exits, 1)
+    assert.deepEqual(toasts, [])
   } finally {
     await unmount()
     spy.mock.restore()
@@ -89,24 +89,56 @@ test('앱: 뒤로가기는 앞 기록이 있으면 history.back, 없으면 앱 �
   assert.equal(listeners.length, 0)
 })
 
+test('앱: 돌아갈 기록이 없으면 1번은 안내만, 안내 시간 안에 1번 더면 닫기, 시간이 지나면 다시 안내', async () => {
+  reset()
+  /** @type {string[]} */
+  const toasts = []
+  const unmount = await mount(() => { useAppBackButton((message) => { toasts.push(message) }, 60) })
+  try {
+    await waitFor(() => listeners.length === 1)
+    listeners[0]({ canGoBack: false })
+    assert.deepEqual(toasts, [EXIT_HINT], '1번이면 안내만')
+    assert.equal(exits, 0)
+    listeners[0]({ canGoBack: false })
+    assert.equal(exits, 1, '안내 시간 안에 1번 더면 닫기')
+    assert.deepEqual(toasts, [EXIT_HINT])
+  } finally {
+    await unmount()
+  }
+  reset()
+  toasts.length = 0
+  const unmount2 = await mount(() => { useAppBackButton((message) => { toasts.push(message) }, 60) })
+  try {
+    await waitFor(() => listeners.length === 1)
+    listeners[0]({ canGoBack: false })
+    await new Promise((resolve) => { setTimeout(resolve, 90) })
+    listeners[0]({ canGoBack: false })
+    assert.equal(exits, 0, '시간이 지나면 닫지 않음')
+    assert.deepEqual(toasts, [EXIT_HINT, EXIT_HINT], '다시 안내')
+  } finally {
+    await unmount2()
+  }
+})
+
 test('웹: 뒤로가기를 가로채지 않는다', async () => {
   reset()
   native = false
-  const unmount = await mount(useAppBackButton)
+  const unmount = await mount(() => { useAppBackButton(() => {}) })
   await waitFor(() => listeners.length > 0)
   assert.equal(listeners.length, 0)
   await unmount()
 })
 
-test('앱: 화면 모드가 browser여도 설치 앱으로 봐서 홈에 붙잡기 기록을 쌓는다(웹 탭은 안 쌓음)', async () => {
-  for (const app of [true, false]) {
+test('앱: 홈에 붙잡기 기록을 쌓지 않는다(안내는 뒤로가기 처리가 맡음), 바탕화면 설치 앱은 그대로 쌓는다', async () => {
+  for (const [app, standalone] of [[true, false], [false, true]]) {
     reset()
     native = app
+    Reflect.set(window, 'matchMedia', () => ({ matches: standalone }))
     window.history.replaceState(null, '', '/app')
     const unmount = await mount(() => useBackToExit(60))
     const idx = Reflect.get(window.history.state || {}, 'idx')
     await unmount()
-    assert.equal(idx, app ? 1 : 0, app ? '앱' : '웹 탭')
+    assert.equal(idx, standalone ? 1 : 0, app ? '앱' : '바탕화면 설치 앱')
   }
 })
 

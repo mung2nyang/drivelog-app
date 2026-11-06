@@ -92,7 +92,11 @@ async function mount(initial) {
   return {
     path: () => path,
     setSession: async (/** @type {object|null} */ next) => { await act(async () => { setSession(next) }) },
-    cleanup: async () => { await act(async () => { root.unmount() }) },
+    // 화면을 치운 뒤 늦게 끝나는 걸기·지우기가 다음 시험의 가짜 장치로 넘어가지 않게 잠시 기다린다.
+    cleanup: async () => {
+      await act(async () => { root.unmount() })
+      for (let i = 0; i < 10; i += 1) await act(async () => { await flush() })
+    },
   }
 }
 
@@ -165,10 +169,13 @@ test('로그아웃하면 걸어 둔 알림을 모두 지운다', async () => {
   const view = await mount({ session: GUEST })
   try {
     await waitFor(() => schedules.length > 0)
-    const scheduled = pending.length
+    const scheduledIds = pending.map(({ id }) => id).sort((a, b) => a - b)
+    assert.ok(scheduledIds.length > 0)
+    const cancelsBefore = cancels.length
     await view.setSession(null)
-    await waitFor(() => cancels.length > 1)
-    assert.equal(cancels[1].length, scheduled)
-    assert.equal(pending.length, 0)
+    await waitFor(() => cancels.length > cancelsBefore && pending.length === 0)
+    assert.equal(pending.length, 0, '걸어 둔 알림이 남지 않음')
+    const cancelledIds = cancels.slice(cancelsBefore).flat().map(({ id }) => id).sort((a, b) => a - b)
+    assert.deepEqual(cancelledIds, scheduledIds, '로그아웃 전에 걸려 있던 알림을 모두 지움')
   } finally { await view.cleanup() }
 })

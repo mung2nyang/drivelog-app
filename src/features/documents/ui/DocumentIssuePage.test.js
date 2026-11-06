@@ -26,7 +26,7 @@ Reflect.set(globalThis, 'IS_REACT_ACT_ENVIRONMENT', true)
 const React = await import('react')
 const { withSession } = await import('../../../testSupport/withSession.js')
 const { createRoot } = await import('react-dom/client')
-const { MemoryRouter, Route, Routes } = await import('react-router-dom')
+const { MemoryRouter, Route, Routes, useLocation, useNavigationType } = await import('react-router-dom')
 const { act } = React
 const { default: DocumentIssuePage } = await import('./DocumentIssuePage.jsx')
 const { commitCars, commitInvoices, commitLogWorkData, commitProfile, commitSettings, commitWorkData } = await import('../../../data/store/commitHelpers.ts')
@@ -52,15 +52,22 @@ async function render({ path = '/report', owner = false } = {}) {
   const container = document.createElement('div')
   document.body.appendChild(container)
   const root = createRoot(container)
+  const where = { search: '', navigationType: '' }
+  function LocationProbe() {
+    where.search = useLocation().search
+    where.navigationType = useNavigationType()
+    return null
+  }
   await act(async () => {
     const page = withSession(React.createElement(DocumentIssuePage, { onBack: () => {}, isEmployedDriver: !owner }), { ownerKey: OWNER })
     root.render(React.createElement(MemoryRouter, { initialEntries: [path] },
       React.createElement(Routes, null,
         React.createElement(Route, { path: '/report', element: page }),
-        React.createElement(Route, { path: '/logs/:logId/report', element: page }))))
+        React.createElement(Route, { path: '/logs/:logId/report', element: page })),
+      React.createElement(LocationProbe)))
   })
   await act(async () => { await new Promise((resolve) => setTimeout(resolve, 0)) })
-  return { container, cleanup: async () => { await act(async () => { root.unmount() }); container.remove() } }
+  return { container, where, cleanup: async () => { await act(async () => { root.unmount() }); container.remove() } }
 }
 
 test('스위치 꺼짐 + 저장분 없음 → 탭 줄 없이 운송비 내역서만, 제목 "서류 발급"', async () => {
@@ -297,5 +304,42 @@ test('세금계산서 정리 ② 차량별: 메인 서류 발급 = 메인 차량
     assert.ok(cardsText(sub.container).includes('옛발급'), '그 차량 발급 완료분은 나옴')
   } finally {
     await sub.cleanup()
+  }
+})
+
+test('주소의 탭·달로 열리고(앱이 다시 열려도 보던 서류), 탭·달을 바꾸면 주소를 바꿔 끼운다', async () => {
+  commitSettings(OWNER, normalizeSettings({ dailyInspectionOn: true }))
+  const navText = (/** @type {Element} */ root) => (root.querySelector('.report-top-card .maint-fuel-nav')?.textContent || '').replace(/\s/g, '')
+  const view = await render({ owner: true, path: '/report?tab=report&y=2025&m=9' })
+  try {
+    assert.equal(view.container.querySelector('.doc-tab.active')?.textContent, '운송비 내역서')
+    assert.ok(view.container.querySelector('#reportContentToExport'))
+    assert.ok(navText(view.container).includes('2025년10월'), navText(view.container))
+
+    const prevBtn = view.container.querySelector('.report-top-card button[title="이전 달"]')
+    assert.ok(prevBtn instanceof window.HTMLButtonElement)
+    await act(async () => { prevBtn.click() })
+    assert.equal(new URLSearchParams(view.where.search).get('m'), '8', '달이 주소에')
+    assert.equal(view.where.navigationType, 'REPLACE', '기록을 늘리지 않음')
+
+    const inspectionTab = [...view.container.querySelectorAll('.doc-tab')].find((el) => el.textContent === '일상점검표')
+    assert.ok(inspectionTab instanceof window.HTMLButtonElement)
+    await act(async () => { inspectionTab.click() })
+    const params = new URLSearchParams(view.where.search)
+    assert.deepEqual([params.get('tab'), params.get('y'), params.get('m')], ['inspection', '2025', '8'], '탭을 바꿔도 달은 그대로')
+    assert.equal(view.where.navigationType, 'REPLACE')
+    assert.equal(view.container.querySelector('.doc-tab.active')?.textContent, '일상점검표')
+  } finally {
+    await view.cleanup()
+  }
+})
+
+test('주소의 탭이 이 화면에 없으면(연동 기사의 세금계산서) 처음 탭', async () => {
+  commitSettings(OWNER, normalizeSettings({ dailyInspectionOn: true }))
+  const view = await render({ path: '/report?tab=tax' })
+  try {
+    assert.equal(view.container.querySelector('.doc-tab.active')?.textContent, '일상점검표')
+  } finally {
+    await view.cleanup()
   }
 })

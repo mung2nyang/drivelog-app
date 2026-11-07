@@ -135,4 +135,4 @@ AI가 쓴 코드는 사람 눈으로만 보지 않고 자동 검사로 막습니
 
 ## 만든 곳
 
-Studio Bori · studiobori.app@gmail.com
+Studio Bori · 1인 개발 · studiobori.app@gmail.com

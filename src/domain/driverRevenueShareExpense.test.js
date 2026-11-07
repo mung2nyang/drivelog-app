@@ -14,14 +14,14 @@ import { monthSettlementSummary } from './monthSettlement.ts'
 /** 픽스처 서울12가3456(김기사): gross 450000 × 15% = 67500. */
 const REVENUE_SHARE = 67500
 /**
- * 산재(기본 경비율 30.5%·요율 1.8%): 월보수액 = 67500 − floor(67500×30.5%=20587.5→20587) = 46913,
- * 총액 = floor(46913×1.8%=844.4) = 844. 산재 적용 ON → 기사 422·차주 422, OFF → 차주 844.
+ * 산재(기본 경비율 49.9%·요율 1.76%): 월보수액 = 67500 − floor(67500×49.9%=33682.5→33682) = 33818.
+ * 사업소득자 → 각자 33818×0.88%=297.6 → 290(10원 미만 버림), 4대보험 근로자 → 차주 33818×1.76%=595.2 → 590.
  */
-const KIM_INSURANCE_OWNER_ON = 422
-const KIM_INSURANCE_OWNER_EMPLOYEE = 844
+const KIM_INSURANCE_OWNER_ON = 290
+const KIM_INSURANCE_OWNER_EMPLOYEE = 590
 const SALARY_AMOUNT = 2000000
-/** 픽스처 박기사 월급제 2,000,000: 월보수액 1,390,000 × 1.8% = 25,020(4대보험 근로자 → 전액 차주). */
-const PARK_INSURANCE_OWNER = 25020
+/** 픽스처 박기사 월급제 2,000,000: 월보수액 1,002,000 × 1.76% = 17,635.2 → 17,630(4대보험 근로자 → 전액 차주). */
+const PARK_INSURANCE_OWNER = 17630
 
 describe('getMonthlyDriverRevenueShareExpense', () => {
   test('매출제 차량은 fare합계 × % 전체를 기사 급여 지출로 잡는다(산재를 빼지 않는다)', () => {
@@ -207,7 +207,8 @@ describe('기사 급여·산재 차주 몫 — 차량 전용 고정 노선 단�
     const settings = { cars: [shareCar], clients: [{ id: 'c-h', companyName: '한진', commEnabled: true, commType: 'percent', commValue: '10' }], driverLinks: [link] }
     const shareWork = { [plate]: { '2026-10-07': { callDetails: [{ id: 'a', client: '한진', fare: 1000000 }] } } }
     const result = getMonthlyDriverInsuranceOwnerShare(MONTH, settings, [shareCar], shareWork)
-    assert.equal(result.total, 1689)
+    // 기사 몫 270,000 → 월보수액 135,270 × 0.88% = 1,190.3 → 1,190
+    assert.equal(result.total, 1190)
     const detail = getLinkedDriverSettlementDetail(shareWork[plate], MONTH, link, shareCar, settings)
     assert.equal(detail.commissionAmount, 270000)
     assert.equal(result.total, getDriverIncomeDeductions(shareCar, detail.commissionAmount).insuranceOwnerShare)
@@ -275,11 +276,11 @@ describe('기사 급여 이전 기사 줄 — 해제된 예전 계약 기간분'
   })
 
   test('산재 차주 몫도 이전 기사 줄로 나뉜다 — 기사 몫 80,000원·60,000원 각각 계산', () => {
-    // 80,000 → 월보수액 55,600 × 1.8% = 1,000(차주 500), 60,000 → 41,700 × 1.8% = 750(차주 375)
+    // 80,000 → 월보수액 40,080 × 0.88% = 352.7 → 350, 60,000 → 30,060 × 0.88% = 264.5 → 260
     const result = getMonthlyDriverInsuranceOwnerShare('2026-10', settingsOf([linked], [past('2026-09-01', '2026-10-11')]), [car], work)
     assert.deepEqual(result.items.map((item) => [item.label, item.amount]), [
-      ['이전 기사 (9/1~10/11) 산재보험(차주 부담)', 500],
-      ['테스트2 (10/12~) 산재보험(차주 부담)', 375],
+      ['이전 기사 (9/1~10/11) 산재보험(차주 부담)', 350],
+      ['테스트2 (10/12~) 산재보험(차주 부담)', 260],
     ])
   })
 })

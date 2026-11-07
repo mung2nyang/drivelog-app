@@ -98,16 +98,16 @@ describe('carFromAssignedSummary', () => {
     assert.equal(car.insuranceRate, '2')
   })
 
-  test('4개 필드가 없거나 이상하면 차량 폼과 같은 기본값(사업소득자·원천징수 꺼짐·30.5·1.8)으로 되돌린다', () => {
+  test('4개 필드가 없거나 이상하면 차량 폼과 같은 기본값(사업소득자·원천징수 꺼짐·49.9·1.76)으로 되돌린다', () => {
     const base = { id: 'veh-7', number: '서울12가3456', type: 'sub' }
     const missing = carFromAssignedSummary(base)
     assert.equal(missing.driverIncomeType, 'business')
     assert.equal(missing.withholdingOn, false)
-    assert.equal(missing.expenseRate, '30.5')
-    assert.equal(missing.insuranceRate, '1.8')
+    assert.equal(missing.expenseRate, '49.9')
+    assert.equal(missing.insuranceRate, '1.76')
     const weird = carFromAssignedSummary({ ...base, driver_income_type: '근로자', expense_rate: '', insurance_rate: '가나다' })
     assert.equal(weird.driverIncomeType, 'business')
-    assert.equal(weird.expenseRate, '30.5')
-    assert.equal(weird.insuranceRate, '1.8')
+    assert.equal(weird.expenseRate, '49.9')
+    assert.equal(weird.insuranceRate, '1.76')
   })
 })

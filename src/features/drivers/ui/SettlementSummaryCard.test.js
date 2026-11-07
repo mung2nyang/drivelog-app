@@ -34,15 +34,15 @@ async function render(detail) {
   return { rows, async cleanup() { await act(async () => { root.unmount() }); container.remove() } }
 }
 
-test('매출제 20% 사업소득자(둘 다 ON): 운송료 1,000,000 → 정산금 200,000, 산재 1,251, 3.3% 6,600, 실수령 192,149', async () => {
+test('매출제 20% 사업소득자(둘 다 ON): 운송료 1,000,000 → 정산금 200,000, 산재 880, 3.3% 6,600, 실수령 192,520', async () => {
   const car = { number: '12가3456', driverPayMode: 'revenue', insuranceOn: true, withholdingOn: true }
   const view = await render({ tripCount: 3, totalFare: 1000000, commissionAmount: 200000, car })
   try {
     assert.equal(view.rows['총 운송료'], '1,000,000원')
     assert.equal(view.rows['기사 정산금'], '200,000원')
-    assert.equal(view.rows['산재보험 (기사 몫)'], '-1,251원')
+    assert.equal(view.rows['산재보험 (기사 몫)'], '-880원')
     assert.equal(view.rows['원천징수 (3.3%)'], '-6,600원')
-    assert.equal(view.rows['최종 실수령액'], '192,149원')
+    assert.equal(view.rows['최종 실수령액'], '192,520원')
     assert.equal(Object.keys(view.rows).includes('수수료'), false, '옛 "수수료" 줄은 기사 정산금으로 바뀌었다')
   } finally { await view.cleanup() }
 })

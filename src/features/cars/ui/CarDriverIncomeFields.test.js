@@ -23,7 +23,7 @@ const { default: CarFormModal } = await import('./CarFormModal.jsx')
 const SUB_DRAFT = {
   number: '12가3456', tonnage: '', type: 'sub', driverName: '', driverPhone: '',
   driverPayMode: 'revenue', driverSalaryAmount: '', commEnabled: true, commType: 'percent', commission: '20',
-  driverIncomeType: 'business', insuranceOn: true, withholdingOn: true, expenseRate: '30.5', insuranceRate: '1.8',
+  driverIncomeType: 'business', insuranceOn: true, withholdingOn: true, expenseRate: '49.9', insuranceRate: '1.76',
   inviteCode: '', inviteStartDate: '', inviteDriverId: null, connectMode: 'log',
 }
 
@@ -99,9 +99,9 @@ test('산재 적용을 끄면 두 요율이 0이 되고 숨겨지며, 켜면 기
     assert.equal(view.container.querySelector('#newCarInsuranceRate'), null)
     assert.equal(view.container.querySelector('#newCarExpenseRate'), null)
     await act(async () => { el(view.container, '#newCarInsuranceOn').click() })
-    assert.equal(view.draft().insuranceRate, '1.8')
-    assert.equal(view.draft().expenseRate, '30.5')
-    assert.equal(el(view.container, '#newCarExpenseRate').value, '30.5')
+    assert.equal(view.draft().insuranceRate, '1.76')
+    assert.equal(view.draft().expenseRate, '49.9')
+    assert.equal(el(view.container, '#newCarExpenseRate').value, '49.9')
   } finally { await view.cleanup() }
 })
 
@@ -117,11 +117,11 @@ test('필요경비율·산재보험료율 입력은 숫자와 소수점만 남�
   } finally { await view.cleanup() }
 })
 
-test('필요경비율은 품목·차종 선택 없이 기본값 30.5로 시작하고 직접 고칠 수 있다', async () => {
+test('필요경비율은 품목·차종 선택 없이 기본값 49.9로 시작하고 직접 고칠 수 있다', async () => {
   const view = await mount(fields)
   try {
     assert.equal(view.container.querySelector('.app-dropdown-trigger'), null, '품목·차종 선택칸 없음')
-    assert.equal(el(view.container, '#newCarExpenseRate').value, '30.5')
+    assert.equal(el(view.container, '#newCarExpenseRate').value, '49.9')
     await act(async () => { typeInto(el(view.container, '#newCarExpenseRate'), '43.1') })
     assert.equal(view.draft().expenseRate, '43.1', '숫자를 직접 고칠 수 있다')
   } finally { await view.cleanup() }
@@ -133,8 +133,8 @@ test('차량 폼: 기사차량에는 이 블록이 보이고 메인 차량에는
   const sub = await mount(modal)
   try {
     for (const id of ['#newCarInsuranceOn', '#newCarWithholdingOn', '#newCarExpenseRate', '#newCarInsuranceRate']) assert.ok(sub.container.querySelector(id), id)
-    assert.equal(el(sub.container, '#newCarExpenseRate').value, '30.5')
-    assert.equal(el(sub.container, '#newCarInsuranceRate').value, '1.8')
+    assert.equal(el(sub.container, '#newCarExpenseRate').value, '49.9')
+    assert.equal(el(sub.container, '#newCarInsuranceRate').value, '1.76')
   } finally { await sub.cleanup() }
   const main = await mount(modal, { ...SUB_DRAFT, type: 'main' })
   try {

@@ -45,4 +45,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <!-- 휴대폰 알림은 "정확한 시각" 권한 없이 건다(몇 분 늦을 수 있음). -->
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" tools:node="remove" />
+    <!-- 마이크·위치가 없는 기기(일부 태블릿 등)에도 깔리게 한다. 없으면 운비서는 글 입력·지역 이름으로 쓴다. -->
+    <uses-feature android:name="android.hardware.microphone" android:required="false" />
+    <uses-feature android:name="android.hardware.location" android:required="false" />
 </manifest>

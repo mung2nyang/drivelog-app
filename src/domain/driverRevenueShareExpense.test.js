@@ -71,6 +71,14 @@ describe('getMonthlyDriverInsuranceOwnerShare — 산재보험료 차주 부담�
     assert.equal(result.items.find((item) => item.label.startsWith('김기사 (5/1~5/31)'))?.amount, KIM_INSURANCE_OWNER_EMPLOYEE)
   })
 
+  test('산재 부담이 기사 전액이면 차주 몫 항목이 없고, 차주 전액이면 총액 전부가 차주 몫', () => {
+    const withSplit = (/** @type {'owner'|'driver'} */ insuranceSplit) => subCars.map((car) => (car.number === '서울12가3456' ? { ...car, insuranceSplit } : car))
+    const driverPays = getMonthlyDriverInsuranceOwnerShare(MONTH_KEY, FIXTURE_SETTINGS, withSplit('driver'), FIXTURE_WORK)
+    assert.equal(driverPays.items.some((item) => item.label.startsWith('김기사')), false)
+    const ownerPays = getMonthlyDriverInsuranceOwnerShare(MONTH_KEY, FIXTURE_SETTINGS, withSplit('owner'), FIXTURE_WORK)
+    assert.equal(ownerPays.items.find((item) => item.label.startsWith('김기사'))?.amount, KIM_INSURANCE_OWNER_EMPLOYEE)
+  })
+
   test('산재 적용을 끄면 산재보험료가 없다 — 항목이 생기지 않는다', () => {
     const cars = subCars.map((car) => ({ ...car, insuranceOn: false }))
     const result = getMonthlyDriverInsuranceOwnerShare(MONTH_KEY, FIXTURE_SETTINGS, cars, FIXTURE_WORK)

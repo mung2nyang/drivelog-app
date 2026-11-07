@@ -28,6 +28,7 @@ import CarShareBaseField from './CarShareBaseField.jsx'
  * @property {boolean} [withholdingOn]
  * @property {string} [expenseRate]
  * @property {string} [insuranceRate]
+ * @property {'owner'|'half'|'driver'} [insuranceSplit]
  * @property {'gross'|'afterClientCommission'} [driverShareBase]
  * @property {string} inviteCode
  * @property {string} inviteStartDate

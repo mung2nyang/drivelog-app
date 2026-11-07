@@ -98,6 +98,14 @@ describe('carFromAssignedSummary', () => {
     assert.equal(car.insuranceRate, '2')
   })
 
+  test('insurance_split(0036)을 옮기고, 없거나 이상하면 기사 유형으로 정한다', () => {
+    const base = { id: 'veh-8', number: '서울12가3456', type: 'sub', driver_income_type: 'employee' }
+    assert.equal(carFromAssignedSummary({ ...base, insurance_split: 'driver' }).insuranceSplit, 'driver')
+    assert.equal(carFromAssignedSummary(base).insuranceSplit, 'owner')
+    assert.equal(carFromAssignedSummary({ ...base, insurance_split: '반반' }).insuranceSplit, 'owner')
+    assert.equal(carFromAssignedSummary({ ...base, driver_income_type: 'business', insurance_split: null }).insuranceSplit, 'half')
+  })
+
   test('4개 필드가 없거나 이상하면 차량 폼과 같은 기본값(사업소득자·원천징수 꺼짐·49.9·1.76)으로 되돌린다', () => {
     const base = { id: 'veh-7', number: '서울12가3456', type: 'sub' }
     const missing = carFromAssignedSummary(base)

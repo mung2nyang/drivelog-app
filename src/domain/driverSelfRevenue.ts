@@ -1,7 +1,7 @@
 // 소속기사 본인 매출 손익 — workLogs.main 전제, 정산액(매출제)은 getMonthlyDriverRevenueShareExpense와 같은 계산(link → 기간 합계 → 기사 몫 − 산재).
 // 지출 카드는 expenses 로 채우되 netProfit 은 정산액 유지(Q1).
 import { getShortCarNum, isVehicleRevenueSharedWithOwner } from './cars.ts'
-import { getDriverIncomeDeductions, getDriverSettlementAmount } from './driverIncomeDeductions.ts'
+import { getDriverIncomeDeductions, getDriverSettlementAmount, hasDriverInsuranceShare } from './driverIncomeDeductions.ts'
 import {
   calculateDriverVehicleCommission,
   getMonthlyDriverTotals,
@@ -57,7 +57,7 @@ export function getDriverSelfMonthlyDetail(monthKey: string, settings: FinanceSe
       amount: deductions.settlementAmount,
       insurance: deductions.insuranceDriverShare,
       withholding: deductions.withholding,
-      showInsurance: !!assigned.insuranceOn && assigned.driverIncomeType !== 'employee',
+      showInsurance: hasDriverInsuranceShare(assigned),
       showWithholding: !!assigned.withholdingOn,
     }
     label = settlementLabelForCar(assigned, settlementTotal)

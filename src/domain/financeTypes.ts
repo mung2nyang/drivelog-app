@@ -20,6 +20,7 @@ export type CarLike = {
   withholdingOn?: boolean // 3.3% 사업소득세 원천징수 여부
   expenseRate?: string | number // 산재 월보수액 계산용 필요경비율(%)
   insuranceRate?: string | number // 산재보험료율(%), 0이면 산재 적용 제외
+  insuranceSplit?: 'owner' | 'half' | 'driver' // 산재 부담: 차주 전액 / 반반 / 기사 전액(없으면 기사 유형으로)
   driverShareBase?: 'gross' | 'afterClientCommission' // 매출제 기사 몫 기준 — 운송료 전체(기본)/거래처 수수료 뗀 뒤
   logEnabled?: boolean
   driverLinkEnabled?: boolean

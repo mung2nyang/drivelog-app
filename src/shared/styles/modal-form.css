@@ -48,6 +48,8 @@
   background: color-mix(in srgb, var(--border-color) 55%, transparent);
 }
 
+.car-commission-type.three { grid-template-columns: repeat(3, 1fr); }
+
 .car-commission-type button {
   min-height: 40px;
   border: 0;

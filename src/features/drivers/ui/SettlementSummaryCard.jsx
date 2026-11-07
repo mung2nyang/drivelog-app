@@ -2,7 +2,7 @@
 import CalendarDateSelect from '../../../shared/ui/CalendarDateSelect.jsx'
 import { getYearOptions } from '../../../domain/calendar.ts'
 import { formatWon } from '../../../domain/money.ts'
-import { getDriverSettlementBreakdown } from '../../../domain/driverIncomeDeductions.ts'
+import { getDriverSettlementBreakdown, hasDriverInsuranceShare } from '../../../domain/driverIncomeDeductions.ts'
 
 const YEAR_OPTIONS = getYearOptions()
 
@@ -34,8 +34,8 @@ export default function SettlementSummaryCard({
   const year = viewDate.getFullYear()
   const month = viewDate.getMonth()
   const breakdown = getDriverSettlementBreakdown(detail, detail?.car)
-  // 기사차량 설정에서 켠 공제만 줄로 보인다(근로자 산재는 차주 전액이라 기사 몫 줄 없음).
-  const showInsurance = !!detail?.car?.insuranceOn && detail.car.driverIncomeType !== 'employee'
+  // 기사차량 설정에서 켠 공제만 줄로 보인다(산재 부담이 차주 전액이면 기사 몫 줄 없음).
+  const showInsurance = hasDriverInsuranceShare(detail?.car)
   const showWithholding = !!detail?.car?.withholdingOn
   return (
     <section className="tax-invoice-summary" id="linkedDriverSettlementSummary">

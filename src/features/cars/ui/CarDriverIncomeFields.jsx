@@ -2,10 +2,16 @@
 // 기사차량 폼의 "기사 유형·산재보험·원천징수(3.3%)·필요경비율·산재보험료율" 블록(CarFormModal이 씀).
 // 계산 규칙은 domain/driverIncomeDeductions.ts, 값은 draft에만 두고 저장은 차량 저장 경로가 한다.
 import { formatPercentInput } from '../../../domain/money.ts'
-import { DEFAULT_EXPENSE_RATE, DEFAULT_INSURANCE_RATE } from '../../../domain/driverIncomeDeductions.ts'
+import { DEFAULT_EXPENSE_RATE, DEFAULT_INSURANCE_RATE, insuranceSplitOf } from '../../../domain/driverIncomeDeductions.ts'
 import InfoTip from '../../../shared/ui/InfoTip.jsx'
 
 const INSURANCE_RATE_INFO = `화물차주 산재보험료율(${DEFAULT_INSURANCE_RATE}%, 출퇴근 재해 포함)입니다. 매년 1월 1일 바뀌며 직접 수정할 수 있고, '0' 입력 시 계산에서 제외됩니다.`
+/** @type {Array<{ value: 'owner'|'half'|'driver', label: string }>} */
+const INSURANCE_SPLITS = [
+  { value: 'owner', label: '차주 전액' },
+  { value: 'half', label: '반반' },
+  { value: 'driver', label: '기사 전액' },
+]
 const EXPENSE_RATE_INFO = `산재보험료를 계산할 때 운송료에서 빼는 고시 공제율입니다(기본 ${DEFAULT_EXPENSE_RATE}%). 매년 7월 1일 바뀌며 직접 수정할 수 있습니다.`
 
 /**
@@ -15,10 +21,11 @@ const EXPENSE_RATE_INFO = `산재보험료를 계산할 때 운송료에서 빼�
  */
 export default function CarDriverIncomeFields({ draft, setDraft }) {
   const isEmployee = draft.driverIncomeType === 'employee'
+  const insuranceSplit = insuranceSplitOf(draft)
 
-  /** 유형이 산재 부담(근로자: 차주 전액, 사업소득자: 반반)과 원천징수 기본값을 정한다. 산재 토글은 그대로. */
+  /** 유형이 원천징수와 산재 부담 기본값(근로자: 차주 전액, 사업소득자: 반반)을 정한다. */
   function setType(/** @type {'employee'|'business'} */ type) {
-    setDraft((prev) => ({ ...prev, driverIncomeType: type, withholdingOn: type === 'business' }))
+    setDraft((prev) => ({ ...prev, driverIncomeType: type, withholdingOn: type === 'business', insuranceSplit: type === 'employee' ? 'owner' : 'half' }))
   }
 
   /** 산재 끄면 두 요율 0·숨김, 켜면 기본값으로 다시 채워 보인다. */
@@ -37,8 +44,8 @@ export default function CarDriverIncomeFields({ draft, setDraft }) {
         <label>기사 유형</label>
         <p className="car-settlement-mode-guide">
           {isEmployee
-            ? '4대 보험 근로자는 산재보험료를 차주가 전액 부담하며, 사업소득세 3.3%는 공제하지 않습니다.'
-            : '사업소득자(3.3%)는 산재보험료를 차주와 기사가 절반씩 부담하며, 기사 정산액에서 사업소득세 3.3%를 공제합니다.'}
+            ? '4대 보험 근로자는 기사 정산액에서 사업소득세 3.3%를 공제하지 않습니다.'
+            : '사업소득자(3.3%)는 기사 정산액에서 사업소득세 3.3%를 공제합니다.'}
         </p>
         <div className="car-commission-type" role="group" aria-label="기사 유형">
           <button type="button" className={isEmployee ? 'active' : ''} aria-pressed={isEmployee} onClick={() => setType('employee')}>4대보험 근로자</button>
@@ -55,6 +62,15 @@ export default function CarDriverIncomeFields({ draft, setDraft }) {
           <span className="slider"></span>
         </label>
       </div>
+      {draft.insuranceOn && <div className="form-group">
+        <label>산재 부담</label>
+        <p className="car-settlement-mode-guide">산재보험료를 누가 낼지 고릅니다.</p>
+        <div className="car-commission-type three" role="group" aria-label="산재 부담">
+          {INSURANCE_SPLITS.map(({ value, label }) => (
+            <button key={value} type="button" className={insuranceSplit === value ? 'active' : ''} aria-pressed={insuranceSplit === value} onClick={() => setDraft((prev) => ({ ...prev, insuranceSplit: value }))}>{label}</button>
+          ))}
+        </div>
+      </div>}
       {draft.insuranceOn && <div className="car-income-rate-row">
         <div className="form-group">
           <div className="car-income-rate-label">

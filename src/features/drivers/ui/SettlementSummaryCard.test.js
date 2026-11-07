@@ -71,6 +71,19 @@ test('켠 공제만 줄로 보인다: 원천징수만 ON이면 원천징수 줄�
   } finally { await employee.cleanup() }
 })
 
+test('산재 부담이 기사 전액이면 근로자여도 기사 몫 줄이 보이고, 차주 전액이면 사업소득자여도 없다', async () => {
+  const driverPays = await render({ tripCount: 1, totalFare: 1000000, commissionAmount: 200000, car: { number: 'a', driverIncomeType: 'employee', insuranceOn: true, withholdingOn: false, insuranceSplit: 'driver' } })
+  try {
+    assert.equal(driverPays.rows['산재보험 (기사 몫)'], '-1,760원')
+    assert.equal(driverPays.rows['최종 실수령액'], '198,240원')
+  } finally { await driverPays.cleanup() }
+  const ownerPays = await render({ tripCount: 1, totalFare: 1000000, commissionAmount: 200000, car: { number: 'a', driverIncomeType: 'business', insuranceOn: true, withholdingOn: true, insuranceSplit: 'owner' } })
+  try {
+    assert.equal('산재보험 (기사 몫)' in ownerPays.rows, false)
+    assert.equal(ownerPays.rows['최종 실수령액'], '193,400원')
+  } finally { await ownerPays.cleanup() }
+})
+
 test('detail이 없으면 전부 0원으로 안전하게 그린다', async () => {
   const view = await render(null)
   try {

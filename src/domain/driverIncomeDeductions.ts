@@ -3,8 +3,9 @@
 import { parseCurrencyValue } from './money.ts'
 import type { CarLike } from './financeTypes.ts'
 
-export type DriverIncomeDraft = { driverIncomeType?: string, insuranceOn?: boolean, withholdingOn?: boolean, expenseRate?: string | number, insuranceRate?: string | number }
-export type DriverIncomeFields = { driverIncomeType: 'employee' | 'business', insuranceOn: boolean, withholdingOn: boolean, expenseRate: string, insuranceRate: string }
+export type InsuranceSplit = 'owner' | 'half' | 'driver'
+export type DriverIncomeDraft = { driverIncomeType?: string, insuranceOn?: boolean, withholdingOn?: boolean, expenseRate?: string | number, insuranceRate?: string | number, insuranceSplit?: string }
+export type DriverIncomeFields = { driverIncomeType: 'employee' | 'business', insuranceOn: boolean, withholdingOn: boolean, expenseRate: string, insuranceRate: string, insuranceSplit: InsuranceSplit }
 
 export const DEFAULT_EXPENSE_RATE = '49.9'
 export const DEFAULT_INSURANCE_RATE = '1.76'
@@ -19,6 +20,21 @@ export const NEW_DRIVER_INCOME_DRAFT: DriverIncomeFields = {
   withholdingOn: true,
   expenseRate: DEFAULT_EXPENSE_RATE,
   insuranceRate: DEFAULT_INSURANCE_RATE,
+  insuranceSplit: 'half',
+}
+
+export function isInsuranceSplit(value: string | null | undefined): value is InsuranceSplit {
+  return value === 'owner' || value === 'half' || value === 'driver'
+}
+
+/** 산재 부담: 저장값이 없으면 기사 유형으로 정한다(근로자 = 차주 전액, 사업소득자 = 반반). */
+export function insuranceSplitOf(car: { insuranceSplit?: string | null, driverIncomeType?: string | null } | null | undefined): InsuranceSplit {
+  if (isInsuranceSplit(car?.insuranceSplit)) return car.insuranceSplit
+  return car?.driverIncomeType === 'employee' ? 'owner' : 'half'
+}
+
+export function hasDriverInsuranceShare(car: CarLike | null | undefined) {
+  return !!car?.insuranceOn && insuranceSplitOf(car) !== 'owner'
 }
 
 /** 원 미만 버림. 소수 요율 곱셈의 부동소수점 오차(2501.9999…)로 1원 어긋나지 않게 보정한다. */
@@ -59,6 +75,7 @@ export function driverIncomeFieldsFromDraft(draft: DriverIncomeDraft): DriverInc
     withholdingOn: !!draft.withholdingOn,
     expenseRate: String(rateOf(draft.expenseRate, DEFAULT_EXPENSE_RATE)),
     insuranceRate: String(rateOf(draft.insuranceRate, DEFAULT_INSURANCE_RATE)),
+    insuranceSplit: insuranceSplitOf(draft),
   }
 }
 
@@ -70,6 +87,7 @@ export function driverIncomeDraftFromCar(car: CarLike): DriverIncomeFields {
     withholdingOn: !!car.withholdingOn,
     expenseRate: String(expenseRateOf(car.expenseRate) ?? DEFAULT_EXPENSE_RATE),
     insuranceRate: String(insuranceRateOf(car.insuranceRate) ?? DEFAULT_INSURANCE_RATE),
+    insuranceSplit: insuranceSplitOf(car),
   }
 }
 
@@ -80,16 +98,18 @@ export function getDriverSettlementAmount(car: CarLike | null | undefined, commi
 
 /**
  * 산재보험료 총액·부담 나눔·3.3%·기사 실수령. 산재는 산재 적용 토글이 켜졌을 때만(꺼지면 총액 0),
- * 부담은 기사 유형이 정한다: 사업소득자 = 기사·차주가 각각 월보수액 × 요율의 절반(10원 미만 버림), 근로자 = 차주가 월보수액 × 요율.
+ * 부담은 산재 부담 선택이 정한다: 반반 = 기사·차주가 각각 월보수액 × 요율의 절반, 차주 전액·기사 전액 = 한쪽이 월보수액 × 요율(모두 10원 미만 버림).
  * 3.3%는 산재 공제 전 정산액 기준이며 원천징수 토글이 켜졌을 때만.
  */
 export function getDriverIncomeDeductions(car: CarLike | null | undefined, settlementAmount: number) {
   const amount = Math.max(0, Math.floor(Number(settlementAmount) || 0))
   const insuranceBase = amount - floorWon(amount * rateOf(expenseRateOf(car?.expenseRate), DEFAULT_EXPENSE_RATE) / 100)
   const insuranceRate = car?.insuranceOn ? rateOf(insuranceRateOf(car?.insuranceRate), DEFAULT_INSURANCE_RATE) : 0
-  const isEmployee = car?.driverIncomeType === 'employee'
-  const insuranceDriverShare = isEmployee ? 0 : floorTen(insuranceBase * insuranceRate / 200)
-  const insuranceOwnerShare = isEmployee ? floorTen(insuranceBase * insuranceRate / 100) : insuranceDriverShare
+  const split = insuranceSplitOf(car)
+  const fullShare = floorTen(insuranceBase * insuranceRate / 100)
+  const halfShare = floorTen(insuranceBase * insuranceRate / 200)
+  const insuranceDriverShare = split === 'owner' ? 0 : split === 'driver' ? fullShare : halfShare
+  const insuranceOwnerShare = split === 'driver' ? 0 : split === 'owner' ? fullShare : halfShare
   const withholding = car?.withholdingOn ? floorWon(amount * WITHHOLDING_RATE / 100) : 0
   return {
     settlementAmount: amount,

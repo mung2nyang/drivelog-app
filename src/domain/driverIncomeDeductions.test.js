@@ -4,7 +4,7 @@ import { describe, test } from 'node:test'
 import {
   DEFAULT_EXPENSE_RATE, DEFAULT_INSURANCE_RATE, NEW_DRIVER_INCOME_DRAFT,
   driverIncomeDraftFromCar, driverIncomeFieldsFromDraft, getDriverIncomeDeductions,
-  getDriverSettlementAmount, getDriverSettlementBreakdown,
+  getDriverSettlementAmount, getDriverSettlementBreakdown, hasDriverInsuranceShare, insuranceSplitOf,
 } from './driverIncomeDeductions.ts'
 import { upsertCar } from './cars.ts'
 
@@ -134,6 +134,43 @@ describe('getDriverIncomeDeductions — 토글·요율·경계', () => {
   })
 })
 
+describe('산재 부담 선택(차주 전액·반반·기사 전액)', () => {
+  test('정산액 200,000(산재·3.3% 켬): 반반 880·880, 차주 전액 0·1,760, 기사 전액 1,760·0', () => {
+    const pick = (/** @type {'owner'|'half'|'driver'} */ insuranceSplit) => {
+      const r = getDriverIncomeDeductions({ ...BUSINESS_CAR, insuranceSplit }, 200000)
+      return [r.insuranceDriverShare, r.insuranceOwnerShare, r.insuranceTotal, r.driverNet]
+    }
+    assert.deepEqual(pick('half'), [880, 880, 1760, 192520])
+    assert.deepEqual(pick('owner'), [0, 1760, 1760, 193400])
+    assert.deepEqual(pick('driver'), [1760, 0, 1760, 191640])
+  })
+
+  test('기사 유형과 상관없이 고른 산재 부담대로 계산한다 — 근로자여도 기사 전액이면 기사 몫이 빠진다', () => {
+    const r = getDriverIncomeDeductions({ ...EMPLOYEE_CAR, insuranceSplit: 'driver' }, 2000000)
+    assert.equal(r.insuranceDriverShare, 17630)
+    assert.equal(r.insuranceOwnerShare, 0)
+    assert.equal(r.driverNet, 2000000 - 17630)
+  })
+
+  test('산재 부담 값이 없거나 이상하면 기사 유형으로 정한다(근로자 = 차주 전액, 사업소득자 = 반반)', () => {
+    assert.equal(insuranceSplitOf({ driverIncomeType: 'employee' }), 'owner')
+    assert.equal(insuranceSplitOf({ driverIncomeType: 'business' }), 'half')
+    assert.equal(insuranceSplitOf({}), 'half')
+    assert.equal(insuranceSplitOf(null), 'half')
+    assert.equal(insuranceSplitOf({ driverIncomeType: 'employee', insuranceSplit: 'x' }), 'owner')
+    assert.equal(insuranceSplitOf({ driverIncomeType: 'employee', insuranceSplit: 'driver' }), 'driver')
+  })
+
+  test('산재 기사 몫 줄은 산재를 켜고 차주 전액이 아닐 때만', () => {
+    assert.equal(hasDriverInsuranceShare(BUSINESS_CAR), true)
+    assert.equal(hasDriverInsuranceShare(EMPLOYEE_CAR), false)
+    assert.equal(hasDriverInsuranceShare({ ...EMPLOYEE_CAR, insuranceSplit: 'driver' }), true)
+    assert.equal(hasDriverInsuranceShare({ ...BUSINESS_CAR, insuranceSplit: 'owner' }), false)
+    assert.equal(hasDriverInsuranceShare({ ...BUSINESS_CAR, insuranceOn: false }), false)
+    assert.equal(hasDriverInsuranceShare(undefined), false)
+  })
+})
+
 describe('정산액·정산 요약', () => {
   test('월급제는 월급, 매출제는 기사 몫(수수료 계산 결과)이 정산액이다', () => {
     assert.equal(getDriverSettlementAmount({ number: 'a', driverPayMode: 'salary', driverSalaryAmount: '2,000,000' }, 999), 2000000)
@@ -168,7 +205,7 @@ describe('차량 폼 draft ↔ 저장 필드', () => {
   test('새 차량 폼 기본값은 사업소득자 + 산재·원천징수 ON, 경비율 49.9·요율 1.76', () => {
     assert.deepEqual(NEW_DRIVER_INCOME_DRAFT, {
       driverIncomeType: 'business', insuranceOn: true, withholdingOn: true,
-      expenseRate: DEFAULT_EXPENSE_RATE, insuranceRate: DEFAULT_INSURANCE_RATE,
+      expenseRate: DEFAULT_EXPENSE_RATE, insuranceRate: DEFAULT_INSURANCE_RATE, insuranceSplit: 'half',
     })
     assert.equal(DEFAULT_EXPENSE_RATE, '49.9')
     assert.equal(DEFAULT_INSURANCE_RATE, '1.76')
@@ -176,17 +213,19 @@ describe('차량 폼 draft ↔ 저장 필드', () => {
 
   test('driverIncomeFieldsFromDraft: 빈 요율은 기본값, 이상한 유형은 사업소득자, 숫자 문자열로 정리', () => {
     assert.deepEqual(driverIncomeFieldsFromDraft({ driverIncomeType: '?', expenseRate: '', insuranceRate: '2.00' }), {
-      driverIncomeType: 'business', insuranceOn: false, withholdingOn: false, expenseRate: '49.9', insuranceRate: '2',
+      driverIncomeType: 'business', insuranceOn: false, withholdingOn: false, expenseRate: '49.9', insuranceRate: '2', insuranceSplit: 'half',
     })
     assert.equal(driverIncomeFieldsFromDraft({ driverIncomeType: 'employee' }).driverIncomeType, 'employee')
+    assert.equal(driverIncomeFieldsFromDraft({ driverIncomeType: 'employee' }).insuranceSplit, 'owner')
+    assert.equal(driverIncomeFieldsFromDraft({ driverIncomeType: 'employee', insuranceSplit: 'driver' }).insuranceSplit, 'driver')
   })
 
   test('driverIncomeDraftFromCar: 새 필드가 없는 기존 차량은 원천징수 꺼짐·사업소득자·기본 요율(기존 동작 유지)', () => {
     assert.deepEqual(driverIncomeDraftFromCar({ number: 'a', insuranceOn: true }), {
-      driverIncomeType: 'business', insuranceOn: true, withholdingOn: false, expenseRate: '49.9', insuranceRate: '1.76',
+      driverIncomeType: 'business', insuranceOn: true, withholdingOn: false, expenseRate: '49.9', insuranceRate: '1.76', insuranceSplit: 'half',
     })
     assert.deepEqual(driverIncomeDraftFromCar({ number: 'a', driverIncomeType: 'employee', withholdingOn: true, expenseRate: 43.1, insuranceRate: '0' }), {
-      driverIncomeType: 'employee', insuranceOn: false, withholdingOn: true, expenseRate: '43.1', insuranceRate: '0',
+      driverIncomeType: 'employee', insuranceOn: false, withholdingOn: true, expenseRate: '43.1', insuranceRate: '0', insuranceSplit: 'owner',
     })
   })
 
@@ -205,9 +244,11 @@ describe('차량 폼 draft ↔ 저장 필드', () => {
     assert.equal(sub?.withholdingOn, false)
     assert.equal(sub?.expenseRate, '43.1')
     assert.equal(sub?.insuranceRate, '2')
+    assert.equal(sub?.insuranceSplit, 'owner')
+    assert.equal(upsertCar([], { number: '12가3457', type: 'sub', commission: '20', insuranceSplit: 'driver' }).cars?.[0]?.insuranceSplit, 'driver')
     const main = upsertCar([], { number: '99가9999', type: 'main', driverIncomeType: 'employee', withholdingOn: true, expenseRate: '43.1' }).cars?.[0]
     assert.equal(main?.type, 'main')
-    for (const key of ['driverIncomeType', 'withholdingOn', 'expenseRate', 'insuranceRate']) {
+    for (const key of ['driverIncomeType', 'withholdingOn', 'expenseRate', 'insuranceRate', 'insuranceSplit']) {
       assert.equal(key in (main || {}), false, `메인 차량에 ${key}가 저장되면 안 된다`)
     }
     assert.equal(main?.insuranceOn, false)

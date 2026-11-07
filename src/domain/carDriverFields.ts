@@ -17,6 +17,7 @@ export type CarUpsertDraft = {
   withholdingOn?: boolean
   expenseRate?: string | number
   insuranceRate?: string | number
+  insuranceSplit?: string
   driverShareBase?: string
 }
 
@@ -34,6 +35,7 @@ export type DriverFields = {
   withholdingOn?: boolean
   expenseRate?: string
   insuranceRate?: string
+  insuranceSplit?: 'owner' | 'half' | 'driver'
   /** 매출제 기사 몫 기준 */
   driverShareBase?: 'gross' | 'afterClientCommission'
 }

@@ -241,3 +241,13 @@ test('공제 줄용 breakdown: 기사 몫·산재(기사 부담)·원천징수, 
   assert.equal(breakdown.amount - breakdown.insurance - breakdown.withholding, detail.income.settlement.total)
 })
 
+
+test('산재 부담 선택이 기사 본인 화면에도 그대로: 기사 전액이면 기사 몫 590원, 차주 전액이면 산재 줄 없음', () => {
+  // 정산액 67,500 → 월보수액 33,818 × 1.76% = 595.2 → 590
+  const driverPays = getDriverSelfMonthlyDetail(MONTH_KEY, settingsWithCars([{ ...REVENUE_CAR, insuranceSplit: 'driver' }]), MAIN_ONLY_WORK).income.settlement.breakdown
+  assert.equal(driverPays?.insurance, 590)
+  assert.equal(driverPays?.showInsurance, true)
+  const ownerPays = getDriverSelfMonthlyDetail(MONTH_KEY, settingsWithCars([{ ...REVENUE_CAR, insuranceSplit: 'owner' }]), MAIN_ONLY_WORK).income.settlement.breakdown
+  assert.equal(ownerPays?.insurance, 0)
+  assert.equal(ownerPays?.showInsurance, false)
+})

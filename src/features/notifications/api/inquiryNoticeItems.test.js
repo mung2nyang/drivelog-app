@@ -17,6 +17,8 @@ test('답변 도착 한 줄: 제목·내용(문의 제목)·날짜 줄·id에 �
     title: '문의에 답변이 도착했습니다',
     body: '첫 문의',
     dateLabel: '답변 10.22',
+    inquiryId: 'q-1',
+    answeredAt: ANSWERED[0].answeredAt,
   })
 })
 

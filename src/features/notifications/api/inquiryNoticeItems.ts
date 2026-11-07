@@ -12,6 +12,8 @@ export type InquiryNoticeItem = {
   dateLabel: string
   actionLabel?: string
   dismissLabel?: string
+  inquiryId?: string // 답변 알림만 — [닫기] 때 서버에 봤음 저장
+  answeredAt?: string
 }
 
 export const NO_INQUIRY_NOTICES: InquiryNoticeData = { answered: [], pending: null }
@@ -39,6 +41,8 @@ export function buildInquiryNoticeItems(
       title: '문의에 답변이 도착했습니다',
       body: inquiry.title || '문의',
       dateLabel: date ? `답변 ${date}` : '',
+      inquiryId: inquiry.id,
+      answeredAt: inquiry.answeredAt,
     })
   }
   if (data.pending) {

@@ -1,7 +1,7 @@
 // @ts-check
 // 알림 화면(알림 단추 → /app/notifications): 맨 위 "알림 받기" 종류별 스위치 + 알림 목록(날짜 줄·[닫기]). 옆 창(NotificationPanel)을 대체.
 import { isCloudSession } from '../../../data/cloud/cloudSession.ts'
-import { dismissNotification } from '../api/notifications.js'
+import { dismissNotice } from '../api/dismissNotice.ts'
 import useNotifications from '../hooks/useNotifications.js'
 import { savePracticeSettings } from '../../../data/sync/settingsSave.ts'
 import { useOwnerSettings } from '../../../data/store/ownerDataHooks.ts'
@@ -15,6 +15,7 @@ import { useIsAdmin } from '../../../data/cloud/adminRole.ts'
 /** @typedef {ReturnType<typeof useNotifications>[number]} NotificationItem */
 
 const SAVE_FAIL = SERVER_SAVE_FAIL
+const DISMISS_FAIL = '알림을 닫지 못했습니다. 잠시 뒤 다시 시도해 주세요.'
 
 /**
  * @param {Object} props
@@ -51,9 +52,9 @@ export default function NotificationsPage({ onBack, onOpenMenu, onOpenPage }) {
     }
   }
 
-  /** @param {string} id */
-  function dismiss(id) {
-    dismissNotification(ownerKey, id)
+  /** @param {NotificationItem} item */
+  function dismiss(item) {
+    dismissNotice(ownerKey, item).catch(() => showToast?.(DISMISS_FAIL))
   }
 
   function turnOnInspection() {
@@ -95,7 +96,7 @@ export default function NotificationsPage({ onBack, onOpenMenu, onOpenPage }) {
               {item.actionLabel && (
                 <button type="button" className="notif-action-primary" onClick={turnOnInspection}>{item.actionLabel}</button>
               )}
-              {!('noDismiss' in item && item.noDismiss) && <button type="button" className="notif-action-dismiss" onClick={() => dismiss(item.id)}>{item.dismissLabel || '닫기'}</button>}
+              {!('noDismiss' in item && item.noDismiss) && <button type="button" className="notif-action-dismiss" onClick={() => dismiss(item)}>{item.dismissLabel || '닫기'}</button>}
             </div>
           </article>
         ))}

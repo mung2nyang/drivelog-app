@@ -31,6 +31,7 @@ beforeEach(() => {
   handlers.rpc = {
     is_admin: () => ({ data: false, error: null }),
     admin_list_support_inquiries: () => ({ data: [{ id: 'n-1', title: '새 문의', answer: null }, { id: 'n-0', title: '옛', answer: null }], error: null }),
+    mark_inquiry_answer_seen: () => ({ data: 1, error: null }),
   }
 })
 
@@ -90,6 +91,8 @@ test('일반 계정: 답변 도착이 맨 뒤에, 누르면 my-inquiries, [닫�
     const close = item.querySelector('.notif-action-dismiss')
     assert.ok(close instanceof window.HTMLElement)
     await act(async () => { close.click() })
+    await flush()
+    assert.equal(countOf('rpc', 'mark_inquiry_answer_seen'), 1)
     assert.equal(view.titles().includes('문의에 답변이 도착했습니다'), false)
   } finally { await view.cleanup() }
 })

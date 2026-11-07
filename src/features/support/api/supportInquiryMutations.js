@@ -17,7 +17,7 @@ const LOGIN_REQUIRED_TOAST = '로그인이 필요합니다.'
 
 /**
  * @typedef {{ id: string, type: string|null, title: string|null, content: string|null,
- *   answer: string|null, created_at: string|null }} SupportInquiryRow
+ *   answer: string|null, created_at: string|null, answeredAt: string|null, answerSeenAt: string|null }} SupportInquiryRow
  */
 
 /**
@@ -33,7 +33,9 @@ function normalizeInquiryRow(row) {
   const content = 'content' in row && typeof row.content === 'string' ? row.content : null
   const answer = 'answer' in row && typeof row.answer === 'string' ? row.answer : null
   const createdAt = 'created_at' in row && typeof row.created_at === 'string' ? row.created_at : null
-  return { id: String(id), type, title, content, answer, created_at: createdAt }
+  const answeredAt = 'answered_at' in row && typeof row.answered_at === 'string' ? row.answered_at : null
+  const answerSeenAt = 'answer_seen_at' in row && typeof row.answer_seen_at === 'string' ? row.answer_seen_at : null
+  return { id: String(id), type, title, content, answer, created_at: createdAt, answeredAt, answerSeenAt }
 }
 
 /**

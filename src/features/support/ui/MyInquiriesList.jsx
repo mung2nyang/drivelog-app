@@ -2,6 +2,7 @@
 // 고객센터 내 문의 목록 — 답변 대기/완료 표시, 못 불러오면 알림과 빈 목록 안내.
 import { useEffect, useState } from 'react'
 import { fetchMyInquiries } from '../api/supportInquiryMutations.js'
+import { markShownAnswersSeen } from '../../../data/cloud/inquiryNotices.ts'
 import { SkeletonLines } from '../../../shared/ui/Skeleton.jsx'
 import { useToast } from '../../../shared/hooks/useToast.js'
 
@@ -21,7 +22,12 @@ export default function MyInquiriesList({ userId }) {
   useEffect(() => {
     let cancelled = false
     fetchMyInquiries(userId)
-      .then((rows) => { if (!cancelled) setResult({ key: userId, items: rows }) })
+      .then((rows) => {
+        if (cancelled) return
+        setResult({ key: userId, items: rows })
+        // 여기 보인 답변은 봤음으로 — 알림 화면의 답변 알림이 사라진다.
+        void markShownAnswersSeen(rows)
+      })
       .catch(() => {
         if (cancelled) return
         setResult({ key: userId, items: [] })

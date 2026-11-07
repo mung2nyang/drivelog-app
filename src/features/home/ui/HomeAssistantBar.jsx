@@ -1,12 +1,10 @@
 // @ts-check
 // 홈 운비서 줄 — 마이크를 한 번 누르면 카드가 늘어나며 바로 듣고, 나머지를 누르면 글로 쓰는 칸이 열린다. 이름 "운비서"는 임시.
 import { useState } from 'react'
-import { assetPath } from '../../../shared/utils/assetPath.js'
 import { useUnbiseo } from '../hooks/unbiseoContext.ts'
 import HomeAssistantPanel from './HomeAssistantPanel.tsx'
+import UnbiseoAvatar from './UnbiseoAvatar.tsx'
 import './home-assistant.css'
-
-const AVATAR = assetPath('/images/assistant_unbiseo.png')
 
 export default function HomeAssistantBar() {
   const [open, setOpen] = useState(false)
@@ -25,7 +23,7 @@ export default function HomeAssistantBar() {
       <div className="home-assistant-head">
         <button type="button" className="home-assistant-toggle" aria-expanded={open} onClick={() => setOpen((value) => !value)}>
           <span className="home-assistant-avatar">
-            <img src={AVATAR} alt="" width="36" height="29" />
+            <UnbiseoAvatar assistant={assistant} width={36} height={29} />
           </span>
           <span className="home-assistant-copy">
             <strong className="home-assistant-name">AI 운비서</strong>

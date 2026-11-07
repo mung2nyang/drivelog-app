@@ -2,14 +2,12 @@
 import { useEffect, type CSSProperties } from 'react'
 import { useSession } from '../../../data/cloud/sessionContext.ts'
 import { useOwnerSettings } from '../../../data/store/ownerDataHooks.ts'
-import { assetPath } from '../../../shared/utils/assetPath.js'
 import { useUnbiseo } from '../hooks/unbiseoContext.ts'
 import { useDockPosition } from '../hooks/useDockPosition.ts'
 import HomeAssistantPanel from './HomeAssistantPanel.tsx'
+import UnbiseoAvatar from './UnbiseoAvatar.tsx'
 import './home-assistant.css'
 import './unbiseo-dock.css'
-
-const AVATAR = assetPath('/images/assistant_unbiseo.png')
 
 export default function UnbiseoDock() {
   const { assistant, openCall, dockOpen, setDockOpen } = useUnbiseo()
@@ -47,7 +45,7 @@ export default function UnbiseoDock() {
           aria-expanded={false}
           onClick={() => { if (!justDragged()) openAndListen() }}
         >
-          <img src={AVATAR} alt="" width="40" height="32" draggable={false} />
+          <UnbiseoAvatar assistant={assistant} width={40} height={32} />
         </button>
       </section>
     )
@@ -58,7 +56,7 @@ export default function UnbiseoDock() {
       <div className="unbiseo-dock-card">
         <div className="home-assistant-head unbiseo-dock-head">
           <span className="home-assistant-avatar">
-            <img src={AVATAR} alt="" width="36" height="29" />
+            <UnbiseoAvatar assistant={assistant} width={36} height={29} />
           </span>
           <strong className="home-assistant-name unbiseo-dock-name">AI 운비서</strong>
           {speech.supported && (

@@ -1,0 +1,30 @@
+.unbiseo-avatar {
+  position: relative;
+  display: block;
+  overflow: hidden;
+}
+
+.unbiseo-avatar.moving > img:first-child {
+  visibility: hidden;
+}
+
+.unbiseo-avatar .unbiseo-avatar-strip {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 800%;
+  max-width: none;
+  height: 100%;
+  animation: unbiseo-motion 0.8s steps(8) var(--motion-loops, infinite);
+}
+
+@keyframes unbiseo-motion {
+  from { transform: translateX(0); }
+  to { transform: translateX(-100%); }
+}
+
+/* 움직임 줄이기를 켠 기기에서는 멈춘 그림만. */
+@media (prefers-reduced-motion: reduce) {
+  .unbiseo-avatar .unbiseo-avatar-strip { display: none; }
+  .unbiseo-avatar.moving > img:first-child { visibility: visible; }
+}

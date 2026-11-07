@@ -47,3 +47,9 @@ export function applyTheme(theme?: 'light' | 'dark') {
   // 다음에 앱 파일이 오기 전 로딩 화면 색(index.html)용 — 화면 색만 기억, 못 써도 무시.
   try { localStorage.setItem('lastTheme', theme === 'dark' ? 'dark' : 'light') } catch { /* 무시 */ }
 }
+
+/** 휴대폰 다크 모드 설정 — 테마를 고른 적 없는 새 계정의 첫 테마. */
+export function phoneTheme(): 'light' | 'dark' {
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return 'light'
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+}

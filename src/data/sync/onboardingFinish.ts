@@ -1,4 +1,4 @@
-import { savePracticeSettings } from './settingsSave.ts'
+import { phoneTheme, savePracticeSettings } from './settingsSave.ts'
 import { requestVehicleSave } from './vehicleMutations.ts'
 import type { CarLike } from '../../domain/financeTypes.ts'
 
@@ -42,7 +42,8 @@ export async function applyOnboardingWizard({ ownerKey, userId, cars = [], wizar
 }): Promise<{ toast?: string }> {
   let toast: string | undefined
   try {
-    await savePracticeSettings(ownerKey, buildOnboardingSettingsPatch(wizard))
+    // 새 계정의 첫 테마는 휴대폰 다크 모드 설정을 따른다.
+    await savePracticeSettings(ownerKey, { ...buildOnboardingSettingsPatch(wizard), theme: phoneTheme() })
   } catch (error) {
     console.error('온보딩 설정 저장 실패:', error)
     toast = '설정 저장에 실패했습니다. 앱 설정에서 다시 저장해 주세요.'

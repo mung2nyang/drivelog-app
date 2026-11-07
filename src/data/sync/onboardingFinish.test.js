@@ -149,4 +149,18 @@ describe('applyOnboardingWizard', () => {
     const cars = getState().cars[ownerKey] || []
     assert.equal(cars.length, 0)
   })
+
+  for (const [phoneDark, expected] of /** @type {Array<[boolean, 'dark' | 'light']>} */ ([[true, 'dark'], [false, 'light']])) {
+    test(`휴대폰이 ${phoneDark ? '다크' : '라이트'} 모드면 첫 설정에 테마 ${expected}를 저장한다`, async () => {
+      const original = Reflect.get(window, 'matchMedia')
+      Reflect.set(window, 'matchMedia', (/** @type {string} */ query) => ({ matches: phoneDark && query.includes('prefers-color-scheme: dark') }))
+      try {
+        const outcome = await applyOnboardingWizard({ ownerKey: 'guest', userId: null, cars: [], wizard: { workStyle: 'call' } })
+        assert.equal(outcome.toast, undefined)
+        assert.equal(readOwnerSettings('guest').theme, expected)
+      } finally {
+        Reflect.set(window, 'matchMedia', original)
+      }
+    })
+  }
 })

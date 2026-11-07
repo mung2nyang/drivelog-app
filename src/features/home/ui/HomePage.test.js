@@ -39,7 +39,7 @@ const { notifyDailyInspectionChanged } = await import('../../../data/sync/dailyI
 /**
  * @param {string} ownerKey
  * @param {(dateKey: string) => void} onOpenToday
- * @param {{ onOpenReceivables?: () => void, onOpenCalendar?: () => void }} [more]
+ * @param {{ onOpenReceivables?: () => void, onOpenCalendar?: () => void, session?: import('../../../data/sync/syncTypes.ts').AppSession }} [more]
  */
 async function renderHome(ownerKey, onOpenToday, more = {}) {
   const container = document.createElement('div')
@@ -51,7 +51,7 @@ async function renderHome(ownerKey, onOpenToday, more = {}) {
       { initialEntries: ['/app'] },
       withSession(React.createElement(UnbiseoProvider, { onOpenCall: () => {} }, React.createElement(HomePage, { onOpenToday, onOpenMenu: () => {}, onOpenNotifs: () => {},
         onOpenReceivables: more.onOpenReceivables || (() => {}), onOpenCalendar: more.onOpenCalendar || (() => {}),
-      })), { ownerKey }),
+      })), { ownerKey, session: more.session || null }),
     ))
   })
   return {
@@ -389,6 +389,30 @@ test('AI 비서 — 오늘 카드와 할 일 사이에 운비서 줄(그림·이
     await act(async () => { toggle?.click() })
     assert.equal(toggle?.getAttribute('aria-expanded'), 'true')
     assert.equal(bar?.querySelector('.home-assistant-note')?.textContent, '로그인하면 쓸 수 있습니다.', '테스트 계정은 비회원')
+  } finally {
+    await view.cleanup()
+  }
+})
+
+test('설정에서 운비서를 끄면 홈 운비서 카드가 사라지고 나머지 카드 순서는 그대로, 켜면 접힌 채 다시 보인다', async () => {
+  const ownerKey = 'test-home-assistant-off'
+  commitSettings(ownerKey, normalizeSettings({}))
+  const view = await renderHome(ownerKey, () => {}, { session: { userId: ownerKey, name: '보리', accountType: 'owner' } })
+  /** @returns {string[]} */
+  const kinds = () => Array.from(view.container.querySelectorAll('.home-card')).map((el) => (
+    el.classList.contains('home-today-card') ? 'today'
+      : el.classList.contains('home-assistant') ? 'assistant'
+        : el.classList.contains('home-todo-empty') || el.classList.contains('home-todo-card') ? 'todo'
+          : el.classList.contains('home-month-card') ? 'month' : 'other'
+  ))
+  try {
+    assert.deepEqual(kinds(), ['today', 'assistant', 'todo', 'month'])
+    await act(async () => { view.container.querySelector('button.home-assistant-toggle')?.click() })
+    await act(async () => { commitSettings(ownerKey, normalizeSettings({ unbiseoDockOn: false })) })
+    assert.deepEqual(kinds(), ['today', 'todo', 'month'])
+    await act(async () => { commitSettings(ownerKey, normalizeSettings({ unbiseoDockOn: true })) })
+    assert.deepEqual(kinds(), ['today', 'assistant', 'todo', 'month'])
+    assert.equal(view.container.querySelector('button.home-assistant-toggle')?.getAttribute('aria-expanded'), 'false', '접힌 채')
   } finally {
     await view.cleanup()
   }

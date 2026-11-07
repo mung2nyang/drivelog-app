@@ -86,7 +86,7 @@ export type FinanceSettings = {
   cargoTonnageOn?: boolean
   dailyInspectionOn?: boolean // 일상점검표 사용(메인 차량 — 기사차량은 subCarSettings)
   notifOff?: Array<string> // 알림 화면에서 끈 알림 종류(NOTIF_KINDS)
-  unbiseoDockOn?: boolean // 홈이 아닌 화면의 운비서 버튼(기본 켜짐)
+  unbiseoDockOn?: boolean // 운비서 켜기(홈 카드와 다른 화면의 버튼, 기본 켜짐)
   messageTemplates?: [string, string, string] // 문자 문구 1~3(미수금 안내·입금 요청·운행 완료), 없으면 기본 문구
   reportShareMessage?: string // 내역서 공유 문자 문구, 없으면 기본 문구
   fixedRouteOn?: boolean

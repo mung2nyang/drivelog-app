@@ -45,7 +45,7 @@ export default function UnbiseoDock() {
           aria-expanded={false}
           onClick={() => { if (!justDragged()) openAndListen() }}
         >
-          <UnbiseoAvatar assistant={assistant} width={46} height={37} />
+          <UnbiseoAvatar assistant={assistant} width={45} height={32} />
         </button>
       </section>
     )
@@ -56,7 +56,7 @@ export default function UnbiseoDock() {
       <div className="unbiseo-dock-card">
         <div className="home-assistant-head unbiseo-dock-head">
           <span className="home-assistant-avatar">
-            <UnbiseoAvatar assistant={assistant} width={52} height={42} />
+            <UnbiseoAvatar assistant={assistant} width={53} height={37} />
           </span>
           <strong className="home-assistant-name unbiseo-dock-name">AI 운비서</strong>
           {speech.supported && (

@@ -23,7 +23,7 @@ export default function HomeAssistantBar() {
       <div className="home-assistant-head">
         <button type="button" className="home-assistant-toggle" aria-expanded={open} onClick={() => setOpen((value) => !value)}>
           <span className="home-assistant-avatar">
-            <UnbiseoAvatar assistant={assistant} width={52} height={42} />
+            <UnbiseoAvatar assistant={assistant} width={53} height={37} />
           </span>
           <span className="home-assistant-copy">
             <strong className="home-assistant-name">AI 운비서</strong>

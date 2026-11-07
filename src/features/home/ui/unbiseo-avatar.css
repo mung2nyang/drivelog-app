@@ -4,27 +4,23 @@
   overflow: hidden;
 }
 
-.unbiseo-avatar.moving > img:first-child {
+.unbiseo-avatar.playing > img {
   visibility: hidden;
 }
 
-.unbiseo-avatar .unbiseo-avatar-strip {
+.unbiseo-avatar-layer {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 800%;
-  max-width: none;
-  height: 100%;
-  animation: unbiseo-motion 0.8s steps(8) var(--motion-loops, infinite);
+  inset: 0;
+  background-repeat: no-repeat;
+  background-position: 0% 0;
 }
 
-@keyframes unbiseo-motion {
-  from { transform: translateX(0); }
-  to { transform: translateX(-100%); }
+.unbiseo-avatar-layer.top {
+  opacity: 0;
 }
 
 /* 움직임 줄이기를 켠 기기에서는 멈춘 그림만. */
 @media (prefers-reduced-motion: reduce) {
-  .unbiseo-avatar .unbiseo-avatar-strip { display: none; }
-  .unbiseo-avatar.moving > img:first-child { visibility: visible; }
+  .unbiseo-avatar-layer { display: none; }
+  .unbiseo-avatar.playing > img { visibility: visible; }
 }

@@ -51,8 +51,12 @@ body:has(.management-add-fab) .unbiseo-dock:not(.open) { align-items: flex-start
 
 .unbiseo-dock-fab img {
   display: block;
-  width: 40px;
+  width: 46px;
   height: auto;
+}
+
+.unbiseo-dock-fab .unbiseo-avatar {
+  transform: translateY(-2px);
 }
 
 /* 펼친 카드는 잠깐 쓰는 것 — 너무 길면 카드 안에서만 넘긴다. */

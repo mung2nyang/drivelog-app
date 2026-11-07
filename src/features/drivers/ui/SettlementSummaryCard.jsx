@@ -16,7 +16,7 @@ function deductionWon(amount) {
 
 /**
  * detail은 getLinkedDriverSettlementDetail 결과에 그 기사차량(car)을 실은 것 — 카드는 car의 산재·원천징수 설정으로 계산한다.
- * @typedef {{ tripCount?: number, totalFare?: number, commissionAmount?: number, car?: import('../../../domain/financeTypes.ts').CarLike }} SettlementDetail
+ * @typedef {{ tripCount?: number, totalFare?: number, commissionAmount?: number, previousPeriods?: Array<{ label: string, fare: number }>, car?: import('../../../domain/financeTypes.ts').CarLike }} SettlementDetail
  */
 
 /**
@@ -63,6 +63,9 @@ export default function SettlementSummaryCard({
       </div>
       <div className="summary-title"><span>기사 정산</span><span>{detail?.tripCount || 0}건</span></div>
       <div className="summary-row"><span>총 운송료</span><span className="summary-value">{formatWon(breakdown.totalFare)}</span></div>
+      {(detail?.previousPeriods || []).map((period) => (
+        <div className="summary-row" key={period.label}><span>{period.label}</span><span className="summary-value">{deductionWon(period.fare)}</span></div>
+      ))}
       <div className="summary-row"><span>기사 정산금</span><span className="summary-value">{formatWon(breakdown.settlementAmount)}</span></div>
       {showInsurance && <div className="summary-row"><span>산재보험 (기사 몫)</span><span className="summary-value">{deductionWon(breakdown.insuranceDriverShare)}</span></div>}
       {showWithholding && <div className="summary-row"><span>원천징수 (3.3%)</span><span className="summary-value">{deductionWon(breakdown.withholding)}</span></div>}

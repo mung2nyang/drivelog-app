@@ -5,6 +5,7 @@ import { isDateWithinAssignment } from './drivers.ts'
 import { parseCurrencyValue, vatOf } from './money.ts'
 import { calculateDriverVehicleCommission, getDriverCarWorkData, getMonthlyDriverTotals, logData } from './financeCore.ts'
 import { driverShareBaseAmount, getMonthlyDriverClientCommission } from './driverShareBase.ts'
+import { getPreviousDriverPeriods } from './driverRevenueShareExpense.ts'
 import type { CarLike, DriverLinkLike, FinanceSettings, SupplierBiz, WorkDataByLogId } from './financeTypes.ts'
 import { getPalletCount } from './day-record.ts'
 import type { DayRecordLike } from './day-record.ts'
@@ -141,13 +142,16 @@ export function flattenLinkedDriverTrips(data: Record<string, DayRecordLike>, mo
 export function getLinkedDriverSettlementDetail(data: Record<string, DayRecordLike>, monthKey: string, link: DriverLinkLike, car: CarLike, settings: FinanceSettings = {}) {
   const totals = getMonthlyDriverTotals(data, monthKey, link, settings)
   const base = driverShareBaseAmount(car, totals.grossAmount, getMonthlyDriverClientCommission(data, monthKey, link, settings))
-  const commissionAmount = calculateDriverVehicleCommission(car, base)
+  // 연동 없는 차량은 이전 기사 기간을 빼고 센다 — 매출 기사 급여 줄과 같은 금액.
+  const past = link.assignmentStart ? [] : getPreviousDriverPeriods(monthKey, settings, car, data, null)
+  const commissionAmount = calculateDriverVehicleCommission(car, base) - past.reduce((sum, item) => sum + item.share, 0)
   const insuranceAmount = car?.insuranceOn ? totals.insuranceAmount : 0
   const finalAmount = Math.max(0, totals.grossAmount - commissionAmount - insuranceAmount)
   const trips = flattenLinkedDriverTrips(data, monthKey, link, settings)
   return {
     totalFare: totals.grossAmount,
-    tripCount: totals.count,
+    tripCount: totals.count - past.reduce((sum, item) => sum + item.count, 0),
+    previousPeriods: past.filter((item) => item.gross > 0).map((item) => ({ label: item.label, fare: item.gross })),
     commissionAmount,
     insuranceAmount,
     finalAmount,

@@ -84,6 +84,19 @@ test('산재 부담이 기사 전액이면 근로자여도 기사 몫 줄이 보
   } finally { await ownerPays.cleanup() }
 })
 
+test('이전 기사 기간이 있으면 총 운송료 다음에 그 기간 운송료가 빼기 줄로 보이고, 없으면 줄이 없다', async () => {
+  const car = { number: '22가2222', driverPayMode: 'revenue', insuranceOn: false, withholdingOn: false }
+  const view = await render({ tripCount: 25, totalFare: 1350000, commissionAmount: 150000, previousPeriods: [{ label: '이전 기사 (11/3~11/6)', fare: 600000 }], car })
+  try {
+    assert.equal(view.rows['이전 기사 (11/3~11/6)'], '-600,000원')
+    assert.equal(view.rows['기사 정산금'], '150,000원')
+  } finally { await view.cleanup() }
+  const plain = await render({ tripCount: 1, totalFare: 1000000, commissionAmount: 200000, car })
+  try {
+    assert.equal(Object.keys(plain.rows).some((label) => label.startsWith('이전 기사')), false)
+  } finally { await plain.cleanup() }
+})
+
 test('detail이 없으면 전부 0원으로 안전하게 그린다', async () => {
   const view = await render(null)
   try {

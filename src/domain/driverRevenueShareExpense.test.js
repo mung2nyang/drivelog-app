@@ -291,4 +291,36 @@ describe('기사 급여 이전 기사 줄 — 해제된 예전 계약 기간분'
       ['테스트2 (10/12~) 산재보험(차주 부담)', 260],
     ])
   })
+
+  /** 기사 관리 화면이 연동 없는 차량에 넘기는 빈 계약 기간 */
+  const openLink = { id: '', vehicleNumber: '22가2222', assignmentStart: '', assignmentEnd: '' }
+
+  test('기사 관리 카드(연동 없는 차량)도 이전 기사 기간을 빼서 매출 차량 기사 줄·산재와 같다', () => {
+    const settings = settingsOf([], [past('2026-10-01', '2026-10-10')])
+    const detail = getLinkedDriverSettlementDetail(work['22가2222'], '2026-10', openLink, car, settings)
+    assert.equal(detail.totalFare, 700000)
+    assert.equal(detail.tripCount, 1)
+    assert.deepEqual(detail.previousPeriods, [{ label: '이전 기사 (10/1~10/10)', fare: 400000 }])
+    assert.equal(detail.commissionAmount, 60000)
+    const owner = getMonthlyDriverInsuranceOwnerShare('2026-10', settings, [car], work)
+    const line = owner.items.find((item) => item.label === '테스트2 산재보험(차주 부담)')
+    assert.equal(line?.amount, 260)
+    assert.equal(getDriverIncomeDeductions(car, detail.commissionAmount).insuranceDriverShare, 260)
+  })
+
+  test('기사 관리 카드: 이전 기사 기록이 없거나, 연동 중 계약이거나, 월급제면 이전 기사 기간을 빼지 않는다', () => {
+    const none = getLinkedDriverSettlementDetail(work['22가2222'], '2026-10', openLink, car, settingsOf([], []))
+    assert.equal(none.commissionAmount, 140000)
+    assert.equal(none.tripCount, 2)
+    assert.deepEqual(none.previousPeriods, [])
+    const history = [past('2026-09-01', '2026-10-11')]
+    const linkedDetail = getLinkedDriverSettlementDetail(work['22가2222'], '2026-10', linked, car, settingsOf([linked], history))
+    assert.equal(linkedDetail.commissionAmount, 60000)
+    assert.deepEqual(linkedDetail.previousPeriods, [])
+    /** @type {import('./financeTypes.ts').CarLike} */
+    const salaryCar = { ...car, driverPayMode: 'salary', driverSalaryAmount: '2,000,000' }
+    const salaryWithout = getLinkedDriverSettlementDetail(work['22가2222'], '2026-10', openLink, salaryCar, settingsOf([], [], salaryCar))
+    const salaryWith = getLinkedDriverSettlementDetail(work['22가2222'], '2026-10', openLink, salaryCar, settingsOf([], history, salaryCar))
+    assert.deepEqual(salaryWith, salaryWithout)
+  })
 })

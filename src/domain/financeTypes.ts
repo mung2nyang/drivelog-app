@@ -42,6 +42,7 @@ export type DriverLinkLike = {
   assignmentStart?: string
   assignmentEnd?: string
   status?: string
+  driverName?: string // 해제 때 남긴 기사 이름(해제 기록만, 없으면 빈 값)
 }
 
 export type SupplierBiz = {

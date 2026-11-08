@@ -425,6 +425,19 @@ describe('driverHistoryFromRows — 해제된 예전 계약만 계산용 모양�
     ])
   })
 
+  test('해제 때 남긴 기사 이름은 다듬어 담고, 비었거나 공백뿐이면 담지 않는다', () => {
+    const rows = asRows([
+      { id: 1, vehicle_id: 700, status: 'disconnected', assignment_start: '2026-08-01', assignment_end: '2026-08-31', driver_name: ' 김예전 ' },
+      { id: 2, vehicle_id: 701, status: 'disconnected', assignment_start: '2026-09-01', assignment_end: '2026-09-20', driver_name: '  ' },
+      { id: 3, vehicle_id: 701, status: 'disconnected', assignment_start: '2026-09-21', assignment_end: '2026-09-30', driver_name: null },
+    ])
+    assert.deepEqual(driverHistoryFromRows(rows, cars), [
+      { id: '1', vehicleNumber: '11가1111', assignmentStart: '2026-08-01', assignmentEnd: '2026-08-31', status: 'disconnected', driverName: '김예전' },
+      { id: '2', vehicleNumber: '22나2222', assignmentStart: '2026-09-01', assignmentEnd: '2026-09-20', status: 'disconnected' },
+      { id: '3', vehicleNumber: '22나2222', assignmentStart: '2026-09-21', assignmentEnd: '2026-09-30', status: 'disconnected' },
+    ])
+  })
+
   test('차량을 못 찾거나 시작일·끝난 날이 비면 뺀다', () => {
     const rows = asRows([
       { id: 1, vehicle_id: 999, status: 'disconnected', assignment_start: '2026-08-01', assignment_end: '2026-08-31' },

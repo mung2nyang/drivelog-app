@@ -60,7 +60,7 @@ function periodShare(carData: Record<string, DayRecordLike>, monthKey: string, p
 export function getPreviousDriverPeriods(monthKey: string, settings: FinanceSettings, car: CarLike, carData: Record<string, DayRecordLike>, link: DriverLinkLike | null): Array<PreviousDriverPeriod> {
   if (car.driverPayMode === 'salary') return []
   return previousContracts(settings, car, link).map((period) => ({
-    label: `이전 기사 (${shortDate(period.assignmentStart)}~${shortDate(period.assignmentEnd)})`,
+    label: `${period.driverName || '이전 기사'} (${shortDate(period.assignmentStart)}~${shortDate(period.assignmentEnd)})`,
     ...periodShare(carData, monthKey, period, settings, car),
   }))
 }

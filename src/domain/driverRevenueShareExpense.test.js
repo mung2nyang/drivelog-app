@@ -292,6 +292,20 @@ describe('기사 급여 이전 기사 줄 — 해제된 예전 계약 기간분'
     ])
   })
 
+  test('해제 기록에 기사 이름이 있으면 이전 기사 줄·산재 줄이 그 이름으로 보인다(금액 그대로)', () => {
+    const named = [{ ...past('2026-09-01', '2026-10-11'), driverName: '김예전' }]
+    const pay = getMonthlyDriverRevenueShareExpense('2026-10', settingsOf([linked], named), [car], work)
+    assert.deepEqual(pay.items.map((item) => [item.label, item.amount]), [
+      ['김예전 (9/1~10/11)', 80000],
+      ['테스트2 (10/12~)', 60000],
+    ])
+    const owner = getMonthlyDriverInsuranceOwnerShare('2026-10', settingsOf([linked], named), [car], work)
+    assert.deepEqual(owner.items.map((item) => [item.label, item.amount]), [
+      ['김예전 (9/1~10/11) 산재보험(차주 부담)', 350],
+      ['테스트2 (10/12~) 산재보험(차주 부담)', 260],
+    ])
+  })
+
   /** 기사 관리 화면이 연동 없는 차량에 넘기는 빈 계약 기간 */
   const openLink = { id: '', vehicleNumber: '22가2222', assignmentStart: '', assignmentEnd: '' }
 
@@ -306,6 +320,13 @@ describe('기사 급여 이전 기사 줄 — 해제된 예전 계약 기간분'
     const line = owner.items.find((item) => item.label === '테스트2 산재보험(차주 부담)')
     assert.equal(line?.amount, 260)
     assert.equal(getDriverIncomeDeductions(car, detail.commissionAmount).insuranceDriverShare, 260)
+  })
+
+  test('기사 관리 카드(연동 없는 차량): 해제 기록에 이름이 있으면 빼기 줄도 그 이름', () => {
+    const settings = settingsOf([], [{ ...past('2026-10-01', '2026-10-10'), driverName: '김예전' }])
+    const detail = getLinkedDriverSettlementDetail(work['22가2222'], '2026-10', openLink, car, settings)
+    assert.deepEqual(detail.previousPeriods, [{ label: '김예전 (10/1~10/10)', fare: 400000 }])
+    assert.equal(detail.commissionAmount, 60000)
   })
 
   test('기사 관리 카드: 이전 기사 기록이 없거나, 연동 중 계약이거나, 월급제면 이전 기사 기간을 빼지 않는다', () => {

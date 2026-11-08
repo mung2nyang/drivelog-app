@@ -81,7 +81,8 @@ export function driverHistoryFromRows(linkRows: Array<DriverLinkRow> | null | un
     if (row.status !== 'disconnected' || !row.assignment_start || !row.assignment_end) continue
     const car = (cars || []).find((item) => item.supabaseId === row.vehicle_id)
     if (!car?.number) continue
-    history.push({ id: String(row.id), vehicleNumber: car.number, assignmentStart: row.assignment_start, assignmentEnd: row.assignment_end, status: 'disconnected' })
+    const driverName = String(row.driver_name || '').trim()
+    history.push({ id: String(row.id), vehicleNumber: car.number, assignmentStart: row.assignment_start, assignmentEnd: row.assignment_end, status: 'disconnected', ...(driverName ? { driverName } : {}) })
   }
   return history.sort((a, b) => String(a.assignmentStart).localeCompare(String(b.assignmentStart)))
 }

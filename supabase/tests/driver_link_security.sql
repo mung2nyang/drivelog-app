@@ -1,7 +1,7 @@
 -- 기사 연동 보안 시험(pgTAP): 공격 거절·정상 초대·수락·해제·기록 복사·재연동·비로그인.
 -- 임시 사용자·차량만 만들고 끝에 되돌린다. CI에서 supabase test db로 돈다.
 begin;
-select plan(79);
+select plan(80);
 set local statement_timeout = '30s';
 set local lock_timeout = '3s';
 
@@ -69,10 +69,10 @@ select is(current_user::text, 'postgres', '준비: postgres로 실행');
 insert into auth.users(id) values (pg_temp.id('owner_a')), (pg_temp.id('owner_b')), (pg_temp.id('driver_c'));
 insert into public.profiles(id, name) values
   (pg_temp.id('owner_a'), '임시 차주'), (pg_temp.id('owner_b'), '임시 타인'), (pg_temp.id('driver_c'), '임시 기사');
-insert into public.vehicles(id, user_id, number, type) values
-  (pg_temp.id('car_a'), pg_temp.id('owner_a'), '연동 시험 A', 'sub'),
-  (pg_temp.id('car_a2'), pg_temp.id('owner_a'), '연동 시험 A2', 'sub'),
-  (pg_temp.id('car_b'), pg_temp.id('owner_b'), '연동 시험 B', 'sub');
+insert into public.vehicles(id, user_id, number, type, driver_name) values
+  (pg_temp.id('car_a'), pg_temp.id('owner_a'), '연동 시험 A', 'sub', ' 연동 시험 기사 '),
+  (pg_temp.id('car_a2'), pg_temp.id('owner_a'), '연동 시험 A2', 'sub', null),
+  (pg_temp.id('car_b'), pg_temp.id('owner_b'), '연동 시험 B', 'sub', null);
 insert into public.daily_logs(id, user_id, vehicle_id, work_date, raw)
   values (pg_temp.id('log_a'), pg_temp.id('owner_a'), pg_temp.id('car_a'), pg_temp.day_a(), '{}');
 insert into public.transport_details(daily_log_id, user_id, vehicle_id, work_date)
@@ -155,6 +155,7 @@ select throws_ok(format('update public.driver_links set vehicle_id=%L where id=%
 select throws_ok(format('update public.driver_links set driver_id=%L where id=%L', pg_temp.id('owner_b'), pg_temp.id('link_a')),
   '42501', null, '차주: 연동 중 기사 바꾸기 거절');
 select is((select status from public.consent_driver_unlink(pg_temp.id('link_a'))), 'disconnected', '차주: 해제 동의');
+select is((select driver_name from public.driver_links where id = pg_temp.id('link_a')), '연동 시험 기사', '차주: 해제 기록에 그때 차량 기사 이름이 남음');
 select throws_ok(format('update public.driver_links set status=''linked'' where id=%L', pg_temp.id('link_a')),
   '42501', null, '차주: 해제 뒤 연동됨으로 되돌리기 거절');
 select is((select count(*)::int from public.profiles where id = pg_temp.id('driver_c')), 0, '차주: 해제 뒤 기사 프로필 안 보임');

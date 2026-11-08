@@ -1,9 +1,10 @@
 // @ts-check
-// 운행일지의 콜 상세 저장·삭제·수금 바꾸기, 고정 노선 횟수, 고정 장소 저장 — 화면(DayLogPage)은 그리기만.
+// 운행일지의 콜 상세 저장·삭제·수금 바꾸기, 고정 노선 횟수, 고정 장소·플랫폼 칩 저장 — 화면(DayLogPage)은 그리기만.
 import { applyFixedRouteRun, getFixedRouteCounts } from '../../../domain/day-record.ts'
 import { removeCallDetail, upsertCallDetail } from '../../../domain/call-details.ts'
 import { getDetailPaymentSummary } from '../../../domain/finance.ts'
 import { togglePinnedLocation as togglePinnedLocationIn } from '../../../domain/locationShortcuts.ts'
+import { addPlatformPreset, removePlatformPreset } from '../../../domain/platformPresets.ts'
 import { toggleCallPaymentStatus } from '../../../domain/payments.ts'
 import { savePracticeSettings } from '../../../data/sync/settingsSave.ts'
 import { useToast } from '../../../shared/hooks/useToast.js'
@@ -43,7 +44,23 @@ export default function useCallDetailActions(draft, dispatch, { dateKey, clients
     // buildCallDetail이 항상 id를 붙이므로 "id 항상 있음" 일지 타입으로 좁힌다.
     patchDraft({ callDetails: /** @type {Array<DayDraft['callDetails'][number]>} */ (result.items) })
     dispatch({ type: 'closeCallForm' })
-    showToast?.(editingIndex >= 0 ? '세부 입력을 수정했습니다.' : '세부 입력을 저장했습니다.')
+    const added = settings.platformOn ? addPlatformPreset(settings, formDraft.platform || '') : null
+    showToast?.(added?.error || (editingIndex >= 0 ? '세부 입력을 수정했습니다.' : '세부 입력을 저장했습니다.'))
+    if (added && !added.error && added.settings !== settings) void savePlatformPresets((current) => addPlatformPreset(current, formDraft.platform || ''))
+  }
+
+  /** @param {(current: Settings) => { settings: Settings }} change */
+  async function savePlatformPresets(change) {
+    try {
+      await savePracticeSettings(ownerKey, (current) => ({ platformPresets: change(current).settings.platformPresets }))
+    } catch {
+      showToast?.('플랫폼 칩 저장에 실패했습니다.')
+    }
+  }
+
+  /** @param {string} name */
+  function removePlatform(name) {
+    void savePlatformPresets((current) => removePlatformPreset(current, name))
   }
 
   /** @param {string} id */
@@ -74,5 +91,5 @@ export default function useCallDetailActions(draft, dispatch, { dateKey, clients
     showToast?.(unpaid ? '수금 처리했습니다.' : '수금을 취소했습니다.')
   }
 
-  return { patchDraft, runRoute, saveCall, deleteCall, togglePayment, togglePinnedLocation }
+  return { patchDraft, runRoute, saveCall, deleteCall, togglePayment, togglePinnedLocation, removePlatform }
 }

@@ -66,7 +66,7 @@ export default function DayLogPage({ month, day, dateKey, clients, settings, onC
   const { ownerKey } = useSession()
   const { draft, editingCallId, callFormOpen, dispatch, autoSaveStatus } = useDayDraft(ownerKey, dateKey, logId)
   const expenseForm = useExpenseForm(ownerKey, dateKey, logId)
-  const { patchDraft, runRoute, saveCall, deleteCall, togglePayment, togglePinnedLocation } = useCallDetailActions(draft, dispatch, { dateKey, clients, settings, editingCallId })
+  const { patchDraft, runRoute, saveCall, deleteCall, togglePayment, togglePinnedLocation, removePlatform } = useCallDetailActions(draft, dispatch, { dateKey, clients, settings, editingCallId })
   const [messageCallId, setMessageCallId] = useState(/** @type {string|null} */ (null))
   const mainWorkData = useOwnerWorkData(ownerKey)
   const workDataByLogId = useOwnerWorkDataByLogId(ownerKey)
@@ -158,6 +158,7 @@ export default function DayLogPage({ month, day, dateKey, clients, settings, onC
                   locationShortcuts={locationShortcuts}
                   pinnedLocations={pinnedLocations}
                   onTogglePinnedLocation={togglePinnedLocation}
+                  onRemovePlatform={removePlatform}
                   isEmployedDriver={isEmployedDriver}
                   onSave={saveCall}
                   onClose={() => dispatch({ type: 'closeCallForm' })}

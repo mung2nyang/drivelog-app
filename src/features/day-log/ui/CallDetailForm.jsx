@@ -4,10 +4,12 @@ import { useState } from 'react'
 import { dueDateForClient, getClientsForLog, getPaymentTermLabel, pinnedClients } from '../../../domain/clients.ts'
 import { parseCurrencyValue, vatOf } from '../../../domain/money.ts'
 import { checkCallDetailDraft } from '../../../domain/call-details.ts'
+import { normalizePlatformPresets } from '../../../domain/platformPresets.ts'
 import { confirmLargeFareSave, draftFromDetail, emptyDraft } from './callDetailFormHelpers.js'
 import LocationShortcuts from './LocationShortcuts.jsx'
 import CallClientQuickAdd from './CallClientQuickAdd.jsx'
 import CallOdometerFields from './CallOdometerFields.jsx'
+import PlatformChips from './PlatformChips.jsx'
 import ClearableInput from '../../../shared/ui/ClearableInput.jsx'
 import CurrencyInput from '../../../shared/ui/CurrencyInput.jsx'
 import TemporalInput from '../../../shared/ui/TemporalInput.jsx'
@@ -16,8 +18,6 @@ import CallDetailPaymentFields, { CallInsuranceFeeField, CallVatExemptRow } from
 import './call-detail-form.css'
 import './call-detail-inputs.css'
 import { useSession } from '../../../data/cloud/sessionContext.ts'
-
-const PLATFORM_PRESETS = ['24시콜', '화물맨', '더운반', '원콜', '전국화물콜', '카카오T트럭커']
 
 /** @typedef {import('./dayLogTypes.js').CallDetailLike} CallDetailLike */
 /** @typedef {import('./dayLogTypes.js').ClientLike} ClientLike */
@@ -37,13 +37,14 @@ const PLATFORM_PRESETS = ['24시콜', '화물맨', '더운반', '원콜', '전�
  * @param {Array<string>} [props.locationShortcuts]
  * @param {Array<string>} [props.pinnedLocations]
  * @param {(location: string) => void} [props.onTogglePinnedLocation]
+ * @param {(name: string) => void} [props.onRemovePlatform]
  * @param {(item: CallDetailDraft) => void} props.onSave
  * @param {() => void} props.onClose
  * @param {boolean} [props.isEmployedDriver] 기사연동 계정(고용된 기사 본인) 세션이면 산재보험료 칸을 숨긴다 — 자기 명의로 플랫폼 일을 받는 게 아니라서 의미가 없다.
  */
 export default function CallDetailForm({
   value, previousItem, prefill = null, dateKey, clients, settings, logId, clientScopeKey, onSave, onClose,
-  locationShortcuts = [], pinnedLocations = [], onTogglePinnedLocation, isEmployedDriver = false,
+  locationShortcuts = [], pinnedLocations = [], onTogglePinnedLocation, onRemovePlatform, isEmployedDriver = false,
 }) {
   const { ownerKey } = useSession()
   const start = value || (prefill && { ...prefill, id: '', fare: prefill.fare ?? '' })
@@ -175,11 +176,7 @@ export default function CallDetailForm({
             <label htmlFor="callPlatform">플랫폼</label>
             <ClearableInput id="callPlatform" className="input-box" placeholder="직접 입력 또는 선택" value={draft.platform} onChange={(e) => setDraft({ ...draft, platform: e.target.value })} />
           </div>
-          <div className="call-platform-quick-list">
-            {PLATFORM_PRESETS.map((name) => (
-              <button key={name} type="button" className={`dark-pill-btn${draft.platform === name ? ' active' : ''}`} onClick={() => setDraft({ ...draft, platform: draft.platform === name ? '' : name })}>{name}</button>
-            ))}
-          </div>
+          <PlatformChips presets={normalizePlatformPresets(settings.platformPresets)} selected={draft.platform} onSelect={(name) => setDraft({ ...draft, platform: name })} onRemove={onRemovePlatform} />
         </div>
       )}
       {settings.paymentOn && !isEmployedDriver && <CallInsuranceFeeField draft={draft} setDraft={setDraft} />}

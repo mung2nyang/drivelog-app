@@ -1,5 +1,5 @@
 // commitBatch가 쓸 localStorage { key, value } 목록을 계산하는 순수 함수(도메인 값).
-// 로그인 세션은 서버가 정본이라 업무 도메인(CLOUD_MEMORY_ONLY_DOMAINS)을 LS에 쓰지 않는다. settings는 theme만 남긴다.
+// 로그인 세션은 서버가 정본이라 업무 도메인(CLOUD_MEMORY_ONLY_DOMAINS)을 LS에 쓰지 않는다. settings는 theme·themeFollowPhone만 남긴다.
 import { storageKeyFor } from './persist.ts'
 import type { PersistDomain } from './persist.ts'
 import type { DomainValue } from './app-store.ts'
@@ -13,7 +13,7 @@ export type BatchEntry = {
 
 /**
  * 로그인 사용자에게 localStorage 미러를 두지 않는 업무 도메인.
- * dismissedNotifications는 여기 없다. settings는 theme만 별도 persist.
+ * dismissedNotifications는 여기 없다. settings는 theme·themeFollowPhone만 별도 persist.
  */
 export const CLOUD_MEMORY_ONLY_DOMAINS: ReadonlySet<string> = new Set([
   'cars', 'clients', 'drivers', 'workData', 'expenses', 'invoices', 'profile', 'workDataDeletedDates',
@@ -29,8 +29,10 @@ export function buildBatchWrites(entries: Array<BatchEntry>, { persist, cloudOwn
     entries.forEach(({ domain, ownerKey, value }) => {
       if (isCloudMemoryOnly(domain, ownerKey, cloudOwnerKey)) return
       if (cloudOwnerKey != null && ownerKey === cloudOwnerKey && domain === 'settings') {
-        const theme = value && typeof value === 'object' && 'theme' in value && value.theme === 'dark' ? 'dark' : 'light'
-        writes.push({ key: storageKeyFor(domain, ownerKey), value: { theme } })
+        const raw = value && typeof value === 'object' && !Array.isArray(value) ? value : {}
+        const theme = 'theme' in raw && raw.theme === 'dark' ? 'dark' : 'light'
+        const follow = 'themeFollowPhone' in raw ? raw.themeFollowPhone : undefined
+        writes.push({ key: storageKeyFor(domain, ownerKey), value: typeof follow === 'boolean' ? { theme, themeFollowPhone: follow } : { theme } })
         return
       }
       writes.push({ key: storageKeyFor(domain, ownerKey), value })

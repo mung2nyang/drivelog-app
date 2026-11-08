@@ -39,7 +39,7 @@ const SETTINGS = plain(v.strictObject({
   unitPrice: opt(stringOrNumber),
   bizName: opt(str), bizNumber: opt(str), bizRepresentative: opt(str), userName: opt(str),
   bizAddress: opt(str), bizType: opt(str), bizItem: opt(str), bizEmail: opt(str),
-  theme: opt(v.picklist(['light', 'dark'])), inputMode: opt(INPUT_MODE),
+  theme: opt(v.picklist(['light', 'dark'])), themeFollowPhone: opt(bool), inputMode: opt(INPUT_MODE),
   callDetail: opt(bool), timeOn: opt(bool), platformOn: opt(bool), distanceOn: opt(bool), cargoTonnageOn: opt(bool),
   fixedRouteOn: opt(bool), fixedRoutePresets: opt(v.array(ROUTE_PRESET)), runCountToggle: opt(bool), runCountPresets: opt(v.array(finiteNumber)),
   subFixedRouteOn: opt(bool), subFixedRoutePresets: opt(v.array(ROUTE_PRESET)), subRunCountToggle: opt(bool), subRunCountPresets: opt(v.array(finiteNumber)),

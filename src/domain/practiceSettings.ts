@@ -19,6 +19,7 @@ function normalizeNotifOff(raw: JsonValue | undefined): Array<string> {
 const defaults = {
   unitPrice: 0,
   theme: 'light',
+  themeFollowPhone: true,
   inputMode: 'count',
   callDetail: false,
   paymentOn: false,
@@ -64,6 +65,7 @@ export function normalizeSettings(raw: FinanceSettings = {}): FinanceSettings {
   return {
     unitPrice: Math.max(0, parseInt(String(raw.unitPrice ?? ''), 10) || 0),
     theme,
+    themeFollowPhone: asBool(raw.themeFollowPhone, defaults.themeFollowPhone),
     inputMode,
     callDetail,
     paymentOn: asBool(raw.paymentOn, defaults.paymentOn),

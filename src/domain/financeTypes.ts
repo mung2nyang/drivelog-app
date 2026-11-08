@@ -79,6 +79,7 @@ export type FinanceSettings = {
   bizItem?: string
   bizEmail?: string
   theme?: 'light' | 'dark'
+  themeFollowPhone?: boolean // 화면 색을 휴대폰 다크 설정에 맞춤(없으면 켜짐)
   inputMode?: 'count' | 'fare'
   callDetail?: boolean
   timeOn?: boolean

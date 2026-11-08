@@ -38,9 +38,10 @@ export function initializeOwnerFromPersist(ownerKey: string): boolean {
     if (cloud && domain === 'settings') {
       const raw = read.value && typeof read.value === 'object' ? read.value : {}
       const theme = 'theme' in raw && raw.theme === 'dark' ? 'dark' : 'light'
+      const follow = 'themeFollowPhone' in raw && typeof raw.themeFollowPhone === 'boolean' ? { themeFollowPhone: raw.themeFollowPhone } : {}
       const existing = getState().settings[ownerKey]
       const base = existing && typeof existing === 'object' ? existing : {}
-      entries.push({ domain, ownerKey, value: { ...base, theme } })
+      entries.push({ domain, ownerKey, value: { ...base, theme, ...follow } })
       continue
     }
     const value = domain === 'cars' && Array.isArray(read.value)

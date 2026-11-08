@@ -485,6 +485,35 @@ describe('initializeOwnerFromPersist — 슬라이스 E 로그인 settings theme
     endCloudSession()
   })
 
+  test('(d) 휴대폰 설정 따르기 LS 복원 — 켜짐·꺼짐이면 테마와 함께 얹고, 다른 값이면 Store 값 그대로', () => {
+    const owner = 'init-cloud-follow-phone'
+    beginSessionEpoch(owner, owner)
+    commitSettings(owner, normalizeSettings({ callDetail: true, theme: 'light' }))
+    writeJsonKey('settings', owner, { theme: 'dark', themeFollowPhone: false })
+    initializeOwnerFromPersist(owner)
+    assert.equal(getState().settings[owner]?.themeFollowPhone, false)
+    assert.equal(getState().settings[owner]?.theme, 'dark')
+    assert.equal(getState().settings[owner]?.callDetail, true)
+    endCloudSession()
+
+    const other = 'init-cloud-follow-phone-bad'
+    beginSessionEpoch(other, other)
+    commitSettings(other, normalizeSettings({ theme: 'light' }))
+    localStorage.setItem(storageKeyFor('settings', other), JSON.stringify({ theme: 'dark', themeFollowPhone: 'no' }))
+    initializeOwnerFromPersist(other)
+    assert.equal(getState().settings[other]?.themeFollowPhone, true)
+    endCloudSession()
+  })
+
+  test('(e) 게스트 — 휴대폰 설정 따르기를 끈 설정을 저장하고 다시 읽어도 읽기 실패가 아니다', () => {
+    endCloudSession()
+    const owner = 'init-guest-follow-phone'
+    commitSettings(owner, normalizeSettings({ theme: 'dark', themeFollowPhone: false }))
+    assert.equal(initializeOwnerFromPersist(owner), true)
+    assert.equal(getState().settings[owner]?.themeFollowPhone, false)
+    assert.equal(getState().settings[owner]?.theme, 'dark')
+  })
+
   test('(c) 게스트 cloud=false — settings LS 전체를 그대로 읽는다(회귀)', () => {
     endCloudSession()
     const owner = 'init-guest-settings-full'

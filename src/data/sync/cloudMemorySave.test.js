@@ -3,7 +3,7 @@ import assert from 'node:assert/strict'
 import { describe, mock, test } from 'node:test'
 import { createFakeSupabase } from '../../testSupport/fakeSupabaseClient.js'
 
-const { fakeSupabase, handlers, resetHandlers, countOf, emptyOkHandlers } = createFakeSupabase()
+const { fakeSupabase, handlers, resetHandlers, countOf, callsOf, emptyOkHandlers } = createFakeSupabase()
 mock.module('../cloud/supabaseClient.ts', { namedExports: { supabase: fakeSupabase } })
 
 const { beginSessionEpoch, endCloudSession } = await import('../cloud/cloudSession.ts')
@@ -126,7 +126,24 @@ describe('슬라이스 E — 로그인 프로필·설정·비용·계산서는 �
     assert.equal(countOf('profiles', 'upsert'), 1)
     assert.equal(settingsUnitPrice(getState().settings[ownerKey]), 9000)
     assert.equal(settingsCallDetail(getState().settings[ownerKey]), true)
-    assert.deepEqual(readJsonKey('settings', ownerKey, {}), { theme: 'light' })
+    assert.deepEqual(readJsonKey('settings', ownerKey, {}), { theme: 'light', themeFollowPhone: true })
+    endCloudSession()
+  })
+
+  test('savePracticeSettings: 휴대폰 설정 따르기를 끄면 서버로 꺼짐이 가고 LS에도 테마와 함께 꺼짐만 남는다', async () => {
+    const ownerKey = 'cms-settings-follow-off'
+    const userId = 'user-cms-settings-follow-off'
+    beginReady(userId, ownerKey)
+    handlers.profiles = { upsert: () => ({ data: null, error: null }) }
+
+    await savePracticeSettings(ownerKey, { theme: 'dark', themeFollowPhone: false, unitPrice: 7000 })
+    const sent = callsOf('profiles', 'upsert')
+    assert.equal(sent.length, 1)
+    const row = sent[0]?.args[0]
+    const settings = row && typeof row === 'object' && !Array.isArray(row) ? row.settings : null
+    assert.equal(settings && typeof settings === 'object' && !Array.isArray(settings) ? settings.themeFollowPhone : 'none', false)
+    assert.equal(getState().settings[ownerKey]?.themeFollowPhone, false)
+    assert.deepEqual(readJsonKey('settings', ownerKey, {}), { theme: 'dark', themeFollowPhone: false })
     endCloudSession()
   })
 

@@ -3,6 +3,7 @@ import { useEffect, useState, type CSSProperties } from 'react'
 import { assetPath } from '../../../shared/utils/assetPath.js'
 import useFramePlayer, { type FrameStrip } from '../hooks/useFramePlayer.ts'
 import useUnbiseoMotion, { type Situation } from '../hooks/useUnbiseoMotion.ts'
+import type { UnbiseoAnswer } from '../hooks/useUnbiseoAssistant.ts'
 import './unbiseo-avatar.css'
 
 const STILL = assetPath('/images/unbiseo-rest-still.png')
@@ -32,7 +33,7 @@ function prefersStill() {
 }
 
 type Props = {
-  assistant: { speaking: boolean, answer: unknown, busy: boolean, text: string, speech: { listening: boolean } },
+  assistant: { speaking: boolean, answer: UnbiseoAnswer | null, busy: boolean, text: string, speech: { listening: boolean } },
   width: number,
   height: number,
 }

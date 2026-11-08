@@ -1,5 +1,6 @@
 // 운비서 상황 고르기 — 말하기 > 듣기 > 글 답(두 바퀴) > 입력 > 쉴 때.
 import { useCallback, useEffect, useState } from 'react'
+import type { UnbiseoAnswer } from './useUnbiseoAssistant.ts'
 
 /** 상황 이름(`unbiseo-<이름>.webp`). */
 export type Situation = 'rest' | 'listen' | 'type' | 'talk'
@@ -7,7 +8,7 @@ export type Situation = 'rest' | 'listen' | 'type' | 'talk'
 /** loops: 계속이면 'infinite', key: 같은 상황도 처음 칸부터 다시 틀기 위한 이름. */
 export type UnbiseoMotion = { situation: Situation, loops: 'infinite' | 2, key: string }
 
-type Watched = { speaking: boolean, answer: unknown, busy: boolean, listening: boolean, text: string }
+type Watched = { speaking: boolean, answer: UnbiseoAnswer | null, busy: boolean, listening: boolean, text: string }
 
 const TYPING_PAUSE_MS = 1000
 

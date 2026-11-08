@@ -11,7 +11,11 @@ const { createRoot } = await import('react-dom/client')
 const { act } = React
 const { default: useUnbiseoMotion } = await import('./useUnbiseoMotion.ts')
 
-/** @typedef {{ speaking: boolean, answer: unknown, busy: boolean, listening: boolean, text: string }} Watched */
+/** @typedef {import('./useUnbiseoAssistant.ts').UnbiseoAnswer} UnbiseoAnswer */
+/** @typedef {{ speaking: boolean, answer: UnbiseoAnswer | null, busy: boolean, listening: boolean, text: string }} Watched */
+
+/** 문장만 있는 답. @param {string} sentence @returns {UnbiseoAnswer} */
+const said = (sentence) => ({ said: '', sentence, call: null, expense: null, fixed: null, client: null, sms: null, inspection: null, dayOff: null })
 
 /** @type {Watched} */
 const idle = { speaking: false, answer: null, busy: false, listening: false, text: '' }
@@ -50,7 +54,7 @@ test('아무 일 없으면 쉴 때 그림을 계속 넘긴다', async () => {
 test('소리 내 말하는 동안 답하는 중을 계속, 말이 끝나면 쉴 때로', async () => {
   const view = await mount()
   // 마이크로 물으면 답과 말하기가 같이 바뀐다 — 두 바퀴 짜리가 아니라 계속.
-  await view.show({ speaking: true, answer: { sentence: '오늘 매출은 30만 원이에요.' } })
+  await view.show({ speaking: true, answer: said('오늘 매출은 30만 원이에요.') })
   assert.deepEqual(view.motion(), { situation: 'talk', loops: 'infinite' })
   await view.show({ speaking: false })
   assert.deepEqual(view.motion(), { situation: 'rest', loops: 'infinite' })
@@ -59,14 +63,14 @@ test('소리 내 말하는 동안 답하는 중을 계속, 말이 끝나면 쉴 
 
 test('글로만 답이 오면 답하는 중을 두 바퀴, 다 돌면 쉴 때로. 다음 답은 처음 칸부터 다시', async () => {
   const view = await mount()
-  await view.show({ answer: { sentence: '알아듣는 중…' }, busy: true })
+  await view.show({ answer: said('알아듣는 중…'), busy: true })
   assert.equal(view.motion().situation, 'rest', '기다리는 중에는 쉴 때')
-  await view.show({ answer: { sentence: '등록했어요.' }, busy: false })
+  await view.show({ answer: said('등록했어요.'), busy: false })
   assert.deepEqual(view.motion(), { situation: 'talk', loops: 2 })
   const firstKey = view.latest.current.motion.key
   await view.done()
   assert.equal(view.motion().situation, 'rest')
-  await view.show({ answer: { sentence: '또 등록했어요.' } })
+  await view.show({ answer: said('또 등록했어요.') })
   assert.notEqual(view.latest.current.motion.key, firstKey)
   await view.unmount()
 })

@@ -1,12 +1,13 @@
 // @ts-check
 // 일지 화면의 일상점검표 안내 줄(피그마 1번) — 그 차량 스위치 켜짐·휴무 아님·로그인·차량이 서버에 있을 때만.
 // 열 때 서버에서 그날 1장을 읽어 "작성 필요 [+ 입력]" / "작성 완료 [보기]"를 보이고, 누르면 점검표 모달.
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { deleteDailyInspection, fetchDailyInspection, saveDailyInspection } from '../../../data/sync/dailyInspections.ts'
 import { vehicleSupabaseIdForLog } from '../../../data/sync/mainDayLogRouting.ts'
 import { useOwnerCars } from '../../../data/store/ownerDataHooks.ts'
 import { useOwnerProfile } from '../../../data/store/ownerProfileDriversHooks.ts'
 import DailyInspectionModal from './DailyInspectionModal.jsx'
+import useModalBackGuard from '../hooks/useModalBackGuard.ts'
 import './daily-inspection.css'
 import './daily-inspection-items.css'
 import './daily-inspection-loading.css'
@@ -41,6 +42,8 @@ export default function DailyInspectionNotice({ logId, dateKey, month, day, enab
   const [result, setResult] = useState(/** @type {{ key: string, status: 'ready'|'error', record: DailyInspection|null }|null} */ (null))
   const load = result && result.key === loadKey ? result : LOADING
   const [modalOpen, setModalOpen] = useState(false)
+  const backRef = useRef(/** @type {(() => void)|null} */ (null))
+  useModalBackGuard(modalOpen, () => { if (backRef.current) backRef.current(); else setModalOpen(false) })
 
   useEffect(() => {
     if (!active || vehicleId == null) return undefined
@@ -123,7 +126,7 @@ export default function DailyInspectionNotice({ logId, dateKey, month, day, enab
         )}
       </div>
       {modalOpen && (
-        <DailyInspectionModal title={title} record={load.record} inspectorName={inspectorName} onClose={() => setModalOpen(false)} onSave={save} onDelete={remove} />
+        <DailyInspectionModal title={title} record={load.record} inspectorName={inspectorName} onClose={() => setModalOpen(false)} onSave={save} onDelete={remove} backRef={backRef} />
       )}
     </>
   )

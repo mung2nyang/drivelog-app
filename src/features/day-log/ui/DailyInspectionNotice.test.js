@@ -338,3 +338,126 @@ test('처음 입력·일부만 고른 수정은 지금처럼 "모든 항목을 �
     await view.cleanup()
   }
 })
+
+// 휴대폰 뒤로가기: 점검표 창이 열린 동안 기록 1장을 쌓아 뒤로가기는 창만 닫는다(실제 window.history로).
+const { ConfirmDialogHost } = await import('../../../shared/ui/confirmDialog.jsx')
+const DAY_PATH = '/app/day/2026-10-01'
+const guardOnTop = () => Boolean(Reflect.get(window.history.state || {}, 'modalGuard'))
+const pause = (/** @type {number} */ ms) => new Promise((resolve) => { setTimeout(resolve, ms) })
+
+/** 달력 → 일지 순서로 기록을 깐다(뒤로가기가 일지를 빠져나가면 달력 주소가 된다). */
+function startAtDayLog() {
+  window.history.replaceState({ idx: 1, key: 'calendar' }, '', '/app/calendar')
+  window.history.pushState({ idx: 2, key: 'day' }, '', DAY_PATH)
+}
+
+/** 휴대폰 뒤로가기 한 번 — 기록이 옮겨질 때까지(최대 0.5초) 기다린다. */
+async function pressBack() {
+  await act(async () => {
+    const popped = new Promise((resolve) => { window.addEventListener('popstate', () => resolve(undefined), { once: true }) })
+    window.history.back()
+    await Promise.race([popped, pause(500)])
+  })
+  await act(async () => { await pause(0) })
+}
+
+/** @param {() => boolean} ok */
+async function waitUntil(ok) {
+  for (let i = 0; i < 50 && !ok(); i += 1) await act(async () => { await pause(5) })
+}
+
+const modalShown = () => Boolean(document.body.querySelector('.daily-inspection-modal'))
+const editingShown = () => Boolean(document.body.querySelector('.di-choice'))
+
+test('보기에서 뒤로가기 → 창만 닫히고 일지 주소 그대로, 한 번 더 누르면 지금처럼 일지를 나간다', async () => {
+  serverRecord = { items: allGoodItems(), actionNote: '', inspectorName: '김기사' }
+  startAtDayLog()
+  const view = await render()
+  try {
+    await view.click('보기')
+    assert.ok(guardOnTop(), '창이 열리면 기록 1장')
+    assert.equal(window.location.pathname, DAY_PATH)
+    await pressBack()
+    assert.equal(modalShown(), false, '창 닫힘')
+    assert.equal(window.location.pathname, DAY_PATH, '일지 그대로')
+    await pressBack()
+    assert.equal(window.location.pathname, '/app/calendar')
+  } finally {
+    await view.cleanup()
+  }
+})
+
+test('입력 중 뒤로가기는 [취소]와 같다 — 처음 입력이면 닫힘, 연필로 고치던 중이면 보기로 갔다가 한 번 더 누르면 닫힘', async () => {
+  startAtDayLog()
+  const view = await render()
+  try {
+    await view.click('+ 입력')
+    await view.click('모두 양호')
+    await pressBack()
+    assert.equal(modalShown(), false, '처음 입력은 닫힘')
+    assert.equal(window.location.pathname, DAY_PATH)
+    assert.equal(saved.length, 0)
+  } finally {
+    await view.cleanup()
+  }
+  serverRecord = { items: allGoodItems(), actionNote: '', inspectorName: '김기사' }
+  startAtDayLog()
+  const again = await render()
+  try {
+    await again.click('보기')
+    await again.click('수정')
+    await pressBack()
+    assert.ok(modalShown(), '창은 그대로')
+    assert.equal(editingShown(), false, '보기로 돌아감')
+    assert.ok(guardOnTop(), '기록 1장 다시 쌓임')
+    await pressBack()
+    assert.equal(modalShown(), false)
+    assert.equal(window.location.pathname, DAY_PATH)
+  } finally {
+    await again.cleanup()
+  }
+})
+
+test('"점검표를 지울까요?" 확인 창이 떠 있을 때 뒤로가기 → 확인 창만 닫히고 안 지워진다', async () => {
+  serverRecord = { items: allGoodItems(), actionNote: '', inspectorName: '김기사' }
+  startAtDayLog()
+  const hostBox = document.createElement('div')
+  document.body.appendChild(hostBox)
+  const hostRoot = createRoot(hostBox)
+  await act(async () => { hostRoot.render(React.createElement(ConfirmDialogHost)) })
+  const view = await render()
+  try {
+    await clearAll(view)
+    await view.click('저장')
+    assert.ok(view.text().includes('점검표를 지울까요?'), '확인 창')
+    await pressBack()
+    assert.equal(view.text().includes('점검표를 지울까요?'), false, '확인 창 닫힘')
+    assert.ok(modalShown() && editingShown(), '수정 화면 그대로')
+    assert.deepEqual(deleted, [])
+    assert.ok(guardOnTop(), '기록 1장 다시 쌓임')
+    assert.equal(window.location.pathname, DAY_PATH)
+  } finally {
+    await view.cleanup()
+    await act(async () => { hostRoot.unmount() })
+    hostBox.remove()
+  }
+})
+
+test('[<]로 닫으면 쌓은 기록을 조용히 빼서, 닫은 뒤 뒤로가기 한 번이면 일지를 나간다', async () => {
+  serverRecord = { items: allGoodItems(), actionNote: '', inspectorName: '김기사' }
+  startAtDayLog()
+  const view = await render()
+  try {
+    await view.click('보기')
+    assert.ok(guardOnTop())
+    await view.click('닫기')
+    await waitUntil(() => !guardOnTop())
+    assert.equal(guardOnTop(), false, '기록 빠짐')
+    assert.equal(modalShown(), false)
+    assert.equal(window.location.pathname, DAY_PATH)
+    await pressBack()
+    assert.equal(window.location.pathname, '/app/calendar')
+  } finally {
+    await view.cleanup()
+  }
+})

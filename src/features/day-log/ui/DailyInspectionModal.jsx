@@ -1,7 +1,7 @@
 // @ts-check
 // 일상점검표 모달 — 입력·보기 한 창(피그마 2·3번). 입력 모드는 바깥 클릭으로 안 닫힘(8번 규칙), 보기 모드는 닫힘.
 // 연필로 들어온 수정 중 [취소]는 보기로 돌아가고, 처음 입력 중 [취소]는 창을 닫는다.
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { DAILY_INSPECTION_SECTIONS, INSPECTION_RESULT_LABEL, allGoodItems, isInspectionComplete, isInspectionEmpty } from '../../../domain/dailyInspectionItems.ts'
 import ModalShell from '../../../shared/ui/ModalShell.jsx'
 import { useToast } from '../../../shared/hooks/useToast.js'
@@ -19,9 +19,10 @@ const INCOMPLETE_TOAST = '모든 항목을 선택해 주세요.'
  *   onClose: () => void,
  *   onSave: (next: { items: InspectionItems, actionNote: string }) => Promise<boolean>,
  *   onDelete: () => Promise<boolean>,
+ *   backRef?: { current: (() => void)|null },
  * }} props
  */
-export default function DailyInspectionModal({ title, record, inspectorName, onClose, onSave, onDelete }) {
+export default function DailyInspectionModal({ title, record, inspectorName, onClose, onSave, onDelete, backRef }) {
   const showToast = useToast()
   const [mode, setMode] = useState(/** @type {'input'|'view'} */ (record ? 'view' : 'input'))
   const [fromView, setFromView] = useState(false)
@@ -58,6 +59,9 @@ export default function DailyInspectionModal({ title, record, inspectorName, onC
     if (fromView) { setMode('view'); setFromView(false); return }
     onClose()
   }
+
+  // 휴대폰 뒤로가기는 입력 중이면 [취소], 보기면 닫기와 같다.
+  useEffect(() => { if (backRef) backRef.current = editing ? cancel : onClose })
 
   async function save() {
     if (savingNow.current) return

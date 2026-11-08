@@ -61,7 +61,7 @@ export default function InviteRedeemModal({ onClose, onLinked }) {
     <ModalShell onClose={onClose} closeOnOverlay={false} closeOnEscape={false} contentClassName="modal-content client-modal invite-redeem-modal" label="초대코드 입력">
       <div className="modal-title">초대 코드 입력</div>
       <p className="invite-redeem-note">
-        차주에게 전달받은 초대 코드를 입력해 주세요.<br />
+        차주에게 받은 초대 코드를 입력하거나, 받은 문자를 통째로 붙여넣어 주세요.<br />
         연동이 완료되면 기사님이 입력한 운행 및 매출 내역이 차주와 공유됩니다. <InfoTip name="연동하면 바뀌는 것" info={LINKED_INFO} />
       </p>
       <div className="form-group">
@@ -69,7 +69,7 @@ export default function InviteRedeemModal({ onClose, onLinked }) {
         <ClearableInput
           id="driverInviteCode"
           className="input-box"
-          placeholder="초대 코드"
+          placeholder="초대 코드 또는 받은 문자 전체"
           autoComplete="off"
           value={code}
           onChange={(e) => setCode(pickCodeFromPaste(e.target.value))}

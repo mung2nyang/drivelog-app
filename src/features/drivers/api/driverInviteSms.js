@@ -9,7 +9,7 @@ import { buildSmsHref } from '../../../domain/smsHref.ts'
  * @returns {{ error: string }|{ href: string }}
  */
 export function buildDriverInviteSmsHref({
-  name = '', phone = '', inviteCode = '', vehicleNumber = '', ownerDisplayName = '운송사', userAgent = '',
+  name = '', phone = '', inviteCode = '', ownerDisplayName = '운송사', userAgent = '',
 }) {
   const trimmedPhone = phone.trim()
   if (!trimmedPhone || trimmedPhone.replace(/\D/g, '').length < 10) {
@@ -20,7 +20,6 @@ export function buildDriverInviteSmsHref({
     return { error: '[코드 생성]으로 초대 코드를 먼저 만들어 주세요.' }
   }
   const trimmedName = name.trim()
-  const trimmedVehicle = vehicleNumber.trim()
-  const message = `[운행일지] 안녕하세요, ${ownerDisplayName}입니다.${trimmedName ? ` ${trimmedName}기사님,` : ''}\n${trimmedVehicle ? `[${trimmedVehicle}] 차량 ` : ''}소속 기사 연동 초대 코드입니다.\n\n▶ 초대 코드 (아래 줄을 길게 눌러 복사하세요)\n${code}\n\n운행일지 앱 실행 후 [마이페이지 > 초대 코드 입력]에서 위 코드를 입력해 주세요. (초대 저장 후 7일 동안 사용할 수 있습니다)`
+  const message = `[운행일지] 안녕하세요, ${ownerDisplayName}입니다.${trimmedName ? ` ${trimmedName}기사님,` : ''}\n소속 기사 연동 초대 코드입니다.\n\n▶ 초대 코드\n${code}\n\n[등록 방법]\n1. 이 문자를 길게 눌러 [복사]\n2. 운행일지 앱 → 마이페이지 → [초대 코드 입력]\n3. 입력 칸을 길게 눌러 [붙여넣기] (코드만 자동으로 들어갑니다)\n초대 저장 후 7일 동안 사용할 수 있습니다.`
   return { href: buildSmsHref(trimmedPhone, message, userAgent) }
 }

@@ -57,6 +57,8 @@ test('초대 문자 전체를 붙여넣으면 칸에 코드만 남고, 짧은 �
       root.render(withSession(React.createElement(InviteRedeemModal, { onClose: () => {}, onLinked: () => {} }), { session: null }))
     })
     const input = /** @type {HTMLInputElement} */ (document.getElementById('driverInviteCode'))
+    assert.ok(document.querySelector('.invite-redeem-note')?.textContent?.startsWith('차주에게 받은 초대 코드를 입력하거나, 받은 문자를 통째로 붙여넣어 주세요.'))
+    assert.equal(input.placeholder, '초대 코드 또는 받은 문자 전체')
     await typeInto(input, '[운행일지] 안녕하세요, 차주입니다.\n\n▶ 초대 코드 (아래 줄을 길게 눌러 복사하세요)\nA2B3C4D5E6\n\n위 코드를 입력해 주세요.')
     assert.equal(input.value, 'A2B3C4D5E6')
     await typeInto(input, 'a2b3c-4d5e6')

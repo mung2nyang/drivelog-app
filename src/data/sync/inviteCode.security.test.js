@@ -55,19 +55,27 @@ describe('초대 저장 검사', () => {
 })
 
 describe('초대 문자', () => {
-  test('6자리 코드는 문자 발송을 막고, 새 코드는 혼자 한 줄(하이픈 없이)·복사 안내·7일 안내를 넣는다', () => {
+  test('6자리 코드는 문자 발송을 막고, 새 코드는 혼자 한 줄(하이픈 없이)·등록 순서·7일 안내를 넣는다', () => {
     const base = { name: '박기사', phone: '010-3333-4444', vehicleNumber: '서울12가3456' }
     const old = buildDriverInviteSmsHref({ ...base, inviteCode: '123456' })
     assert.ok('error' in old)
     const result = buildDriverInviteSmsHref({ ...base, inviteCode: 'A2B3C4D5E6' })
     assert.ok('href' in result)
     const body = decodeURIComponent(result.href.split('body=')[1])
-    assert.ok(body.includes('\n▶ 초대 코드 (아래 줄을 길게 눌러 복사하세요)\nA2B3C4D5E6\n'), '코드는 혼자 한 줄')
+    assert.ok(body.includes('\n▶ 초대 코드\nA2B3C4D5E6\n'), '코드는 혼자 한 줄')
     assert.equal(body.includes('A2B3C-4D5E6'), false, '문자에는 하이픈 없음')
-    assert.match(body, /7일 동안/)
-    assert.ok(body.includes('[마이페이지 > 초대 코드 입력]'), '실제 버튼 이름으로 안내')
+    assert.ok(body.includes('[등록 방법]\n1. 이 문자를 길게 눌러 [복사]\n2. 운행일지 앱 → 마이페이지 → [초대 코드 입력]\n3. 입력 칸을 길게 눌러 [붙여넣기] (코드만 자동으로 들어갑니다)\n'))
+    assert.ok(body.endsWith('초대 저장 후 7일 동안 사용할 수 있습니다.'))
     assert.equal(body.includes('소속 연결'), false)
     assert.equal(pickInviteCodeFromText(body), 'A2B3C4D5E6', '문자 전체에서 코드를 골라낼 수 있다')
+  })
+
+  test('문자 앱이 인증번호로 오해할 숫자 묶음(번호판 등)을 넣지 않는다', () => {
+    const result = buildDriverInviteSmsHref({ name: '박기사', phone: '010-3333-4444', vehicleNumber: '22가2222', ownerDisplayName: '보리운송', inviteCode: 'A2B3C4D5E6' })
+    assert.ok('href' in result)
+    const body = decodeURIComponent(result.href.split('body=')[1])
+    assert.equal(body.includes('22가2222'), false, '차량번호 없음')
+    assert.deepEqual(body.replace('A2B3C4D5E6', '').match(/\d{2,}/g), null, '코드 밖에는 두 자리 이상 숫자 없음')
   })
 })
 

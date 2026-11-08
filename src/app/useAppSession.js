@@ -2,7 +2,7 @@
 // App.jsx가 쓰는 세션/부트/토스트 state·이펙트·handleLogout.
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { applyTheme } from '../data/sync/settingsSave.ts'
+import { applyTheme, phoneTheme, settingsTheme, watchPhoneTheme } from '../data/sync/settingsSave.ts'
 import { endCloudSession } from '../data/cloud/cloudSession.ts'
 import { confirmReloadIfUnsaved } from '../data/sync/durableWriteGuard.ts'
 import { buzz } from './haptic.js'
@@ -27,6 +27,7 @@ export function useAppSession() {
   const [booting, setBooting] = useState(true)
   const [bootLinkFailed, setBootLinkFailed] = useState(false) // 연동 확인 실패 → 안내 화면
   const [loadFailedOwner, setLoadFailedOwner] = useState('') // 저장된 기록을 못 읽은 owner
+  const [phoneScheme, setPhoneScheme] = useState(phoneTheme)
 
   const navigate = useNavigate()
   const location = useLocation()
@@ -104,11 +105,14 @@ export function useAppSession() {
     setLoadFailedOwner(initializeOwnerFromPersist(ownerKey) ? '' : ownerKey)
   }, [ownerKey])
 
+  useEffect(() => watchPhoneTheme(setPhoneScheme), [])
+
+  const { theme, themeFollowPhone } = practiceSettings
   useEffect(() => {
-    // 부트 중·세션 없음·계정 화면은 덮지 않고 마지막 테마를 둔다(로그아웃해도 라이트로 바뀌지 않게).
-    if (booting || !session || inAccountFlow) return
-    applyTheme(practiceSettings.theme)
-  }, [booting, session, inAccountFlow, practiceSettings.theme, location.pathname])
+    // 계정 화면·세션 없음은 휴대폰 설정, 앱 안은 계정 설정(기본 휴대폰 설정)으로 칠한다. 앱 준비 중엔 로딩 화면 색을 둔다.
+    if (booting) return
+    applyTheme(!session || inAccountFlow ? phoneScheme : settingsTheme({ theme, themeFollowPhone }, phoneScheme))
+  }, [booting, session, inAccountFlow, theme, themeFollowPhone, phoneScheme, location.pathname])
 
   useEffect(() => {
     if (!toast) return undefined

@@ -48,8 +48,23 @@ export function applyTheme(theme?: 'light' | 'dark') {
   try { localStorage.setItem('lastTheme', theme === 'dark' ? 'dark' : 'light') } catch { /* 무시 */ }
 }
 
-/** 휴대폰 다크 모드 설정 — 테마를 고른 적 없는 새 계정의 첫 테마. */
+/** 휴대폰 다크 모드 설정. */
 export function phoneTheme(): 'light' | 'dark' {
   if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return 'light'
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+}
+
+/** 계정 설정으로 칠할 색 — 휴대폰 설정 따르기를 끈 때만 고른 테마. */
+export function settingsTheme(settings: FinanceSettings, phone: 'light' | 'dark'): 'light' | 'dark' {
+  if (settings.themeFollowPhone === false) return settings.theme === 'dark' ? 'dark' : 'light'
+  return phone
+}
+
+/** 휴대폰 다크 모드가 바뀔 때마다 알린다 — 그만 들을 함수를 돌려준다. */
+export function watchPhoneTheme(onChange: (theme: 'light' | 'dark') => void): () => void {
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return () => {}
+  const query = window.matchMedia('(prefers-color-scheme: dark)')
+  const listener = () => onChange(query.matches ? 'dark' : 'light')
+  query.addEventListener('change', listener)
+  return () => query.removeEventListener('change', listener)
 }

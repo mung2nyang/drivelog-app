@@ -1,7 +1,7 @@
 // @ts-check
 import { useParams } from 'react-router-dom'
 import { useOwnerCars, useOwnerDrivers, useOwnerSettings } from '../../../data/store/ownerDataHooks.ts'
-import { applyTheme, savePracticeSettings } from '../../../data/sync/settingsSave.ts'
+import { applyTheme, phoneTheme, savePracticeSettings, settingsTheme } from '../../../data/sync/settingsSave.ts'
 import { defaultCarSettings } from '../../../domain/practiceSettings.ts'
 import { resolveDriverOrPlateLabel } from '../../../domain/driverManagementContext.ts'
 import { useHydrationLock } from '../../../data/store/useHydrationLock.ts'
@@ -44,7 +44,7 @@ export default function AppSettingsPage({ onBack, onOpenMenu }) {
   async function patch(nextPatch) {
     try {
       const next = await savePracticeSettings(ownerKey, nextPatch)
-      applyTheme(next.theme)
+      applyTheme(settingsTheme(next, phoneTheme()))
     } catch (error) {
       console.error('설정 저장 실패:', error)
       showToast?.(SERVER_SAVE_FAIL)
@@ -59,7 +59,13 @@ export default function AppSettingsPage({ onBack, onOpenMenu }) {
     }))
   }
 
-  const isDark = settings.theme === 'dark'
+  const themeChoice = settings.themeFollowPhone === false ? (settings.theme === 'dark' ? 'dark' : 'light') : 'phone'
+  /** @type {Array<{ id: string, value: string, label: string, patch: import('../../../domain/financeTypes.ts').FinanceSettings }>} */
+  const themeOptions = [
+    { id: 'theme-phone', value: 'phone', label: '휴대폰 설정', patch: { themeFollowPhone: true } },
+    { id: 'theme-light', value: 'light', label: '라이트', patch: { themeFollowPhone: false, theme: 'light' } },
+    { id: 'theme-dark', value: 'dark', label: '다크', patch: { themeFollowPhone: false, theme: 'dark' } },
+  ]
   const activeSettings = logId ? carSettings : settings
   // 세부 입력 하위 항목은 토글 대신 칩(체크박스) — 토글이 줄지어 보이지 않게
   const detailChipRows = [
@@ -89,11 +95,14 @@ export default function AppSettingsPage({ onBack, onOpenMenu }) {
         <section className="setting-section settings-theme-card">
           {!logId && (
             <div className="setting-item settings-theme-row">
-              <label htmlFor="theme-dark">다크 모드</label>
-              <label className="switch">
-                <input id="theme-dark" type="checkbox" checked={isDark} onChange={(e) => patch({ theme: e.target.checked ? 'dark' : 'light' })} />
-                <span className="slider"></span>
-              </label>
+              <label>화면 테마</label>
+              <div className="segment-control" role="group" aria-label="화면 테마">
+                {themeOptions.map((option) => (
+                  <button key={option.value} id={option.id} type="button" aria-pressed={themeChoice === option.value} className={`segment-btn${themeChoice === option.value ? ' active' : ''}`} onClick={() => patch(option.patch)}>
+                    {option.label}
+                  </button>
+                ))}
+              </div>
             </div>
           )}
           {!logId && ownerKey !== 'guest' && (

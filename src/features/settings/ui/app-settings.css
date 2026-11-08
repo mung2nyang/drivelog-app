@@ -174,6 +174,8 @@
 
 /* 테마 선택 + 달력 일일 표시 방식 한 카드: 두 줄 사이 구분선 */
 .settings-theme-row { margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); }
+.settings-theme-row .segment-control { width: 200px; flex-shrink: 0; }
+.settings-theme-row .segment-btn:first-child { flex: 1.5; }
 /* 달력 일일 표시 방식: 왼쪽 제목+설명, 오른쪽 횟수|금액(상하 가운데) */
 .settings-calendar-row { align-items: center; margin-bottom: 0; }
 .settings-calendar-row .segment-control { flex-shrink: 0; }

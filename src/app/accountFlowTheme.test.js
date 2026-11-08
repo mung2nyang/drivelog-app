@@ -1,4 +1,4 @@
-// 계정 화면(로그인·환영·첫 설정)은 테마를 덮지 않고 마지막 테마를 둔다 — 로그아웃해도 라이트로 바뀌지 않게.
+// 계정 화면(로그인·환영·첫 설정)은 휴대폰 다크 설정대로, 앱 안은 계정 설정(기본 휴대폰 설정)대로 칠한다.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 
@@ -63,34 +63,91 @@ async function withApp(body) {
     commitSettings('guest', normalizeSettings({}))
     document.documentElement.removeAttribute('data-theme')
     localStorage.removeItem('lastTheme')
+    Reflect.deleteProperty(window, 'matchMedia')
   }
 }
 
-test('다크로 쓰다 로그아웃해 로그인 화면에 오면 다크와 마지막 테마 기억이 그대로 남는다', async () => {
+/** 휴대폰 다크 모드 흉내 — set으로 바꾸면 듣는 곳에 알린다. @param {boolean} dark */
+function fakePhone(dark) {
+  const state = { dark }
+  /** @type {Set<() => void>} */
+  const listeners = new Set()
+  const query = {
+    get matches() { return state.dark },
+    addEventListener: (/** @type {string} */ _type, /** @type {() => void} */ fn) => { listeners.add(fn) },
+    removeEventListener: (/** @type {string} */ _type, /** @type {() => void} */ fn) => { listeners.delete(fn) },
+  }
+  Object.defineProperty(window, 'matchMedia', { value: () => query, configurable: true, writable: true })
+  return {
+    /** @param {boolean} next */
+    async set(next) {
+      state.dark = next
+      await act(async () => { listeners.forEach((fn) => fn()) })
+    },
+  }
+}
+
+/** @param {HTMLElement} container */
+async function enterAsGuest(container) {
+  const guestBtn = container.querySelector('.auth-guest-btn')
+  await act(async () => {
+    guestBtn?.dispatchEvent(new window.MouseEvent('click', { bubbles: true, cancelable: true }))
+  })
+  await waitUntil(() => window.location.pathname === '/app', { timeoutMs: 8000 })
+}
+
+test('로그인 화면은 마지막 테마가 다크여도 휴대폰이 라이트면 라이트로 칠하고 그 색을 기억한다', async () => {
+  fakePhone(false)
   document.documentElement.setAttribute('data-theme', 'dark')
   localStorage.setItem('lastTheme', 'dark')
   window.history.pushState({}, '', '/auth')
   await withApp(async (container) => {
     await waitUntil(() => !!container.querySelector('.auth-guest-btn'))
-    await act(async () => { await wait(50) })
-    assert.equal(document.documentElement.getAttribute('data-theme'), 'dark', '로그인 화면에서 라이트로 덮으면 안 된다')
-    assert.equal(localStorage.getItem('lastTheme'), 'dark', '마지막 테마 기억도 그대로')
+    await waitUntil(() => document.documentElement.getAttribute('data-theme') === null)
+    assert.equal(localStorage.getItem('lastTheme'), 'light', '로딩 화면 색도 휴대폰 색으로')
     assert.equal(document.body.classList.contains('account-flow-active'), false, '계정 화면 강제 다크 클래스는 없다')
   })
 })
 
-test('로그인 화면을 지나 앱 안으로 들어가면 그 계정 설정의 테마로 칠한다', async () => {
-  commitSettings('guest', normalizeSettings({ theme: 'dark' }))
+test('휴대폰이 다크면 로그인 화면도 다크, 휴대폰 설정이 바뀌면 바로 따라간다', async () => {
+  const phone = fakePhone(true)
+  localStorage.setItem('lastTheme', 'light')
   window.history.pushState({}, '', '/auth')
   await withApp(async (container) => {
     await waitUntil(() => !!container.querySelector('.auth-guest-btn'))
-    assert.equal(document.documentElement.getAttribute('data-theme'), null, '로그인 화면은 아직 마지막 테마(라이트)')
-    const guestBtn = container.querySelector('.auth-guest-btn')
-    await act(async () => {
-      guestBtn?.dispatchEvent(new window.MouseEvent('click', { bubbles: true, cancelable: true }))
-    })
-    await waitUntil(() => window.location.pathname === '/app', { timeoutMs: 8000 })
     await waitUntil(() => document.documentElement.getAttribute('data-theme') === 'dark')
-    assert.equal(localStorage.getItem('lastTheme'), 'dark')
+    await phone.set(false)
+    await waitUntil(() => document.documentElement.getAttribute('data-theme') === null)
+    assert.equal(localStorage.getItem('lastTheme'), 'light')
+  })
+})
+
+test('휴대폰 설정 따르기(기본)인 계정은 앱 안에서도 휴대폰 색, 휴대폰이 바뀌면 바로 따라간다', async () => {
+  const phone = fakePhone(true)
+  commitSettings('guest', normalizeSettings({ theme: 'light' }))
+  window.history.pushState({}, '', '/auth')
+  await withApp(async (container) => {
+    await waitUntil(() => !!container.querySelector('.auth-guest-btn'))
+    await enterAsGuest(container)
+    await waitUntil(() => document.documentElement.getAttribute('data-theme') === 'dark')
+    assert.equal(localStorage.getItem('lastTheme'), 'dark', '저장된 테마(라이트)가 아니라 휴대폰 색')
+    await phone.set(false)
+    await waitUntil(() => document.documentElement.getAttribute('data-theme') === null)
+  })
+})
+
+test('라이트·다크를 직접 고른 계정은 앱 안에서 고른 색, 휴대폰이 바뀌어도 그대로', async () => {
+  const phone = fakePhone(false)
+  commitSettings('guest', normalizeSettings({ theme: 'dark', themeFollowPhone: false }))
+  window.history.pushState({}, '', '/auth')
+  await withApp(async (container) => {
+    await waitUntil(() => !!container.querySelector('.auth-guest-btn'))
+    assert.equal(document.documentElement.getAttribute('data-theme'), null, '로그인 화면은 휴대폰 색(라이트)')
+    await enterAsGuest(container)
+    await waitUntil(() => document.documentElement.getAttribute('data-theme') === 'dark')
+    await phone.set(true)
+    await phone.set(false)
+    await act(async () => { await wait(50) })
+    assert.equal(document.documentElement.getAttribute('data-theme'), 'dark', '휴대폰이 라이트로 바뀌어도 고른 다크 그대로')
   })
 })

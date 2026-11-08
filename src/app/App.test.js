@@ -1059,8 +1059,8 @@ test('알림 화면 — 알림 단추 → /app/notifications(옆 창 없음) →
   }
 })
 
-// 로그인 계정이 다크로 쓰다 로그아웃하면 로그인 화면도 다크 — 세션이 비고 주소가 아직 /app인 순간 비회원(라이트) 설정으로 덮지 않는다.
-test('로그인 계정 설정에서 다크 → 개인정보 [로그아웃] → 로그인 화면도 다크, 마지막 테마 기억도 dark', async () => {
+// 로그인 계정이 다크를 골라 쓰다 로그아웃하면 로그인 화면은 계정 색이 아니라 휴대폰 색(시험 환경은 라이트).
+test('로그인 계정 설정에서 다크 → 개인정보 [로그아웃] → 로그인 화면은 휴대폰 색(라이트), 마지막 테마 기억도 light', async () => {
   window.history.pushState({}, '', '/app/me/settings')
   handlers.profiles.upsert = () => ({ data: null, error: null })
   const container = document.createElement('div')
@@ -1072,7 +1072,7 @@ test('로그인 계정 설정에서 다크 → 개인정보 [로그아웃] → �
     })
     await waitUntil(() => !!container.querySelector('#theme-dark'), { timeoutMs: 5000 })
     const darkSwitch = container.querySelector('#theme-dark')
-    assert.ok(darkSwitch, '설정 화면 다크 모드 스위치')
+    assert.ok(darkSwitch, '설정 화면 테마 [다크] 단추')
     await act(async () => { darkSwitch.dispatchEvent(new window.MouseEvent('click', { bubbles: true, cancelable: true })) })
     await waitUntil(() => document.documentElement.getAttribute('data-theme') === 'dark')
     assert.equal(document.documentElement.getAttribute('data-theme'), 'dark', '설정에서 다크로 바꿈')
@@ -1087,9 +1087,9 @@ test('로그인 계정 설정에서 다크 → 개인정보 [로그아웃] → �
     await act(async () => { logout.dispatchEvent(new window.MouseEvent('click', { bubbles: true, cancelable: true })) })
     await waitUntil(() => !!container.querySelector('.auth-guest-btn'), { timeoutMs: 5000 })
     assert.equal(window.location.pathname, '/auth')
-    await act(async () => { await wait(50) })
-    assert.equal(document.documentElement.getAttribute('data-theme'), 'dark', '로그아웃 뒤 로그인 화면이 라이트로 바뀌면 안 된다')
-    assert.equal(localStorage.getItem('lastTheme'), 'dark', '마지막 테마 기억도 dark')
+    await waitUntil(() => document.documentElement.getAttribute('data-theme') === null)
+    assert.equal(document.documentElement.getAttribute('data-theme'), null, '로그아웃 뒤 로그인 화면은 휴대폰 색')
+    assert.equal(localStorage.getItem('lastTheme'), 'light', '마지막 테마 기억도 휴대폰 색')
   } finally {
     await unmountTracked(root)
     container.remove()

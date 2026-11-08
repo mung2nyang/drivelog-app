@@ -88,6 +88,7 @@ test('목록: 연체 알림에 날짜 줄(운행·입금 예정), 누르면 미�
     assert.ok(dismiss)
     await act(async () => { dismiss.dispatchEvent(new window.MouseEvent('click', { bubbles: true })) })
     assert.equal(itemWith(view.container, '연체거래처'), undefined, '닫으면 목록에서 사라져야 한다')
+    assert.deepEqual(readOwnerSettings(ownerKey).dismissedNotices, ['overdue:main:2026-08-30:od-1'], '닫은 알림은 계정 설정에 저장')
   } finally {
     await view.cleanup()
   }

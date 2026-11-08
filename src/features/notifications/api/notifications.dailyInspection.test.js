@@ -6,8 +6,10 @@ import assert from 'node:assert/strict'
 import { beforeEach, test } from 'node:test'
 import { normalizeCarSettings, normalizeSettings } from '../../../domain/practiceSettings.ts'
 
-const { collectNotifications, dismissNotification, DAILY_INSPECTION_NOTICE_ID } = await import('./notifications.js')
+const { collectNotifications, DAILY_INSPECTION_NOTICE_ID } = await import('./notifications.js')
+const { dismissNotice } = await import('./dismissNotice.ts')
 const { commitSettings } = await import('../../../data/store/commitHelpers.ts')
+const { readOwnerSettings } = await import('../../../data/store/ownerDataHooks.ts')
 
 /** @param {string} ownerKey */
 const notice = (ownerKey) => collectNotifications(ownerKey).find((item) => item.id === DAILY_INSPECTION_NOTICE_ID)
@@ -31,9 +33,10 @@ test('메인 스위치가 켜져 있으면 알림 없음(기사차량 스위치�
   assert.ok(notice('di-owner-3'), '기사차량만 켜져 있으면 메인 기준으로 알림')
 })
 
-test('다시 보지 않기 누르면 그 기기에서 사라짐, 비회원은 알림 없음', () => {
+test('다시 보지 않기 누르면 계정 설정에 저장되어 사라짐, 비회원은 알림 없음', async () => {
   commitSettings('di-owner-4', normalizeSettings({}))
-  dismissNotification('di-owner-4', DAILY_INSPECTION_NOTICE_ID)
+  await dismissNotice('di-owner-4', { id: DAILY_INSPECTION_NOTICE_ID, kind: 'inspectionRequired' })
+  assert.deepEqual(readOwnerSettings('di-owner-4').dismissedNotices, [DAILY_INSPECTION_NOTICE_ID])
   assert.equal(notice('di-owner-4'), undefined)
   assert.equal(notice('guest'), undefined)
 })

@@ -7,12 +7,11 @@ import { getShortCarNum } from '../../../domain/cars.ts'
 import { getDdayLabel, overdueItems } from '../../../domain/receivables.ts'
 import { buildFinanceSettings, loadWorkDataByLogId } from '../../../data/sync/ownerFinance.ts'
 import { getReceivableItems } from '../../../domain/finance.ts'
-import { readJsonKey } from '../../../data/store/persist.ts'
-import { commitDismissedNotifications } from '../../../data/store/commitHelpers.ts'
 import { readOwnerDrivers, readOwnerSettings } from '../../../data/store/ownerDataHooks.ts'
 import { getLastBackupAt } from '../../../data/sync/guestBackup.ts'
 import { isCloudSession } from '../../../data/cloud/cloudSession.ts'
 import { listFailedDayLogDates } from '../../../data/sync/failedDayLogDates.ts'
+import { readDismissedIds } from './dismissNotice.ts'
 
 /** @typedef {import('../../../domain/financeReceivables.ts').ReceivableItemLike} ReceivableItemLike */
 
@@ -25,28 +24,12 @@ function shortDate(value) {
   return match ? `${match[1]}.${match[2]}` : ''
 }
 
-/** @param {string} ownerKey */
-function loadDismissed(ownerKey) {
-  const parsed = /** @type {Array<string>} */ (readJsonKey('dismissedNotifications', ownerKey, []))
-  return new Set(Array.isArray(parsed) ? parsed : [])
-}
-
-/**
- * @param {string} ownerKey
- * @param {string} id
- */
-export function dismissNotification(ownerKey, id) {
-  const next = loadDismissed(ownerKey)
-  next.add(id)
-  commitDismissedNotifications(ownerKey, [...next])
-}
-
 /**
  * @param {string} [ownerKey]
  * @param {import('../../../data/cloud/cloudSession.ts').AppSession|null} [session]
  */
 export function collectNotifications(ownerKey = 'guest', session = null) {
-  const dismissed = loadDismissed(ownerKey)
+  const dismissed = new Set(readDismissedIds(ownerKey))
   /** @type {Array<{ id: string, kind: string, page: string, title: string, body: string, dateLabel: string, actionLabel?: string, dismissLabel?: string, noDismiss?: boolean }>} */
   const items = []
 

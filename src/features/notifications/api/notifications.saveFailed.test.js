@@ -4,7 +4,8 @@ import '../../../testSupport/setupDom.js'
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 
-const { collectNotifications, dismissNotification } = await import('./notifications.js')
+const { collectNotifications } = await import('./notifications.js')
+const { dismissNotice } = await import('./dismissNotice.ts')
 const { addFailedDayLogDate } = await import('../../../data/sync/failedDayLogDates.ts')
 const { commitSettings } = await import('../../../data/store/commitHelpers.ts')
 const { normalizeSettings } = await import('../../../domain/practiceSettings.ts')
@@ -29,10 +30,10 @@ test('실패 날짜마다 알림(메인·기사 차량), 맨 앞·날짜 오래�
   assert.ok(items.slice(2).some((item) => item.kind === 'inspectionRequired'), '다른 알림은 그 뒤')
 })
 
-test('알림 받기에서 꺼도, 닫은 id에 있어도 빠지지 않는다', () => {
+test('알림 받기에서 꺼도, 닫은 id에 있어도 빠지지 않는다', async () => {
   const ownerKey = 'nf-off'
   commitSettings(ownerKey, normalizeSettings({ dailyInspectionOn: true, notifOff: ['saveFailed', 'today'] }))
   addFailedDayLogDate(ownerKey, 'main', '2026-10-22')
-  dismissNotification(ownerKey, 'saveFailed:main:2026-10-22')
+  await dismissNotice(ownerKey, { id: 'saveFailed:main:2026-10-22', kind: 'saveFailed' })
   assert.deepEqual(collectNotifications(ownerKey).map((item) => item.id), ['saveFailed:main:2026-10-22'])
 })

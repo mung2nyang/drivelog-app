@@ -7,10 +7,10 @@ import { formatWon } from '../../../domain/money.ts'
 import { getDdayLabel } from '../../../domain/receivables.ts'
 import { getReceivableItems } from '../../../domain/finance.ts'
 import { buildFinanceSettings, loadWorkDataByLogId } from '../../../data/sync/ownerFinance.ts'
-import { readJsonKey } from '../../../data/store/persist.ts'
 import { readOwnerSettings } from '../../../data/store/ownerDataHooks.ts'
 import { getLastBackupAt } from '../../../data/sync/guestBackup.ts'
 import { isCloudSession } from '../../../data/cloud/cloudSession.ts'
+import { readDismissedIds } from './dismissNotice.ts'
 
 export type DeviceNotice = { key: string, page: string, title: string, body: string, at: Date }
 
@@ -120,12 +120,11 @@ export function planDeviceNotices(input: DeviceNoticeInput): Array<DeviceNotice>
 /** 지금 휴대폰(Store) 값으로 계획에 넣을 값을 모은다. */
 export function readDeviceNoticeInput(ownerKey: string, session: AppSession | null, now: Date = new Date()): DeviceNoticeInput {
   const workDataByLogId = loadWorkDataByLogId(ownerKey)
-  const dismissed = readJsonKey<JsonValue>('dismissedNotifications', ownerKey, [])
   return {
     now,
     workDataByLogId,
     receivables: getReceivableItems(buildFinanceSettings(ownerKey), workDataByLogId),
-    dismissed: Array.isArray(dismissed) ? dismissed.filter((id): id is string => typeof id === 'string') : [],
+    dismissed: readDismissedIds(ownerKey),
     off: readOwnerSettings(ownerKey).notifOff || [],
     guest: ownerKey === 'guest' && !isCloudSession(session),
     lastBackupAt: getLastBackupAt(),

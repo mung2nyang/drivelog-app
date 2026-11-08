@@ -3,6 +3,7 @@
 import { useMemo, useSyncExternalStore } from 'react'
 import { collectNotifications } from '../api/notifications.js'
 import { buildInquiryNoticeItems } from '../api/inquiryNoticeItems.ts'
+import { readDismissedIds } from '../api/dismissNotice.ts'
 import useInquiryNotices from './useInquiryNotices.ts'
 import { getState, subscribe } from '../../../data/store/app-store.ts'
 import { failedDayLogDatesVersion, subscribeFailedDayLogDates } from '../../../data/sync/failedDayLogDates.ts'
@@ -33,7 +34,7 @@ export default function useNotifications(ownerKey, session = null, refreshKey = 
   return useMemo(
     () => [
       ...collectNotifications(ownerKey, session),
-      ...buildInquiryNoticeItems(inquiry, dismissed || [], settings.notifOff || []),
+      ...buildInquiryNoticeItems(inquiry, readDismissedIds(ownerKey), settings.notifOff || []),
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps -- 구독한 값이 바뀌면 다시 센다(계산은 Store에서 직접 읽음)
     [ownerKey, session, refreshKey, workDataByLogId, settings, drivers, clients, profile, dismissed, inquiry, failedVersion],

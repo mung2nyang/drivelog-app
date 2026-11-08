@@ -5,9 +5,12 @@ import assert from 'node:assert/strict'
 import { afterEach, beforeEach, describe, mock, test } from 'node:test'
 import { todayKey } from '../../../domain/expenses.ts'
 
-const { collectNotifications, dismissNotification } = await import('./notifications.js')
+const { collectNotifications } = await import('./notifications.js')
+const { dismissNotice } = await import('./dismissNotice.ts')
 const { markBackupDone } = await import('../../../data/sync/guestBackup.ts')
-const { commitWorkData } = await import('../../../data/store/commitHelpers.ts')
+const { commitDismissedNotifications, commitSettings, commitWorkData } = await import('../../../data/store/commitHelpers.ts')
+const { normalizeSettings } = await import('../../../domain/practiceSettings.ts')
+const { readOwnerSettings } = await import('../../../data/store/ownerDataHooks.ts')
 const { commitBatch } = await import('../../../data/store/app-store.ts')
 
 describe('notifications — 데이터 백업 권장 알림 및 게스트/로그인 분기', () => {
@@ -64,15 +67,24 @@ describe('notifications — 데이터 백업 권장 알림 및 게스트/로그�
     assert.equal(notifsCloud.some((item) => item.id.startsWith('backup:')), false)
   })
 
-  test('알림 닫기: dismissNotification 후 다시 뜨지 않는다', () => {
+  test('알림 닫기: dismissNotice 후 계정 설정 닫은 목록에 들어가고 다시 뜨지 않는다', async () => {
     const notifsBefore = collectNotifications('guest')
     const backupNotif = notifsBefore.find((item) => item.id.startsWith('backup:'))
     assert.ok(backupNotif)
 
-    dismissNotification('guest', backupNotif.id)
+    await dismissNotice('guest', backupNotif)
 
+    assert.ok(readOwnerSettings('guest').dismissedNotices?.includes(backupNotif.id), '계정 설정에 저장')
     const notifsAfter = collectNotifications('guest')
     assert.equal(notifsAfter.some((item) => item.id === backupNotif.id), false)
+  })
+
+  test('이 휴대폰 옛 닫은 목록에 있는 알림도 뜨지 않는다', () => {
+    commitSettings('guest', normalizeSettings({}))
+    const backupNotif = collectNotifications('guest').find((item) => item.id.startsWith('backup:'))
+    assert.ok(backupNotif)
+    commitDismissedNotifications('guest', [backupNotif.id])
+    assert.equal(collectNotifications('guest').some((item) => item.id === backupNotif.id), false)
   })
 })
 

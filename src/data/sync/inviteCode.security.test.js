@@ -11,7 +11,7 @@ Object.assign(fakeSupabase.auth, {
 mock.module('../cloud/supabaseClient.ts', { namedExports: { supabase: fakeSupabase } })
 
 const {
-  formatInviteCode, generateInviteCode, INVITE_CODE_PATTERN, normalizeInviteCode, upsertDriver,
+  formatInviteCode, generateInviteCode, INVITE_CODE_PATTERN, normalizeInviteCode, pickInviteCodeFromText, upsertDriver,
 } = await import('../../domain/drivers.ts')
 const { buildDriverInviteSmsHref } = await import('../../features/drivers/api/driverInviteSms.js')
 const { redeemDriverInviteCode } = await import('./driverLinkRpc.ts')
@@ -55,17 +55,31 @@ describe('초대 저장 검사', () => {
 })
 
 describe('초대 문자', () => {
-  test('6자리 코드는 문자 발송을 막고, 새 코드는 하이픈 표시·7일 안내를 넣는다', () => {
+  test('6자리 코드는 문자 발송을 막고, 새 코드는 혼자 한 줄(하이픈 없이)·복사 안내·7일 안내를 넣는다', () => {
     const base = { name: '박기사', phone: '010-3333-4444', vehicleNumber: '서울12가3456' }
     const old = buildDriverInviteSmsHref({ ...base, inviteCode: '123456' })
     assert.ok('error' in old)
     const result = buildDriverInviteSmsHref({ ...base, inviteCode: 'A2B3C4D5E6' })
     assert.ok('href' in result)
     const body = decodeURIComponent(result.href.split('body=')[1])
-    assert.match(body, /초대 코드: A2B3C-4D5E6/)
+    assert.ok(body.includes('\n▶ 초대 코드 (아래 줄을 길게 눌러 복사하세요)\nA2B3C4D5E6\n'), '코드는 혼자 한 줄')
+    assert.equal(body.includes('A2B3C-4D5E6'), false, '문자에는 하이픈 없음')
     assert.match(body, /7일 동안/)
     assert.ok(body.includes('[마이페이지 > 초대 코드 입력]'), '실제 버튼 이름으로 안내')
     assert.equal(body.includes('소속 연결'), false)
+    assert.equal(pickInviteCodeFromText(body), 'A2B3C4D5E6', '문자 전체에서 코드를 골라낼 수 있다')
+  })
+})
+
+describe('붙여넣은 글에서 초대 코드 고르기', () => {
+  test('5자-5자·10자·소문자 코드가 하나뿐이면 코드만, 없거나 둘 이상이면 null', () => {
+    assert.equal(pickInviteCodeFromText('▶ 초대 코드: A2B3C-4D5E6\n입력해 주세요'), 'A2B3C4D5E6')
+    assert.equal(pickInviteCodeFromText('코드 a2b3c4d5e6 입니다'), 'A2B3C4D5E6')
+    assert.equal(pickInviteCodeFromText('A2B3C4D5E6 그리고 A2B3C-4D5E6'), 'A2B3C4D5E6', '같은 코드가 두 번이면 하나로 봄')
+    assert.equal(pickInviteCodeFromText('[서울12가3456] 차량 안녕하세요'), null)
+    assert.equal(pickInviteCodeFromText('A2B3C4D5E6 과 Z9Y8X7W6V5'), null, '다른 코드가 둘이면 고르지 않음')
+    assert.equal(pickInviteCodeFromText('A2B3C4D5E1 은 1이 들어가 코드 글자가 아님'), null)
+    assert.equal(pickInviteCodeFromText('A2B3C4D5E6X 열한 자'), null)
   })
 })
 

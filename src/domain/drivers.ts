@@ -15,6 +15,15 @@ export function normalizeInviteCode(value: JsonValue | undefined) {
   return String(value || '').toUpperCase().replace(/[^0-9A-Z]/g, '')
 }
 
+const INVITE_CODE_IN_TEXT = /^[23456789ABCDEFGHJKMNPQRSTUVWXYZ]{5}-?[23456789ABCDEFGHJKMNPQRSTUVWXYZ]{5}$/
+
+// 붙여넣은 글에 초대 코드 모양(5자-5자 또는 10자)이 하나뿐일 때만 그 코드를 돌려준다.
+export function pickInviteCodeFromText(text: string) {
+  const words = text.toUpperCase().replace(/[^0-9A-Z-]+/g, ' ').split(' ')
+  const found = new Set(words.filter((word) => INVITE_CODE_IN_TEXT.test(word)).map((word) => word.replace('-', '')))
+  return found.size === 1 ? [...found][0] : null
+}
+
 export function formatInviteCode(code: string | null | undefined) {
   const value = code || ''
   return INVITE_CODE_PATTERN.test(value) ? `${value.slice(0, 5)}-${value.slice(5)}` : value

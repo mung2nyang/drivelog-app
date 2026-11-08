@@ -38,3 +38,33 @@ test('설명 옆 (i)를 누르면 배정 차량, 사업자 정보, 설정, 해�
     container.remove()
   }
 })
+
+/** @param {HTMLInputElement} input @param {string} value */
+async function typeInto(input, value) {
+  const setValue = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set
+  await act(async () => {
+    setValue?.call(input, value)
+    input.dispatchEvent(new window.Event('input', { bubbles: true }))
+  })
+}
+
+test('초대 문자 전체를 붙여넣으면 칸에 코드만 남고, 짧은 입력·코드 없는 글은 그대로', async () => {
+  const container = document.createElement('div')
+  document.body.appendChild(container)
+  const root = createRoot(container)
+  try {
+    await act(async () => {
+      root.render(withSession(React.createElement(InviteRedeemModal, { onClose: () => {}, onLinked: () => {} }), { session: null }))
+    })
+    const input = /** @type {HTMLInputElement} */ (document.getElementById('driverInviteCode'))
+    await typeInto(input, '[운행일지] 안녕하세요, 차주입니다.\n\n▶ 초대 코드 (아래 줄을 길게 눌러 복사하세요)\nA2B3C4D5E6\n\n위 코드를 입력해 주세요.')
+    assert.equal(input.value, 'A2B3C4D5E6')
+    await typeInto(input, 'a2b3c-4d5e6')
+    assert.equal(input.value, 'a2b3c-4d5e6', '코드 길이 안쪽은 친 그대로')
+    await typeInto(input, '초대 코드를 아직 못 받았어요')
+    assert.equal(input.value, '초대 코드를 아직 못 받았어요', '코드가 없으면 그대로')
+  } finally {
+    await act(async () => { root.unmount() })
+    container.remove()
+  }
+})

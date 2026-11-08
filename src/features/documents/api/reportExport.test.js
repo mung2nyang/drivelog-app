@@ -6,17 +6,39 @@ import { mock, test } from 'node:test'
 
 /** @type {Array<{ jsPDF?: { orientation?: string } }>} */
 const seen = []
+const drawnSize = { width: 1900, height: 3000 }
 const fakeWorker = {
   /** @param {{ jsPDF?: { orientation?: string } }} opt */
   set(opt) { seen.push(opt); return fakeWorker },
   from() { return fakeWorker },
   async outputPdf() { return new Blob(['%PDF'], { type: 'application/pdf' }) },
   toCanvas() { return fakeWorker },
-  async get() { return { toBlob: (/** @type {(blob: Blob) => void} */ done) => done(new Blob(['png'], { type: 'image/png' })) } },
+  async get() { return { ...drawnSize } },
 }
 mock.module('html2pdf.js', { defaultExport: () => fakeWorker })
 
-const { buildReportExportFile, createReportImageFile, createReportPdfFile, downloadFile } = await import('./reportExport.js')
+// jsdom 그림판엔 그리기가 없어 기록용 가짜를 붙인다 — 여백 바탕 크기와 그린 자리를 남긴다.
+/** @type {Array<Array<string|number>>} */
+const drawCalls = []
+/** @type {Array<{ width: number, height: number }>} */
+const pngSizes = []
+Object.defineProperty(window.HTMLCanvasElement.prototype, 'getContext', {
+  configurable: true,
+  value: () => ({
+    fillStyle: '',
+    /** @param {number} x @param {number} y @param {number} w @param {number} h */
+    fillRect(x, y, w, h) { drawCalls.push(['fillRect', x, y, w, h]) },
+    /** @param {object} _img @param {number} x @param {number} y */
+    drawImage(_img, x, y) { drawCalls.push(['drawImage', x, y]) },
+  }),
+})
+Object.defineProperty(window.HTMLCanvasElement.prototype, 'toBlob', {
+  configurable: true,
+  /** @this {HTMLCanvasElement} @param {(blob: Blob) => void} done */
+  value(done) { pngSizes.push({ width: this.width, height: this.height }); done(new Blob(['png'], { type: 'image/png' })) },
+})
+
+const { buildReportExportFile, createReportImageFile, createReportPdfFile, downloadFile, imageMarginPx } = await import('./reportExport.js')
 
 test('방향을 안 넘기면 세로, 가로를 넘기면 가로', async () => {
   const element = document.createElement('div')
@@ -36,6 +58,32 @@ test('이미지: 방향을 안 넘기면 종이 설정 없음(운송비 내역�
   assert.equal(seen[0].jsPDF, undefined)
   assert.equal(seen[1].jsPDF?.orientation, 'landscape')
   assert.equal(image.name, '일상점검표.png')
+})
+
+test('이미지 여백은 PDF와 같은 비율 — 세로는 내용 폭 190mm, 가로는 277mm 기준 좌우 10mm·위아래 12mm', () => {
+  assert.deepEqual(imageMarginPx(1900), { x: 100, y: 120 })
+  assert.deepEqual(imageMarginPx(1900, 'portrait'), { x: 100, y: 120 })
+  assert.deepEqual(imageMarginPx(2770, 'landscape'), { x: 100, y: 120 })
+  assert.deepEqual(imageMarginPx(1632), { x: 86, y: 103 })
+})
+
+test('이미지: 그린 그림을 여백만큼 큰 흰 바탕 가운데에 놓아 PNG로 만든다', async () => {
+  drawCalls.length = 0
+  pngSizes.length = 0
+  const element = document.createElement('div')
+  drawnSize.width = 1900
+  drawnSize.height = 3000
+  await createReportImageFile(element, '운송비')
+  drawnSize.width = 2770
+  drawnSize.height = 1000
+  await createReportImageFile(element, '일상점검표', { orientation: 'landscape' })
+  drawnSize.width = 1900
+  drawnSize.height = 3000
+  assert.deepEqual(pngSizes, [{ width: 2100, height: 3240 }, { width: 2970, height: 1240 }])
+  assert.deepEqual(drawCalls, [
+    ['fillRect', 0, 0, 2100, 3240], ['drawImage', 100, 120],
+    ['fillRect', 0, 0, 2970, 1240], ['drawImage', 100, 120],
+  ])
 })
 
 // 로드맵 99-B — 운송비 내역서 화면과 공유 창이 같이 쓰는 내보내기·내려받기.

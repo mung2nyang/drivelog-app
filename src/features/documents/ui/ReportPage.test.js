@@ -26,9 +26,19 @@ const fakeWorker = {
   async save() { html2pdfCalls.push('save') },
   async outputPdf() { html2pdfCalls.push('outputPdf'); return new Blob(['%PDF'], { type: 'application/pdf' }) },
   toCanvas() { return fakeWorker },
-  async get() { return { toBlob: (/** @type {(blob: Blob|null) => void} */ done) => done(canvasFail.on ? null : new Blob(['png'], { type: 'image/png' })) } },
+  async get() { return { width: 100, height: 100 } },
 }
 mock.module('html2pdf.js', { defaultExport: () => fakeWorker })
+// jsdom 그림판엔 그리기·PNG 만들기가 없어 가짜를 붙인다 — canvasFail.on이면 PNG를 못 만든다.
+Object.defineProperty(window.HTMLCanvasElement.prototype, 'getContext', {
+  configurable: true,
+  value: () => ({ fillStyle: '', fillRect() {}, drawImage() {} }),
+})
+Object.defineProperty(window.HTMLCanvasElement.prototype, 'toBlob', {
+  configurable: true,
+  /** @param {(blob: Blob|null) => void} done */
+  value(done) { done(canvasFail.on ? null : new Blob(['png'], { type: 'image/png' })) },
+})
 
 const React = await import('react')
 const { withSession } = await import('../../../testSupport/withSession.js')

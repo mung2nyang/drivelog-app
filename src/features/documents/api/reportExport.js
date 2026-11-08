@@ -26,6 +26,36 @@ async function renderReportCanvas(element, orientation) {
 }
 
 /**
+ * 이미지 여백(픽셀) — PDF에서 내용 폭은 A4 너비에서 좌우 10mm를 뺀 값(세로 190mm, 가로 277mm).
+ * @param {number} width 그린 그림 너비(픽셀)
+ * @param {'portrait'|'landscape'} [orientation]
+ * @returns {{ x: number, y: number }}
+ */
+export function imageMarginPx(width, orientation) {
+  const contentMm = orientation === 'landscape' ? 277 : 190
+  return { x: Math.round((width * 10) / contentMm), y: Math.round((width * 12) / contentMm) }
+}
+
+// PDF 여백(위아래 12mm·좌우 10mm)과 같은 비율로 이미지 둘레에 흰 여백을 둔다.
+/**
+ * @param {HTMLCanvasElement} canvas
+ * @param {'portrait'|'landscape'} [orientation]
+ * @returns {HTMLCanvasElement}
+ */
+function addWhiteMargin(canvas, orientation) {
+  const { x, y } = imageMarginPx(canvas.width, orientation)
+  const padded = document.createElement('canvas')
+  padded.width = canvas.width + x * 2
+  padded.height = canvas.height + y * 2
+  const ctx = padded.getContext('2d')
+  if (!ctx) throw new Error('PNG 이미지 생성 실패')
+  ctx.fillStyle = '#ffffff'
+  ctx.fillRect(0, 0, padded.width, padded.height)
+  ctx.drawImage(canvas, x, y)
+  return padded
+}
+
+/**
  * @param {HTMLCanvasElement} canvas
  * @returns {Promise<Blob>}
  */
@@ -42,7 +72,7 @@ function canvasToPngBlob(canvas) {
  * @returns {Promise<File>}
  */
 export async function createReportImageFile(element, baseName, { orientation } = {}) {
-  const canvas = await renderReportCanvas(element, orientation)
+  const canvas = addWhiteMargin(await renderReportCanvas(element, orientation), orientation)
   const blob = await canvasToPngBlob(canvas)
   return new File([blob], `${baseName}.png`, { type: 'image/png' })
 }

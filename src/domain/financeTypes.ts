@@ -101,6 +101,7 @@ export type FinanceSettings = {
   subRunCountPresets?: Array<number>
   pinnedLocations?: Array<string>
   platformPresets?: Array<string> // 콜 상세 플랫폼 칩(없으면 기본 6개)
+  dismissedNotices?: Array<string> // 닫은 알림 id(계정 설정, 최대 200개)
   subCarSettings?: Record<string, SubCarPracticeSettings> // 서브차량 번호별 전용 값(세부입력 5종+달력 표시방식만, 결제/고정노선은 공용)
 }
 

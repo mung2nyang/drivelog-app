@@ -21,7 +21,7 @@ const SETTINGS = {
   inputMode: 'count', callDetail: true, timeOn: false, platformOn: true, distanceOn: false, cargoTonnageOn: true,
   fixedRouteOn: true, fixedRoutePresets: [PRESET], runCountToggle: true, runCountPresets: [1, 2, 3],
   subFixedRouteOn: false, subFixedRoutePresets: [PRESET], subRunCountToggle: false, subRunCountPresets: [4],
-  pinnedLocations: ['부산'], platformPresets: ['원콜', '내 플랫폼'], subCarSettings: { '34나5678': SUB }, dailyInspectionOn: true, notifOff: ['backup'],
+  pinnedLocations: ['부산'], platformPresets: ['원콜', '내 플랫폼'], dismissedNotices: ['today:2026-11-08', 'driver:d1'], subCarSettings: { '34나5678': SUB }, dailyInspectionOn: true, notifOff: ['backup'],
 }
 /** 칸마다 틀린 값(설정 37칸 전부) — 손으로 적는다. @type {Array<[string, JsonValue]>} */
 const SETTINGS_BAD = [
@@ -37,7 +37,7 @@ const SETTINGS_BAD = [
   ['runCountToggle', 'y'], ['runCountPresets', ['1']], ['runCountPresets', [Number.NaN]], ['runCountPresets', {}],
   ['subFixedRouteOn', 'y'], ['subFixedRoutePresets', [{ id: 1, loadLoc: 'a', unloadLoc: 'b' }]],
   ['subRunCountToggle', 1], ['subRunCountPresets', [Number.POSITIVE_INFINITY]],
-  ['pinnedLocations', [1]], ['pinnedLocations', 'x'], ['platformPresets', 'x'], ['platformPresets', [1]], ['subCarSettings', []], ['subCarSettings', 'x'],
+  ['pinnedLocations', [1]], ['pinnedLocations', 'x'], ['platformPresets', 'x'], ['platformPresets', [1]], ['dismissedNotices', 'x'], ['dismissedNotices', [1]], ['subCarSettings', []], ['subCarSettings', 'x'],
   ['subCarSettings', { a: { inputMode: 'x' } }], ['subCarSettings', { a: { callDetail: 'y' } }],
   ['subCarSettings', { a: { junk: true } }], ['subCarSettings', { a: [] }], ['subCarSettings', { a: null }],
   ['dailyInspectionOn', 'y'], ['notifOff', [1]], ['notifOff', 'backup'],

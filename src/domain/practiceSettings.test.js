@@ -169,6 +169,13 @@ describe('플랫폼 칩(platformPresets)', () => {
   })
 })
 
+describe('닫은 알림(dismissedNotices)', () => {
+  test('칸이 없는 옛 설정은 빈 목록, 목록은 정리해서 남긴다', () => {
+    assert.deepEqual(normalizeSettings({}).dismissedNotices, [])
+    assert.deepEqual(normalizeSettings({ dismissedNotices: [' driver:d1 ', 'driver:d1', 'today:2026-11-08'] }).dismissedNotices, ['driver:d1', 'today:2026-11-08'])
+  })
+})
+
 describe('휴대폰 설정 따르기(themeFollowPhone)', () => {
   test('칸이 없는 옛 설정은 켜짐, 끈 값은 꺼짐 그대로, 켜짐·꺼짐이 아닌 값은 켜짐', () => {
     assert.equal(normalizeSettings({}).themeFollowPhone, true)

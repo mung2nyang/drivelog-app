@@ -3,6 +3,7 @@
 import { normalizePinnedLocations } from './locationShortcuts.ts'
 import { normalizeFixedRoutePresets, normalizeRunCountPresets } from './practicePresets.ts'
 import { normalizePlatformPresets } from './platformPresets.ts'
+import { normalizeDismissedNotices } from './dismissedNotices.ts'
 import type { JsonValue } from './jsonTypes.ts'
 import type { FinanceSettings, SubCarPracticeSettings } from './financeTypes.ts'
 
@@ -89,6 +90,7 @@ export function normalizeSettings(raw: FinanceSettings = {}): FinanceSettings {
     platformPresets: normalizePlatformPresets(raw.platformPresets),
     subCarSettings: normalizeSubCarSettingsMap(raw.subCarSettings, asBool(raw.subFixedOn, fixedOn)),
     notifOff: normalizeNotifOff(raw.notifOff),
+    dismissedNotices: normalizeDismissedNotices(raw.dismissedNotices),
     unbiseoDockOn: asBool(raw.unbiseoDockOn, defaults.unbiseoDockOn),
     ...pickMessageTemplates(raw.messageTemplates),
     ...pickReportShareMessage(raw.reportShareMessage),

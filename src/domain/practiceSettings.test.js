@@ -161,6 +161,14 @@ describe('운비서 버튼(unbiseoDockOn)', () => {
   })
 })
 
+describe('플랫폼 칩(platformPresets)', () => {
+  test('칸이 없는 옛 설정은 기본 6개, 빈 목록은 빈 목록, 목록은 정리해서 남긴다', () => {
+    assert.deepEqual(normalizeSettings({}).platformPresets, ['24시콜', '화물맨', '더운반', '원콜', '전국화물콜', '카카오T트럭커'])
+    assert.deepEqual(normalizeSettings({ platformPresets: [] }).platformPresets, [])
+    assert.deepEqual(normalizeSettings({ platformPresets: [' 원콜 ', '원콜', '내 플랫폼'] }).platformPresets, ['원콜', '내 플랫폼'])
+  })
+})
+
 describe('휴대폰 설정 따르기(themeFollowPhone)', () => {
   test('칸이 없는 옛 설정은 켜짐, 끈 값은 꺼짐 그대로, 켜짐·꺼짐이 아닌 값은 켜짐', () => {
     assert.equal(normalizeSettings({}).themeFollowPhone, true)

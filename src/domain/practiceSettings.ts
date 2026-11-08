@@ -2,6 +2,7 @@
 // 프리셋(운행 횟수 버튼·노선 이름표) 함수는 practicePresets.ts — 여기서 다시 내보낸다.
 import { normalizePinnedLocations } from './locationShortcuts.ts'
 import { normalizeFixedRoutePresets, normalizeRunCountPresets } from './practicePresets.ts'
+import { normalizePlatformPresets } from './platformPresets.ts'
 import type { JsonValue } from './jsonTypes.ts'
 import type { FinanceSettings, SubCarPracticeSettings } from './financeTypes.ts'
 
@@ -85,6 +86,7 @@ export function normalizeSettings(raw: FinanceSettings = {}): FinanceSettings {
     subRunCountToggle: asBool(raw.subRunCountToggle, defaults.subRunCountToggle),
     subRunCountPresets: normalizeRunCountPresets(raw.subRunCountPresets),
     pinnedLocations: normalizePinnedLocations(raw.pinnedLocations),
+    platformPresets: normalizePlatformPresets(raw.platformPresets),
     subCarSettings: normalizeSubCarSettingsMap(raw.subCarSettings, asBool(raw.subFixedOn, fixedOn)),
     notifOff: normalizeNotifOff(raw.notifOff),
     unbiseoDockOn: asBool(raw.unbiseoDockOn, defaults.unbiseoDockOn),

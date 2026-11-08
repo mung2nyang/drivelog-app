@@ -147,6 +147,20 @@ describe('슬라이스 E — 로그인 프로필·설정·비용·계산서는 �
     endCloudSession()
   })
 
+  test('savePracticeSettings: 플랫폼 칩 목록은 서버로 가고 휴대폰 저장에는 남지 않는다', async () => {
+    const ownerKey = 'cms-settings-platform'
+    beginReady('user-cms-settings-platform', ownerKey)
+    handlers.profiles = { upsert: () => ({ data: null, error: null }) }
+
+    await savePracticeSettings(ownerKey, { platformPresets: ['원콜', '내 플랫폼'] })
+    const row = callsOf('profiles', 'upsert')[0]?.args[0]
+    const settings = row && typeof row === 'object' && !Array.isArray(row) ? row.settings : null
+    assert.deepEqual(settings && typeof settings === 'object' && !Array.isArray(settings) ? settings.platformPresets : 'none', ['원콜', '내 플랫폼'])
+    assert.deepEqual(getState().settings[ownerKey]?.platformPresets, ['원콜', '내 플랫폼'])
+    assert.equal('platformPresets' in readJsonKey('settings', ownerKey, {}), false)
+    endCloudSession()
+  })
+
   test('savePracticeSettings throw: Store 단가 불변', async () => {
     const ownerKey = 'cms-settings-err'
     beginReady('user-1', ownerKey)

@@ -43,7 +43,7 @@ const SETTINGS = plain(v.strictObject({
   callDetail: opt(bool), timeOn: opt(bool), platformOn: opt(bool), distanceOn: opt(bool), cargoTonnageOn: opt(bool),
   fixedRouteOn: opt(bool), fixedRoutePresets: opt(v.array(ROUTE_PRESET)), runCountToggle: opt(bool), runCountPresets: opt(v.array(finiteNumber)),
   subFixedRouteOn: opt(bool), subFixedRoutePresets: opt(v.array(ROUTE_PRESET)), subRunCountToggle: opt(bool), subRunCountPresets: opt(v.array(finiteNumber)),
-  pinnedLocations: opt(v.array(str)), subCarSettings: opt(plain(v.record(str, SUB_CAR_SETTINGS))),
+  pinnedLocations: opt(v.array(str)), platformPresets: opt(v.array(str)), subCarSettings: opt(plain(v.record(str, SUB_CAR_SETTINGS))),
   dailyInspectionOn: opt(bool), notifOff: opt(v.array(str)), unbiseoDockOn: opt(bool),
   messageTemplates: opt(v.strictTuple([str, str, str])), reportShareMessage: opt(str),
 }))

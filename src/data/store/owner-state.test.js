@@ -514,6 +514,14 @@ describe('initializeOwnerFromPersist — 슬라이스 E 로그인 settings theme
     assert.equal(getState().settings[owner]?.theme, 'dark')
   })
 
+  test('(f) 게스트 — 플랫폼 칩 목록을 저장하고 다시 읽어도 읽기 실패가 아니다', () => {
+    endCloudSession()
+    const owner = 'init-guest-platform-presets'
+    commitSettings(owner, normalizeSettings({ platformPresets: ['원콜', '내 플랫폼'] }))
+    assert.equal(initializeOwnerFromPersist(owner), true)
+    assert.deepEqual(getState().settings[owner]?.platformPresets, ['원콜', '내 플랫폼'])
+  })
+
   test('(c) 게스트 cloud=false — settings LS 전체를 그대로 읽는다(회귀)', () => {
     endCloudSession()
     const owner = 'init-guest-settings-full'

@@ -20,9 +20,10 @@ test('높이는 놓은 곳 그대로, 아래 메뉴 위보다 낮아지지 않�
   assert.equal(snapDockPosition(fab(400, 10), dock).lift, 692 - 52 - 12, '위로 끝까지 끌어도 위 12px')
 })
 
-test('저장 값이 없거나 깨졌으면 기본 자리(오른쪽, 높이 0)', () => {
-  const base = { side: 'right', lift: 0 }
+test('저장 값이 없거나 깨졌으면 기본 자리(왼쪽, 높이 0)', () => {
+  const base = { side: 'left', lift: 0 }
   assert.deepEqual(toDockPosition(JSON.stringify({ side: 'left', lift: 120 })), { side: 'left', lift: 120 })
+  assert.deepEqual(toDockPosition(JSON.stringify({ side: 'right', lift: 0 })), { side: 'right', lift: 0 }, '옮겨 둔 오른쪽은 그대로')
   assert.deepEqual(toDockPosition(null), base)
   assert.deepEqual(toDockPosition('{'), base)
   assert.deepEqual(toDockPosition('null'), base)

@@ -114,6 +114,18 @@ test('홈에는 없고, 다른 화면에는 작은 캐릭터 버튼만 — 누�
 // 로드맵 108 — 옮긴 자리는 이 휴대폰에 남는다. 카드는 늘 아래 메뉴 위 앱 폭 전체.
 const DOCK_KEY = 'drivelogUnbiseoDockPosition'
 
+test('저장된 자리가 없으면 버튼은 왼쪽 아래(높이 0)', async () => {
+  localStorage.removeItem(DOCK_KEY)
+  const view = await renderShell('dock-default', '/app/revenue')
+  try {
+    await waitUntil(() => !!view.dock())
+    assert.ok(view.dock()?.classList.contains('left'), '왼쪽 가장자리')
+    assert.equal(/** @type {HTMLElement|null} */ (view.dock())?.style.getPropertyValue('--dock-lift'), '0px')
+  } finally {
+    await view.cleanup()
+  }
+})
+
 test('저장된 왼쪽·높이가 다시 열 때 버튼에 적용, 카드는 늘 지금 자리', async () => {
   localStorage.setItem(DOCK_KEY, JSON.stringify({ side: 'left', lift: 120 }))
   const view = await renderShell('dock-place', '/app/revenue')
@@ -154,12 +166,12 @@ test('설정에서 운비서 버튼을 끄면 다른 화면에 안 뜨고, 펼�
   } finally { await view.cleanup() }
 })
 
-test('저장 값이 깨졌으면 기본 자리(오른쪽, 높이 0)', async () => {
+test('저장 값이 깨졌으면 기본 자리(왼쪽, 높이 0)', async () => {
   localStorage.setItem(DOCK_KEY, JSON.stringify({ side: 'top', lift: -3 }))
   const view = await renderShell('dock-broken', '/app/revenue')
   try {
     await waitUntil(() => !!view.dock())
-    assert.equal(view.dock()?.className, 'unbiseo-dock')
+    assert.equal(view.dock()?.className, 'unbiseo-dock left')
     assert.equal(/** @type {HTMLElement|null} */ (view.dock())?.style.getPropertyValue('--dock-lift'), '0px')
   } finally {
     await view.cleanup()

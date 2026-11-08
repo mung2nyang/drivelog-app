@@ -6,7 +6,7 @@ export type DockPosition = { side: 'left' | 'right', lift: number }
 type Box = { left: number, right: number, top: number, bottom: number }
 
 const STORAGE_KEY = 'drivelogUnbiseoDockPosition'
-const DEFAULT: DockPosition = { side: 'right', lift: 0 }
+const DEFAULT: DockPosition = { side: 'left', lift: 0 }
 const FAB_GAP = 8 // 아래 메뉴와 동그라미 사이(unbiseo-dock.css 아래 padding)
 const TOP_GAP = 12
 const DRAG_CLICK_MS = 400

@@ -1,6 +1,6 @@
 // @ts-check
 import { useState } from 'react'
-import { FUEL_TYPES, MAINT_CATEGORIES, MISC_CATEGORIES } from '../../../domain/expenses.ts'
+import { FUEL_TYPES, MAINT_CATEGORIES, MISC_CATEGORIES, fuelAmountUnit } from '../../../domain/expenses.ts'
 import { checkExpenseDraft } from '../../../domain/expenseDraft.ts'
 import { formatCurrencyInput, parseCurrencyValue } from '../../../domain/money.ts'
 import TemporalInput from '../../../shared/ui/TemporalInput.jsx'
@@ -158,10 +158,10 @@ export default function ExpenseFormModal({
               </div>
             </div>
             <div className="form-group">
-              <label htmlFor="expenseLiters">주유량</label>
+              <label htmlFor="expenseLiters">{draft.fuelType === '전기' ? '충전량' : '주유량'}</label>
               <div className="input-with-suffix">
                 <input id="expenseLiters" className="input-box" inputMode="decimal" placeholder="0" value={draft.liters} onChange={(e) => onChange({ ...draft, liters: e.target.value })} />
-                <span className="suffix">L</span>
+                <span className="suffix">{fuelAmountUnit(draft.fuelType)}</span>
               </div>
             </div>
           </div>

@@ -198,3 +198,29 @@ test('정비 항목명·비용 둘 다 비면 항목명 칸 표시, 항목명 �
   }
 })
 
+
+test('주유 종류 칩은 주유·요소수·전기·기타, 전기면 양 칸이 "충전량 kWh", 주유면 "주유량 L"', async () => {
+  for (const [fuelType, label, unit] of [['전기', '충전량', 'kWh'], ['주유', '주유량', 'L']]) {
+    const { container, root } = mountTarget()
+    try {
+      await act(async () => {
+        root.render(React.createElement(ExpenseFormModal, {
+          draft: { kind: 'fuel', date: '2026-11-09', fuelType },
+          kindLabel: '주유',
+          inline: true,
+          onChange: () => {},
+          onClose: () => {},
+          onSave: () => {},
+        }))
+      })
+      const chips = [...container.querySelectorAll('.pill-group .pill-btn')].map((el) => el.textContent)
+      assert.deepEqual(chips, ['주유', '요소수', '전기', '기타'])
+      const field = container.querySelector('#expenseLiters')?.closest('.form-group')
+      assert.equal(field?.querySelector('label')?.textContent, label)
+      assert.equal(field?.querySelector('.suffix')?.textContent, unit)
+    } finally {
+      await act(async () => { root.unmount() })
+      container.remove()
+    }
+  }
+})

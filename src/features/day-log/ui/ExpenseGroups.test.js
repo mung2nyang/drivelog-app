@@ -55,3 +55,15 @@ describe('ExpenseGroups — 유가보조금 표시', () => {
     assert.deepEqual(badges, ['현금'])
   })
 })
+
+describe('ExpenseGroups — 주유 양 단위', () => {
+  test('전기는 "35kWh", 경유는 "50L" 그대로', async () => {
+    const { text } = await render([
+      { id: 'e1', kind: 'fuel', date: '2026-11-09', fuelType: '전기', cost: 30000, subsidy: 0, liters: 35 },
+      { id: 'f3', kind: 'fuel', date: '2026-11-09', fuelType: '경유', cost: 80000, subsidy: 0, liters: 50 },
+    ])
+    assert.ok(text.includes('35kWh'))
+    assert.ok(text.includes('50L'))
+    assert.equal(text.includes('35L'), false)
+  })
+})

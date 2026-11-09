@@ -1,5 +1,6 @@
 // getOwnerMonthlyFinanceDetail의 비용(정비/주유/기타/유가보조금) sweep — owner expenses와 driverExpenses를 같은 규칙으로 나눈다.
 import { parseCurrencyValue } from './money.ts'
+import { fuelAmountUnit } from './expenses.ts'
 
 export type ExpenseLike = { id?: string, kind: string, date: string, name?: string, category?: string, fuelType?: string, cost?: number, subsidy?: number, liters?: number | string, vehicleNumber?: string }
 export type ExpenseLineItem = { date: string, label: string, amount: number }
@@ -45,7 +46,7 @@ export function sweepExpenseItems(monthKey: string, items: Array<ExpenseLike> = 
     } else if (item.kind === 'fuel') {
       const cost = parseCurrencyValue(item.cost)
       const subsidy = parseCurrencyValue(item.subsidy)
-      fuelItems.push({ date, label: `${item.fuelType || '주유'}${item.liters ? ` ${item.liters}L` : ''}`, amount: cost })
+      fuelItems.push({ date, label: `${item.fuelType || '주유'}${item.liters ? ` ${item.liters}${fuelAmountUnit(item.fuelType)}` : ''}`, amount: cost })
       if (subsidy > 0) {
         fuelSubsidyItems.push({ date, label: item.fuelType || '주유', amount: subsidy })
         fuelSubsidyTotal += subsidy

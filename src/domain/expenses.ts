@@ -9,7 +9,12 @@ export const KINDS = [
 
 export const MAINT_CATEGORIES = ['엔진/미션', '판금/도장', '소모품', '기타']
 export const MISC_CATEGORIES = ['통행료', '주차비', '과태료', '기타']
-export const FUEL_TYPES = ['주유', '요소수', '기타']
+export const FUEL_TYPES = ['주유', '요소수', '전기', '기타']
+
+/** 주유 양 단위 — 전기는 kWh, 나머지는 L. */
+export function fuelAmountUnit(fuelType: string | undefined) {
+  return fuelType === '전기' ? 'kWh' : 'L'
+}
 
 export function todayKey() {
   const d = new Date()
@@ -52,7 +57,7 @@ export function expenseTitle(item: ExpenseItem | null | undefined, kindLabel = '
   if (item.kind === 'fuel') {
     const liters = Number(item.liters) || 0
     const label = item.fuelType || item.name || '주유'
-    return liters ? `${label} (${liters}L)` : label
+    return liters ? `${label} (${liters}${fuelAmountUnit(label)})` : label
   }
   return item.name || item.category || kindLabel || (item.kind === 'misc' ? '기타' : '정비')
 }

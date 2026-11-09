@@ -67,4 +67,12 @@ describe('sweepExpenseItems', () => {
     assert.equal(buckets.fuelSubsidyTotal, 2500)
     assert.equal(buckets.fuelItems[0].amount, 1)
   })
+
+  test('매출 지출 줄 이름: 전기는 "전기 35kWh", 주유는 "주유 10L" 그대로', () => {
+    const buckets = sweepExpenseItems('2026-05', [
+      { id: 'e', kind: 'fuel', date: '2026-05-12', fuelType: '전기', cost: 30000, liters: 35 },
+      { id: 'f', kind: 'fuel', date: '2026-05-13', fuelType: '주유', cost: 20000, liters: 10 },
+    ])
+    assert.deepEqual(buckets.fuelItems.map((item) => item.label), ['전기 35kWh', '주유 10L'])
+  })
 })

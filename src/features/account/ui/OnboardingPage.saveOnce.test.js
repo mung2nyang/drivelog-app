@@ -56,7 +56,7 @@ test('마지막 단계에서 [완료하기] 두 번·[건너뛰기]를 눌러도
   }
 })
 
-test('차량 단계에서 연료 종류를 고르면 [완료하기] 값에 담기고, 안 고르면 빈 값', async () => {
+test('차량 단계에서 연료 종류 칩을 누르면 [완료하기] 값에 담긴다', async () => {
   /** @type {Array<import('../../../data/sync/onboardingFinish.ts').OnboardingWizard>} */
   const finished = []
   const container = document.createElement('div')
@@ -66,11 +66,9 @@ test('차량 단계에서 연료 종류를 고르면 [완료하기] 값에 담�
   try {
     for (let i = 0; i < 3; i += 1) await act(async () => { button(container, '건너뛰기 >').click() })
     await typeInto(/** @type {HTMLInputElement} */ (container.querySelector('#onboardingCarNumber')), '12가3456')
-    const trigger = /** @type {HTMLButtonElement} */ (container.querySelector('#onboardingCarFuelKind'))
-    assert.equal(trigger.textContent?.trim(), '선택 안 함')
-    await act(async () => { trigger.click() })
-    const option = /** @type {HTMLElement} */ ([...container.querySelectorAll('[role="option"]')].find((el) => el.textContent?.trim() === '전기'))
-    await act(async () => { option.click() })
+    const electric = /** @type {HTMLButtonElement} */ ([...container.querySelectorAll('#onboardingCarFuelKind button')].find((el) => el.textContent === '전기'))
+    assert.equal(electric.getAttribute('aria-pressed'), 'false')
+    await act(async () => { electric.click() })
     await act(async () => { button(container, '완료하기').click() })
     assert.equal(finished.at(-1)?.carFuelKind, '전기')
   } finally {

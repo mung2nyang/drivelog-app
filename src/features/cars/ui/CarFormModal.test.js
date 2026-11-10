@@ -136,24 +136,19 @@ test('로드맵 61 — 저장된 기준으로 열면 그 값, 월급제·메인 
   }
 })
 
-test('연료 종류 드롭다운: 처음엔 "선택 안 함", 전기를 고르면 저장 값에 담기고 "선택 안 함"이면 비운다', async () => {
+test('연료 종류 칩 4개: 처음엔 아무것도 안 골라짐, 전기를 누르면 저장 값에 담기고 다시 누르면 비운다', async () => {
   const view = await render({ ...EMPTY, number: '12가3456', fuelKind: '' })
   try {
-    const trigger = /** @type {HTMLButtonElement} */ (view.container.querySelector('#newCarFuelKind'))
-    assert.equal(trigger.textContent?.trim(), '선택 안 함')
-    /** @param {string} label */
-    const pick = async (label) => {
-      await act(async () => { trigger.click() })
-      const options = [...view.container.querySelectorAll('[role="option"]')]
-      assert.deepEqual(options.map((el) => el.textContent?.trim()), ['선택 안 함', '휘발유', '경유', '전기', 'LPG'])
-      const option = /** @type {HTMLElement} */ (options.find((el) => el.textContent?.trim() === label))
-      await act(async () => { option.click() })
-    }
-    await pick('전기')
-    assert.equal(trigger.textContent?.trim(), '전기')
+    const chips = () => [...view.container.querySelectorAll('#newCarFuelKind button')]
+    assert.deepEqual(chips().map((el) => el.textContent), ['휘발유', '경유', '전기', 'LPG'])
+    assert.deepEqual(chips().filter((el) => el.classList.contains('active')), [])
+    const electric = () => /** @type {HTMLButtonElement} */ (chips().find((el) => el.textContent === '전기'))
+    await act(async () => { electric().click() })
+    assert.equal(electric().getAttribute('aria-pressed'), 'true')
     await view.save()
     assert.equal(view.saves.at(-1)?.fuelKind, '전기')
-    await pick('선택 안 함')
+    await act(async () => { electric().click() })
+    assert.equal(electric().getAttribute('aria-pressed'), 'false')
     await view.save()
     assert.equal(view.saves.at(-1)?.fuelKind, '')
   } finally {

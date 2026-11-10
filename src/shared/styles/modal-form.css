@@ -49,6 +49,7 @@
 }
 
 .car-commission-type.three { grid-template-columns: repeat(3, 1fr); }
+.car-commission-type.four { grid-template-columns: repeat(4, 1fr); }
 
 .car-commission-type button {
   min-height: 40px;

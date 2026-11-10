@@ -3,7 +3,7 @@ import { useRef, useState } from 'react'
 import { assetPath } from '../../../shared/utils/assetPath.js'
 import { tonnageDigits, tonnageValue } from '../../../domain/formatPhone.ts'
 import ClearableInput from '../../../shared/ui/ClearableInput.jsx'
-import CarFuelKindField from '../../cars/ui/CarFuelKindField.jsx'
+import CarFuelKindField from '../../../shared/ui/CarFuelKindField.jsx'
 
 /** @typedef {import('../../../data/sync/onboardingFinish.ts').OnboardingWizard} OnboardingWizard */
 

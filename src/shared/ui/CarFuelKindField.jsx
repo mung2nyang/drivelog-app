@@ -1,7 +1,7 @@
 // @ts-check
 // 차량 연료 종류 드롭다운 — "선택 안 함"이면 비운다.
-import AppDropdown from '../../../shared/ui/AppDropdown.jsx'
-import { CAR_FUEL_KINDS } from '../../../domain/cars.ts'
+import AppDropdown from './AppDropdown.jsx'
+import { CAR_FUEL_KINDS } from '../../domain/cars.ts'
 
 const OPTIONS = [{ value: '', label: '선택 안 함' }, ...CAR_FUEL_KINDS.map((kind) => ({ value: kind, label: kind }))]
 

@@ -7,6 +7,7 @@ import ExpenseFormModal from './ExpenseFormModal.jsx'
 import MaintFuelDayList from './MaintFuelDayList.jsx'
 import PageHeader from '../../../shared/ui/PageHeader.jsx'
 import { resolveDriverOrPlateLabel } from '../../../domain/driverManagementContext.ts'
+import { defaultFuelTypeForLog } from '../../../domain/cars.ts'
 import { getExpensesForLog } from '../../../domain/expenseScope.ts'
 import { deleteExpense, saveExpenseDraft } from '../../../data/sync/expensesSave.ts'
 import { filterMonth, groupExpensesByDate, KINDS, monthTotal } from '../../../domain/expenses.ts'
@@ -27,7 +28,7 @@ import { useSession } from '../../../data/cloud/sessionContext.ts'
  * @param {(() => void)} [props.onOpenMenu]
  */
 export default function MaintFuelPage({ logId: logIdProp, onBack, onOpenMenu }) {
-  const { ownerKey } = useSession()
+  const { ownerKey, session } = useSession()
   const showToast = useToast()
   const { logId: rawLogId } = useParams()
   const logId = logIdProp ?? (rawLogId ? decodeURIComponent(rawLogId) : undefined)
@@ -63,7 +64,8 @@ export default function MaintFuelPage({ logId: logIdProp, onBack, onOpenMenu }) 
 
   function openAdd() {
     setEditingId(null)
-    setDraft(emptyExpenseDraft(kind, undefined, logId && logId !== 'main' ? logId : undefined))
+    const fresh = emptyExpenseDraft(kind, undefined, logId && logId !== 'main' ? logId : undefined)
+    setDraft(kind === 'fuel' ? { ...fresh, fuelType: defaultFuelTypeForLog(cars, logId, session?.accountType === 'employed_driver') } : fresh)
     setModalOpen(true)
   }
 

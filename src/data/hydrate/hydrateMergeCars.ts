@@ -1,4 +1,4 @@
-import { dedupeCarsById } from '../../domain/cars.ts'
+import { dedupeCarsById, isCarFuelKind } from '../../domain/cars.ts'
 import { isInsuranceSplit } from '../../domain/driverIncomeDeductions.ts'
 import { COMM_TYPES, DRIVER_PAY_MODES, INFO_TYPES, isAllowedEnum } from '../store/persistDomainEnums.ts'
 import {
@@ -65,6 +65,7 @@ export function mergeCarsFromRows(localCars: Array<LocalCar>, vehicleRows: Array
     if (raw.insuranceRate !== undefined && isStringOrFiniteNumber(raw.insuranceRate)) car.insuranceRate = raw.insuranceRate
     if (isInsuranceSplit(raw.insuranceSplit)) car.insuranceSplit = raw.insuranceSplit
     if (raw.driverShareBase === 'gross' || raw.driverShareBase === 'afterClientCommission') car.driverShareBase = raw.driverShareBase
+    if (isCarFuelKind(raw.fuelKind)) car.fuelKind = raw.fuelKind
     const logEnabled = boolOrOmit(raw.logEnabled)
     if (logEnabled !== undefined) car.logEnabled = logEnabled
     const driverLinkEnabled = boolOrOmit(raw.driverLinkEnabled)

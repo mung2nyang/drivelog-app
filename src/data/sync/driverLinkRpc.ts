@@ -102,7 +102,7 @@ export async function fetchLinkedDriverLink(userId: string): Promise<DriverLinkR
   return result.ok ? result.link : null
 }
 
-export async function fetchAssignedVehicleSummary(): Promise<Array<{ id: string, number?: string, type?: string, tonnage?: string, driver_pay_mode?: string | null, driver_salary_amount?: number | string | null, comm_enabled?: boolean | null, comm_type?: string | null, comm_value?: string | null, insurance_on?: boolean | null, driver_income_type?: string | null, withholding_on?: boolean | null, expense_rate?: string | null, insurance_rate?: string | null, driver_share_base?: string | null, insurance_split?: string | null }>> {
+export async function fetchAssignedVehicleSummary(): Promise<Array<{ id: string, number?: string, type?: string, tonnage?: string, driver_pay_mode?: string | null, driver_salary_amount?: number | string | null, comm_enabled?: boolean | null, comm_type?: string | null, comm_value?: string | null, insurance_on?: boolean | null, driver_income_type?: string | null, withholding_on?: boolean | null, expense_rate?: string | null, insurance_rate?: string | null, driver_share_base?: string | null, insurance_split?: string | null, fuel_kind?: string | null }>> {
   const { data, error } = await supabase.rpc('get_assigned_vehicle_summary')
   if (error) throw error
   return Array.isArray(data) ? data : []

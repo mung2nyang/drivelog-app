@@ -4,6 +4,7 @@ import { driverIncomeFieldsFromDraft } from './driverIncomeDeductions.ts'
 export type CarUpsertDraft = {
   number?: string
   tonnage?: string
+  fuelKind?: string
   type?: 'main' | 'sub'
   driverName?: string
   driverPhone?: string

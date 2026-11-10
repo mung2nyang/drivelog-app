@@ -11,6 +11,7 @@ export type CarLike = {
   supabaseId?: string | number
   number: string
   tonnage?: string
+  fuelKind?: '휘발유' | '경유' | '전기' | 'LPG'
   type?: 'main' | 'sub'
   commEnabled?: boolean
   commType?: string

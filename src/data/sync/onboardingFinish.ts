@@ -11,6 +11,7 @@ export type OnboardingWizard = {
   distanceOn?: boolean
   carNumber?: string
   carTonnage?: string
+  carFuelKind?: string
 }
 
 /**
@@ -62,6 +63,7 @@ export async function applyOnboardingWizard({ ownerKey, userId, cars = [], wizar
         type: 'main',
         number,
         tonnage: String(wizard?.carTonnage || '').trim(),
+        fuelKind: wizard?.carFuelKind || '',
       },
     })
     if (result.failed) {

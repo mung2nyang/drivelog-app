@@ -16,6 +16,23 @@ export function canAddDriverCar(cars: Array<CarLike> | null | undefined) {
   return (cars || []).filter((car) => car.type === 'sub').length < MAX_DRIVER_CARS
 }
 
+export const CAR_FUEL_KINDS = ['휘발유', '경유', '전기', 'LPG'] as const
+export type CarFuelKind = typeof CAR_FUEL_KINDS[number]
+
+export function isCarFuelKind(value: string | null | undefined): value is CarFuelKind {
+  return CAR_FUEL_KINDS.some((kind) => kind === value)
+}
+
+/** 일지 차량이 전기차면 주유 입력을 "전기"로 연다. 연동 기사는 배정 차량이 메인 일지다. */
+export function defaultFuelTypeForLog(cars: Array<CarLike> | null | undefined, logId: string | undefined, isEmployedDriver = false) {
+  const list = cars || []
+  const key = String(logId || '').trim()
+  const car = !key || key === 'main'
+    ? list.find((item) => item.type === 'main') ?? (isEmployedDriver ? list[0] : undefined)
+    : list.find((item) => item.number === key)
+  return car?.fuelKind === '전기' ? '전기' : '주유'
+}
+
 /**
  * 같은 id는 한 번만 남긴다(먼저 나온 항목). hydrate가 서버 행 + 미동기화 로컬을
  * 이어 붙일 때 같은 raw.id가 두 번 들어가면 React key 경고가 난다.
@@ -69,6 +86,7 @@ export function upsertCar(cars: Array<CarLike> | null | undefined, draft: CarUps
   const tonnage = String(draft.tonnage || '').trim()
   const type = draft.type === 'sub' ? 'sub' : 'main'
   const extra = driverFieldsFromDraft(draft, type)
+  const fuel = isCarFuelKind(draft.fuelKind) ? { fuelKind: draft.fuelKind } : {}
 
   const list = [...(cars || [])]
   const duplicate = list.some((car) => car.number === number && (!editingId || car.id !== editingId))
@@ -81,7 +99,9 @@ export function upsertCar(cars: Array<CarLike> | null | undefined, draft: CarUps
     if (type === 'main' && othersHaveMain) {
       return { error: '메인 차량이 이미 등록되어 있습니다.', cars }
     }
-    list[idx] = { ...list[idx], number, tonnage, type, ...extra }
+    const next: CarLike = { ...list[idx], number, tonnage, type, ...extra, ...fuel }
+    if (!fuel.fuelKind) delete next.fuelKind
+    list[idx] = next
     return { cars: list }
   }
 
@@ -95,6 +115,7 @@ export function upsertCar(cars: Array<CarLike> | null | undefined, draft: CarUps
     number,
     tonnage,
     ...extra,
+    ...fuel,
   })
   return { cars: list }
 }

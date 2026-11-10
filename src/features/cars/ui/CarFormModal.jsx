@@ -5,6 +5,7 @@ import { formatPhoneNumber, tonnageDigits, tonnageValue } from '../../../domain/
 import { formatCurrencyInput, formatPercentInput } from '../../../domain/money.ts'
 import CarDriverConnectPanel from './CarDriverConnectPanel.jsx'
 import CarDriverIncomeFields from './CarDriverIncomeFields.jsx'
+import CarFuelKindField from './CarFuelKindField.jsx'
 import ClearableInput from '../../../shared/ui/ClearableInput.jsx'
 import CurrencyInput from '../../../shared/ui/CurrencyInput.jsx'
 import FieldError, { focusField, invalidProps } from '../../../shared/ui/FieldError.jsx'
@@ -15,6 +16,7 @@ import CarShareBaseField from './CarShareBaseField.jsx'
  * @typedef {Object} CarFormDraft
  * @property {string} number
  * @property {string} tonnage
+ * @property {string} [fuelKind]
  * @property {'main'|'sub'} type
  * @property {string} driverName
  * @property {string} driverPhone
@@ -118,6 +120,7 @@ export default function CarFormModal({
           </div>
         </div>
       </div>
+      <CarFuelKindField id="newCarFuelKind" value={draft.fuelKind} onChange={(next) => setDraft({ ...draft, fuelKind: next })} />
       {isSub && (
         <>
           <div className="form-group">

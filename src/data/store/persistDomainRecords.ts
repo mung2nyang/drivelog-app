@@ -3,6 +3,7 @@ import { bool, by, finiteNumber, isPlainObject, opt, str, stringOrNumber } from 
 import {
   CAR_SETTLEMENT_MODES, COMM_TYPES, DRIVER_PAY_MODES, INFO_TYPES, PAYMENT_TERM_VALUES,
 } from './persistDomainEnums.ts'
+import { CAR_FUEL_KINDS } from '../../domain/cars.ts'
 import type { JsonValue } from '../../domain/jsonTypes.ts'
 
 // isPlainObject는 공용 조각(domain/schemaParts.ts) 것 — 이 파일에서 가져다 쓰던 곳이 많아 그대로 내보낸다.
@@ -43,7 +44,7 @@ export { PERSONAL_INFO_KEYS, BUSINESS_INFO_KEYS }
 // 칸 이름 → 그 칸이 있을 때의 모양(Valibot, 공용 조각은 domain/schemaParts.ts). 목록 밖 칸·값이 비어 있는 칸은 거부.
 const CAR = v.strictObject({
   number: str,
-  id: opt(str), supabaseId: opt(stringOrNumber), tonnage: opt(str), type: opt(v.picklist(['main', 'sub'])),
+  id: opt(str), supabaseId: opt(stringOrNumber), tonnage: opt(str), type: opt(v.picklist(['main', 'sub'])), fuelKind: opt(v.picklist(CAR_FUEL_KINDS)),
   // settlementMode: 옛 "계산서 처리 방식"(없앰) — 옛 저장분 읽기용.
   settlementMode: opt(v.picklist(CAR_SETTLEMENT_MODES)),
   commEnabled: opt(bool), commType: opt(v.picklist(COMM_TYPES)), commission: opt(stringOrNumber),

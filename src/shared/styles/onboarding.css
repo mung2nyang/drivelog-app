@@ -100,3 +100,5 @@
   text-align: center;
 }
 .onboarding-form-fields { display: flex; flex-direction: column; gap: 16px; }
+/* 연료 종류 드롭다운을 위 입력 칸과 같은 크기로. */
+.onboarding-form-fields .app-dropdown-boxed .app-dropdown-trigger { min-height: 56px; padding: 0 18px; border-radius: 18px; font-size: var(--fs-4); font-weight: var(--fw-semibold); }

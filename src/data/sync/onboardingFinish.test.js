@@ -104,6 +104,7 @@ describe('applyOnboardingWizard', () => {
         distanceOn: true,
         carNumber: '12가3456',
         carTonnage: '5',
+        carFuelKind: '전기',
       },
     })
     assert.equal(outcome.toast, undefined)
@@ -120,6 +121,7 @@ describe('applyOnboardingWizard', () => {
     assert.equal(cars[0].type, 'main')
     assert.equal(cars[0].number, '12가3456')
     assert.equal(cars[0].tonnage, '5')
+    assert.equal(cars[0].fuelKind, '전기')
   })
 
   test('차량번호가 없으면 차량은 만들지 않고 설정만 저장한다', async () => {

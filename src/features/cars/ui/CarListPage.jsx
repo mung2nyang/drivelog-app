@@ -21,7 +21,7 @@ import { useSession } from '../../../data/cloud/sessionContext.ts'
 
 /** @type {CarFormDraft} */
 const emptyDraft = {
-  number: '', tonnage: '', type: 'main', driverName: '', driverPhone: '',
+  number: '', tonnage: '', fuelKind: '', type: 'main', driverName: '', driverPhone: '',
   driverPayMode: 'revenue', driverSalaryAmount: '', commEnabled: false, commType: 'percent', commission: '',
   ...NEW_DRIVER_INCOME_DRAFT, driverShareBase: 'gross',
   inviteCode: '', inviteStartDate: '', inviteDriverId: null, connectMode: 'log',
@@ -68,6 +68,7 @@ export default function CarListPage({ onBack, onOpenMenu }) {
     setDraft({
       number: car.number,
       tonnage: car.tonnage || '',
+      fuelKind: car.fuelKind || '',
       type: car.type === 'sub' ? 'sub' : 'main',
       driverName: car.driverName || linked?.name || '',
       driverPhone: car.driverPhone || linked?.phone || '',

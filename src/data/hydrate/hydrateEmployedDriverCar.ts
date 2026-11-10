@@ -1,8 +1,9 @@
 // 서버 RPC 행 → 화면용 차량 정보로 바꾸는 순수 변환만 담는다(네트워크 호출 없음).
+import { isCarFuelKind } from '../../domain/cars.ts'
 import { driverIncomeFieldsFromDraft } from '../../domain/driverIncomeDeductions.ts'
 import type { LocalCar } from './hydrateMergeTypes.ts'
 
-export function carFromAssignedSummary(row: { id: string, number?: string, type?: string, tonnage?: string, driver_pay_mode?: string | null, driver_salary_amount?: number | string | null, comm_enabled?: boolean | null, comm_type?: string | null, comm_value?: string | number | null, insurance_on?: boolean | null, driver_income_type?: string | null, withholding_on?: boolean | null, expense_rate?: string | null, insurance_rate?: string | null, driver_share_base?: string | null, insurance_split?: string | null }): LocalCar {
+export function carFromAssignedSummary(row: { id: string, number?: string, type?: string, tonnage?: string, driver_pay_mode?: string | null, driver_salary_amount?: number | string | null, comm_enabled?: boolean | null, comm_type?: string | null, comm_value?: string | number | null, insurance_on?: boolean | null, driver_income_type?: string | null, withholding_on?: boolean | null, expense_rate?: string | null, insurance_rate?: string | null, driver_share_base?: string | null, insurance_split?: string | null, fuel_kind?: string | null }): LocalCar {
   return {
     id: `car-${row.id}`,
     number: row.number || '',
@@ -25,6 +26,7 @@ export function carFromAssignedSummary(row: { id: string, number?: string, type?
     }),
     // 매출제 기사 몫 기준 — 서버 함수 0024부터 옴. 없거나 모르는 값이면 기본(운송료 전체).
     driverShareBase: row.driver_share_base === 'afterClientCommission' ? 'afterClientCommission' : 'gross',
+    ...(isCarFuelKind(row.fuel_kind) ? { fuelKind: row.fuel_kind } : {}),
     infoType: 'existing',
     driverName: '',
     driverPhone: '',

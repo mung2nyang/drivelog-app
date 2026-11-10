@@ -32,6 +32,7 @@ const { act } = React
 const { MemoryRouter } = await import('react-router-dom')
 const { default: MaintFuelPage } = await import('./MaintFuelPage.jsx')
 const { getState } = await import('../../../data/store/app-store.ts')
+const { commitCars } = await import('../../../data/store/commitHelpers.ts')
 const { saveFailMessage } = await import('../../../shared/utils/failureMessages.js')
 
 /** 오늘 기준 offset 달의 day일 — 'YYYY-MM-DD' @param {number} offset @param {number} day */
@@ -186,5 +187,30 @@ test('저장 실패면 실패 알림이 뜨고 입력 창이 닫히지 않는다
   } finally {
     quiet.mock.restore()
     await view.cleanup()
+  }
+})
+
+/** @param {ReturnType<typeof render> extends Promise<infer V> ? V : never} view */
+async function openFuelAdd(view) {
+  await view.click(view.button('주유'))
+  await view.click(view.button('+ 추가'))
+  return [...view.container.querySelectorAll('.pill-group .pill-btn.active')].map((el) => el.textContent)
+}
+
+test('전기 차량이면 주유 추가 창이 "전기"로 열리고, 경유 차량은 "주유" 그대로', async () => {
+  commitCars('mf-ev', [{ id: 'c1', number: '11가1111', type: 'main', fuelKind: '전기' }])
+  const view = await render('mf-ev', [])
+  try {
+    assert.ok((await openFuelAdd(view)).includes('전기'))
+    assert.ok(view.container.textContent?.includes('충전량'))
+  } finally {
+    await view.cleanup()
+  }
+  commitCars('mf-diesel', [{ id: 'c2', number: '22나2222', type: 'main', fuelKind: '경유' }])
+  const other = await render('mf-diesel', [])
+  try {
+    assert.ok((await openFuelAdd(other)).includes('주유'))
+  } finally {
+    await other.cleanup()
   }
 })

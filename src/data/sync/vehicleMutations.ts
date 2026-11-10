@@ -27,6 +27,7 @@ const SAVED_TOAST = '저장했습니다.'
 export type CarSaveDraft = {
   number?: string
   tonnage?: string
+  fuelKind?: string
   type?: 'main' | 'sub'
   driverName?: string
   driverPhone?: string

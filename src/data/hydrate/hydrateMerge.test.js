@@ -217,6 +217,18 @@ describe('mergeCarsFromRows', () => {
     assert.equal('driverShareBase' in merged[2], false)
   })
 
+  test('차량 연료 종류(fuelKind)는 raw에서 꺼내고, 모르는 값·없는 값은 칸을 안 만든다', () => {
+    const rows = [
+      { id: 701, number: '22나2222', type: 'sub', raw: { fuelKind: '전기' } },
+      { id: 702, number: '33다3333', type: 'sub', raw: { fuelKind: '수소' } },
+      { id: 703, number: '44라4444', type: 'sub', raw: {} },
+    ]
+    const merged = mergeCarsFromRows([], rows)
+    assert.equal(merged[0].fuelKind, '전기')
+    assert.equal('fuelKind' in merged[1], false)
+    assert.equal('fuelKind' in merged[2], false)
+  })
+
   test('최소 서버 row는 commType을 기본값으로 정규화하고 옛 settlementMode는 안 읽는다', () => {
     const merged = mergeCarsFromRows([], [{ id: 501, number: '11가1111', type: 'main', raw: {} }])
     assert.equal('settlementMode' in merged[0], false)

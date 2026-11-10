@@ -12,3 +12,10 @@ test('서버가 준 기사 몫 기준을 차량에 담고, 없거나 모르는 �
   assert.equal(carFromAssignedSummary({ ...ROW, driver_share_base: null }).driverShareBase, 'gross')
   assert.equal(carFromAssignedSummary(ROW).driverShareBase, 'gross', '옛 서버 함수(칸 없음)')
 })
+
+test('서버가 준 차량 연료 종류를 담고, 없거나 모르는 값이면 칸을 비운다', () => {
+  assert.equal(carFromAssignedSummary({ ...ROW, fuel_kind: '전기' }).fuelKind, '전기')
+  assert.equal('fuelKind' in carFromAssignedSummary({ ...ROW, fuel_kind: '수소' }), false)
+  assert.equal('fuelKind' in carFromAssignedSummary({ ...ROW, fuel_kind: null }), false)
+  assert.equal('fuelKind' in carFromAssignedSummary(ROW), false, '옛 서버 함수(칸 없음)')
+})

@@ -14,7 +14,7 @@ const CAR = {
   infoType: 'new',
   personalInfo: { driverName: 'a', bizNumber: 'b', name: 'c', address: 'd', bizType: 'e', bizItem: 'f', email: 'g', phone: 'h', bank: 'i', account: 'j', accountHolder: 'k' },
   businessInfo: { sameAsOwner: false, name: 'a', bizNumber: 'b', representative: 'c', address: 'd', bizType: 'e', bizItem: 'f', email: 'g' },
-  driverIncomeType: 'business', withholdingOn: true, expenseRate: 43.1, insuranceRate: '0.8', driverShareBase: 'afterClientCommission', insuranceSplit: 'driver',
+  driverIncomeType: 'business', withholdingOn: true, expenseRate: 43.1, insuranceRate: '0.8', driverShareBase: 'afterClientCommission', insuranceSplit: 'driver', fuelKind: '전기',
 }
 /** 칸마다 틀린 값 — 표에서 만들지 않고 손으로 적는다. @type {Array<[string, JsonValue]>} */
 const CAR_BAD = [
@@ -25,7 +25,7 @@ const CAR_BAD = [
   ['infoType', 'x'], ['personalInfo', { junk: 'a' }], ['personalInfo', { name: 1 }], ['personalInfo', 'a'],
   ['businessInfo', { sameAsOwner: 'no' }], ['businessInfo', { name: 1 }], ['businessInfo', { junk: 'a' }],
   ['driverIncomeType', 'x'], ['withholdingOn', '1'], ['expenseRate', {}], ['insuranceRate', []],
-  ['driverShareBase', 'x'], ['driverShareBase', 1], ['insuranceSplit', 'x'], ['insuranceSplit', true],
+  ['driverShareBase', 'x'], ['driverShareBase', 1], ['insuranceSplit', 'x'], ['insuranceSplit', true], ['fuelKind', '수소'], ['fuelKind', ''],
 ]
 
 const CLIENT = {
@@ -131,6 +131,7 @@ test('글자·숫자 둘 다 받는 칸: 글자도 숫자도 통과', () => {
 test('허용 값 칸은 목록 안의 다른 값도 통과', () => {
   assert.equal(isPersistedCar({ ...CAR, type: 'main', settlementMode: 'driver_direct', commType: 'direct', driverPayMode: 'revenue', infoType: 'existing', driverIncomeType: 'employee' }), true)
   assert.equal(isPersistedCar({ ...CAR, driverShareBase: 'gross' }), true)
+  for (const fuelKind of ['휘발유', '경유', 'LPG']) assert.equal(isPersistedCar({ ...CAR, fuelKind }), true)
   assert.equal(isPersistedClient({ ...CLIENT, paymentTerm: 'second_month_end', commType: 'percent' }), true)
   assert.equal(isPersistedExpense({ ...EXPENSE, kind: 'maint' }), true)
   assert.equal(isPersistedExpense({ ...EXPENSE, kind: 'misc' }), true)

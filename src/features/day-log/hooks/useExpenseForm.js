@@ -4,7 +4,9 @@
 import { useRef, useState } from 'react'
 import { deleteExpense, saveExpenseDraft } from '../../../data/sync/expensesSave.ts'
 import { emptyExpenseDraft, expenseToDraft } from '../../../domain/expenseDraft.ts'
-import { useOwnerExpenses } from '../../../data/store/ownerDataHooks.ts'
+import { useOwnerCars, useOwnerExpenses } from '../../../data/store/ownerDataHooks.ts'
+import { useSession } from '../../../data/cloud/sessionContext.ts'
+import { defaultFuelTypeForLog } from '../../../domain/cars.ts'
 import { useToast } from '../../../shared/hooks/useToast.js'
 
 /** @typedef {import('../ui/dayLogTypes.js').ExpenseItem} ExpenseItem */
@@ -17,6 +19,8 @@ import { useToast } from '../../../shared/hooks/useToast.js'
 export function useExpenseForm(ownerKey, dateKey, logId = 'main') {
   const showToast = useToast()
   const expenses = useOwnerExpenses(ownerKey)
+  const cars = useOwnerCars(ownerKey)
+  const { session } = useSession()
   const [kindPick, setKindPick] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
   const [editingId, setEditingId] = useState(/** @type {string|null} */ (null))
@@ -35,7 +39,8 @@ export function useExpenseForm(ownerKey, dateKey, logId = 'main') {
   // preset — 운비서가 채운 처음 값(빈 칸은 기본값 그대로)
   /** @param {string} kind @param {import('../../../domain/expenseTypes.ts').ExpenseDraft} [preset] */
   function openAdd(kind, preset) {
-    const fresh = () => ({ ...emptyExpenseDraft(kind, dateKey, logId !== 'main' ? logId : undefined), ...preset })
+    const fuel = kind === 'fuel' ? { fuelType: defaultFuelTypeForLog(cars, logId, session?.accountType === 'employed_driver') } : {}
+    const fresh = () => ({ ...emptyExpenseDraft(kind, dateKey, logId !== 'main' ? logId : undefined), ...fuel, ...preset })
     if (kindPick) {
       setKindPick(false)
       setTimeout(() => {

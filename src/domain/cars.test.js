@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { describe, test } from 'node:test'
-import { MAX_DRIVER_CARS, canAddDriverCar, checkCarDraft, dedupeCarsById, upsertCar, validateDriverLinkFields } from './cars.ts'
+import { MAX_DRIVER_CARS, canAddDriverCar, checkCarDraft, dedupeCarsById, defaultFuelTypeForLog, upsertCar, validateDriverLinkFields } from './cars.ts'
 
 describe('차량 저장 — 기사명·정산·수수료', () => {
   test('차량번호 중복은 거절한다', () => {
@@ -228,5 +228,35 @@ describe('기사 차량 대수 제한', () => {
     assert.equal(canAddDriverCar([{ number: 'm', type: 'main' }, ...subs(3)]), false)
     assert.equal(canAddDriverCar(subs(4)), false)
     assert.equal(MAX_DRIVER_CARS, 3)
+  })
+})
+
+describe('차량 연료 종류', () => {
+  test('고른 연료 종류를 저장하고, 비우거나 목록 밖 값이면 칸을 뺀다', () => {
+    const created = upsertCar([], { number: '서울12가3456', type: 'main', fuelKind: '전기' })
+    assert.equal(created.cars[0].fuelKind, '전기')
+    const cleared = upsertCar(created.cars, { number: '서울12가3456', type: 'main', fuelKind: '' }, created.cars[0].id)
+    assert.equal('fuelKind' in cleared.cars[0], false)
+    assert.equal('fuelKind' in upsertCar([], { number: '1', type: 'main', fuelKind: '수소' }).cars[0], false)
+    const changed = upsertCar(created.cars, { number: '서울12가3456', type: 'main', fuelKind: 'LPG' }, created.cars[0].id)
+    assert.equal(changed.cars[0].fuelKind, 'LPG')
+  })
+
+  test('일지 차량이 전기차일 때만 주유 입력을 "전기"로 연다', () => {
+    /** @type {Array<import('./financeTypes.ts').CarLike>} */
+    const cars = [{ number: '11가1111', type: 'main', fuelKind: '경유' }, { number: '22나2222', type: 'sub', fuelKind: '전기' }]
+    assert.equal(defaultFuelTypeForLog(cars, '22나2222'), '전기')
+    assert.equal(defaultFuelTypeForLog(cars, 'main'), '주유')
+    assert.equal(defaultFuelTypeForLog(cars, undefined), '주유')
+    assert.equal(defaultFuelTypeForLog([{ number: '11가1111', type: 'main', fuelKind: '전기' }], 'main'), '전기')
+    assert.equal(defaultFuelTypeForLog([{ number: '22나2222', type: 'sub' }], '22나2222'), '주유')
+    assert.equal(defaultFuelTypeForLog(null, 'main'), '주유')
+  })
+
+  test('연동 기사는 메인 차량이 없으면 배정 차량을 메인 일지로 본다', () => {
+    /** @type {Array<import('./financeTypes.ts').CarLike>} */
+    const assigned = [{ number: '22나2222', type: 'sub', fuelKind: '전기' }]
+    assert.equal(defaultFuelTypeForLog(assigned, 'main', true), '전기')
+    assert.equal(defaultFuelTypeForLog(assigned, 'main', false), '주유')
   })
 })

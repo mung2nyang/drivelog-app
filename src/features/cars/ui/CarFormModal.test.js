@@ -135,3 +135,28 @@ test('로드맵 61 — 저장된 기준으로 열면 그 값, 월급제·메인 
     try { assert.equal(view.container.querySelector('#newCarShareBase'), null, JSON.stringify([draft.type, draft.commType, draft.driverPayMode])) } finally { await view.cleanup() }
   }
 })
+
+test('연료 종류 드롭다운: 처음엔 "선택 안 함", 전기를 고르면 저장 값에 담기고 "선택 안 함"이면 비운다', async () => {
+  const view = await render({ ...EMPTY, number: '12가3456', fuelKind: '' })
+  try {
+    const trigger = /** @type {HTMLButtonElement} */ (view.container.querySelector('#newCarFuelKind'))
+    assert.equal(trigger.textContent?.trim(), '선택 안 함')
+    /** @param {string} label */
+    const pick = async (label) => {
+      await act(async () => { trigger.click() })
+      const options = [...view.container.querySelectorAll('[role="option"]')]
+      assert.deepEqual(options.map((el) => el.textContent?.trim()), ['선택 안 함', '휘발유', '경유', '전기', 'LPG'])
+      const option = /** @type {HTMLElement} */ (options.find((el) => el.textContent?.trim() === label))
+      await act(async () => { option.click() })
+    }
+    await pick('전기')
+    assert.equal(trigger.textContent?.trim(), '전기')
+    await view.save()
+    assert.equal(view.saves.at(-1)?.fuelKind, '전기')
+    await pick('선택 안 함')
+    await view.save()
+    assert.equal(view.saves.at(-1)?.fuelKind, '')
+  } finally {
+    await view.cleanup()
+  }
+})

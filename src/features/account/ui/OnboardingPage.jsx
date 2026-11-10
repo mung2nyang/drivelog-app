@@ -3,6 +3,7 @@ import { useRef, useState } from 'react'
 import { assetPath } from '../../../shared/utils/assetPath.js'
 import { tonnageDigits, tonnageValue } from '../../../domain/formatPhone.ts'
 import ClearableInput from '../../../shared/ui/ClearableInput.jsx'
+import CarFuelKindField from '../../cars/ui/CarFuelKindField.jsx'
 
 /** @typedef {import('../../../data/sync/onboardingFinish.ts').OnboardingWizard} OnboardingWizard */
 
@@ -26,6 +27,7 @@ export default function OnboardingPage({ accountType: _accountType, onFinish }) 
     distanceOn: false,
     carNumber: '',
     carTonnage: '',
+    carFuelKind: '',
   }))
 
   const step = STEP_SEQUENCE[stepIndex]
@@ -143,6 +145,7 @@ export default function OnboardingPage({ accountType: _accountType, onFinish }) 
                   <span className="unit-input-suffix">톤</span>
                 </div>
               </div>
+              <CarFuelKindField id="onboardingCarFuelKind" groupClassName="auth-field" value={wizard.carFuelKind} onChange={(next) => setWizard({ ...wizard, carFuelKind: next })} />
             </div>
           </div>
         )}

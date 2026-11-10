@@ -19,7 +19,7 @@ const PLACE_MAX = 100
 // 앱 domain/expenses.ts 목록과 같게 — 서버는 앱 파일을 못 읽는다.
 const MAINT_CATEGORIES = ['엔진/미션', '판금/도장', '소모품', '기타']
 const MISC_CATEGORIES = ['통행료', '주차비', '과태료', '기타']
-const FUEL_TYPES = ['주유', '요소수', '기타']
+const FUEL_TYPES = ['주유', '요소수', '전기', '기타']
 const PAYMENTS = ['카드', '현금']
 
 export function record(value: Json | undefined): { [key: string]: Json } | null {

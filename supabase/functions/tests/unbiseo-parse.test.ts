@@ -107,6 +107,10 @@ Deno.test('지출: 목록 밖 분류·결제는 빈 값', () => {
   assert.equal(expenseOf({ ...EXPENSE, expenseType: 'misc', category: '통행료', payment: '현금' }).category, '통행료')
 })
 
+Deno.test('지출: 전기 종류는 그대로 받는다', () => {
+  assert.equal(expenseOf({ ...EXPENSE, name: '전기 충전', cost: 30000, fuelType: '전기' }).fuelType, '전기')
+})
+
 Deno.test('지출: 주유가 아니면 주유 종류는 빈 값', () => {
   assert.equal(expenseOf({ ...EXPENSE, expenseType: 'misc', fuelType: '주유' }).fuelType, '')
 })

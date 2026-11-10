@@ -51,6 +51,10 @@ jobs:
         if: ${{ !cancelled() }}
         run: npm run depcheck
 
+      - name: CSS 이름표 구역 검사 (npm run csscheck)
+        if: ${{ !cancelled() }}
+        run: npm run csscheck
+
       - name: 코드 검사 (npm run lint)
         if: ${{ !cancelled() }}
         run: npm run lint

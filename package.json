@@ -8,6 +8,7 @@
     "build": "vite build",
     "lint": "oxlint --deny-warnings",
     "depcheck": "depcruise src --config .dependency-cruiser.cjs",
+    "csscheck": "node scripts/css-owner-check.mjs",
     "typecheck": "tsc --noEmit",
     "typecheck:strict-inventory": "tsc -p tsconfig.strict-inventory.json --noEmit",
     "test": "npm run test:unit && npm run test:app",

@@ -41,7 +41,7 @@ describe('Step 9 ② 1차: 계정별 화면 권한 정리 UI 검증', () => {
         root.render(
           withSession(React.createElement(MyPage, {
             onOpen: () => {},
-          }), { ownerKey, session: /** @type {any} */ ({ accountType: 'employed_driver', name: '홍길동' }) }),
+          }), { ownerKey, session: { accountType: 'employed_driver', name: '홍길동' } }),
         )
       })
 
@@ -53,7 +53,7 @@ describe('Step 9 ② 1차: 계정별 화면 권한 정리 UI 검증', () => {
         root.render(
           withSession(React.createElement(MyPage, {
             onOpen: () => {},
-          }), { ownerKey, session: /** @type {any} */ ({ accountType: 'owner_driver', name: '홍길동' }) }),
+          }), { ownerKey, session: { accountType: 'owner_driver', name: '홍길동' } }),
         )
       })
 
@@ -124,7 +124,7 @@ describe('Step 9 ② 1차: 계정별 화면 권한 정리 UI 검증', () => {
           React.createElement(MemoryRouter, null,
             withSession(React.createElement(CarListPage, {
               onBack: () => {},
-            }), { ownerKey, session: /** @type {any} */ ({ accountType: 'employed_driver' }) }),
+            }), { ownerKey, session: { accountType: 'employed_driver' } }),
           ),
         )
       })
@@ -141,7 +141,7 @@ describe('Step 9 ② 1차: 계정별 화면 권한 정리 UI 검증', () => {
           React.createElement(MemoryRouter, null,
             withSession(React.createElement(CarListPage, {
               onBack: () => {},
-            }), { ownerKey, session: /** @type {any} */ ({ accountType: 'owner_driver' }) }),
+            }), { ownerKey, session: { accountType: 'owner_driver' } }),
           ),
         )
       })

@@ -59,16 +59,25 @@ function reset() {
   speakHangs = false
 }
 
-/** @param {() => unknown} useHook */
+/**
+ * @template T
+ * @param {() => T} useHook
+ */
 async function mount(useHook) {
-  /** @type {{ current: any }} */
-  const latest = { current: null }
+  /** @type {T | undefined} */
+  let value
   function Harness() {
-    latest.current = useHook()
+    value = useHook()
     return null
   }
   const root = createRoot(document.createElement('div'))
   await act(async () => { root.render(React.createElement(Harness)) })
+  const latest = {
+    get current() {
+      if (value === undefined) throw new Error('훅이 아직 그려지지 않았다')
+      return value
+    },
+  }
   return { latest, async unmount() { await act(async () => { root.unmount() }) } }
 }
 

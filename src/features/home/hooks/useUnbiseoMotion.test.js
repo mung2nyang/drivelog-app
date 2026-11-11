@@ -22,12 +22,18 @@ const idle = { speaking: false, answer: null, busy: false, listening: false, tex
 
 /** @param {Partial<Watched>} [first] */
 async function mount(first = {}) {
-  /** @type {{ current: any }} */
-  const latest = { current: null }
+  /** @type {ReturnType<typeof useUnbiseoMotion> | undefined} */
+  let value
   let watched = { ...idle, ...first }
   function Harness() {
-    latest.current = useUnbiseoMotion(watched)
+    value = useUnbiseoMotion(watched)
     return null
+  }
+  const latest = {
+    get current() {
+      if (value === undefined) throw new Error('훅이 아직 그려지지 않았다')
+      return value
+    },
   }
   const root = createRoot(document.createElement('div'))
   /** @param {Partial<Watched>} change */

@@ -10,6 +10,7 @@
     "depcheck": "depcruise src --config .dependency-cruiser.cjs",
     "csscheck": "node scripts/css-owner-check.mjs",
     "typecheck": "tsc --noEmit",
+    "typecheck:ban": "node scripts/type-ban-check.mjs",
     "typecheck:strict-inventory": "tsc -p tsconfig.strict-inventory.json --noEmit",
     "test": "npm run test:unit && npm run test:app",
     "test:unit": "node --experimental-test-module-mocks --test-timeout=60000 --test \"src/domain/**/*.test.js\" \"src/data/**/*.test.js\"",

@@ -33,7 +33,7 @@ describe('remapEmployedDriverWorkLogs', () => {
   })
 
   test('cars null/undefined 도 { main: {} }', () => {
-    assert.deepEqual(remapEmployedDriverWorkLogs({ main: { a: /** @type {any} */ ({}) } }, null), { main: {} })
+    assert.deepEqual(remapEmployedDriverWorkLogs({ main: { a: {} } }, null), { main: {} })
     assert.deepEqual(remapEmployedDriverWorkLogs(undefined, undefined), { main: {} })
   })
 

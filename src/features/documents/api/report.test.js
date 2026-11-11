@@ -1,6 +1,7 @@
 // @ts-check
 import assert from 'node:assert/strict'
 import { describe, test } from 'node:test'
+import { EMPTY_PROFILE } from '../../../data/sync/profileSave.ts'
 import {
   buildDetailReportFileName,
   buildReportFileName,
@@ -174,8 +175,7 @@ describe('getDetailReportClientContact', () => {
 })
 
 describe('buildMonthReport', () => {
-  /** @type {any} */
-  const profile = { name: '차주' }
+  const profile = { ...EMPTY_PROFILE, name: '차주' }
   /** @type {Array<import('../../../domain/financeTypes.ts').CarLike>} */
   const cars = [{ id: 'm1', type: 'main', number: '12가3456' }]
   const settings = { fixedOn: true }
@@ -363,7 +363,7 @@ describe('buildReportDayRows', () => {
     const workData = { '2026-09-01': { fixedCount: 2, palletCount: 1 } }
     const report = buildMonthReport(
       'test-days-field', 2026, 8, [], [{ id: 'm1', type: 'main', number: '1' }],
-      { fixedOn: true }, workData, clients, /** @type {any} */ ({ name: 'a' }),
+      { fixedOn: true }, workData, clients, { ...EMPTY_PROFILE, name: 'a' },
     )
     assert.equal(report.showPallet, true)
     assert.equal(report.days.length, 1)

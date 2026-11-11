@@ -55,6 +55,10 @@ jobs:
         if: ${{ !cancelled() }}
         run: npm run csscheck
 
+      - name: 금지 타입 표기 검사 (npm run typecheck:ban)
+        if: ${{ !cancelled() }}
+        run: npm run typecheck:ban
+
       - name: 코드 검사 (npm run lint)
         if: ${{ !cancelled() }}
         run: npm run lint

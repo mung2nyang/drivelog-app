@@ -25,7 +25,7 @@ const { clientToDraft } = await import('../../../domain/clientDraft.ts')
 
 const BASE = { managerName: '김담당', phone: '010-1111-2222', bizNumber: '123-45-67891', paymentTerm: 'next_month_end', taxEmail: 'a@b.kr', isPinned: true }
 
-/** @param {string} owner @param {Array<Record<string, unknown>>} clients @param {Record<string, unknown>} [settings] */
+/** @param {string} owner @param {Parameters<typeof commitClients>[1]} clients @param {Parameters<typeof normalizeSettings>[0]} [settings] */
 function seed(owner, clients, settings = { fixedOn: true, subFixedOn: true }) {
   commitSettings(owner, normalizeSettings(settings))
   commitClients(owner, clients)
@@ -33,10 +33,10 @@ function seed(owner, clients, settings = { fixedOn: true, subFixedOn: true }) {
 
 /** @param {string} owner */
 function clientsOf(owner) {
-  return /** @type {Array<Record<string, unknown>>} */ (getState().clients[owner] || [])
+  return getState().clients[owner] || []
 }
 
-/** @param {string} owner @param {string} path @param {Record<string, unknown>|null} [session] */
+/** @param {string} owner @param {string} path @param {import('../../../data/sync/syncTypes.ts').AppSession|null} [session] */
 async function render(owner, path, session = null) {
   /** @type {Array<string>} */
   const toasts = []

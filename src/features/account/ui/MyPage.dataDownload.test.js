@@ -17,7 +17,7 @@ const { createRoot } = await import('react-dom/client')
 const { act } = React
 const { default: MyPage } = await import('./MyPage.jsx')
 
-/** @param {Record<string, unknown>|null} session */
+/** @param {import('../../../data/sync/syncTypes.ts').AppSession|null} session */
 async function render(session) {
   const container = document.createElement('div')
   document.body.appendChild(container)

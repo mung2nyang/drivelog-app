@@ -35,7 +35,7 @@ describe('requestSupportInquirySave — Step 10 5-2', () => {
 
   test('성공 시 support_inquiries insert 1회 + 성공 토스트', async () => {
     beginReady('user-inq-1', 'user-inq-1')
-    /** @type {Array<Record<string, unknown>>} */
+    /** @type {Array<import('../../../testSupport/fakeSupabaseClient.js').EqFilters | import('../../../domain/jsonTypes.ts').JsonRecord>} */
     const inserted = []
     handlers.support_inquiries = {
       insert: (payload) => {
@@ -91,7 +91,7 @@ describe('requestSupportInquirySave — Step 10 5-2', () => {
 describe('fetchMyInquiries — Step 10 5-3', () => {
   test('성공 시 user_id 필터·최신순 배열을 반환한다', async () => {
     beginReady('user-list-1', 'user-list-1')
-    /** @type {Array<Record<string, unknown>>} */
+    /** @type {Array<import('../../../testSupport/fakeSupabaseClient.js').EqFilters | import('../../../domain/jsonTypes.ts').JsonRecord>} */
     const filtersSeen = []
     handlers.support_inquiries = {
       select: (filters) => {

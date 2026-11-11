@@ -4,9 +4,9 @@
 import assert from 'node:assert/strict'
 import { mock, test } from 'node:test'
 
-/** @type {Array<Record<string, unknown>>} */
+/** @type {Array<import('../../../domain/jsonTypes.ts').JsonRecord>} */
 let cars = []
-/** @type {Array<Record<string, unknown>>} */
+/** @type {Array<import('../../../domain/jsonTypes.ts').JsonRecord>} */
 let drivers = []
 /** @type {Record<string, Record<string, object>>} */
 let workLogs = {}

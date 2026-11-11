@@ -15,7 +15,7 @@ const { createRoot } = await import('react-dom/client')
 const { act } = React
 const { default: SettlementSummaryCard } = await import('./SettlementSummaryCard.jsx')
 
-/** @param {Record<string, unknown>|null} detail */
+/** @param {Parameters<typeof SettlementSummaryCard>[0]['detail']} detail */
 async function render(detail) {
   const container = document.createElement('div')
   document.body.appendChild(container)
@@ -48,7 +48,7 @@ test('매출제 20% 사업소득자(둘 다 ON): 운송료 1,000,000 → 정산�
 })
 
 test('월급제 둘 다 OFF: 산재·원천징수 줄이 없고 월급 그대로', async () => {
-  const car = { number: '12가3456', driverPayMode: 'salary', driverSalaryAmount: '2000000', driverIncomeType: 'employee', insuranceOn: false, withholdingOn: false }
+  const car = /** @type {const} */ ({ number: '12가3456', driverPayMode: 'salary', driverSalaryAmount: '2000000', driverIncomeType: 'employee', insuranceOn: false, withholdingOn: false })
   const view = await render({ tripCount: 1, totalFare: 500000, commissionAmount: 0, car })
   try {
     assert.equal(view.rows['기사 정산금'], '2,000,000원')

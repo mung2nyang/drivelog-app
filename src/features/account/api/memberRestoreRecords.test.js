@@ -3,15 +3,15 @@
 import assert from 'node:assert/strict'
 import { mock, test } from 'node:test'
 
-/** @type {Array<Record<string, unknown>>} */
+/** @type {ReturnType<typeof import('../../../data/store/ownerDataHooks.ts').readOwnerClients>} */
 let clients = []
-/** @type {Array<Record<string, unknown>>} */
+/** @type {ReturnType<typeof import('../../../data/store/ownerDataHooks.ts').readOwnerExpenses>} */
 let expenses = []
-/** @type {Array<Record<string, unknown>>} */
+/** @type {ReturnType<typeof import('../../../data/store/ownerDataHooks.ts').readOwnerInvoices>} */
 let invoices = []
-/** @type {Array<{ next: Array<Record<string, unknown>>, changedIds: string[] }>} */
+/** @type {Array<Parameters<typeof import('../../../data/sync/clientCloudSave.ts').saveClientsToCloud>[0]>} */
 const clientSaves = []
-/** @type {Array<Array<Record<string, unknown>>>} */
+/** @type {Array<Parameters<typeof import('../../../data/sync/expensesSave.ts').saveExpenses>[1]>} */
 const expenseSaves = []
 let failExpenses = false
 
@@ -34,7 +34,7 @@ mock.module('../../../data/store/ownerDataHooks.ts', {
 mock.module('../../../data/cloud/cloudSession.ts', { namedExports: { getCloudUserId: () => 'o-1' } })
 mock.module('../../../data/sync/clientCloudSave.ts', {
   namedExports: {
-    saveClientsToCloud: async (/** @type {{ next: Array<Record<string, unknown>>, changedIds: string[] }} */ args) => {
+    saveClientsToCloud: async (/** @type {Parameters<typeof import('../../../data/sync/clientCloudSave.ts').saveClientsToCloud>[0]} */ args) => {
       clientSaves.push(args)
       return { clients: args.next, toast: null, failed: false }
     },
@@ -42,7 +42,7 @@ mock.module('../../../data/sync/clientCloudSave.ts', {
 })
 mock.module('../../../data/sync/expensesSave.ts', {
   namedExports: {
-    saveExpenses: async (/** @type {string} */ _owner, /** @type {Array<Record<string, unknown>>} */ items) => {
+    saveExpenses: async (/** @type {string} */ _owner, /** @type {Parameters<typeof import('../../../data/sync/expensesSave.ts').saveExpenses>[1]} */ items) => {
       expenseSaves.push(items)
       if (failExpenses) throw new Error('network')
     },

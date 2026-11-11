@@ -14,7 +14,7 @@ let onServer = {}
 let fetchFails = false
 /** @type {Array<Array<string|number>>} */
 const fetched = []
-/** @type {Array<Record<string, unknown>>} */
+/** @type {Array<Parameters<typeof import('../../../data/sync/dailyInspections.ts').saveDailyInspection>[0]>} */
 const saved = []
 let failOnSave = 0
 
@@ -33,7 +33,7 @@ mock.module('../../../data/sync/dailyInspections.ts', {
       if (fetchFails) throw new Error('network')
       return onServer
     },
-    saveDailyInspection: async (/** @type {Record<string, unknown>} */ input) => {
+    saveDailyInspection: async (/** @type {Parameters<typeof import('../../../data/sync/dailyInspections.ts').saveDailyInspection>[0]} */ input) => {
       if (failOnSave && saved.length + 1 === failOnSave) throw new Error('network')
       saved.push(input)
     },

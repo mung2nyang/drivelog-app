@@ -20,7 +20,7 @@ async function mount({ reduce = false } = {}) {
   Reflect.set(window, 'matchMedia', (/** @type {string} */ query) => ({ matches: reduce && query.includes('reduced-motion') }))
   /** @type {Array<{ block?: string, behavior?: string }>} */
   const calls = []
-  const proto = /** @type {{ scrollIntoView?: unknown }} */ (window.HTMLElement.prototype)
+  const proto = /** @type {{ scrollIntoView?: (options: { block?: string, behavior?: string }) => void }} */ (window.HTMLElement.prototype)
   const original = proto.scrollIntoView
   proto.scrollIntoView = function scrollIntoView(/** @type {{ block?: string, behavior?: string }} */ options) { calls.push(options) }
   const container = document.createElement('div')

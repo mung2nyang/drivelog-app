@@ -25,7 +25,7 @@ const { default: CallDetailForm } = await import('./CallDetailForm.jsx')
 const noop = () => {}
 const PAYMENT_ON_SETTINGS = normalizeSettings({ paymentOn: true })
 
-/** @param {Record<string, unknown>} props */
+/** @param {Partial<Parameters<typeof CallDetailForm>[0]>} props */
 async function mount(props) {
   const container = document.createElement('div')
   document.body.appendChild(container)
@@ -98,15 +98,15 @@ test('운송료 이름표 "(부가세 별도)"는 보통 공백 — 큰 글씨�
 })
 
 test('부가세 포함 미리보기는 원 미만 버림 — 15,555원이면 17,110원(로드맵 102)', async () => {
-  const view = await mount({ value: { fare: '15,555', client: '' } })
+  const view = await mount({ value: { id: 'c1', fare: '15,555', client: '' } })
   try {
     assert.equal((view.container.textContent || '').match(/부가세 포함 [\d,]+원/)?.[0], '부가세 포함 17,110원')
   } finally { await view.cleanup() }
 })
 
 test('부가세 미리보기는 면세 체크와 같은 줄 오른쪽, 면세면 "부가세 0원", 공급가액 안내는 (i) 속에만', async () => {
-  const view = await mount({ value: { fare: '100,000', client: '' } })
-  const exempt = await mount({ value: { fare: '100,000', client: '', vatExempt: true } })
+  const view = await mount({ value: { id: 'c1', fare: '100,000', client: '' } })
+  const exempt = await mount({ value: { id: 'c1', fare: '100,000', client: '', vatExempt: true } })
   try {
     const row = view.container.querySelector('.call-vat-row')
     assert.ok(row?.querySelector('#callVatExempt'))
@@ -117,7 +117,7 @@ test('부가세 미리보기는 면세 체크와 같은 줄 오른쪽, 면세면
 })
 
 test('면세 옆 (i)를 누르면 공급가액 안내가 펼쳐지고 면세 체크는 그대로다', async () => {
-  const view = await mount({ value: { fare: '100,000', client: '' } })
+  const view = await mount({ value: { id: 'c1', fare: '100,000', client: '' } })
   try {
     const button = /** @type {HTMLButtonElement|null} */ (view.container.querySelector('.call-vat-row button[aria-label="부가세 입력 설명 보기"]'))
     assert.ok(button)

@@ -14,7 +14,7 @@ let serverRecord = null
 let failFetch = false
 /** @type {Promise<null>|null} */
 let holdFetch = null
-/** @type {Array<Record<string, unknown>>} */
+/** @type {Array<Parameters<typeof import('../../../data/sync/dailyInspections.ts').saveDailyInspection>[0]>} */
 let saved = []
 /** @type {Array<{ vehicleId: string|number, workDate: string }>} */
 let deleted = []
@@ -25,7 +25,7 @@ let holdDelete = null
 mock.module('../../../data/sync/dailyInspections.ts', {
   namedExports: {
     fetchDailyInspection: async () => { if (holdFetch) return holdFetch; if (failFetch) throw new Error('down'); return serverRecord },
-    saveDailyInspection: async (/** @type {Record<string, unknown>} */ input) => { saved.push(input) },
+    saveDailyInspection: async (/** @type {Parameters<typeof import('../../../data/sync/dailyInspections.ts').saveDailyInspection>[0]} */ input) => { saved.push(input) },
     deleteDailyInspection: async (/** @type {{ vehicleId: string|number, workDate: string }} */ input) => { if (holdDelete) await holdDelete; if (deleteError) throw deleteError; deleted.push(input) },
   },
 })

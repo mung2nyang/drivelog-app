@@ -75,13 +75,13 @@
   margin: 4px 0 2px;
 }
 
-.management-badge.car-type {
+.car-type.management-badge {
   border: 1px solid var(--sub-text-color);
   color: var(--sub-text-color);
   background: transparent;
 }
 
-.management-badge.car-type.main {
+.car-type.management-badge.main {
   border-color: var(--primary-color);
   color: var(--primary-color);
 }

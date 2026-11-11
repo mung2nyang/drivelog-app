@@ -1,4 +1,5 @@
 // CSS 규칙 맨 앞 이름표가 두 구역(공용, 기능 폴더마다)에서 정의되면 실패한다 — 예외는 아래 목록만.
+// 화면이 공용 부품 모양을 바꿀 때는 화면 이름표를 맨 앞에 쓴다(예: .active-off.toggle-btn).
 import fs from 'node:fs'
 import path from 'node:path'
 
@@ -10,16 +11,11 @@ const ALLOWED = {
   'app-settings-page': ['src/features/settings/ui/app-settings-groups.css', 'src/shared/styles/management-common.css', 'src/shared/styles/modal-form.css'],
   'car-modal': ['src/features/cars/ui/car-management.css', 'src/shared/styles/modal-form.css'],
   'maint-fuel-page': ['src/features/expenses/ui/maint-fuel.css', 'src/shared/styles/management-common.css'],
-  'management-badge': ['src/features/receivables/ui/receivables.css', 'src/shared/styles/management-common.css'],
-  'management-list-card': ['src/features/cars/ui/car-management.css', 'src/shared/styles/management-common.css'],
   'message-settings-textarea': ['src/features/settings/ui/message-settings.css', 'src/shared/styles/modal-form.css'],
-  'modal-content': ['src/features/expenses/ui/expense-form.css', 'src/shared/styles/controls-common.css', 'src/shared/styles/modal-base.css'],
   'personal-info-page': ['src/features/account/ui/PersonalInfoPage.css', 'src/shared/styles/management-common.css', 'src/shared/styles/modal-form.css'],
   'receivables-page': ['src/features/receivables/ui/receivables.css', 'src/shared/styles/management-common.css'],
   'report-page-wrap': ['src/features/documents/ui/report.css', 'src/shared/styles/management-common.css'],
   'revenue-detail-head': ['src/features/revenue/ui/revenue.css', 'src/shared/styles/app-shell-base.css'],
-  'setting-item': ['src/features/settings/ui/app-settings.css', 'src/shared/styles/controls-common.css'],
-  'toggle-btn': ['src/features/day-log/ui/day-log-shell.css', 'src/shared/styles/controls-common.css', 'src/shared/styles/shared-controls.css'],
 }
 
 function cssFiles(dir) {

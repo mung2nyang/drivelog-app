@@ -97,7 +97,7 @@
   margin-bottom: 16px;
 }
 
-.toggle-btn.active-off {
+.active-off.toggle-btn {
   background-color: var(--off-badge-bg);
   color: var(--off-badge-text);
   border-color: var(--off-badge-bg);

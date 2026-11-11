@@ -2,8 +2,8 @@
    테마 버튼 아이콘 정렬 + 고정노선/운행횟수 프리셋 편집기(RunCountChips.jsx/
    RoutePresetEditor.jsx, AppSettingsPage.jsx에서만 렌더) 전용. */
 
-.setting-item.fixed-route-preset-setting,
-.setting-item.run-count-preset-setting {
+.fixed-route-preset-setting.setting-item,
+.run-count-preset-setting.setting-item {
   flex-direction: column;
   align-items: stretch;
   justify-content: flex-start;
@@ -184,7 +184,7 @@
 .settings-row-guide { margin: 4px 0 0; color: var(--sub-text-color); font-size: var(--fs-floor); line-height: 1.5; text-align: left; }
 
 /* 고정 노선 거래처 연결 줄(FixedRouteClientLink) — 요약 + 버튼, 입력은 팝업(FixedRouteClientModal) */
-.setting-item.fixed-route-client-setting { flex-direction: column; align-items: stretch; gap: 0; }
+.fixed-route-client-setting.setting-item { flex-direction: column; align-items: stretch; gap: 0; }
 .fixed-route-client-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-top: 7px; }
 .fixed-route-client-summary-copy { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; min-width: 0; font-size: var(--fs-2); }
 .fixed-route-client-summary-copy strong { font-weight: var(--fw-medium); }

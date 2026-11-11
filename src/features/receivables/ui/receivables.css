@@ -140,3 +140,7 @@
 .receivable-complete-btn {
   background: color-mix(in srgb, var(--primary-color) 10%, var(--card-bg));
 }
+
+.receivables-page {
+  text-align: left;
+}

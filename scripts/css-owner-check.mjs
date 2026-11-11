@@ -8,14 +8,6 @@ const SRC = path.join(ROOT, 'src')
 
 /** 이미 겹쳐 있던 이름표 → 허용 파일. 정리하면 여기서 지운다. */
 const ALLOWED = {
-  'app-settings-page': ['src/features/settings/ui/app-settings-groups.css', 'src/shared/styles/management-common.css', 'src/shared/styles/modal-form.css'],
-  'car-modal': ['src/features/cars/ui/car-management.css', 'src/shared/styles/modal-form.css'],
-  'maint-fuel-page': ['src/features/expenses/ui/maint-fuel.css', 'src/shared/styles/management-common.css'],
-  'message-settings-textarea': ['src/features/settings/ui/message-settings.css', 'src/shared/styles/modal-form.css'],
-  'personal-info-page': ['src/features/account/ui/PersonalInfoPage.css', 'src/shared/styles/management-common.css', 'src/shared/styles/modal-form.css'],
-  'receivables-page': ['src/features/receivables/ui/receivables.css', 'src/shared/styles/management-common.css'],
-  'report-page-wrap': ['src/features/documents/ui/report.css', 'src/shared/styles/management-common.css'],
-  'revenue-detail-head': ['src/features/revenue/ui/revenue.css', 'src/shared/styles/app-shell-base.css'],
 }
 
 function cssFiles(dir) {

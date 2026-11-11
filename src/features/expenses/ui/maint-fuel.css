@@ -157,3 +157,7 @@
   color: var(--text-color);
   font-size: var(--fs-4);
 }
+
+.maint-fuel-page {
+  text-align: left;
+}

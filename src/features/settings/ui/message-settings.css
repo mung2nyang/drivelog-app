@@ -12,3 +12,4 @@
 .message-settings-actions button { min-height: var(--btn-height); margin: 0; border-radius: var(--btn-radius); font: inherit; font-size: var(--btn-font); font-weight: var(--btn-weight); cursor: pointer; }
 .message-settings-reset { border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-color); box-shadow: var(--shadow-sm); }
 .message-settings-save { border: 1px solid var(--primary-fill); background: var(--primary-fill); color: #ffffff; }
+.message-settings-textarea[aria-invalid='true'] { border-color: var(--sunday-color); outline: 2px solid var(--sunday-color); outline-offset: -2px; }

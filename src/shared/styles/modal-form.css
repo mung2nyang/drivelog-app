@@ -1,6 +1,5 @@
-/* 모달 폼 공통 — car-modal/client-modal shell + form-group/label/input-box. App.jsx가 shared-controls.css 다음에 import. */
+/* 모달 폼 공통 — client-modal 껍데기 + form-group/label/input-box. App.jsx가 shared-controls.css 다음에 import. */
 
-.car-modal,
 .client-modal {
   width: min(92vw, 360px);
   max-height: min(82vh, 640px);
@@ -8,19 +7,13 @@
   text-align: left;
 }
 
-.car-modal .form-group,
 .client-modal .form-group,
-.personal-info-page .form-group,
-.app-settings-page .form-group,
 .report-picker-modal .form-group {
   margin-bottom: 14px;
   text-align: left;
 }
 
-.car-modal .form-group label,
 .client-modal .form-group label,
-.personal-info-page .form-group label,
-.app-settings-page .form-group label,
 .report-picker-modal .form-group label {
   display: block;
   margin-bottom: 8px;
@@ -29,10 +22,7 @@
   font-weight: var(--fw-bold);
 }
 
-.car-modal .input-box,
 .client-modal .input-box,
-.personal-info-page .input-box,
-.app-settings-page .input-box,
 .report-picker-modal .input-box {
   text-align: left;
 }
@@ -143,7 +133,6 @@
 /* 입력이 잘못된 칸(FieldError.jsx) — 화면 읽기용 "잘못됨" 표시를 빨간 테두리로, 커서가 있어도 빨강 */
 .input-box[aria-invalid='true'],
 .app-temporal-trigger[aria-invalid='true'],
-.message-settings-textarea[aria-invalid='true'],
 .car-commission-input:has([aria-invalid='true']) {
   border-color: var(--sunday-color);
   outline: 2px solid var(--sunday-color);

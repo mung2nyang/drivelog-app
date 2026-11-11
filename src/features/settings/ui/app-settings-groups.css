@@ -133,3 +133,24 @@
     align-self: flex-end;
   }
 }
+
+.app-settings-page {
+  text-align: left;
+}
+
+.app-settings-page .form-group {
+  margin-bottom: 14px;
+  text-align: left;
+}
+
+.app-settings-page .form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--text-color);
+  font-size: var(--fs-3);
+  font-weight: var(--fw-bold);
+}
+
+.app-settings-page .input-box {
+  text-align: left;
+}

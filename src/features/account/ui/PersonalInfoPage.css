@@ -71,3 +71,24 @@
   border: 0;
   border-top: 1px solid var(--border-color);
 }
+
+.personal-info-page {
+  text-align: left;
+}
+
+.personal-info-page .form-group {
+  margin-bottom: 14px;
+  text-align: left;
+}
+
+.personal-info-page .form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--text-color);
+  font-size: var(--fs-3);
+  font-weight: var(--fw-bold);
+}
+
+.personal-info-page .input-box {
+  text-align: left;
+}

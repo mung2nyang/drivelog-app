@@ -151,3 +151,9 @@
   color: var(--sub-text-color);
   font-size: var(--fs-2);
 }
+
+/* 카드 폭 전체 줄 버튼은 93%로 줄면 양옆이 크게 움찔해 아주 살짝만 줄인다. */
+.revenue-detail-head:not(:disabled):active { scale: 0.98; }
+@media (prefers-reduced-motion: reduce) {
+  .revenue-detail-head:not(:disabled):active { scale: none; opacity: 0.75; }
+}

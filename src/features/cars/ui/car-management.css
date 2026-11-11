@@ -82,3 +82,28 @@
   border: 0;
   border-top: 1px solid var(--border-color);
 }
+
+/* 차량 등록·수정 창 껍데기와 입력 칸(CarFormModal). */
+.car-modal {
+  width: min(92vw, 360px);
+  max-height: min(82vh, 640px);
+  overflow-y: auto;
+  text-align: left;
+}
+
+.car-modal .form-group {
+  margin-bottom: 14px;
+  text-align: left;
+}
+
+.car-modal .form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--text-color);
+  font-size: var(--fs-3);
+  font-weight: var(--fw-bold);
+}
+
+.car-modal .input-box {
+  text-align: left;
+}

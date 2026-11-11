@@ -2,14 +2,14 @@
 import { mock, test } from 'node:test'
 import assert from 'node:assert/strict'
 
-/** @type {Array<{ table: string, row: Record<string, unknown> }>} */
+/** @type {Array<{ table: string, row: import('../../domain/jsonTypes.ts').JsonRecord }>} */
 const captured = []
 
 mock.module('../cloud/supabaseClient.ts', {
   namedExports: {
     supabase: {
       from: (/** @type {string} */ table) => ({
-        upsert: (/** @type {Record<string, unknown>} */ row) => {
+        upsert: (/** @type {import('../../domain/jsonTypes.ts').JsonRecord} */ row) => {
           captured.push({ table, row })
           return Promise.resolve({ error: null })
         },

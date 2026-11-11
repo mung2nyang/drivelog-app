@@ -221,9 +221,9 @@ describe('슬라이스 E — 로그인 프로필·설정·비용·계산서는 �
     endCloudSession()
   })
 
-  /** @param {unknown} filters @param {string} column */
+  /** @param {Parameters<import('../../testSupport/fakeSupabaseClient.js').FakeHandler>[0]} filters @param {string} column */
   function filterValue(filters, column) {
-    return filters && typeof filters === 'object' && !Array.isArray(filters) ? String(/** @type {Record<string, unknown>} */ (filters)[column]) : ''
+    return filters && typeof filters === 'object' && !Array.isArray(filters) ? String(filters[column]) : ''
   }
 
   /**

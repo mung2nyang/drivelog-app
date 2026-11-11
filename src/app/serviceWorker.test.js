@@ -54,11 +54,11 @@ function loadWorker(/** @type {{ online: boolean }} */ net) {
   vm.runInNewContext(readFileSync(new URL('../../public/sw.js', import.meta.url), 'utf8'), context)
   /** @param {string} type @param {object} [extra] */
   const fire = async (type, extra = {}) => {
-    /** @type {Array<Promise<unknown>>} */
+    /** @type {Array<Promise<void | Response>>} */
     const waits = []
-    /** @type {Promise<unknown> | null} */
+    /** @type {Promise<Response> | null} */
     let response = null
-    handlers[type]({ ...extra, waitUntil: (/** @type {Promise<unknown>} */ p) => { waits.push(p) }, respondWith: (/** @type {Promise<unknown>} */ p) => { response = p } })
+    handlers[type]({ ...extra, waitUntil: (/** @type {Promise<void | Response>} */ p) => { waits.push(p) }, respondWith: (/** @type {Promise<Response>} */ p) => { response = p } })
     await Promise.all(waits)
     return { responded: response !== null, response: response ? await response : null }
   }

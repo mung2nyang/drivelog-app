@@ -11,9 +11,9 @@ const { syncExpenseItemsForVehicle } = await import('./syncExpenseItems.ts')
 
 /** @typedef {import('../../domain/expenseTypes.ts').ExpenseItem} ExpenseItem */
 
-/** @param {unknown} value @param {string} key */
+/** @param {Parameters<import('../../testSupport/fakeSupabaseClient.js').FakeHandler>[0]} value @param {string} key */
 function field(value, key) {
-  return value && typeof value === 'object' && !Array.isArray(value) ? /** @type {Record<string, unknown>} */ (value)[key] : undefined
+  return value && typeof value === 'object' && !Array.isArray(value) ? value[key] : undefined
 }
 
 /** @type {Array<Record<string, import('../store/atomicPersist.ts').JsonValue>>} */

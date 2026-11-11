@@ -12,9 +12,9 @@ const { setHydration, getState } = await import('../store/app-store.ts')
 const { commitCars, commitExpenses } = await import('../store/commitHelpers.ts')
 const { saveExpenses } = await import('./expensesSave.ts')
 
-/** @param {unknown} filters @param {string} column */
+/** @param {Parameters<import('../../testSupport/fakeSupabaseClient.js').FakeHandler>[0]} filters @param {string} column */
 function filterValue(filters, column) {
-  return filters && typeof filters === 'object' && !Array.isArray(filters) ? String(/** @type {Record<string, unknown>} */ (filters)[column]) : ''
+  return filters && typeof filters === 'object' && !Array.isArray(filters) ? String(filters[column]) : ''
 }
 
 /** @type {import('../../domain/expenseTypes.ts').ExpenseItem} */

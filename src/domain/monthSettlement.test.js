@@ -6,7 +6,7 @@ import { callVatTotal } from './day-record.ts'
 const YEAR = 2026
 const MONTH = 8 // September (0-based)
 
-/** @param {Record<string, unknown>} record */
+/** @param {import('./dayRecordTypes.ts').DayRecordLike} record */
 function day(record) {
   return record
 }

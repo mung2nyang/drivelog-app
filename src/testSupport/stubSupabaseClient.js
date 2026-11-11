@@ -6,7 +6,7 @@
 // --experimental-test-module-mocks 플래그가 있어야 동작한다(package.json의 test 스크립트).
 import { mock } from 'node:test'
 
-/** @typedef {{ data: unknown, error: { message: string }|null }} StubQueryResult */
+/** @typedef {{ data: import('../data/store/atomicPersist.ts').JsonValue, error: { message: string }|null }} StubQueryResult */
 /** @typedef {'select'|'upsert'|'insert'|'update'|'delete'} StubMethod */
 
 /** @type {Record<StubMethod, number>} */
@@ -52,8 +52,8 @@ function createQuery(method) {
     single() { return query },
     maybeSingle() { return query },
     /**
-     * @param {(value: StubQueryResult) => unknown} [onFulfilled]
-     * @param {(reason: unknown) => unknown} [onRejected]
+     * @param {(value: StubQueryResult) => StubQueryResult} [onFulfilled]
+     * @param {(reason: Error) => StubQueryResult} [onRejected]
      */
     then(onFulfilled, onRejected) {
       return Promise.resolve(stubSupabaseMethodImpls[method]()).then(onFulfilled, onRejected)

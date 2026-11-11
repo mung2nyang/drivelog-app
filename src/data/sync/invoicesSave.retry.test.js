@@ -12,9 +12,9 @@ const { beginSessionEpoch, endCloudSession } = await import('../cloud/cloudSessi
 const { setHydration, getState } = await import('../store/app-store.ts')
 const { commitCars } = await import('../store/commitHelpers.ts')
 
-/** @param {unknown} value @param {string} key */
+/** @param {Parameters<import('../../testSupport/fakeSupabaseClient.js').FakeHandler>[0]} value @param {string} key */
 function field(value, key) {
-  return value && typeof value === 'object' && !Array.isArray(value) ? /** @type {Record<string, unknown>} */ (value)[key] : undefined
+  return value && typeof value === 'object' && !Array.isArray(value) ? value[key] : undefined
 }
 
 /**

@@ -21,7 +21,7 @@ describe('remapEmployedDriverWorkLogs', () => {
     )
     assert.deepEqual(Object.keys(remapped), ['main'])
     assert.equal(remapped.main['2026-05-12'], day)
-    assert.equal(/** @type {Record<string, unknown>} */ (remapped)[plate], undefined)
+    assert.equal(Object.hasOwn(remapped, plate), false)
   })
 
   test('cars 비면 workLogs = { main: {} } (logIdForCar 미호출)', () => {
@@ -61,11 +61,11 @@ describe('buildEmployedDriverSnapshot — 소속기사 hydrate 비용 및 스냅
   test('정상 조회: 배정차량 1대, 비용 3종 각 1건씩 → snapshot.expenses 3건 확인', async () => {
     resetHandlers()
     Object.assign(handlers, emptyOkHandlers())
-    /** @type {Array<Record<string, unknown>>} */
+    /** @type {Array<import('../../testSupport/fakeSupabaseClient.js').EqFilters | import('../../domain/jsonTypes.ts').JsonRecord>} */
     const fuelFilters = []
-    /** @type {Array<Record<string, unknown>>} */
+    /** @type {Array<import('../../testSupport/fakeSupabaseClient.js').EqFilters | import('../../domain/jsonTypes.ts').JsonRecord>} */
     const maintFilters = []
-    /** @type {Array<Record<string, unknown>>} */
+    /** @type {Array<import('../../testSupport/fakeSupabaseClient.js').EqFilters | import('../../domain/jsonTypes.ts').JsonRecord>} */
     const miscFilters = []
 
     handlers.rpc = {

@@ -42,7 +42,7 @@ const { shareFileFromDevice } = await import('./shareFile.ts')
 const pdf = new File(['운송비 내역'], '2026년_11월_운송비내역서.pdf', { type: 'application/pdf' })
 const words = { title: '운송비 내역서', text: '안녕하세요. 11월 운송비 내역서입니다.' }
 
-/** @param {unknown} share @param {unknown} [canShare] */
+/** @param {((data: ShareData) => Promise<void>) | undefined} share @param {(() => boolean) | undefined} [canShare] */
 function setBrowserShare(share, canShare) {
   Object.defineProperty(navigator, 'share', { configurable: true, writable: true, value: share })
   Object.defineProperty(navigator, 'canShare', { configurable: true, writable: true, value: canShare })
@@ -83,9 +83,9 @@ test('앱: 공유 창을 닫으면(취소) 오류 없이 끝나고, 다른 실�
 test('웹: 앱 쪽을 부르지 않고 브라우저 공유에 파일·제목·문구를 넘긴다, 취소는 조용히 끝난다', async () => {
   reset()
   native = false
-  /** @type {Array<{ files: Array<File>, title: string, text: string }>} */
+  /** @type {Array<ShareData>} */
   const browserShares = []
-  setBrowserShare(async (/** @type {{ files: Array<File>, title: string, text: string }} */ data) => { browserShares.push(data) }, () => true)
+  setBrowserShare(async (/** @type {ShareData} */ data) => { browserShares.push(data) }, () => true)
   assert.equal(await shareFileFromDevice(pdf, words), true)
   assert.deepEqual(browserShares, [{ files: [pdf], ...words }])
   assert.equal(writes.length, 0)

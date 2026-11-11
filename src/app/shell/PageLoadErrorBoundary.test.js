@@ -33,8 +33,8 @@ test('정상 화면은 그대로, 오류면 안내, 다른 화면으로 가면 �
   const root = createRoot(container)
   // 예상한 오류(일부러 던진 화면 오류·경계 기록)만 숨기고, 나머지는 원래대로 내보낸다(플레이북 §6).
   const original = console.error
-  const expected = (/** @type {Array<unknown>} */ args) => args.some((arg) => /Failed to fetch dynamically imported module|\[PageLoadErrorBoundary\]/.test(String(arg instanceof Error ? arg.message : arg)))
-  const logged = mock.method(console, 'error', (/** @type {Array<unknown>} */ ...args) => { if (!expected(args)) original(...args) })
+  const expected = (/** @type {Array<string | Error>} */ args) => args.some((arg) => /Failed to fetch dynamically imported module|\[PageLoadErrorBoundary\]/.test(String(arg instanceof Error ? arg.message : arg)))
+  const logged = mock.method(console, 'error', (/** @type {Array<string | Error>} */ ...args) => { if (!expected(args)) original(...args) })
   /** @param {string} path @param {boolean} broken */
   const show = async (path, broken) => {
     await act(async () => { root.render(React.createElement(PageLoadErrorBoundary, { resetKey: path }, React.createElement(Page, { broken }))) })

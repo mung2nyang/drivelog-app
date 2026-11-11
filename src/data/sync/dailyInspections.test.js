@@ -33,7 +33,7 @@ test('읽기 실패는 던짐', async () => {
 test('저장: 작성자 = 로그인 사용자, 점검자 이름, 조치 기록 빈칸이면 null, 차량+날짜 덮어쓰기', async () => {
   beginSessionEpoch('driver-1', 'owner-1')
   setHydration({ status: 'ready', userId: 'driver-1', ownerKey: 'owner-1' })
-  /** @type {Array<{ row: unknown, options: unknown }>} */
+  /** @type {Array<{ row: Parameters<import('../../testSupport/fakeSupabaseClient.js').FakeHandler>[0], options: Parameters<import('../../testSupport/fakeSupabaseClient.js').FakeHandler>[1] }>} */
   const upserts = []
   handlers.daily_inspections = { upsert: (row, options) => { upserts.push({ row, options }); return { data: null, error: null } } }
   await saveDailyInspection({ vehicleId: 'veh-1', workDate: '2026-10-01', items: { tires: 'good' }, actionNote: '   ', inspectorName: '김기사' })

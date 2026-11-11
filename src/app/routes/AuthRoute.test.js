@@ -25,7 +25,7 @@ const { MemoryRouter, Routes, Route } = await import('react-router-dom')
 const { act } = React
 const { default: AuthRoute, AUTH_WITH_SESSION_REDIRECT_MS } = await import('./AuthRoute.jsx')
 
-/** @param {Record<string, unknown>|null} session @param {boolean} booting */
+/** @param {import('../../data/sync/syncTypes.ts').AppSession|null} session @param {boolean} booting */
 async function render(session, booting) {
   const container = document.createElement('div')
   document.body.appendChild(container)

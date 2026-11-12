@@ -1,5 +1,3 @@
-// 차량 창 [저장]·연동 해제·삭제를 처리 중에 또 눌러도 서버 요청은 한 번만 간다.
-// 서버 요청 함수는 가짜로 바꿔 끼워, 풀어 주기 전까지 끝나지 않게 붙잡는다.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 
@@ -16,7 +14,6 @@ Reflect.set(globalThis, 'IS_REACT_ACT_ENVIRONMENT', true)
 const calls = []
 /** @type {Array<() => void>} */
 const releases = []
-/** 다음 요청을 실패로 돌려줄지. */
 const plan = { failNext: false }
 
 /** 풀어 줄 때까지 기다린 뒤 결과를 돌려준다. @template T @param {string} name @param {(failed: boolean) => T} result @returns {Promise<T>} */
@@ -89,7 +86,6 @@ async function render(ownerKey, cars, drivers = []) {
     await act(async () => { el.dispatchEvent(new window.MouseEvent('click', { bubbles: true })) })
     await settle()
   }
-  /** 붙잡아 둔 요청을 모두 풀어 준다. */
   const releaseAll = async () => {
     await act(async () => { releases.splice(0).forEach((release) => release()) })
     await settle()

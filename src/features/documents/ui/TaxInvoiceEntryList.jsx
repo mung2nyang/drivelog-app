@@ -6,10 +6,8 @@ import './tax-invoice.css'
 
 /** @typedef {import('../../../domain/financeTaxInvoiceEntries.ts').InvoiceLike} InvoiceLike */
 
-/** 홈택스 전자세금계산서 발급 화면. */
 const HOMETAX_ISSUE_URL = 'https://hometax.go.kr/websquare/websquare.html?w2xPath=/ui/pp/index_pp.xml&tmIdx=46&tm2lIdx=4601010000&tm3lIdx=4601010500'
 
-/** 상대방 세무정보 6칸이 전부 채워졌는지 — [작성하기]/[수정하기] 구분용. */
 function hasFullPartyInfo(/** @type {InvoiceLike} */ item) {
   return [item.clientBizNumber, item.clientRepresentative, item.clientAddress, item.clientBizType, item.clientBizItem, item.clientEmail]
     .every((value) => String(value || '').trim() !== '')
@@ -28,7 +26,6 @@ function hasFullPartyInfo(/** @type {InvoiceLike} */ item) {
 export default function TaxInvoiceEntryList({
   entries, tab, emptyDraft, flowMeta, onOpenDraft, onExportExcel, onChangeStatus,
 }) {
-  // [발급하러 가기]를 누른 카드 — 화면 안에서만 기억(새로고침하면 다시 [발급하러 가기]).
   const [visitedIds, setVisitedIds] = useState(/** @type {Set<string>} */ (new Set()))
   const goHometax = (/** @type {string} */ id) => {
     window.open(HOMETAX_ISSUE_URL, '_blank', 'noopener')

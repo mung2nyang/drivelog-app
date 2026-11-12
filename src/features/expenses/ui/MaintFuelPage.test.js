@@ -1,5 +1,3 @@
-// 로드맵 97 — 차량 유지비 화면의 보기·저장·수정·삭제 흐름(나누기 전 동작을 그대로 적음).
-// 저장은 실제 함수(비회원이라 기기 저장)를 쓰고, 실패는 기기 저장소의 지출 키 쓰기를 막아 흉내 낸다.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

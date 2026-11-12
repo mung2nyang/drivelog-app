@@ -1,5 +1,4 @@
 // @ts-check
-// 앱 설정의 운행 횟수 버튼 편집.
 import { useEffect, useRef, useState } from 'react'
 import ConfirmModal from '../../../shared/ui/ConfirmModal.tsx'
 import { addRunCountPreset, removeRunCountPreset, replaceRunCountPreset, RUN_COUNT_PRESET_MAX } from '../../../domain/practiceSettings.ts'
@@ -7,7 +6,6 @@ import { useToast } from '../../../shared/hooks/useToast.ts'
 
 /** @typedef {import('../../../domain/financeTypes.ts').FinanceSettings} FinanceSettings */
 
-// 길게 누르기 판정 시간·손가락 이동 허용 거리(넘으면 취소).
 const LONG_PRESS_MS = 600
 const MOVE_TOLERANCE_PX = 10
 
@@ -22,7 +20,6 @@ export default function RunCountChips({ scope, settings, onPatch }) {
   const key = scope === 'sub' ? 'subRunCountPresets' : 'runCountPresets'
   const presets = settings[key] || []
   const [pendingIndex, setPendingIndex] = useState(/** @type {number|null} */ (null))
-  // 평소엔 읽기 전용이라 손가락이 닿아도 자판이 안 뜬다 — 짧게 떼거나 키보드로 오면 그 칩만 고친다.
   const [editingIndex, setEditingIndex] = useState(/** @type {number|null} */ (null))
   const inputs = useRef(/** @type {Array<HTMLInputElement|null>} */ ([]))
   const press = useRef(/** @type {{ timer: ReturnType<typeof setTimeout>|null, x: number, y: number }|null} */ (null))
@@ -67,7 +64,6 @@ export default function RunCountChips({ scope, settings, onPatch }) {
     if (start && Math.hypot((event.clientX || 0) - start.x, (event.clientY || 0) - start.y) > MOVE_TOLERANCE_PX) cancelPress()
   }
 
-  // 저장 차례가 왔을 때의 최신 설정에서 횟수 버튼 목록만 바꾼다.
   /** @param {(current: FinanceSettings) => FinanceSettings} change */
   function patchPresets(change) {
     onPatch((current) => ({ [key]: change(current)[key] }))
@@ -110,7 +106,6 @@ export default function RunCountChips({ scope, settings, onPatch }) {
               onBlur={(e) => {
                 setEditingIndex(null)
                 const value = e.target.value
-                // 값이 그대로면 저장하지 않는다(삭제 창이 뜰 때 칸을 벗어나는 것 포함).
                 if (value.trim() === String(count)) return
                 patchPresets((current) => replaceRunCountPreset(current, scope, count, value))
               }}

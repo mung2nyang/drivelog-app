@@ -1,5 +1,4 @@
 // @ts-check
-// 로드맵 24-B-1 — 운비서 서버 함수 부르기: 보내는 값, 응답 모양 확인, 실패 문구.
 import assert from 'node:assert/strict'
 import { beforeEach, mock, test } from 'node:test'
 import { FunctionsFetchError, FunctionsHttpError } from '@supabase/supabase-js'
@@ -72,7 +71,6 @@ test('관계없음은 종류만, 질문은 질문 칸을 읽고, 모르는 종�
   }
 })
 
-// 로드맵 24-I-2 — 날씨 칸 읽기: 날짜 모양이 틀리면 오늘, 지역은 30자까지, 앞뒤 공백 뺌.
 test('날씨 칸: 날짜·지역을 읽고, 칸이 없으면 알아듣지 못함', async () => {
   reply = async () => ({ data: { kind: 'weather', weather: { date: '2026-10-23', place: ' 평택 ' } }, error: null })
   assert.deepEqual(await requestUnbiseoParse({ text: '내일 평택 날씨', today: '2026-10-22', clientNames: [] }), { kind: 'weather', weather: { date: '2026-10-23', place: '평택' } })
@@ -84,7 +82,6 @@ test('날씨 칸: 날짜·지역을 읽고, 칸이 없으면 알아듣지 못함
   assert.deepEqual(await requestUnbiseoParse({ text: '날씨', today: '2026-10-22', clientNames: [] }), { kind: 'error', message: NOT_UNDERSTOOD })
 })
 
-// 로드맵 24-K-2 — 휴무 칸 읽기: 날짜 모양이 틀리면 오늘(앞날 그대로), off가 참·거짓이 아니면 알아듣지 못함. 문장은 받침을 따른다.
 test('휴무 칸: 날짜·휴무를 읽고, 모양이 틀리면 알아듣지 못함 — 문장', async () => {
   const ask = () => requestUnbiseoParse({ text: '휴무', today: '2026-10-22', clientNames: [] })
   reply = async () => ({ data: { kind: 'dayOff', dayOff: { date: '2026-11-03', off: true } }, error: null })
@@ -105,7 +102,6 @@ test('휴무 칸: 날짜·휴무를 읽고, 모양이 틀리면 알아듣지 못
   assert.equal(describeDayOff({ date: '2026-10-03', off: false }, '2026-10-22', true), '10월 3일은 휴무가 아니에요.')
 })
 
-// 로드맵 24-J-2 — 점검표 칸 읽기: 날짜 모양이 틀리면 오늘, 칸이 없으면 알아듣지 못함.
 test('점검표 칸: 날짜를 읽고, 칸이 없으면 알아듣지 못함', async () => {
   const ask = () => requestUnbiseoParse({ text: '점검표 모두 양호', today: '2026-10-22', clientNames: [] })
   reply = async () => ({ data: { kind: 'inspection', inspection: { date: '2026-10-21' } }, error: null })
@@ -120,7 +116,6 @@ test('점검표 칸: 날짜를 읽고, 칸이 없으면 알아듣지 못함', as
   }
 })
 
-// 로드맵 24-C-2 — 지출 칸 읽기·문장.
 test('지출 칸을 그대로 돌려준다, 이상한 칸은 고쳐 담는다(날짜 모양 아니면 오늘, 모르는 종류는 정비, 금액 정수 아니면 없음)', async () => {
   const expense = { date: '2026-10-21', type: 'fuel', cost: 120000, name: '경유', category: '', fuelType: '주유', payment: '카드' }
   reply = async () => ({ data: { kind: 'expense', expense }, error: null })
@@ -189,7 +184,6 @@ test('결과 문장: 오늘이면 "오늘", 빈 칸은 빼고, 끝 글자 받침
   assert.equal(describeResult({ kind: 'error', message: TRY_LATER }, today, () => ''), TRY_LATER)
 })
 
-// 로드맵 24-F-2 — 고정 노선: 노선 이름 보내기, 답 읽기(횟수 1~20·노선 60자), 문장.
 test('고정 노선 이름: 일지 칩과 같은 "상차지 → 하차지", 빈 칸·61자·겹침 빼고 30개까지, 없으면 보내지 않음', async () => {
   assert.deepEqual(routeNamesForAi([{ loadLoc: '평택', unloadLoc: '용인' }, { loadLoc: '평택', unloadLoc: '용인' }, { loadLoc: '', unloadLoc: '오산' }, { loadLoc: 'ㄱ'.repeat(30), unloadLoc: 'ㄴ'.repeat(28) }, { loadLoc: '화성', unloadLoc: '오산' }]), ['평택 → 용인', '화성 → 오산'])
   assert.equal(routeNamesForAi(Array.from({ length: 40 }, (_, i) => ({ loadLoc: `가${i}`, unloadLoc: '나' }))).length, 30)
@@ -217,7 +211,6 @@ test('고정 노선 문장: "{오늘|M월 D일} {노선|고정 노선} n회로 �
   assert.equal(describeFixed({ date: '2026-10-21', count: 3, route: '' }, '2026-10-22'), '10월 21일 고정 노선 3회로 기록할게요.')
 })
 
-// 로드맵 24-G-2 — 거래처 등록 답 읽기: 이름은 꼭(50자), 그 밖은 서버(24-G-1)와 같은 범위 안일 때만.
 test('거래처 답: 칸을 그대로 담고, 이름이 없거나 51자·칸이 없으면 알아듣지 못함', async () => {
   const C0 = { name: '한진', manager: '', phone: '', paymentTerm: '', paymentTermValue: null, commType: '', commValue: null }
   const read = async (/** @type {JsonValue} */ client) => { reply = async () => ({ data: { kind: 'client', client }, error: null }); return requestUnbiseoParse({ text: '거래처 등록', today: '2026-10-23', clientNames: [] }) }
@@ -244,7 +237,6 @@ test('거래처 답 이상한 칸은 빈 칸: 담당자 31자, 연락처 자리�
   }
 })
 
-// 로드맵 24-H-2 — 미수금 문자 답 읽기(칸 검사는 unbiseoSms.test.js).
 test('문자 답: sms 칸을 읽고, 칸이 없으면 알아듣지 못함', async () => {
   reply = async () => ({ data: { kind: 'sms', sms: { client: '한진', month: '2026-07', all: false, template: 1 } }, error: null })
   assert.deepEqual(await requestUnbiseoParse({ text: '한진 7월분 미수금 문자', today: '2026-10-23', clientNames: [] }), { kind: 'sms', sms: { client: '한진', month: '2026-07', all: false, template: 1 } })

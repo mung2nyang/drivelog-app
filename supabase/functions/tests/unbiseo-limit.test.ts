@@ -1,4 +1,3 @@
-// 운비서 하루 횟수 시험: 말 읽기·목소리는 AI를 부르기 전에 1회 세고, 넘었거나 셀 수 없으면 AI를 안 부른다. CI에서 deno test로 돈다.
 import assert from 'node:assert/strict'
 import { handleRequest as parse } from '../unbiseo-parse/handler.ts'
 import { handleRequest as voice } from '../unbiseo-voice/handler.ts'

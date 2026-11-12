@@ -1,6 +1,4 @@
 // @ts-check
-// 회원 데이터 불러오기: 파일의 거래처·지출·세금계산서 중 지금 없는 것만 고르고, 기존 저장 길로 더한다.
-// 같은 것 판단: 거래처는 업체명·번호, 지출·계산서는 번호. 내 차량이 아니거나 연동 차량 기록은 건너뛴다.
 import { readOwnerCars, readOwnerClients, readOwnerDrivers, readOwnerExpenses, readOwnerInvoices } from '../../../data/store/ownerDataHooks.ts'
 import { isPersistedClient, isPersistedExpense, isPlainObject } from '../../../data/store/persistDomainRecords.ts'
 import { isPersistedInvoice } from '../../../data/store/persistDomainInvoice.ts'
@@ -17,10 +15,7 @@ import { SERVER_SAVE_FAIL } from '../../../shared/utils/failureMessages.ts'
 /** @typedef {import('../../../domain/financeTaxInvoiceEntries.ts').InvoiceLike} InvoiceLike */
 /** @typedef {{ clients: ClientLike[], expenses: ExpenseItem[], invoices: InvoiceLike[], skippedItems: number }} RecordPicks */
 
-/**
- * 차량 번호('main'이면 메인)가 서버에 있는 내 차량이고 연동 기사가 붙지 않았는지.
- * @param {string} ownerKey @param {string} plate
- */
+/** @param {string} ownerKey @param {string} plate */
 export function isOwnUnlinkedCar(ownerKey, plate) {
   const cars = readOwnerCars(ownerKey)
   const car = plate === 'main'
@@ -39,7 +34,6 @@ function nameKey(name) {
 }
 
 /**
- * 파일 칸이 있으면 전부 올바른 모양이어야 한다(하나라도 틀리면 null). 칸이 없으면 빈 목록.
  * @param {JsonValue} parsed @param {string} key @param {(item: JsonValue) => boolean} check
  * @returns {JsonValue[]|null}
  */
@@ -58,10 +52,7 @@ function isRestorableExpense(item) {
   return isPersistedExpense(rest) && isValidCalendarDateKey(String(item.date))
 }
 
-/**
- * 지금 없는 것만 더한 거래처 목록(새 것은 옛 서버 번호 지움, 고정노선 연결은 차량 범위마다 한 곳만).
- * @param {ClientLike[]} current @param {ClientLike[]} picked
- */
+/** @param {ClientLike[]} current @param {ClientLike[]} picked */
 function newClientsAgainst(current, picked) {
   const names = new Set(current.map((item) => nameKey(item.companyName)))
   const ids = new Set(current.map((item) => item.id))
@@ -91,7 +82,6 @@ function newById(current, picked) {
 }
 
 /**
- * 파일에서 지금 없는 거래처·지출·계산서를 고른다(저장 안 함). 모양이 틀리면 null.
  * @param {string} ownerKey @param {JsonValue} parsed
  * @returns {RecordPicks|null}
  */

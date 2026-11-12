@@ -1,5 +1,4 @@
 // @ts-check
-// 로드맵 23-B — 관리자 문의 목록 좁히기·답변 저장(서버 함수 0025, 오류 코드별 문구).
 import assert from 'node:assert/strict'
 import { beforeEach, describe, mock, test } from 'node:test'
 import { createFakeSupabase } from '../../../testSupport/fakeSupabaseClient.ts'

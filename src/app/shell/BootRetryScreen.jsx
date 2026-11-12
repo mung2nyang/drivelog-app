@@ -1,5 +1,4 @@
 // @ts-check
-// 앱 켤 때 연동 확인이 실패하면 어느 칸으로 들어갈지 몰라 들어가지 않고 이 화면.
 import './boot-retry.css'
 
 export default function BootRetryScreen() {

@@ -1,4 +1,3 @@
-/* 앱 켤 때 연동 확인 실패 안내 화면(BootRetryScreen.jsx) — public/offline.html과 같은 모양. */
 .boot-retry {
   position: fixed;
   inset: 0;

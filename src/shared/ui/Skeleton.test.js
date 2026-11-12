@@ -1,4 +1,3 @@
-// 로드맵 18-D: 뼈대 — 막대 줄 수·화면 뼈대 모양·"불러오는 중" 상태 알림.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

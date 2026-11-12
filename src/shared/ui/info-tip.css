@@ -1,19 +1,15 @@
-/* (i) 설명 버튼·(i) 아래 뜨는 설명 카드. InfoTip.tsx가 import(정산 카드·차량 폼 등 공용). */
 .summary-info-label {
   display: inline-flex;
   align-items: center;
   gap: 4px;
 }
 
-/* 설명 카드 위치 기준 = (i) 버튼 */
 .summary-info-anchor {
   position: relative;
   display: inline-flex;
-  /* 문장 안에 들어간 (i)를 글자 가운데 높이에 맞춘다 */
   vertical-align: -0.25em;
 }
 
-/* 보이는 크기 20px, 누르는 영역은 ::before로 44px(줄 높이는 그대로). */
 .summary-info-btn {
   position: relative;
   display: inline-grid;
@@ -69,7 +65,6 @@
   overflow-wrap: anywhere;
 }
 
-/* 카드 위 꼬리 — (i) 가운데를 가리킨다 */
 .summary-info-text::before {
   content: '';
   position: absolute;

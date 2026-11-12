@@ -12,7 +12,6 @@ const { getState } = await import('../store/app-store.ts')
 const { readJsonKey, writeJsonKey } = await import('../store/persist.ts')
 const { commitDrivers } = await import('../store/commitHelpers.ts')
 
-// 불러오기마다 부르는 기한 지난 연동 정리 함수(빈 성공).
 const settleOk = () => ({ rpc: { settle_expired_driver_unlinks: () => ({ data: null, error: null }) } })
 
 describe('hydrateFromSupabase — 조회 실패는 전부 failed로, 부분 반영 없음', () => {
@@ -185,10 +184,9 @@ describe('로그아웃 후 같은 owner로 즉시 재로그인', () => {
     assert.equal(getState().hydration.status, 'hydrating')
     assert.equal(countOf('profiles', 'select'), 1)
 
-    endCloudSession() // 이전 hydrate가 아직 firstGate에 걸려 있는 채로 로그아웃한다.
+    endCloudSession()
     assert.equal(getState().hydration.status, 'idle')
 
-    // 곧바로 같은 owner로 재로그인 — 이번엔 서버가 즉시 응답한다.
     handlers.profiles = { select: () => ({ data: { id: userId, name: '재로그인 이후 최신 이름', settings: {} }, error: null }) }
     await hydrateFromSupabase(userId, ownerKey)
 
@@ -196,7 +194,7 @@ describe('로그아웃 후 같은 owner로 즉시 재로그인', () => {
     assert.equal(getState().hydration.status, 'ready', '재로그인이 옛 Promise에 합류해 계속 idle/hydrating으로 멈춰 있으면 안 된다')
     assert.equal(getState().profile[ownerKey]?.name, '재로그인 이후 최신 이름')
 
-    releaseFirst() // 로그아웃 이전 요청도 뒤늦게 응답하지만 세대 검사로 무시돼야 한다.
+    releaseFirst()
     await firstHydratePromise
     assert.equal(getState().hydration.status, 'ready', '로그아웃 이전 요청의 뒤늦은 완료가 재로그인의 ready 상태를 덮으면 안 된다')
     assert.equal(getState().profile[ownerKey]?.name, '재로그인 이후 최신 이름', '옛 요청의 오래된 이름으로 되돌아가면 안 된다')
@@ -219,14 +217,13 @@ describe('실패 주입 — hydrate 도중 owner(계정) 변경', () => {
     await wait(10)
     assert.equal(getState().hydration.status, 'hydrating')
 
-    // A가 아직 게이트에 걸려 있는 동안 B(다른 owner)가 hydrate를 시작해 성공한다.
     handlers.profiles = { select: () => ({ data: { id: 'user-b', name: 'B 계정 이름', settings: {} }, error: null }) }
     await hydrateFromSupabase('user-b', ownerB)
     assert.equal(getState().hydration.status, 'ready')
     assert.equal(getState().hydration.ownerKey, ownerB)
 
     releaseA()
-    await hydrateAPromise // A는 이제야 응답을 받지만 이미 세대가 지났다.
+    await hydrateAPromise
 
     assert.equal(getState().hydration.status, 'ready', 'A의 뒤늦은 완료가 B의 ready 상태를 건드리면 안 된다')
     assert.equal(getState().hydration.ownerKey, ownerB, 'A의 뒤늦은 완료가 hydration.ownerKey를 A로 되돌리면 안 된다')
@@ -487,7 +484,6 @@ describe('로드맵 5-A — 서브차량 정비/주유/기타 불러오기', () 
   })
 })
 
-// 로드맵 67-A — 서버(Max rows 1000)처럼 한 번에 1,000줄까지만 주는 가짜 서버로 끝까지 받는지.
 /**
  * @param {Array<import('../store/atomicPersist.ts').JsonValue>} rows
  * @param {Record<string, string|number>|undefined} filters

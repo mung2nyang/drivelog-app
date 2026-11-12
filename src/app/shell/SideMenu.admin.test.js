@@ -1,4 +1,3 @@
-// 로드맵 23-B — 옆 메뉴 "관리자"는 isAdmin일 때만 "설정" 칸 "고객센터" 다음에 보인다.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

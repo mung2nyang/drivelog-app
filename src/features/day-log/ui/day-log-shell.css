@@ -1,6 +1,3 @@
-/* 일지 셸(페이지·섹션·휴무 오버라이드·콜/지출 추가 버튼).
-   DayLogPage.jsx가 fixed-route.css·day-log.css보다 먼저 import. */
-
 .work-log-page {
   text-align: left;
 }
@@ -82,7 +79,6 @@
   min-width: 0;
 }
 
-/* 좁은 휴대폰: [+ 정비 추가] 3개가 "가"만 다음 줄로 넘어가지 않게 */
 @media (max-width: 380px) {
   .work-log-page .maint-fuel-add-btn { padding: 8px 4px; letter-spacing: -0.03em; white-space: nowrap; }
 }
@@ -128,17 +124,16 @@
 }
 
 .modal-title-stack {
-  position: relative;   /* 자식 절대배치 기준점만 됨, 세로쌓기 제거 */
+  position: relative;
 }
 
-/* 저장 아이콘 — 제목 오른쪽에 띄워 아이콘이 바뀌어도 제목이 안 움직인다. */
 .autosave-status {
   position: absolute;
-  top: 6px;              /* 제목 첫 줄(약 27px) 가운데 */
+  top: 6px;
   left: 100%;
   width: 14px;
   height: 14px;
-  margin-left: 4px;      /* 320px 폭에서 메뉴 단추와 2px 남게 */
+  margin-left: 4px;
   color: var(--sub-text-color);
 }
 
@@ -161,7 +156,6 @@
 
 .autosave-status .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
-/* 제목 아래 하루 운송료 합계 — 제목 아래 여백 안에 떠 있어 0원·휴무로 글이 빠져도 아래 칸이 안 움직인다. */
 .work-log-page .day-fare-total {
   position: absolute;
   top: 100%;
@@ -181,7 +175,6 @@
   font-weight: var(--fw-bold);
 }
 
-/* 연동 해제 때 복사된 날의 배정 차량 표시 — 제목 다음 줄 가운데. 그날은 제목이 두 줄이라 합계 자리만큼 여백을 더 둔다. */
 .assigned-vehicle-tag {
   display: block;
   color: var(--sub-text-color);

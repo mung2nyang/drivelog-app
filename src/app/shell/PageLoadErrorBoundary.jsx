@@ -1,6 +1,4 @@
 // @ts-check
-// 화면을 그리다 오류(주로 업데이트 뒤 옛 화면 파일을 못 받음)가 나면 앱 전체가 사라지는 대신 안내. 하단 메뉴는 그대로.
-// 다른 화면으로 가면(resetKey 바뀜) 안내를 풀어 그 화면을 다시 그린다 — 평소엔 아무것도 다시 만들지 않는다.
 import { Component } from 'react'
 import { reportClientError } from '../errorReport.js'
 import './boot-retry.css'
@@ -27,7 +25,7 @@ export default class PageLoadErrorBoundary extends Component {
 
   /** @param {BoundaryProps} prevProps */
   componentDidUpdate(prevProps) {
-    // oxlint-disable-next-line react/no-did-update-set-state -- 다른 화면으로 가면 안내를 풀어야 해서, 화면이 바뀐 때 한 번만 바꾼다.
+    // oxlint-disable-next-line react/no-did-update-set-state
     if (this.state.failed && prevProps.resetKey !== this.props.resetKey) this.setState({ failed: false })
   }
 

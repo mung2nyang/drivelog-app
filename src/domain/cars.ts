@@ -1,4 +1,3 @@
-// 차량 순수 계산부. 저장은 data/store/commitHelpers.ts의 commitCars. 전부 순수 계산 함수(차량 CRUD + 정산/발행 신원 판정).
 import { driverFieldsFromDraft } from './carDriverFields.ts'
 import type { JsonValue } from './jsonTypes.ts'
 import type { CarLike, FinanceSettings } from './financeTypes.ts'
@@ -8,7 +7,6 @@ export function hasMainCar(cars: Array<CarLike> | null | undefined) {
   return (cars || []).some((car) => car.type === 'main')
 }
 
-/** 기사 차량(연동, 미연동 합쳐)은 차주 한 명당 이 대수까지만 새로 등록한다. 이미 넘은 계정은 그대로 둔다. */
 export const MAX_DRIVER_CARS = 3
 export const DRIVER_CAR_LIMIT_MESSAGE = `기사 차량은 연동, 미연동 합쳐 최대 ${MAX_DRIVER_CARS}대까지 등록할 수 있습니다.`
 
@@ -23,7 +21,6 @@ export function isCarFuelKind(value: string | null | undefined): value is CarFue
   return CAR_FUEL_KINDS.some((kind) => kind === value)
 }
 
-/** 일지 차량이 전기차면 주유 입력을 "전기"로 연다. 연동 기사는 배정 차량이 메인 일지다. */
 export function defaultFuelTypeForLog(cars: Array<CarLike> | null | undefined, logId: string | undefined, isEmployedDriver = false) {
   const list = cars || []
   const key = String(logId || '').trim()
@@ -33,11 +30,6 @@ export function defaultFuelTypeForLog(cars: Array<CarLike> | null | undefined, l
   return car?.fuelKind === '전기' ? '전기' : '주유'
 }
 
-/**
- * 같은 id는 한 번만 남긴다(먼저 나온 항목). hydrate가 서버 행 + 미동기화 로컬을
- * 이어 붙일 때 같은 raw.id가 두 번 들어가면 React key 경고가 난다.
- * getSnapshot 안에서는 호출하지 말 것(매번 새 배열 → 렌더 루프).
- */
 export function dedupeCarsById<T extends { id?: string | number }>(cars: Array<T> | null | undefined): Array<T> {
   const seen = new Set<string>()
   const next: Array<T> = []
@@ -62,10 +54,6 @@ function checkDriverLink(name: string | undefined, phone: string | undefined): {
   return null
 }
 
-/**
- * 저장 전 입력 검사 — 맨 처음 문제 칸과 문구, 문제 없으면 null(차량 창 칸 표시와 upsertCar가 같이 씀).
- * 기사 이름·연락처는 "기사 연동"일 때만 필수(linkRequired) — 운행 일지 전용 등록은 비워도 된다.
- */
 export function checkCarDraft(draft: CarUpsertDraft, { linkRequired = false }: { linkRequired?: boolean } = {}): { field: 'driverName' | 'driverPhone' | 'number' | 'driverSalaryAmount', message: string } | null {
   const linkProblem = linkRequired ? checkDriverLink(draft.driverName, draft.driverPhone) : null
   if (linkProblem) return linkProblem
@@ -120,12 +108,6 @@ export function upsertCar(cars: Array<CarLike> | null | undefined, draft: CarUps
   return { cars: list }
 }
 
-/**
- * "기사 연동" 저장 전 확인 — 운행 일지(미연동)는 이 함수를 쓰지 않는다.
- * 신규 등록 시 진짜 관문은 CarListPage.jsx save()의 사전 검사 — 여기 함수는
- * 그게 호출하는 순수 검증 로직일 뿐.
- * @returns 에러 메시지, 문제 없으면 null
- */
 export function validateDriverLinkFields(name: string, phone: string): string | null {
   return checkDriverLink(name, phone)?.message ?? null
 }

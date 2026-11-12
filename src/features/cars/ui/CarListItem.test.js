@@ -1,4 +1,3 @@
-// 차량 목록 카드 글씨 — 기사 차량 수수료는 비율만 보이고, 옛 건당 자료는 수수료 글씨가 없다.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

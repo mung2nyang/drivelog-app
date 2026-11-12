@@ -1,4 +1,3 @@
-// 로드맵 75 — 콜이 있는 날을 휴무로 바꿀 때만 묻는다.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

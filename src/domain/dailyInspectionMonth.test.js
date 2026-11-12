@@ -1,5 +1,4 @@
 // @ts-check
-// 서류 발급 일상점검표 한 달 표(9-C-1): 8일 구간, 처음 구간, 칸 표기(오늘 이후 빈칸·휴무 미·없음 미·양호 O·불량 X).
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { actionNoteLines, initialRangeIndex, inspectionFileBaseName, inspectorCell, inspectionMark, legalFormMark, monthDays, rangeDays } from './dailyInspectionMonth.ts'

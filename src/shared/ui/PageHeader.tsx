@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 
 type Props = {
   title: ReactNode,
-  onBack?: () => void, // 없으면 뒤로가기 대신 빈 자리(하단 메뉴 첫 화면)
+  onBack?: () => void,
   onOpenMenu?: () => void,
   titleExtra?: ReactNode,
 }

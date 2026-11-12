@@ -1,5 +1,4 @@
 // @ts-check
-// 데이터 다운로드(B-1): 비회원 백업과 같은 모양 + 일상점검표(차량 번호별), 서버에서 다 불러오기 전엔 막힘.
 import assert from 'node:assert/strict'
 import { mock, test } from 'node:test'
 

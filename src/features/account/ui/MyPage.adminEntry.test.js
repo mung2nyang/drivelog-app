@@ -1,4 +1,3 @@
-// 로드맵 23-B — 마이페이지 "관리자" 줄: 관리자면 "고객센터" 다음에 보이고 admin으로, 아니면 없음, 비회원은 서버를 안 부름.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

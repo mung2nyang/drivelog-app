@@ -1,4 +1,3 @@
-// 콜상세 한 건의 부분입금 원장(payments[])을 다루는 순수 함수.
 import { findCallDetailIndex } from './callDetailIds.ts'
 import { getDetailPaymentSummary, syncDetailPaymentStatus } from './finance.ts'
 import { parseCurrencyValue } from './money.ts'
@@ -9,10 +8,6 @@ import type { CallDetailLike } from './callDetail.ts'
 import type { DayRecordLike } from './dayRecordTypes.ts'
 
 export type WorkDataMap = Record<string, DayRecordLike>
-/**
- * 쓰기 함수 공통 반환. 입력 map 타입 T를 그대로 보존해 호출부(예: DayLogPage의
- * id 필수 CallDetailLike)와 도메인 DayRecordLike가 어긋나지 않게 한다.
- */
 export type PaymentMutationResult<T extends WorkDataMap> = { data: T, error?: string }
 
 function withCallDetail<T extends WorkDataMap>(data: T, dateKey: string, detailId: string, mutator: (detail: CallDetailLike) => string | null): PaymentMutationResult<T> {
@@ -39,7 +34,6 @@ function ensurePaymentList(detail: CallDetailLike): void {
   }
 }
 
-/** 부분 입금 전 검사 — 문제면 입금액 칸 문구, 없으면 null. */
 export function checkPartialAmount(amount: JsonValue | undefined, remainingAmount: number): { field: 'amount', message: string } | null {
   const value = parseCurrencyValue(amount)
   if (!(value > 0)) return { field: 'amount', message: '입금액을 올바르게 입력해 주세요.' }

@@ -1,5 +1,3 @@
-// 로드맵 24-G-2 — 운비서 [등록하기]로 거래처 화면에 오면 새 등록 창이 들은 값으로 채워진 채 열린다(저장은 사람이).
-// 주소 상태는 읽은 뒤 지워 다시 그려도 열리지 않는다. 연동 기사 화면(한 차량 거래처)도 같다.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

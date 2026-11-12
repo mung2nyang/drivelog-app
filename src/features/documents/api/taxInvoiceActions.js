@@ -10,7 +10,6 @@ import { SERVER_SAVE_FAIL } from '../../../shared/utils/failureMessages.ts'
 
 const SAVE_FAIL_TOAST = SERVER_SAVE_FAIL
 
-// 저장 결과를 기다린 뒤 안내 — 실패를 성공으로 보여 주지 않는다.
 /** @param {() => Promise<void>} save @param {string} label @returns {Promise<boolean>} */
 async function saveSucceeded(save, label) {
   try {
@@ -23,7 +22,6 @@ async function saveSucceeded(save, label) {
 }
 
 /**
- * 저장 전 검사 — 사업자등록번호 → 작성일자 순서로 빈 칸 하나.
  * @param {InvoiceLike} item
  * @returns {{ field: 'clientBizNumber'|'issueDate', message: string }|null}
  */
@@ -41,7 +39,7 @@ export function checkTaxInvoiceDraft(item) {
  * @param {InvoiceLike} params.modalItem
  * @param {(next: Array<InvoiceLike>) => Promise<void>} params.persist
  * @param {(message: string) => void} [params.showToast]
- * @returns {Promise<boolean>} true면 모달을 닫아도 됨
+ * @returns {Promise<boolean>}
  */
 export async function saveTaxInvoiceDraft({ ownerKey, clients, records, modalItem, persist, showToast }) {
   const problem = checkTaxInvoiceDraft(modalItem)

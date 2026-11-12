@@ -13,7 +13,6 @@ import ModalShell from '../../../shared/ui/ModalShell.tsx'
 /** @typedef {import('../../../domain/expenseTypes.ts').ExpenseDraft} ExpenseDraft */
 /** @typedef {NonNullable<ReturnType<typeof checkExpenseDraft>>} ExpenseProblem */
 
-// 날짜는 창에서 비울 수 없어(기본값 오늘·일지에선 잠김) 표시하지 않고 저장 함수 알림으로.
 const INPUT_IDS = { name: 'expenseName', cost: 'expenseCost' }
 
 /**
@@ -27,7 +26,7 @@ const INPUT_IDS = { name: 'expenseName', cost: 'expenseCost' }
  * @param {(next: T) => void} props.onChange
  * @param {() => void} props.onClose
  * @param {() => void} props.onSave
- * @param {boolean} [props.saving] 저장 중이면 [저장] 잠금
+ * @param {boolean} [props.saving]
  */
 export default function ExpenseFormModal({
   draft,
@@ -41,7 +40,6 @@ export default function ExpenseFormModal({
 }) {
   const categories = draft.kind === 'misc' ? MISC_CATEGORIES : MAINT_CATEGORIES
   const [problem, setProblem] = useState(/** @type {(ExpenseProblem & { value: string })|null} */ (null))
-  // 문제 칸 값을 고치기 시작하면 표시를 거둔다.
   const shown = problem && String(draft[problem.field] ?? '') === problem.value ? problem : null
 
   function handleSave() {

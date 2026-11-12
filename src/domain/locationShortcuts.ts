@@ -1,5 +1,3 @@
-// 상차지/하차지 즐겨찾기 칩 — 자주·최근 장소 목록, 고정 장소 켜고 끄기의
-// 순수 로직.
 import { getCallDetails } from './day-record.ts'
 import type { JsonValue } from './jsonTypes.ts'
 import type { FinanceSettings } from './financeTypes.ts'

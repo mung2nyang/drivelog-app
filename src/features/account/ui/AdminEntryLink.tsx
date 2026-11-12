@@ -1,4 +1,3 @@
-// 마이페이지 "관리자" 줄 — 관리자 계정에만 보인다.
 import { useIsAdmin } from '../../../data/cloud/adminRole.ts'
 
 type Props = { onOpen: (page: string) => void }

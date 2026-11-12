@@ -1,4 +1,3 @@
-// 로드맵 9-C-1·9-D·세금계산서 정리 ② — 서류 발급(아래 9-C·9-D 테스트는 연동 기사 앱 화면 = 세금계산서 탭 없음으로 그림): 탭 보임/숨김(스위치·저장분), 처음 탭 [일상점검표], 표 칸(O/X/미/빈칸)·머리 칸, [운송비 내역서] 탭은 기존 화면.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 
@@ -47,7 +46,7 @@ beforeEach(() => {
   commitInvoices(OWNER, [])
 })
 
-/** @param {{ path?: string, owner?: boolean }} [opts] owner = 차주(세금계산서 탭 있음), 기본은 연동 기사 앱 */
+/** @param {{ path?: string, owner?: boolean }} [opts] */
 async function render({ path = '/report', owner = false } = {}) {
   const container = document.createElement('div')
   document.body.appendChild(container)

@@ -1,5 +1,4 @@
 // @ts-check
-// 로드맵 24-D-2 — 운비서 질문 읽기와 답 문장 틀(숫자는 받기만).
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { ASK_BY_MONTH, CANNOT_ANSWER, CLIENT_ONLY_SALES, describeQuestion, readQuestion } from './unbiseoQuestion.ts'
@@ -57,7 +56,6 @@ test('답 문장 — 미수금: 전체·거래처·달·0원', () => {
   assert.equal(describeQuestion({ ...unpaid, client: '한진' }, TODAY, false, numbers({ amount: 300000, count: 2 })), '한진 남은 미수금은 300,000원입니다. 2건입니다.')
   assert.equal(describeQuestion({ ...unpaid, period: OCT }, TODAY, false, numbers({ amount: 100000, count: 1 })), '10월 운행분 남은 미수금은 100,000원입니다. 1건입니다.')
   assert.equal(describeQuestion({ ...unpaid, client: '한진', period: OCT }, TODAY, false, numbers({ amount: 100000, count: 1 })), '한진 10월 운행분 남은 미수금은 100,000원입니다. 1건입니다.')
-  // 기사 차량 운행분이 섞이면 범위를 밝힌다(매출 답은 차주 탭 = 메인만).
   assert.equal(describeQuestion(unpaid, TODAY, false, numbers({ amount: 3309258, count: 14, withSub: true })), '남은 미수금은 3,309,258원입니다. 기사 차량을 포함해 14건입니다.')
   assert.equal(describeQuestion({ ...unpaid, client: '한진', period: OCT }, TODAY, false, numbers({ amount: 100000, count: 1, withSub: true })), '한진 10월 운행분 남은 미수금은 100,000원입니다. 기사 차량을 포함해 1건입니다.')
   assert.equal(describeQuestion(unpaid, TODAY, false, numbers({ amount: 0, count: 0, withSub: false })), '남은 미수금이 없습니다.')
@@ -87,7 +85,6 @@ test('숫자 없이 답하는 경우는 숫자를 내지 않는다: 그 밖·짧
   assert.equal(CLIENT_ONLY_SALES, '거래처별로는 매출과 미수금만 답할 수 있어요.')
 })
 
-// 로드맵 24-D3 — 하루 질문: 기간 이름 "오늘"·"10월 15일"·"2025년 9월 3일", 운송료 문장, 순이익·거래처 매출은 안내.
 test('하루 기간 읽기: 날짜 모양이면 그대로, 틀리면 이번 달(미수금은 전체)', () => {
   assert.deepEqual(readQuestion({ type: 'revenue', period: { unit: 'day', value: '2026-10-15' } }, TODAY).period, { unit: 'day', value: '2026-10-15' })
   for (const value of ['2026-10', '오늘', 20261015]) {

@@ -1,4 +1,3 @@
-// 금지 타입 표기 검사 — any·unknown을 타입으로 쓴 줄이 있으면 실패한다.
 import fs from 'node:fs'
 import path from 'node:path'
 
@@ -7,9 +6,7 @@ const SRC = path.join(ROOT, 'src')
 const BANNED = /\b(?:any|unknown)\b/
 /** 주석 속 타입 자리: @type {…} 같은 태그 뒤 중괄호. */
 const JSDOC_TAG = /@(?:type|param|returns?|typedef|property|prop|satisfies|this|throws|template)\s*\{/g
-/** TS 코드 속 타입 자리: `: any`, `as any`, `<any`, `any[]`, `| any`, `, any>`(unknown도 같음) */
 const TS_BANNED = /:\s*(?:any|unknown)\b|\bas\s+(?:any|unknown)\b|<\s*(?:any|unknown)\b|\b(?:any|unknown)\s*\[\]|\|\s*(?:any|unknown)\b|,\s*(?:any|unknown)\s*[>,)]/g
-/** 문자열·주석 — TS 코드 검사 전에 같은 길이 빈칸으로 바꿔 줄 번호를 지킨다. */
 const STRING_OR_COMMENT = /'(?:\\.|[^'\\\n])*'|"(?:\\.|[^"\\\n])*"|`(?:\\.|[^`\\])*`|\/\*[\s\S]*?\*\/|\/\/[^\n]*/g
 
 function sourceFiles(dir) {
@@ -22,7 +19,6 @@ function sourceFiles(dir) {
 
 const lineOf = (text, index) => text.slice(0, index).split('\n').length
 
-/** 태그 뒤 중괄호 짝을 맞춰 속 글자를 꺼낸다. */
 function braceBody(text, open) {
   let depth = 0
   for (let i = open; i < text.length; i += 1) {

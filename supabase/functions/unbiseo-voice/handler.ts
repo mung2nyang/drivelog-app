@@ -1,4 +1,3 @@
-// 운비서 답 문장을 xAI 목소리(Ara)로 — 로그인한 사람만, 문장 내용은 기록에 안 남기고 글자 수만(로드맵 24-E2).
 import { createClient } from 'npm:@supabase/supabase-js@2.112.3'
 
 type Json = string | number | boolean | null | Array<Json> | { [key: string]: Json }
@@ -7,7 +6,6 @@ const API_URL = 'https://api.x.ai/v1/tts'
 const VOICE_ID = 'ara'
 const TEXT_MAX = 300
 const TIMEOUT_MS = 15000
-// 말소리라 낮은 비트레이트로 — 파일이 작아 휴대폰에서 빨리 받는다.
 const OUTPUT_FORMAT = { codec: 'mp3', sample_rate: 24000, bit_rate: 32000 }
 const TRY_LATER = '잠시 뒤 다시 시도해 주세요.'
 const DAILY_LIMIT = 20
@@ -22,7 +20,6 @@ function reply(status: number, body: Json): Response {
   return new Response(JSON.stringify(body), { status, headers: { ...CORS, 'Content-Type': 'application/json' } })
 }
 
-/** 앱이 보낸 문장 — 모양이 틀리면 null(400). */
 export function readText(body: Json): string | null {
   const row = body && typeof body === 'object' && !Array.isArray(body) ? body : null
   const text = row && typeof row.text === 'string' ? row.text.trim() : ''
@@ -33,7 +30,6 @@ function bearer(req: Request): string {
   return (req.headers.get('Authorization') || '').replace(/^Bearer\s+/i, '').trim()
 }
 
-// 로그인 확인·횟수 세기는 unbiseo-parse와 같은 방식 — 함수끼리 파일을 나눠 쓸 수 없어 따로 둔다.
 async function signedInUserId(req: Request): Promise<string | null> {
   const token = bearer(req)
   const url = Deno.env.get('SUPABASE_URL')
@@ -43,7 +39,6 @@ async function signedInUserId(req: Request): Promise<string | null> {
   return error || !data.user ? null : data.user.id
 }
 
-/** 그 회원의 오늘(한국 날짜) 목소리 횟수를 1 센다 — 한도 안이면 true, 넘었으면 false, 셀 수 없으면 null. */
 async function countToday(req: Request): Promise<boolean | null> {
   const url = Deno.env.get('SUPABASE_URL')
   const key = publishableKey()
@@ -69,7 +64,6 @@ function publishableKey(): string | null {
   }
 }
 
-/** xAI 소리 파일. 키 없음·오류·시간 넘김·빈 소리면 null. */
 async function askVoice(text: string): Promise<ArrayBuffer | null> {
   const apiKey = Deno.env.get('XAI_API_KEY')
   if (!apiKey) return null
@@ -112,9 +106,7 @@ export async function handleRequest(req: Request): Promise<Response> {
   if (!allowed) return reply(429, { error: USED_UP, limit: DAILY_LIMIT })
   const startedAt = Date.now()
   const sound = await askVoice(text)
-  // 비용 세기용 — 글자 수·걸린 시간·성공 여부만, 문장은 남기지 않는다.
   console.log('[unbiseo-voice] tts', JSON.stringify({ chars: text.length, ms: Date.now() - startedAt, ok: !!sound, bytes: sound?.byteLength ?? 0 }))
   if (!sound) return reply(503, { error: TRY_LATER })
-  // 앱의 함수 부르기가 소리 파일로 받는 형식(audio/mpeg는 글자로 읽어 깨진다).
   return new Response(sound, { status: 200, headers: { ...CORS, 'Content-Type': 'application/octet-stream' } })
 }

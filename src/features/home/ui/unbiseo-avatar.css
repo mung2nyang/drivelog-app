@@ -19,7 +19,6 @@
   opacity: 0;
 }
 
-/* 움직임 줄이기를 켠 기기에서는 멈춘 그림만. */
 @media (prefers-reduced-motion: reduce) {
   .unbiseo-avatar-layer { display: none; }
   .unbiseo-avatar.playing > img { visibility: visible; }

@@ -1,5 +1,3 @@
-// 노선·횟수 버튼을 빨리 이어서 고쳐도 앞 변경이 되돌아가지 않는다.
-// 로그인이면 서버 저장이 끝나야 화면 설정이 바뀌므로, 화면은 옛 설정 그대로 두고 실제 저장 창구(savePracticeSettings)로 저장한다.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 
@@ -27,10 +25,7 @@ const { setHydration } = await import('../../../data/store/app-store.ts')
 const { commitSettings } = await import('../../../data/store/commitHelpers.ts')
 const { readOwnerSettings } = await import('../../../data/store/ownerDataHooks.ts')
 
-/**
- * 로그인 계정에 설정을 넣고, 옛 설정을 받은 화면을 그린다. 서버 저장(프로필 행 upsert)은 20ms 걸린다.
- * @param {string} ownerKey @param {import('../../../domain/financeTypes.ts').FinanceSettings} raw @param {typeof RoutePresetEditor | typeof RunCountChips} Component
- */
+/** @param {string} ownerKey @param {import('../../../domain/financeTypes.ts').FinanceSettings} raw @param {typeof RoutePresetEditor | typeof RunCountChips} Component */
 async function mountStale(ownerKey, raw, Component) {
   resetHandlers()
   Object.assign(handlers, emptyOkHandlers())

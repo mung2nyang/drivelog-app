@@ -1,5 +1,4 @@
 // @ts-check
-// 차량 목록·등록/수정 창 — 그리기와 창 열기만, 저장·연동 해제·삭제 흐름은 useCarListActions.
 import { useState } from 'react'
 import ConfirmModal from '../../../shared/ui/ConfirmModal.tsx'
 import PageHeader from '../../../shared/ui/PageHeader.tsx'
@@ -76,7 +75,6 @@ export default function CarListPage({ onBack, onOpenMenu }) {
       driverSalaryAmount: car.driverSalaryAmount != null ? String(car.driverSalaryAmount) : '',
       commEnabled: !!car.commEnabled,
       commType: 'percent',
-      // 옛 건당 자료는 수수료 빈 칸으로 연다.
       commission: car.commType === 'direct' ? '' : String(car.commission ?? ''),
       ...driverIncomeDraftFromCar(car), driverShareBase: resolveDriverShareBase(car),
       inviteCode: linked?.inviteCode || (car.type === 'sub' && cloud ? generateInviteCode(drivers) : ''),

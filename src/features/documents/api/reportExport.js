@@ -3,7 +3,7 @@ import { saveFileToDevice } from '../../../shared/utils/saveFile.ts'
 
 /**
  * @param {HTMLElement} element
- * @param {'portrait'|'landscape'} [orientation] 넘기면 그 방향 A4 너비로 그림(법정 서식 = 가로)
+ * @param {'portrait'|'landscape'} [orientation]
  * @returns {Promise<HTMLCanvasElement>}
  */
 async function renderReportCanvas(element, orientation) {
@@ -26,8 +26,7 @@ async function renderReportCanvas(element, orientation) {
 }
 
 /**
- * 이미지 여백(픽셀) — PDF에서 내용 폭은 A4 너비에서 좌우 10mm를 뺀 값(세로 190mm, 가로 277mm).
- * @param {number} width 그린 그림 너비(픽셀)
+ * @param {number} width
  * @param {'portrait'|'landscape'} [orientation]
  * @returns {{ x: number, y: number }}
  */
@@ -36,7 +35,6 @@ export function imageMarginPx(width, orientation) {
   return { x: Math.round((width * 10) / contentMm), y: Math.round((width * 12) / contentMm) }
 }
 
-// PDF 여백(위아래 12mm·좌우 10mm)과 같은 비율로 이미지 둘레에 흰 여백을 둔다.
 /**
  * @param {HTMLCanvasElement} canvas
  * @param {'portrait'|'landscape'} [orientation]
@@ -67,7 +65,7 @@ function canvasToPngBlob(canvas) {
 
 /**
  * @param {HTMLElement} element
- * @param {string} baseName 확장자 없는 파일명
+ * @param {string} baseName
  * @param {{ orientation?: 'portrait'|'landscape' }} [options]
  * @returns {Promise<File>}
  */
@@ -80,7 +78,7 @@ export async function createReportImageFile(element, baseName, { orientation } =
 /**
  * @param {HTMLElement} element
  * @param {string} baseName
- * @param {{ orientation?: 'portrait'|'landscape' }} [options] 안 넘기면 세로(일상점검표 법정 서식은 가로)
+ * @param {{ orientation?: 'portrait'|'landscape' }} [options]
  * @returns {Promise<File>}
  */
 export async function createReportPdfFile(element, baseName, { orientation = 'portrait' } = {}) {
@@ -98,10 +96,9 @@ export async function createReportPdfFile(element, baseName, { orientation = 'po
 }
 
 /**
- * 화면의 운송비 내역서를 내보내기 모드로 그려 파일로 — 끝나면(실패해도) 모드를 뗀다.
  * @param {HTMLElement} element
  * @param {'pdf'|'image'} type
- * @param {string} baseName 확장자 없는 파일명
+ * @param {string} baseName
  * @returns {Promise<File>}
  */
 export async function buildReportExportFile(element, type, baseName) {

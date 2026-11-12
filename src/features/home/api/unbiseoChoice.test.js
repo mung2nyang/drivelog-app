@@ -1,5 +1,4 @@
 // @ts-check
-// 로드맵 24-H-3 — 되묻기 버튼을 말로 고르기: 딱 하나 맞을 때만 그 버튼, 둘 이상·없음은 null.
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { ALL_WORDS, DIRECT_WORDS, clientWords, matchChoice, monthWords, stepQuestion, templateWords } from './unbiseoChoice.ts'

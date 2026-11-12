@@ -1,5 +1,3 @@
-// 로드맵 60 — 차량 관리 화면의 저장·연동 해제·삭제 흐름(훅으로 옮기기 전 동작을 그대로 적음).
-// 서버 요청 함수는 가짜로 바꿔 끼워 어떤 요청이 몇 번 불렸는지만 본다.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

@@ -1,4 +1,3 @@
-// 앱(Capacitor C-5) 뒤로가기 — 앞 기록이 있으면 크롬처럼 뒤로, 없으면 1번은 종료 안내·4초 안 1번 더면 앱 닫기. 홈 붙잡기 기록은 앱에서 안 쌓음, 당겨 새로고침은 켜짐.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

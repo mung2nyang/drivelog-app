@@ -1,4 +1,3 @@
-// 계산서 저장(saveInvoices) — 계산 규칙은 domain/invoices.ts.
 import { commitInvoices } from '../store/commitHelpers.ts'
 import { getState } from '../store/app-store.ts'
 import {

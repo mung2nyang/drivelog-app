@@ -1,5 +1,3 @@
-// 결제·수수료·월 매출(getMonthlyFareRevenue) 등 순수 계산(finance.ts가 재수출).
-// §6 예외(~250 한도 내) — getMonthlyDriverTotals 계산이 한 함수 안에서 응집돼야 해서 나누지 않는다.
 import {
   getShortCarNum,
   isVehicleRevenueSharedWithOwner,
@@ -59,7 +57,6 @@ export function getCallDetailDurationMinutes(detail: CallDetailLike) {
   return minutes
 }
 
-/** 수수료 판단 정본 — 저장된 commissionSnapshot 우선, 없으면 현재 거래처 설정. */
 export function resolveCallDetailCommission(detail: CallDetailLike | null | undefined, settings: FinanceSettings): { enabled: boolean, type: string | null | undefined, value: string | number | null | undefined } {
   const snapshot = detail?.commissionSnapshot
   if (snapshot) return { enabled: snapshot.enabled, type: snapshot.type, value: snapshot.value }
@@ -73,10 +70,6 @@ export function getCallDetailCommissionAmount(detail: CallDetailLike, fare: numb
   return type === 'direct' ? parseCurrencyValue(value) : Math.floor(fare * (parseFloat(String(value)) || 0) / 100)
 }
 
-// 고정노선 운행(fixedCount)은 그날 기록에 금액이 저장 안 되고 단가×횟수로 매번
-// 계산된다(clients.ts computeFixedRouteFare, getOwnerMonthlyFinanceDetail과 공식
-// 공유) — settings 없이는 이 계산을 못 하므로 인자로 받는다(없으면 고정노선 운행이 0으로 잡힌다).
-// scopeKey: 고정 노선 거래처를 찾을 차량 번호(없으면 연동 정보의 차량 번호).
 export function getMonthlyDriverTotals(data: Record<string, DayRecordLike>, monthKey: string, link: DriverLinkLike | null = null, settings: FinanceSettings = {}, scopeKey?: string) {
   const key = scopeKey || link?.vehicleNumber
   const fixedRouteClient = getFixedRouteClient(settings, key)
@@ -109,7 +102,6 @@ export function getMonthlyDriverTotals(data: Record<string, DayRecordLike>, mont
 }
 
 export function calculateDriverVehicleCommission(car: CarLike, grossAmount: number) {
-  // 옛 건당 자료는 수수료 미설정으로 읽는다(기사 몫 0원).
   if (!car?.commEnabled || !car.commission || car.commType === 'direct') return 0
   return Math.floor(grossAmount * (parseFloat(String(car.commission)) || 0) / 100)
 }
@@ -129,7 +121,6 @@ export function getMonthlyFareRevenue(monthKey: string, settings: FinanceSetting
   sources.forEach((source) => {
     const isMain = source.logId === 'main'
     const activeFixedOn = isMain ? settings.fixedOn : settings.subFixedOn
-    // 소스(차량)별 스코프 고정노선 우선, 없으면 차주 것 fallback(getFixedRouteClient).
     const fixedRouteClientForTotals = getFixedRouteClient(settings, source.logId)
     const activePalletOn = !!fixedRouteClientForTotals?.palletOn
     const fixedUnitPrice = resolveFixedUnitPrice(settings, source.logId)
@@ -152,7 +143,6 @@ export function getMonthlyFareRevenue(monthKey: string, settings: FinanceSetting
       ;(Array.isArray(record.callDetails) ? record.callDetails : []).forEach((detail) => {
         const type = detail?.distanceType || ''
         if (type === '공차') {
-          // 0회 처리
         } else if (type === '혼짐') {
           if (detail.linkedLoadIndex === 'pending' || detail.linkedLoadIndex === '-1' || detail.linkedLoadIndex === undefined) {
             vehicleCount += 1

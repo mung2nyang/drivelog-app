@@ -34,9 +34,7 @@ const sampleItem = {
   unloadLoc: '부산',
 }
 
-/**
- * @param {Object} [props]
- */
+/** @param {Object} [props] */
 function mountSheet(props = {}) {
   const container = document.createElement('div')
   document.body.appendChild(container)

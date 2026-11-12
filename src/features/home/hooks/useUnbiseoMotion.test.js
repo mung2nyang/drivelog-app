@@ -1,5 +1,3 @@
-// 운비서 상황 고르기 — 쉴 때, 소리 내 말하는 동안 답하는 중, 글로만 답하면 답하는 중 두 바퀴,
-// 듣는 동안 듣는 중, 입력하는 동안 입력 중(1초 쉬면 끝). 겹치면 말하기 > 듣기 > 글 답 > 입력.
 import '../../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
@@ -59,7 +57,6 @@ test('아무 일 없으면 쉴 때 그림을 계속 넘긴다', async () => {
 
 test('소리 내 말하는 동안 답하는 중을 계속, 말이 끝나면 쉴 때로', async () => {
   const view = await mount()
-  // 마이크로 물으면 답과 말하기가 같이 바뀐다 — 두 바퀴 짜리가 아니라 계속.
   await view.show({ speaking: true, answer: said('오늘 매출은 30만 원이에요.') })
   assert.deepEqual(view.motion(), { situation: 'talk', loops: 'infinite' })
   await view.show({ speaking: false })

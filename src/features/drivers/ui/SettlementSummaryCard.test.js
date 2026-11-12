@@ -1,4 +1,3 @@
-// 로드맵 4-2 — 기사 관리 정산 요약 카드: 총 운송료 / 기사 정산금 / 산재보험(기사 몫) / 원천징수(3.3%) / 최종 실수령.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

@@ -3,7 +3,6 @@ import { formatWon, parseCurrencyValue } from '../../../domain/money.ts'
 
 /** @typedef {import('./dayLogTypes.js').ClientLike} ClientLike */
 
-// 금액은 저장하지 않고 달력과 같은 공식(횟수 × 거래처 단가, 수수료 전)으로 보여 주기만 한다.
 /**
  * @param {Object} props
  * @param {string} props.label

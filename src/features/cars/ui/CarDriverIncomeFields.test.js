@@ -1,4 +1,3 @@
-// 로드맵 4-2 — 기사차량 폼의 기사 유형·산재보험·원천징수(3.3%)·필요경비율·산재보험료율 블록.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 
@@ -43,7 +42,6 @@ function typeInto(target, value) {
 }
 
 /**
- * draft 상태를 들고 있는 하네스를 그리고, 현재 draft를 읽는 함수를 돌려준다.
  * @param {(props: HarnessProps) => import('react').ReactElement} render
  * @param {CarFormDraft} [initial]
  */

@@ -1,10 +1,8 @@
-// 추가 버튼을 한 번 더 누르면 같은 새 입력 칸이 닫힘(2026-10-08 결정), 다른 경우는 지금처럼 열림.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 
-// 나가기 확인이 앱 확인 창 부품(.jsx)을 쓰므로 .jsx 로더를 건다.
 register(pathToFileURL('./src/testSupport/jsxLoaderHook.mjs').href, import.meta.url)
 const { bindInlinePanelActions } = await import('./inlinePanelActions.js')
 
@@ -59,7 +57,6 @@ test('나가기 확인(로드맵 36): 세부·정비 입력 칸이 열려 있으
   let answer = false
   Reflect.set(globalThis, 'window', { confirm: (/** @type {string} */ message) => { asked.push(message); return answer } })
   try {
-    // 앱 확인 창을 그릴 곳(AppShell)이 없는 테스트에서는 같은 문구로 기본 창이 대신 묻는다.
     assert.equal(await setup({ callFormOpen: true }).actions.confirmLeaveOpenPanel(), false, '세부 입력 칸 열림 + 계속 입력 → 머문다')
     assert.equal(await setup({ modalOpen: true }).actions.confirmLeaveOpenPanel(), false, '정비 입력 칸 열림 + 계속 입력 → 머문다')
     answer = true

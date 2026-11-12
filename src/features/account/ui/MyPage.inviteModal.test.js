@@ -1,4 +1,3 @@
-// 마이페이지 "초대코드 입력"은 전체 화면이 아니라 마이페이지 위 팝업으로 열린다(주소 이동 없음).
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

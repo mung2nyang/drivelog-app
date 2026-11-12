@@ -22,11 +22,6 @@ describe('initDayLogState — store record을 로컬 draft로 복제', () => {
   })
 
   test('재감사(FAIL 지적 3번) — initDayLogState는 더 이상 id를 스스로 만들지 않는다', () => {
-    // id 없는 레거시 콜상세를 영구 id로 채우는 책임은 domain/day-record.js의
-    // backfillCallDetailIds(→ day-record.test.js)로 옮겼다 — useDayDraft.js가
-    // 마운트 시 그 함수로 미리 채운 레코드만 initDayLogState에 넘긴다. 이 함수 자신은
-    // "이미 있는 값을 그대로 옮기기만" 해야 한다 — 예전처럼 매번 다른 임시 id를
-    // 즉석에서 만들면(store에 반영 안 됨) 새로고침·삭제·재정렬마다 id가 흔들렸다.
     const state = initDayLogState({ callDetails: [{ fare: '1000' }] })
     assert.equal(state.draft.callDetails[0].id, undefined, 'initDayLogState가 스스로 id를 만들면 안 된다')
   })
@@ -80,9 +75,6 @@ describe('dayLogReducer — patchDraft/openCallForm/closeCallForm', () => {
   })
 
   test('알 수 없는 action은 state를 그대로(같은 참조) 돌려준다', () => {
-    // 이 파일은 // @ts-check 대상이 아니다(다른 도메인 테스트 파일들과 같은 관례) —
-    // 여기서는 리듀서의 런타임 방어(default 분기)만 확인하면 되고, 잘못된 action
-    // 모양을 타입으로 굳이 흉내 낼 필요가 없다.
     const state = initDayLogState(undefined)
     const next = dayLogReducer(state, { type: 'unknown' })
     assert.equal(next, state)

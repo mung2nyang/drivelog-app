@@ -1,5 +1,4 @@
 // @ts-check
-// 콜상세 거래처 입력란 옆 "+ 추가" — ClientFormModal·requestClientSave 재사용.
 import { useState } from 'react'
 import ClientFormModal from '../../clients/ui/ClientFormModal.jsx'
 import { getCloudUserId } from '../../../data/cloud/cloudSession.ts'

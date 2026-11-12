@@ -1,4 +1,3 @@
-// 로드맵 82-C — 고정 노선 거래처 창: 거래처를 안 고르고 저장하면 고르는 단추에 빨간 표시·칸 아래 문구·커서.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

@@ -1,5 +1,4 @@
 // @ts-check
-// 로드맵 23-C — 알림 화면의 문의 알림: 비회원은 서버 안 부름, 답변 도착·관리자 새 문의, 서버 오류면 문의 알림만 빠짐, 계정 바뀜, 스위치.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

@@ -1,4 +1,3 @@
-// 앱 공용 확인 창은 화면 안의 창(점검표 창 등)보다 위에 그려져야 한다 — 같은 층(z-index)이면 문서 순서가 뒤인 쪽이 위.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

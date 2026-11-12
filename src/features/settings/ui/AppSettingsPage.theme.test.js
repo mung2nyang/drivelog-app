@@ -1,4 +1,3 @@
-// 앱 설정 "화면 테마" 세 칸(휴대폰 설정·라이트·다크): 눌림 표시, 저장 값, 바로 칠한 색.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

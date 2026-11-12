@@ -1,4 +1,3 @@
-// 0-2 — 프로필 서버 저장·복원에 대표자명(business_representative)·예금주(account_holder)가 포함되는지.
 import { mock, test } from 'node:test'
 import assert from 'node:assert/strict'
 

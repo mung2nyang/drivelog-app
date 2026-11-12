@@ -1,5 +1,4 @@
 // @ts-check
-// 로드맵 75 — 휴무일 콜은 모든 화면에서 제외(2026-10-15 결정, F-03 변경).
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { monthCallUnpaidTotal } from './day-record.ts'

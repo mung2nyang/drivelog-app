@@ -1,5 +1,3 @@
-// 슬라이스 D — 로그인 메인 일지의 클라우드 Fail-Fast 저장(commitMainDayLogToCloud)을
-// UI가 타는 실제 코드 경로(useDayDraft.commitNow가 부르는 함수)로 직접 검증한다.
 import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { describe, test } from 'node:test'
@@ -169,7 +167,7 @@ describe('commitMainDayLogToCloud — 슬라이스 D Fail-Fast', () => {
     handlers.rpc = { save_day_log: () => gate.then(() => ({ data: 5001, error: null })) }
 
     const promise = commitMainDayLogToCloud({ ownerKey: 'dlc-epoch', logId: 'main', dateKey: DK, previousData: { [DK]: { fixedCount: 2 } }, nextData: { [DK]: { fixedCount: 9, callDetails: [] } } })
-    endCloudSession() // await 대기 중 로그아웃
+    endCloudSession()
     releaseUpsert()
     const r = await promise
 

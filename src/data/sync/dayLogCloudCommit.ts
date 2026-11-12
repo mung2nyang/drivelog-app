@@ -1,5 +1,3 @@
-// 로그인 일지는 durable/retry 없이 그 날짜 daily_logs(+transport_details)에 직접 1회 쓰고 성공 때만 Store 반영(Fail-Fast). 게스트·미동기화는 { cloud: false }로 로컬 경로.
-// §6: 단건/복수건 커밋이 헬퍼 4개(writeDayKeyToServer 등)를 공유하는 응집 단위. 빈 날 서버 삭제 규칙은 dailyLogRemoval.ts.
 import type { DayRecordLike } from '../../domain/dayRecordTypes.ts'
 import type { SessionCapture } from './syncTypes.ts'
 import { supabase } from '../cloud/supabaseClient.ts'
@@ -37,7 +35,6 @@ function clientIdByName(ownerKey: string): Map<string, number | string> {
   return map
 }
 
-/** 그 날짜 transport_details에 넣을 줄(서버가 전량 교체). */
 function transportDetailRows(userId: string, vehicleId: number | string, workDate: string, record: DayRecordLike, byName: Map<string, number | string>) {
   const callDetails = Array.isArray(record?.callDetails) ? record.callDetails : []
   return callDetails.map((detail, index) => ({
@@ -62,7 +59,6 @@ async function writeDayKeyToServer(userId: string, vehicleId: number | string, o
   const hadBefore = !!previousData[dateKey]
   const record = nextData[dateKey]
   if (record) {
-    // 하루 기록 줄과 콜 상세를 서버 함수 한 번으로 — 하나가 실패하면 둘 다 저장 전 그대로.
     const { error } = await supabase.rpc('save_day_log', {
       p_log: dailyLogRow(userId, vehicleId, dateKey, record),
       p_rows: transportDetailRows(userId, vehicleId, dateKey, record, clientIdByName(ownerKey)),
@@ -75,7 +71,6 @@ async function writeDayKeyToServer(userId: string, vehicleId: number | string, o
   }
 }
 
-/** 저장한 날짜만 지금 Store 위에 얹는다 — 그 사이 끝난 다른 날짜 저장을 되돌리지 않게. */
 function commitSavedDays(ownerKey: string, logId: string, nextData: Record<string, DayRecordLike>, dateKeys: string[]) {
   const latest = { ...readOwnerLogWorkData(ownerKey, logId) }
   for (const dateKey of dateKeys) {
@@ -123,7 +118,6 @@ export async function commitMainDayLogToCloud({ ownerKey, logId, dateKey, previo
   }
 }
 
-/** 여러 dateKey를 순차 서버 커밋한다. 성공한 날짜만 Store에 부분 반영(일괄 미수). */
 export async function commitMainDayLogMapToCloud({ ownerKey, logId, dateKeys, previousData, nextData }: { ownerKey: string, logId: string, dateKeys: string[],
   previousData: Record<string, DayRecordLike>, nextData: Record<string, DayRecordLike> }): Promise<{ cloud: false } | { cloud: true, ok: boolean, partial: boolean,
   appliedDateKeys: string[], failedDateKeys: string[], toast: string | null }> {
@@ -156,7 +150,6 @@ export async function commitMainDayLogMapToCloud({ ownerKey, logId, dateKeys, pr
   }
 
   const failedDateKeys = dateKeys.filter((dateKey) => !appliedDateKeys.includes(dateKey))
-  // 세션이 바뀌었으면 반영하지 않는다 — 이전 계정 일지가 화면·기기에 남지 않게.
   if (appliedDateKeys.length > 0 && isSessionStillCurrent(captured)) commitSavedDays(ownerKey, logId, nextData, appliedDateKeys)
 
   const ok = failedDateKeys.length === 0

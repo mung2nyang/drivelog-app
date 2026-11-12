@@ -1,5 +1,4 @@
 // @ts-check
-// 회원 데이터 불러오기(22-B): 거래처(업체명·번호)·지출·계산서(번호) 중 지금 없는 것만, 내 차량·미연동 차량 기록만 고른다.
 import assert from 'node:assert/strict'
 import { mock, test } from 'node:test'
 

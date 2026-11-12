@@ -1,4 +1,3 @@
-// 세금계산서 "원천 그룹" 계산(거래처 매출 소스 그룹, 기사 정산 상세·거래처별 재그룹) — 레코드 조립(id/발급 상태 등)은 financeTaxInvoiceEntries.ts.
 import { getVehicleSupplierIdentity } from './cars.ts'
 import { computeFixedRouteFare, getFixedRouteClient, resolveFixedUnitPrice } from './clients.ts'
 import { isDateWithinAssignment } from './drivers.ts'
@@ -13,7 +12,6 @@ import type { DayRecordLike } from './day-record.ts'
 export type SupplierIdentity = { key?: string, biz?: SupplierBiz, carLabel?: string, carNumber?: string }
 export type DriverTrip = { type: 'call' | 'fixed', dateKey: string, client: string, loadLoc: string, unloadLoc: string, fare: number, vatExempt: boolean, platform?: string, distanceKm?: string | number, cargoTonnage?: string | number, paymentDueDate?: string, remarks?: string, fixedCount?: number, palletFare?: number }
 
-/** 거래처 매출 계산서 원천 그룹(메인 + 기사차량 운행분). 계산서 종류는 매출뿐(기사 매입·수수료 발행은 없앰) — flow는 저장 id 호환용. logKey('main'|차량번호)를 넘기면 그 차량 운행분만(서류 발급 차량별). */
 export function getTaxInvoiceSourceGroups(monthKey: string, flow: 'sales' = 'sales', settings: FinanceSettings = {}, workDataByLogId: WorkDataByLogId = {}, logKey?: string) {
   const cars = settings.cars || []
   if (flow !== 'sales') return []
@@ -42,7 +40,6 @@ export function getTaxInvoiceSourceGroups(monthKey: string, flow: 'sales' = 'sal
   }
 
   sources.filter((source) => !logKey || source.logId === logKey).forEach((source) => {
-    // 소스(차량)별 스코프 고정노선 우선, 없으면 차주 것 fallback(getFixedRouteClient).
     const fixedRouteClientForInvoice = getFixedRouteClient(settings, source.logId)
     const fixedClientName = fixedRouteClientForInvoice?.companyName || ''
     const fixedUnitPrice = parseCurrencyValue(fixedRouteClientForInvoice?.fixedUnitPrice)
@@ -50,7 +47,6 @@ export function getTaxInvoiceSourceGroups(monthKey: string, flow: 'sales' = 'sal
     const palletUnitPrice = parseCurrencyValue(fixedRouteClientForInvoice?.palletPrice)
     const supplier = getVehicleSupplierIdentity(source.car, settings) as SupplierIdentity
     Object.entries(source.data || {}).forEach(([dateKey, record]) => {
-      // 휴무 날은 콜·고정 노선·파렛트 모두 빼기(다른 합계와 같음).
       if (record?.isOff) return
       ;(record?.callDetails || []).forEach((detail) => {
         const workDate = detail.workDate || dateKey
@@ -76,7 +72,6 @@ export function getTaxInvoiceSourceGroups(monthKey: string, flow: 'sales' = 'sal
         }
       }
 
-      // 파렛트도 고정 노선 거래처 계산서에 — 달력·매출과 같은 조건(고정 노선 켜짐 + 거래처 파렛트 켜짐), 부가세는 날마다.
       const palletAmount = getPalletCount(record) * palletUnitPrice
       if (palletOn && palletAmount > 0 && fixedClientName && dateKey.startsWith(monthKey)) {
         const group = getOrCreateGroup(fixedClientName, supplier, source.logId)
@@ -93,9 +88,6 @@ export function getTaxInvoiceSourceGroups(monthKey: string, flow: 'sales' = 'sal
   }))
 }
 
-// 고정노선(fixedCount)은 그날 기록에 금액이 없어 단가×횟수로 계산해야
-// 드릴다운 목록의 "고정" 트립 금액도 0이 아니게 나온다(getMonthlyDriverTotals와
-// 같은 공식, computeFixedRouteFare 재사용).
 export function flattenLinkedDriverTrips(data: Record<string, DayRecordLike>, monthKey: string, link?: DriverLinkLike, settings: FinanceSettings = {}) {
   const fixedRouteClient = getFixedRouteClient(settings, link?.vehicleNumber)
   const fixedRouteOpts = {
@@ -142,7 +134,6 @@ export function flattenLinkedDriverTrips(data: Record<string, DayRecordLike>, mo
 export function getLinkedDriverSettlementDetail(data: Record<string, DayRecordLike>, monthKey: string, link: DriverLinkLike, car: CarLike, settings: FinanceSettings = {}) {
   const totals = getMonthlyDriverTotals(data, monthKey, link, settings)
   const base = driverShareBaseAmount(car, totals.grossAmount, getMonthlyDriverClientCommission(data, monthKey, link, settings))
-  // 연동 없는 차량은 이전 기사 기간을 빼고 센다 — 매출 기사 급여 줄과 같은 금액.
   const past = link.assignmentStart ? [] : getPreviousDriverPeriods(monthKey, settings, car, data, null)
   const commissionAmount = calculateDriverVehicleCommission(car, base) - past.reduce((sum, item) => sum + item.share, 0)
   const insuranceAmount = car?.insuranceOn ? totals.insuranceAmount : 0
@@ -163,9 +154,7 @@ export function getLinkedDriverSettlementDetail(data: Record<string, DayRecordLi
 export function getLinkedDriverClientInvoiceGroups(trips: Array<DriverTrip>, car: CarLike, ownerSettings: FinanceSettings) {
   const supplier = getVehicleSupplierIdentity(car, ownerSettings) as SupplierIdentity
   const grouped: Record<string, { clientName: string, count: number, supplyAmount: number, taxAmount: number, trips: Array<DriverTrip> }> = {}
-  /** 거래처 미지정 운행 — 계산서 대상 아님, 화면에 목록으로만 */
   const unassignedTrips: Array<DriverTrip> = []
-  // 고정 노선(파렛트 포함)도 그 차량 고정 노선 거래처 카드에 — 서류 발급 세금계산서와 같게, 건수는 고정 횟수만, 부가세는 고정·파렛트 따로.
   const fixedClientName = getFixedRouteClient(ownerSettings, car?.number)?.companyName || ''
   trips.forEach((trip) => {
     const isFixed = trip.type === 'fixed'

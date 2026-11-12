@@ -1,4 +1,3 @@
-// 운비서 목소리 서버 시험: 앱이 보낸 문장 읽기. CI에서 deno test로 돈다.
 import assert from 'node:assert/strict'
 import { readText } from '../unbiseo-voice/handler.ts'
 

@@ -1,5 +1,4 @@
 // @ts-check
-// 휴대폰 알림 걸기 — 웹은 안 함, 처음 한 번만 허용 묻기, 거절이면 안 검, 값이 바뀌면 모두 지우고 다시, 누르면 그 화면, 로그아웃이면 모두 지움.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 
@@ -24,7 +23,6 @@ const taps = []
 
 mock.module('@capacitor/core', { namedExports: { Capacitor: { isNativePlatform: () => native } } })
 mock.module('@capacitor/app', { namedExports: { App: { addListener: async () => ({ remove: async () => {} }) } } })
-// 진짜 플러그인처럼 모르는 이름(then 포함)은 휴대폰 기능 부르기로 바뀌어 실패한다.
 const plugin = {
   checkPermissions: async () => ({ display: permission }),
   requestPermissions: async () => { requests += 1; permission = 'granted'; return { display: permission } },
@@ -92,7 +90,6 @@ async function mount(initial) {
   return {
     path: () => path,
     setSession: async (/** @type {object|null} */ next) => { await act(async () => { setSession(next) }) },
-    // 화면을 치운 뒤 늦게 끝나는 걸기·지우기가 다음 시험의 가짜 장치로 넘어가지 않게 잠시 기다린다.
     cleanup: async () => {
       await act(async () => { root.unmount() })
       for (let i = 0; i < 10; i += 1) await act(async () => { await flush() })

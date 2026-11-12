@@ -3,8 +3,6 @@ import { isValidCurrencyAmount } from './callDetailSchema.ts'
 import { by, finiteNumber, nonEmptyString, opt, plain, str, stringOrNumber } from '../../domain/schemaParts.ts'
 import type { JsonValue } from '../../domain/jsonTypes.ts'
 
-// 옛 하루 기록 안 주유·정비·기타 항목의 칸 → 모양(Valibot, 공용 조각은 domain/schemaParts.ts). 목록 밖 칸·값이 비어 있는 칸은 거부.
-// 돈: 유한 숫자면 음수·소수도 받고, 글자면 금액 규칙("1,000원"·빈 글자).
 const money = v.union([finiteNumber, by(isValidCurrencyAmount)])
 
 const FUEL_ITEM = plain(v.strictObject({

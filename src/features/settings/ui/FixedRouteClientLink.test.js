@@ -1,4 +1,3 @@
-// 앱 설정 고정 노선 "거래처 연결": 요약 줄 + 팝업(고르기·단가·파렛트·저장/연결 해제) → Store, 1곳 규칙, 스코프(서브차량·연동기사).
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 
@@ -50,7 +49,6 @@ async function render(owner, path, session = null) {
         React.createElement(Route, { path: '/settings', element: page }),
         React.createElement(Route, { path: '/logs/:logId/settings', element: page }))), (/** @type {string} */ m) => { toasts.push(m) }))
   })
-  // 팝업은 document.body에 그려진다(createPortal).
   const modal = () => document.querySelector('.fixed-route-client-modal')
   const openModal = async () => {
     const button = container.querySelector('.fixed-route-client-open')

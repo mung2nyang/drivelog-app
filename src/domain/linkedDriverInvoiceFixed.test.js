@@ -2,7 +2,6 @@ import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { getLinkedDriverClientInvoiceGroups, getLinkedDriverSettlementDetail } from './finance.ts'
 
-// 기사 관리 거래처 세금계산서 카드에도 고정 노선·파렛트 — 서류 발급 세금계산서와 같게(로드맵 113-C).
 const PLATE = '서울99가9998'
 const CAR = { type: 'sub', number: PLATE }
 const LINK = { id: 'l1', vehicleNumber: PLATE, assignmentStart: '2026-10-01', assignmentEnd: '2026-10-31' }

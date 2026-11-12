@@ -1,5 +1,3 @@
-// 그림 줄 넘기기 — 칸 위치·시간 계산, 겹침 0이면 바로 넘김, 겹침이 있으면 위 겹을 띄운 뒤 아래 겹을 맞춤,
-// 두 바퀴면 다 돈 뒤 알림, 멈춤이면 첫 칸.
 import '../../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { mock, test } from 'node:test'

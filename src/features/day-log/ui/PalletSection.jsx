@@ -1,5 +1,4 @@
 // @ts-check
-// 파렛트 회수 입력. fixedOn + 고정노선 연결 거래처의 palletOn이 켜져 있을 때만 보인다.
 import { FixedAmountLine } from './FixedCountSection.jsx'
 
 /** @typedef {import('./dayLogTypes.js').ClientLike} ClientLike */

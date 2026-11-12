@@ -181,14 +181,12 @@ describe('buildEmployedDriverSnapshot — 소속기사 hydrate 비용 및 스냅
 
     assert.equal(snapshot.profile.name, '기사본인')
     assert.equal(snapshot.profile.phone, '010-9999-8888')
-    // 9-B-0: 사업자 정보 7칸·정산 계좌 3칸은 차주가 입력한 값(docs/sot.md §0).
     assert.deepEqual(
       [snapshot.profile.bizName, snapshot.profile.bizRepresentative, snapshot.profile.bizNumber, snapshot.profile.bizAddress,
         snapshot.profile.bizType, snapshot.profile.bizItem, snapshot.profile.bizEmail,
         snapshot.profile.bankName, snapshot.profile.accountNumber, snapshot.profile.accountHolder],
       ['차주상사', '김차주', '123-45-67890', '서울시 1', '운수업', '화물', 'owner@a.kr', '차주은행', '111-222', '김차주'],
     )
-    // 9-B-0: 설정은 차주 것이 아니라 기사 자기 프로필 설정.
     assert.equal(snapshot.settings.timeOn, true)
     assert.equal(snapshot.settings.theme, 'dark')
     assert.equal(snapshot.settings.paymentOn, false)
@@ -238,11 +236,9 @@ describe('buildEmployedDriverSnapshot — 소속기사 hydrate 비용 및 스냅
     assert.equal(snapshot.expenses.length, 0)
     assert.deepEqual(snapshot.expenses, [])
 
-    // 비용 3종 테이블 조회가 일절 발생하지 않았는지 검증
     assert.equal(countOf('fuel_records', 'select'), 0)
     assert.equal(countOf('maintenance_records', 'select'), 0)
     assert.equal(countOf('misc_expense_records', 'select'), 0)
-    // 배정 차량 없으면 거래처도 조회하지 않는다(스코프를 알 수 없음).
     assert.equal(countOf('clients', 'select'), 0)
     assert.deepEqual(snapshot.clients, [])
   })

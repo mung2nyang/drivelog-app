@@ -1,4 +1,3 @@
-// 로그인 거래처 저장: 서버 성공 후에만 Store. persist·dirty·syncAll 없음.
 import { assertSessionStillCurrent, captureSession, getCloudOwnerKey } from '../cloud/cloudSession.ts'
 import { commitBatch } from '../store/app-store.ts'
 import { StaleSessionError } from './saveErrors.ts'

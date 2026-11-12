@@ -1,5 +1,3 @@
-/* 하단 네비게이션 전용 — BottomNav.jsx가 직접 import. */
-
 .bottom-nav-bar {
   position: fixed;
   bottom: 0;
@@ -51,7 +49,6 @@
   color: var(--primary-color);
 }
 
-/* 휴대폰을 눕힌 낮은 화면: 여백만 빼고 그림을 줄여 납작하게(59→45px), 그림 위·글자 아래와 누르는 칸 44px는 그대로 */
 @media (orientation: landscape) and (max-height: 500px) {
   .bottom-nav-bar {
     padding: 0;

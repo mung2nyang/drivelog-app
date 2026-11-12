@@ -1,11 +1,6 @@
 // @ts-check
-// 달력 셀 하나. 뱃지 문구/휴무/
-// 미수 여부는 CalendarGrid가 domain(calendarBadges.ts)으로 미리 계산해서 넘긴다 — 이
-// 컴포넌트는 그 결과를 그리기만 한다(순수 표시).
 
 /**
- * domain/calendar.ts의 buildCalendarCells가 만드는 셀 하나의 모양(그 파일은 셀 타입을
- * 내보내지 않는다 — 여기서 소비하는 형태만 정의).
  * @typedef {Object} CalendarCellData
  * @property {string} key
  * @property {number} [day]
@@ -45,7 +40,6 @@ export default function CalendarCell({ cell, badgeLabel, expenseBadgeLabel, isOf
       {isOff && <span className="off-badge">휴무</span>}
       {!isOff && badgeLabel && <span className="work-badge">{badgeLabel}</span>}
       {expenseBadgeLabel && <span className="maint-badge">{expenseBadgeLabel}</span>}
-      {/* 당일 미수 표시 점 — 장식이라 span + aria-hidden(화면 읽기 프로그램에서 숨김). */}
       {hasUnpaid && <span className="unpaid-dot" aria-hidden="true" />}
     </button>
   )

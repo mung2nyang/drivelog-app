@@ -1,5 +1,4 @@
 // @ts-check
-// 게스트 전용 데이터 관리(백업/복구).
 import { useRef, useState } from 'react'
 import { applyGuestBackupData, buildGuestBackupData, getLastBackupAt, markBackupDone } from '../../../data/sync/guestBackup.ts'
 import { useToast } from '../../../shared/hooks/useToast.ts'
@@ -48,9 +47,7 @@ export default function AppSettingsBackupSection() {
     }
   }
 
-  /**
-   * @param {import('react').ChangeEvent<HTMLInputElement>} e
-   */
+  /** @param {import('react').ChangeEvent<HTMLInputElement>} e */
   async function handleImport(e) {
     const file = e.target.files?.[0]
     if (!file) return

@@ -1,5 +1,4 @@
 // @ts-check
-// 운송비 내역서 화면(요약·세부 보기) — 내려받기는 useFileDownload, 공유는 ReportShareModal, 보는 달은 서류 발급이 줌.
 import { useMemo, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { formatWon } from '../../../domain/money.ts'
@@ -25,10 +24,10 @@ const EMPTY_WORK = /** @type {Record<string, never>} */ ({})
 
 /**
  * @param {Object} props
- * @param {string} [props.logId] 특정 차량(연동기사 배정차량·미연동 서브차량)으로 스코프. 없으면 메인 차량.
+ * @param {string} [props.logId]
  * @param {() => void} [props.onBack]
  * @param {(() => void)} [props.onOpenMenu]
- * @param {import('react').ReactNode} [props.tabs] 서류 발급 탭 줄 — 위 카드 달 이동 아래에 끼움
+ * @param {import('react').ReactNode} [props.tabs]
  * @param {Date} props.viewDate
  * @param {(next: Date) => void} props.onChangeMonth
  */
@@ -77,7 +76,6 @@ export default function ReportPage({ logId: logIdProp, onBack, onOpenMenu, tabs,
 
   const { saving, download } = useFileDownload(buildFile, '운송비 내역서')
 
-  // [공유] 파일도 내려받기와 같은 내보내기 모양(날짜 표 두 줄)으로 만든다.
   /** @param {'pdf'|'image'} type */
   async function buildShareFile(type) {
     setSharing(true)

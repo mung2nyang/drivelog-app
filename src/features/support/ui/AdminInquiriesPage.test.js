@@ -1,5 +1,4 @@
 // @ts-check
-// 로드맵 23-B — 관리자 화면: 관리자가 아니면 홈으로, 관리자면 목록·답변하기·저장.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

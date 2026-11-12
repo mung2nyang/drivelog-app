@@ -3,7 +3,6 @@
 /** @typedef {import('../../../domain/financeTypes.ts').DriverLinkLike} DriverLinkLike */
 
 /**
- * Store DriverRecord → 도메인 link shape(정산·배정기간 계산용).
  * @param {DriverRecord} driver
  * @returns {DriverLinkLike & { driverName?: string, phone?: string }}
  */

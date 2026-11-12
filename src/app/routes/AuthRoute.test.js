@@ -1,5 +1,3 @@
-// 10-L 수정: /auth에서 세션이 이미 있으면(다시 켤 때 부트 복원 직후 — 홈 이동은 라우터가 늦게 처리) 로그인 화면 대신 로딩 표시,
-// 그래도 다른 화면으로 안 넘어가면 잠시 뒤 /app으로.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

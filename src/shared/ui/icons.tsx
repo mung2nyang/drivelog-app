@@ -1,4 +1,3 @@
-// 일지 화면의 작은 SVG 아이콘들(순수 표시).
 export function EditIcon() {
   return (
     <svg viewBox="0 0 24 24">
@@ -34,7 +33,6 @@ export function MessageIcon() {
   )
 }
 
-/** 즐겨찾기 별표 — 다른 아이콘과 같은 Feather 스타일. */
 export function StarIcon({ filled = false }: { filled?: boolean }) {
   return (
     <svg className={`star-icon${filled ? ' is-filled' : ''}`} viewBox="0 0 24 24" aria-hidden="true">

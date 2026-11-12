@@ -1,4 +1,3 @@
-// InfoTip — 괄호에 바로 붙은 한글 사이에만 이음 문자, 그 밖 글자는 그대로.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

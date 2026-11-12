@@ -24,7 +24,6 @@ const INPUT_IDS = { clientBizNumber: 'invBiz', issueDate: 'invDate' }
  */
 export default function TaxInvoiceDraftModal({ modalItem, flowMeta, onChange, onCancel, onSave }) {
   const [problem, setProblem] = useState(/** @type {ReturnType<typeof checkTaxInvoiceDraft>} */ (null))
-  // 문제 칸을 채우면 표시를 거둔다.
   const shown = problem && !modalItem[problem.field] ? problem : null
   const dateProps = invalidProps(shown, 'issueDate', 'invDate')
 

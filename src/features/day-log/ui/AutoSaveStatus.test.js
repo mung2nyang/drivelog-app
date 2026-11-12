@@ -1,4 +1,3 @@
-// 로드맵 109-B 수정 — 저장 표시는 제목 옆 아이콘(저장 중·완료·실패), 화면 읽기 프로그램은 상태를 글로 읽는다.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

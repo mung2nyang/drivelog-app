@@ -1,8 +1,3 @@
-// Step 5(달력 홈 재작성) 재감사 5번 — hasUnpaid를 단위 테스트(dayHasUnpaid)로만 확인하고
-// "UI로 직접 안 만들어봤다"는 알려진 한계로 남겼던 부분을 닫는다: CalendarCell을 실제로
-// jsdom에 렌더링해서 hasUnpaid=true일 때 .unpaid-dot이 DOM에 실제로 존재하는지 확인한다
-// (App.test.js가 도입한 jsxLoaderHook.mjs 인프라를 재사용 — 전체 App 부트 없이 이 컴포넌트
-// 하나만 가볍게 렌더한다).
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

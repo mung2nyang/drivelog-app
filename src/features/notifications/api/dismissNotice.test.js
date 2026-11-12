@@ -1,5 +1,4 @@
 // @ts-check
-// 알림 [닫기]: 계정 설정 닫은 목록에 저장(이 휴대폰 옛 목록도 같이), 문의 답변은 서버 봤음 먼저, 어느 저장이든 실패하면 던지고 그대로. 읽기는 두 목록을 합친다.
 import '../../../testSupport/stubSupabaseClient.ts'
 import '../../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'

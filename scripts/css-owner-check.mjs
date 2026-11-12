@@ -1,12 +1,9 @@
-// CSS 규칙 맨 앞 이름표가 두 구역(공용, 기능 폴더마다)에서 정의되면 실패한다 — 예외는 아래 목록만.
-// 화면이 공용 부품 모양을 바꿀 때는 화면 이름표를 맨 앞에 쓴다(예: .active-off.toggle-btn).
 import fs from 'node:fs'
 import path from 'node:path'
 
 const ROOT = path.resolve(import.meta.dirname, '..')
 const SRC = path.join(ROOT, 'src')
 
-/** 이미 겹쳐 있던 이름표 → 허용 파일. 정리하면 여기서 지운다. */
 const ALLOWED = {
 }
 
@@ -18,13 +15,11 @@ function cssFiles(dir) {
   })
 }
 
-/** 공용은 src/shared·src/app 한 구역, 기능은 src/features/<이름>마다 한 구역. */
 function areaOf(file) {
   const parts = file.split('/')
   return parts[1] === 'features' ? parts.slice(0, 3).join('/') : '공용'
 }
 
-/** 규칙 선택자마다 맨 앞 이름표 — 테마 앞붙이([data-theme]·:root·html·body)는 건너뛰고 @규칙 머리·키프레임 단계는 뺀다. */
 function leadingClasses(css) {
   const found = new Set()
   const text = css.replace(/\/\*[\s\S]*?\*\//g, '')

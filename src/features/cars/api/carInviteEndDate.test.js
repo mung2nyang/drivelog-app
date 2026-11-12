@@ -1,4 +1,3 @@
-// 차량 창 저장(기사 연동 탭)은 기존 기사의 계약 기간을 바꾸지 않는다 — 차량 창에는 종료일 칸이 없다.
 import assert from 'node:assert/strict'
 import { beforeEach, mock, test } from 'node:test'
 
@@ -24,7 +23,6 @@ test('기존 기사가 있는 차량을 톤수만 고쳐 저장해도 계약 시
     id: 'drv-1', name: '김기사', phone: '010-1111-2222', inviteCode: 'A2B3C4D5E6',
     vehicleNumber: '12가3456', startDate: '2026-11-01', endDate: '2026-12-31', status: 'linked',
   }
-  // CarListPage 수정 창이 만드는 초안 그대로(배정 칸은 안 건드림).
   await saveInviteAfterVehicle({
     cloud: true,
     ownerKey: 'owner-enddate',

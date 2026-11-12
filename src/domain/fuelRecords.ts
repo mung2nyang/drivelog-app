@@ -1,7 +1,6 @@
 import type { JsonRecord, JsonValue } from './jsonTypes.ts'
 import type { ExpenseItem } from './expenseTypes.ts'
 
-/** 주유 변환 중간형 — ExpenseItem에 type/liter 등 레거시 필드를 덧붙인 형태. */
 export type FuelExpenseShape = ExpenseItem & { type?: string, liter?: number | string, fare?: number | string }
 export type FuelRecordRow = {
   work_date?: string

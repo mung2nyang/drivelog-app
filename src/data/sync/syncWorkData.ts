@@ -1,4 +1,3 @@
-// 일지 한 줄(daily_logs)에 보낼 값 — 로그인 일지 저장이 쓴다.
 import type { JsonValue } from '../../domain/jsonTypes.ts'
 import { parseEntityNumber } from '../cloud/cloudStorage.ts'
 

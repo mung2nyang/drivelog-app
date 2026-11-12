@@ -1,4 +1,3 @@
-// 서버 함수 시험용 가짜 바깥: 환경 값, 주소별 fetch 답, console 모으기. 시험마다 되돌린다.
 export type Answer = (request: Request) => Response | Promise<Response>
 export type Handler = (request: Request) => Promise<Response>
 export type Outcome = { response: Response, urls: Array<string>, requests: Array<Request>, logs: string }
@@ -14,7 +13,6 @@ export const ENV: { [name: string]: string | null } = {
   KMA_API_KEY: 'fake-kma-key',
 }
 
-/** 로그인한 사람이면 사용자, 아니면 거절하는 가짜 Supabase. */
 export function signedIn(request: Request): Response {
   return request.headers.get('Authorization') === `Bearer ${TOKEN}`
     ? Response.json({ id: 'user-1', aud: 'authenticated', role: 'authenticated' })
@@ -34,7 +32,6 @@ function setEnv(values: { [name: string]: string | null }) {
   }
 }
 
-/** 가짜를 깔고 함수를 한 번 부른 뒤 되돌린다. 하루 횟수는 기본 한도 안. 답이 없는 주소는 네트워크 실패로 던지고 urls에 남는다. */
 export async function callWith(handler: Handler, request: Request, answers: { [url: string]: Answer } = {}, env: { [name: string]: string | null } = {}): Promise<Outcome> {
   const values = { ...ENV, ...env }
   const before = Object.fromEntries(Object.keys(values).map((name) => [name, Deno.env.get(name) ?? null]))

@@ -1,4 +1,3 @@
-// 로드맵 82-A — 거래처 창에서 빠지거나 틀린 칸은 저장 전에 빨간 표시·칸 아래 문구·커서, 고치면 표시가 사라진다.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

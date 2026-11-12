@@ -1,4 +1,3 @@
-// 로드맵 44 — 거래처 한 달치 입금 완료 전에 확인 창: 취소면 저장 0회, 확인이면 저장 1회, 문구에 건수·금액.
 import '../../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { beforeEach, mock, test } from 'node:test'

@@ -1,4 +1,3 @@
-// 로드맵 55-B — 앱 오류를 client_errors 표에 남긴다: 로그인 사용자만, 최대 10건, 같은 문구 한 번, 경로만, 길이 자르기, 실패해도 조용함.
 import '../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { beforeEach, mock, test } from 'node:test'

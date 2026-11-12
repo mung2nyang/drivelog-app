@@ -1,4 +1,3 @@
-// 로드맵 101-B — 두 화면이 같이 쓰는 saveExpenseDraft·deleteExpense: 최신 목록을 다시 읽어 고치고, 알림 문구를 돌려준다.
 import '../../testSupport/stubSupabaseClient.ts'
 import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'

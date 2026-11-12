@@ -1,4 +1,3 @@
-// 운비서 날씨 서버 시험: 한국 날짜, 발표 시각 고르기, 그 날 예보 묶기. CI에서 deno test로 돈다.
 import assert from 'node:assert/strict'
 import { baseOf, kstDate, summarizeDay } from '../unbiseo-weather/kma.ts'
 import type { Json } from '../unbiseo-weather/kma.ts'

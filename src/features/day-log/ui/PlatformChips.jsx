@@ -1,9 +1,7 @@
 // @ts-check
-// 콜 상세 플랫폼 칩 — 짧게 누르면 고르기, 길게 누르면 지우기 확인.
 import { useEffect, useRef, useState } from 'react'
 import ConfirmModal from '../../../shared/ui/ConfirmModal.tsx'
 
-// 길게 누르기 판정 시간·손가락 이동 허용 거리(넘으면 취소).
 const LONG_PRESS_MS = 600
 const MOVE_TOLERANCE_PX = 10
 

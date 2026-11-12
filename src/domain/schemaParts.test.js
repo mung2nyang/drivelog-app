@@ -1,4 +1,3 @@
-// 저장 자료 검사 공용 조각 — 진행 중 찾은 Valibot 함정(배열을 객체로 받음, NaN 거부, 빈 값)을 못 박는다.
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import * as v from 'valibot'

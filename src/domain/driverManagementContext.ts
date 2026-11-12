@@ -2,10 +2,6 @@ import { getShortCarNum } from './cars.ts'
 import type { CarLike } from './financeTypes.ts'
 import type { DriverRecord } from './driverTypes.ts'
 
-/**
- * 기사 관리 화면 모드 판별 + car/driver 조회(순수).
- * linkId → 연동 모드, logId → 미연동 서브차량 모드.
- */
 export function resolveDriverManagementContext(params: { linkId?: string, logId?: string }, drivers: Array<DriverRecord> | null | undefined, cars: Array<CarLike> | null | undefined): {
   mode: 'linked' | 'unlinked' | null,
   notFound: boolean,
@@ -47,10 +43,6 @@ export function resolveDriverManagementContext(params: { linkId?: string, logId?
   return { mode: null, notFound: true, driver: null, car: null, plate: '' }
 }
 
-/**
- * 차량번호만 아는 상태(연동/미연동 구분 없이)에서 표시용 라벨을 정한다 —
- * 연동 기사 이름 → 서브차량 기사 이름 → 차량번호(축약) 순.
- */
 export function resolveDriverOrPlateLabel(plate: string, drivers: Array<DriverRecord> | null | undefined, cars: Array<CarLike> | null | undefined): string {
   const trimmedPlate = String(plate || '').trim()
   if (!trimmedPlate) return ''

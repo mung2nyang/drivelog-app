@@ -1,5 +1,4 @@
 // @ts-check
-// 고객센터 내 문의 목록 — 답변 대기/완료 표시, 못 불러오면 알림과 빈 목록 안내.
 import { useEffect, useState } from 'react'
 import { fetchMyInquiries } from '../api/supportInquiryMutations.js'
 import { markShownAnswersSeen } from '../../../data/cloud/inquiryNotices.ts'
@@ -16,7 +15,6 @@ const FETCH_FAIL_TOAST = '문의 목록을 불러오지 못했습니다.'
  */
 export default function MyInquiriesList({ userId }) {
   const showToast = useToast()
-  // 결과는 어느 사용자 것인지 열쇠와 같이 — 열쇠가 다르면 불러오는 중.
   const [result, setResult] = useState(/** @type {{ key: string, items: Array<SupportInquiryRow> }|null} */ (null))
 
   useEffect(() => {
@@ -25,7 +23,6 @@ export default function MyInquiriesList({ userId }) {
       .then((rows) => {
         if (cancelled) return
         setResult({ key: userId, items: rows })
-        // 여기 보인 답변은 봤음으로 — 알림 화면의 답변 알림이 사라진다.
         void markShownAnswersSeen(rows)
       })
       .catch(() => {

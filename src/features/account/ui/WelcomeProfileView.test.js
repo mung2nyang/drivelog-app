@@ -1,4 +1,3 @@
-// 구글 로그인 G-2 — 구글 첫 로그인 기본 정보 화면: 구글 이름 미리 채움, 이름+전화번호 10자리 이상이어야 [시작하기], 실패하면 다시 누를 수 있음.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 
@@ -31,7 +30,6 @@ async function render(initialName, onSubmit) {
 }
 
 /**
- * React가 값 변경을 알아채도록 원래 setter로 넣고 input 이벤트를 보낸다.
  * @param {HTMLInputElement} input
  * @param {string} value
  */

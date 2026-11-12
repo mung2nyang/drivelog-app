@@ -1,4 +1,3 @@
-// 운비서 그림 — 상황마다 그림 줄을 넘긴다. 움직임 줄이기를 켠 기기에서는 쉴 때 첫 칸만.
 import { useEffect, useState, type CSSProperties } from 'react'
 import { assetPath } from '../../../shared/utils/assetPath.ts'
 import useFramePlayer, { type FrameStrip } from '../hooks/useFramePlayer.ts'
@@ -14,7 +13,6 @@ const STRIPS: Record<Situation, FrameStrip & { src: string }> = {
   talk: { src: assetPath('/images/unbiseo-talk.webp'), frames: 46, seconds: 1.1, blend: 0.7 },
 }
 
-// 다 받은 그림 줄 — 받기 전에는 멈춘 그림을 보여 빈칸이 생기지 않게 한다.
 const loaded = new Set<string>()
 
 function useLoaded(src: string) {
@@ -46,7 +44,6 @@ export default function UnbiseoAvatar({ assistant, width, height }: Props) {
   const ready = useLoaded(strip.src)
   const playing = ready && !still
   const { baseRef, topRef } = useFramePlayer(strip, motion.loops, motion.key, done, !playing)
-  // 다른 상황 그림도 미리 받아 둔다.
   useEffect(() => {
     if (still) return
     for (const each of Object.values(STRIPS)) if (!loaded.has(each.src)) new window.Image().src = each.src

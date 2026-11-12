@@ -1,5 +1,4 @@
 // @ts-check
-// Step 9 slice C: readOwnerWorkDataByLogId returns full workLogs (main + sub).
 import '../../testSupport/stubSupabaseClient.ts'
 import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'

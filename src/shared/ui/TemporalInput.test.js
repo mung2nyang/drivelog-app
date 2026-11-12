@@ -1,5 +1,3 @@
-// D-0 착수지시서 검증 — 값 선택 시 onChange 호출, 외부 클릭 시 닫힘,
-// 뷰포트 우측 초과 시 메뉴가 왼쪽으로 당겨지는지 확인 (CalendarCell.test.js 인프라 재사용).
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 
@@ -110,7 +108,6 @@ test('D-0: 트리거가 뷰포트 우측 끝을 넘어가면 메뉴가 왼쪽으
     await act(async () => { container.querySelector('.app-temporal-trigger').click() })
     const menu = document.body.querySelector('.app-temporal-menu')
     assert.ok(menu, '메뉴가 열리지 않았다')
-    // availableRight = 320-8=312, rect.right(380) > 312 → left = max(8, 312-80) = 232
     assert.equal(menu.style.left, '232px')
   } finally {
     await act(async () => { root.unmount() })

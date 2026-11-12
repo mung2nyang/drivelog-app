@@ -1,5 +1,4 @@
 // @ts-check
-// 사이드메뉴 전용 SVG 아이콘.
 
 export function CarIcon() {
   return (

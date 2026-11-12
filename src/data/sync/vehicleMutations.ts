@@ -1,4 +1,3 @@
-// 차량 추가/수정. 서브 번호 변경 때 묶인 것 옮기기는 vehicleRename.ts.
 import { upsertCar } from '../../domain/cars.ts'
 import { applyBusinessForm } from '../../domain/carBusinessInfo.ts'
 import {
@@ -87,7 +86,6 @@ export async function requestVehicleSave({ ownerKey, cars, draft, editingId, use
           return { cars, toast: SESSION_CHANGED_TOAST, failed: true, saved: null, renamedFrom: null }
         }
         console.error('[vehicleMutations] 차량 저장 실패:', error)
-        // 서버가 정해 둔 거절(P0001, 예: 이미 등록된 차량번호)은 그 문구를 보여 준다.
         const serverReason = error && typeof error === 'object' && 'code' in error && error.code === 'P0001' && 'message' in error && typeof error.message === 'string' ? error.message : null
         return { cars, toast: serverReason || SAVE_FAIL_TOAST, failed: true, saved: null, renamedFrom: null }
       }
@@ -104,7 +102,6 @@ export async function requestVehicleSave({ ownerKey, cars, draft, editingId, use
   }
 }
 
-/** 기사 관리 화면의 사업자·정산 계좌 저장 — requestVehicleSave와 같은 순서(차단 확인 → 로그인이면 서버 먼저 → 성공 후 commitBatch). */
 export async function requestCarBusinessInfoSave({ ownerKey, cars, carId, form, userId }: { ownerKey: string, cars: Array<CarLike>, carId: string, form: CarBusinessForm, userId?: string | null }) {
   const blocked = blockedReasonForOwnerDataWrite({ ownerKey, userId })
   if (blocked) return { cars, toast: blocked, failed: true }

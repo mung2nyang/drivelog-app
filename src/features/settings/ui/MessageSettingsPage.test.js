@@ -1,4 +1,3 @@
-// 문자 문구 설정: 빈 칸 표시, 저장·복원은 계정 설정에(로그인은 서버 저장 성공 뒤에만).
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 
@@ -32,10 +31,7 @@ const { SERVER_SAVE_FAIL } = await import('../../../shared/utils/failureMessages
 
 const SAVED = /** @type {[string, string, string]} */ (['미수 {거래처}', '입금 {운송료}', '완료 {운행구간}'])
 
-/**
- * 로그인 계정을 준비하고 profiles 저장을 가로챈다(보낸 settings를 모음).
- * @param {string} ownerKey @param {{ fail?: boolean }} [options]
- */
+/** @param {string} ownerKey @param {{ fail?: boolean }} [options] */
 function loginWithServer(ownerKey, { fail = false } = {}) {
   resetHandlers()
   Object.assign(handlers, emptyOkHandlers())
@@ -52,9 +48,7 @@ function loginWithServer(ownerKey, { fail = false } = {}) {
   return sent
 }
 
-/**
- * @param {string} ownerKey @param {Array<string>} toasts
- */
+/** @param {string} ownerKey @param {Array<string>} toasts */
 async function mount(ownerKey, toasts) {
   const container = document.createElement('div')
   document.body.appendChild(container)

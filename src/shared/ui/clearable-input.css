@@ -1,4 +1,3 @@
-/* 입력칸 X(한 번에 지우기) — ClearableInput 전용. */
 .clearable-input {
   position: relative;
   display: block;
@@ -10,7 +9,6 @@
   text-align: left;
 }
 
-/* 목록 고르기(datalist) 칸의 ▼ 화살표는 X와 겹쳐서 숨김 — 크롬이 화살표 표시를 직접 지정해서 !important가 필요. 오른쪽 여백은 부품이 직접 넣음. */
 .clearable-input input::-webkit-calendar-picker-indicator {
   display: none !important;
 }

@@ -41,8 +41,6 @@ test('skipInvite:true면 신규 등록(운행 일지 모드)에서 초대를 아
     inviteDraft: baseDraft,
     skipInvite: true,
   })
-  // driverName이 비어 있어 upsertDriver를 실제로 불렀다면 검증 에러 문자열이
-  // 돌아온다 — null이 나왔다는 건 그 호출 자체를 안 했다는 뜻(조기 return 증명).
   assert.equal(result, null)
 })
 

@@ -1,9 +1,6 @@
-// finance*.ts가 함께 쓰는 매개변수 모양 모음(타입 전용 모듈). `link = null` 같은 기본값만 있으면
-// TS가 null만 되는 타입으로 좁히므로 여기서 모양을 밝혀 둔다.
 import type { DayRecordLike } from './day-record.ts'
 import type { ClientLike } from './clients.ts'
 
-/** logId(차량번호|'main') → 날짜 → 기록 */
 export type WorkDataByLogId = Record<string, Record<string, DayRecordLike>>
 
 export type CarLike = {
@@ -16,13 +13,13 @@ export type CarLike = {
   commEnabled?: boolean
   commType?: string
   commission?: string | number
-  insuranceOn?: boolean // 산재보험료 기사 몫(50%) 차감 여부(driverIncomeDeductions.ts)
-  driverIncomeType?: 'employee' | 'business' // 기사 유형: 4대보험 근로자 / 3.3% 사업소득자
-  withholdingOn?: boolean // 3.3% 사업소득세 원천징수 여부
-  expenseRate?: string | number // 산재 월보수액 계산용 필요경비율(%)
-  insuranceRate?: string | number // 산재보험료율(%), 0이면 산재 적용 제외
-  insuranceSplit?: 'owner' | 'half' | 'driver' // 산재 부담: 차주 전액 / 반반 / 기사 전액(없으면 기사 유형으로)
-  driverShareBase?: 'gross' | 'afterClientCommission' // 매출제 기사 몫 기준 — 운송료 전체(기본)/거래처 수수료 뗀 뒤
+  insuranceOn?: boolean
+  driverIncomeType?: 'employee' | 'business'
+  withholdingOn?: boolean
+  expenseRate?: string | number
+  insuranceRate?: string | number
+  insuranceSplit?: 'owner' | 'half' | 'driver'
+  driverShareBase?: 'gross' | 'afterClientCommission'
   logEnabled?: boolean
   driverLinkEnabled?: boolean
   shareRevenueWithOwner?: boolean
@@ -43,7 +40,7 @@ export type DriverLinkLike = {
   assignmentStart?: string
   assignmentEnd?: string
   status?: string
-  driverName?: string // 해제 때 남긴 기사 이름(해제 기록만, 없으면 빈 값)
+  driverName?: string
 }
 
 export type SupplierBiz = {
@@ -57,16 +54,11 @@ export type SupplierBiz = {
   email?: string
 }
 
-/**
- * finance*.ts 함수들이 공유하는 설정 모양 — data/sync/ownerFinance.ts의 buildFinanceSettings가
- * 실제로 만드는 값의 상위집합(느슨하게, 전부 optional로 — 픽스처/실제 값 둘 다
- * 이 함수들에 그대로 들어온다).
- */
 export type FinanceSettings = {
   cars?: Array<CarLike>
   clients?: Array<ClientLike>
   driverLinks?: Array<DriverLinkLike>
-  driverHistory?: Array<DriverLinkLike> // 해제된 예전 계약 — 기사 급여 "이전 기사" 줄용
+  driverHistory?: Array<DriverLinkLike>
   paymentOn?: boolean
   subPaymentOn?: boolean
   fixedOn?: boolean
@@ -81,18 +73,18 @@ export type FinanceSettings = {
   bizItem?: string
   bizEmail?: string
   theme?: 'light' | 'dark'
-  themeFollowPhone?: boolean // 화면 색을 휴대폰 다크 설정에 맞춤(없으면 켜짐)
+  themeFollowPhone?: boolean
   inputMode?: 'count' | 'fare'
   callDetail?: boolean
   timeOn?: boolean
   platformOn?: boolean
   distanceOn?: boolean
   cargoTonnageOn?: boolean
-  dailyInspectionOn?: boolean // 일상점검표 사용(메인 차량 — 기사차량은 subCarSettings)
-  notifOff?: Array<string> // 알림 화면에서 끈 알림 종류(NOTIF_KINDS)
-  unbiseoDockOn?: boolean // 운비서 켜기(홈 카드와 다른 화면의 버튼, 기본 켜짐)
-  messageTemplates?: [string, string, string] // 문자 문구 1~3(미수금 안내·입금 요청·운행 완료), 없으면 기본 문구
-  reportShareMessage?: string // 내역서 공유 문자 문구, 없으면 기본 문구
+  dailyInspectionOn?: boolean
+  notifOff?: Array<string>
+  unbiseoDockOn?: boolean
+  messageTemplates?: [string, string, string]
+  reportShareMessage?: string
   fixedRouteOn?: boolean
   fixedRoutePresets?: Array<{ id: string, loadLoc: string, unloadLoc: string }>
   runCountToggle?: boolean
@@ -102,9 +94,9 @@ export type FinanceSettings = {
   subRunCountToggle?: boolean
   subRunCountPresets?: Array<number>
   pinnedLocations?: Array<string>
-  platformPresets?: Array<string> // 콜 상세 플랫폼 칩(없으면 기본 6개)
-  dismissedNotices?: Array<string> // 닫은 알림 id(계정 설정, 최대 200개)
-  subCarSettings?: Record<string, SubCarPracticeSettings> // 서브차량 번호별 전용 값(세부입력 5종+달력 표시방식만, 결제/고정노선은 공용)
+  platformPresets?: Array<string>
+  dismissedNotices?: Array<string>
+  subCarSettings?: Record<string, SubCarPracticeSettings>
 }
 
 export type SubCarPracticeSettings = {
@@ -114,5 +106,5 @@ export type SubCarPracticeSettings = {
   platformOn: boolean
   distanceOn: boolean
   cargoTonnageOn: boolean
-  dailyInspectionOn?: boolean // 일상점검표 사용
+  dailyInspectionOn?: boolean
 }

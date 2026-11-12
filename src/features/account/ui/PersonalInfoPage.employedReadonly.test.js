@@ -1,4 +1,3 @@
-// 로드맵 9-B-0 — 연동 기사 개인정보: 사업자 정보·정산 계좌는 차주가 입력한 값 보기만(잠금), 대표자·연락처는 기사 본인(입력 가능). 차주는 전부 입력 가능.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

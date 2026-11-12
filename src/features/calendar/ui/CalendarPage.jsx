@@ -1,6 +1,4 @@
 // @ts-check
-// 달력 화면. 표시 월은 URL `?y=&m=` 쿼리(calendarViewDate.ts)라 새로고침해도 남고, workData·settings는 store를 구독한다.
-// logId가 있으면 서브 차량 달력(workData·paymentOn·수수료 게이트).
 import { useEffect, useMemo } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { buildCalendarCells, getYearOptions } from '../../../domain/calendar.ts'
@@ -22,7 +20,7 @@ const YEAR_OPTIONS = getYearOptions()
 /**
  * @param {Object} props
  * @param {string} [props.logId]
- * @param {string} [props.clientScopeKey] 고정노선 거래처 스코프(연동기사 본인은 배정 차량번호). 없으면 logId.
+ * @param {string} [props.clientScopeKey]
  * @param {string} [props.userName]
  * @param {(() => void)} [props.onOpenMenu]
  * @param {(() => void)} [props.onBackToAuth]
@@ -34,7 +32,6 @@ export default function CalendarPage({
   const { ownerKey } = useSession()
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
-  // 주소에 달이 없으면(아래 탭·홈 버튼) 앱이 켜진 동안 마지막에 본 달.
   const viewDate = useMemo(() => (searchParams.has('y') || searchParams.has('m')
     ? viewDateFromSearchParams(searchParams)
     : recallViewMonth('calendar', ownerKey)?.viewDate ?? new Date()), [searchParams, ownerKey])

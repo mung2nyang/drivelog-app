@@ -1,5 +1,4 @@
 // @ts-check
-// 홈 운비서 줄 — 마이크를 한 번 누르면 카드가 늘어나며 바로 듣고, 나머지를 누르면 글로 쓰는 칸이 열린다. 이름 "운비서"는 임시.
 import { useEffect, useState } from 'react'
 import { useSession } from '../../../data/cloud/sessionContext.ts'
 import { useOwnerSettings } from '../../../data/store/ownerDataHooks.ts'
@@ -13,7 +12,6 @@ export default function HomeAssistantBar() {
   const { assistant, openCall } = useUnbiseo()
   const { speech } = assistant
   const { ownerKey } = useSession()
-  // 설정에서 운비서를 끄면 홈 카드도 그리지 않는다 — 듣던 중이면 멈춘다. 비회원은 끌 수 없어 늘 보인다.
   const hidden = useOwnerSettings(ownerKey).unbiseoDockOn === false && assistant.loggedIn
   useEffect(() => {
     if (hidden && speech.listening) speech.stop()

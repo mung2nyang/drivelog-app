@@ -17,7 +17,6 @@ function emptyValue(domain: PersistDomain) {
   return expectsArray(domain) ? ([]) as DomainValue : ({}) as DomainValue
 }
 
-/** 키 부재와 getItem/parse/schema 실패를 구분한다. 실패 시 fallback으로 바꾸지 않는다. */
 export function readPersistDomain(domain: PersistDomain, ownerKey: string): PersistDomainRead {
   const key = storageKeyFor(domain, ownerKey)
   let raw

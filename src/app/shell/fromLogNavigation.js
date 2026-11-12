@@ -7,7 +7,6 @@ export function parseAppLogPath(pathname) {
 }
 
 /**
- * 일지에서 차량 관리로 갈 때 출처(logId+date)를 location.state에 붙인다.
  * @param {string} pathname
  * @param {import('react-router-dom').To} to
  * @param {import('react-router-dom').NavigateOptions} [options]

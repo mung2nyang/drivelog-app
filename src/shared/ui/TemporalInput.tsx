@@ -1,5 +1,3 @@
-// 네이티브 date/time input 대신 트리거 버튼 + document.body 포털 컬럼 메뉴. 부모 창의 overflow:hidden을 벗어나야 해서
-// CalendarDateSelect(absolute)와 달리 포털 + position:fixed를 쓴다(컬럼 그리기는 TemporalColumns.tsx).
 import { useEffect, useId, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { DateColumns, TimeColumns } from './TemporalColumns.tsx'
@@ -18,10 +16,10 @@ type Props = {
   min?: string,
   max?: string,
   disabled?: boolean,
-  centered?: boolean, // 트리거 값을 가운데 정렬(콜 상세·지출 창이 씀).
-  invalid?: boolean, // 입력이 잘못된 칸 — 단추에 빨간 표시(FieldError.tsx)
-  describedBy?: string, // 칸 아래 오류 문구 id
-  clearable?: boolean, // 값이 있을 때 고르기 창에 [지우기](비워도 되는 칸만)
+  centered?: boolean,
+  invalid?: boolean,
+  describedBy?: string,
+  clearable?: boolean,
 }
 
 export default function TemporalInput({ type, id, value, onChange, className = '', min, max, disabled = false, centered = false, invalid = false, describedBy, clearable = false }: Props) {

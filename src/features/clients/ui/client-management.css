@@ -1,12 +1,6 @@
-/* 거래처 전용 — ClientListPage 등 거래처 화면이 import.
-   `.management-badge` 기본·`.tax-invoice`는 공용이라 management-common.css에 둠. */
-
-/* 거래처 수수료 입력 — 차량 등록 정산(매출제/월급제)과 같은 칩+입력(modal-form.css). */
 .client-commission-value {
   margin: 0 0 14px;
 }
-
-/* 한 줄 입력(라벨·단위 입력칸) — 일일운행 한 줄 입력과 같은 배치 */
 
 .client-list {
   display: flex;
@@ -85,7 +79,6 @@
   color: #f0ad2b;
 }
 
-/* 별 모양은 운행일지 상·하차지 즐겨찾기와 같은 선 그림(StarIcon) */
 .client-favorite-star .star-icon,
 .client-pinned-star .star-icon {
   width: 22px;
@@ -112,11 +105,10 @@
   cursor: grab;
 }
 
-/* 수정·삭제 아이콘은 제목 줄 오른쪽에 겹쳐 두고, 아래 줄들은 카드 폭을 다 써서 연락처가 한 줄에 들어가게. */
 .client-list-card .management-card-copy { flex: 1; min-width: 0; }
 .client-list-card .client-card-title,
 .client-list-card .client-card-badges { padding-right: 100px; }
-.client-list-card .client-card-title:not(:has(+ .client-card-badges)) { min-height: 44px; align-items: center; } /* 칩 줄이 없을 때만 — 아래 줄이 아이콘과 안 겹치게 */
+.client-list-card .client-card-title:not(:has(+ .client-card-badges)) { min-height: 44px; align-items: center; }
 .client-list-card .car-action-btns { position: absolute; top: 14px; right: 20px; margin-left: 0; }
 .client-list-card .client-phone { white-space: nowrap; }
 
@@ -125,7 +117,6 @@
   cursor: grabbing;
 }
 
-/* 거래처 폼 거래 옵션 문구(ClientTradeFields 전용). */
 .car-option-copy {
   min-width: 0;
   padding-right: 14px;

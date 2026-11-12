@@ -1,4 +1,3 @@
-// 문의 알림 줄 만들기 — 답변 시각·최근 대기 문의를 id에 넣어 바뀌면 다시 뜬다.
 import type { AnsweredInquiry, PendingInquirySummary } from '../../../data/cloud/inquiryNotices.ts'
 
 export type InquiryNoticeData = { answered: Array<AnsweredInquiry>, pending: PendingInquirySummary | null }
@@ -12,13 +11,12 @@ export type InquiryNoticeItem = {
   dateLabel: string
   actionLabel?: string
   dismissLabel?: string
-  inquiryId?: string // 답변 알림만 — [닫기] 때 서버에 봤음 저장
+  inquiryId?: string
   answeredAt?: string
 }
 
 export const NO_INQUIRY_NOTICES: InquiryNoticeData = { answered: [], pending: null }
 
-/** 답변 시각 → 'MM.DD'(이 휴대폰 날짜 기준). 모양이 아니면 빈 글자. */
 function shortLocalDate(iso: string): string {
   if (!iso) return ''
   const date = new Date(iso)

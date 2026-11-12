@@ -1,4 +1,3 @@
-// 로드맵 7-C-1 — 연동 중 기사 카드의 해제 영역: 요청 없음 / 내가(차주) 요청 / 기사가 요청. 거절 버튼 없음.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

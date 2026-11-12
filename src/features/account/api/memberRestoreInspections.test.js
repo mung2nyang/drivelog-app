@@ -1,5 +1,4 @@
 // @ts-check
-// 회원 데이터 불러오기(22-C): 서버에 있는 날은 저장 0회, 없는 날만 파일 그대로(점검자 이름 포함) 저장, 연동·없는 차량은 건너뜀.
 import assert from 'node:assert/strict'
 import { mock, test } from 'node:test'
 

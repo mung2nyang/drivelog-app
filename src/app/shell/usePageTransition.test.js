@@ -1,4 +1,3 @@
-// 로드맵 18-A: 화면 이동 종류(들어감·뒤로·탭·없음) 판단 + 이동 때 겉 상자에 효과 이름이 붙는지.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 
@@ -51,7 +50,6 @@ test('화면 이동 때 겉 상자에 맞는 효과 이름이 붙고, 같은 주
   const root = createRoot(container)
   const box = () => /** @type {HTMLElement} */ (container.querySelector('#box'))
   const move = async (/** @type {string} */ to) => { await act(async () => { go.current?.(to) }) }
-  // 뒤로가기는 브라우저가 늦게 처리할 수 있어 정해진 시간 대신 주소가 바뀔 때까지 기다림.
   const back = async (/** @type {string} */ path) => {
     await act(async () => {
       window.history.back()

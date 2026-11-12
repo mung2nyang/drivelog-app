@@ -1,4 +1,3 @@
-// 로드맵 63-B: 일지 입력 칸이 열린 동안 휴대폰 뒤로가기도 ← 처럼 먼저 묻는다(실제 window.history로).
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 
@@ -21,14 +20,13 @@ const { ConfirmDialogHost, confirmDialog } = await import('../../../shared/ui/co
 /** @param {number} ms */
 const wait = (ms) => new Promise((resolve) => { setTimeout(resolve, ms) })
 
-// 정해진 시간 대신 실제로 그 일이 일어날 때까지 기다림(jsdom 뒤로가기는 늦게 끝남).
 /** @param {() => boolean} ok @param {number} [limitMs] */
 async function waitUntil(ok, limitMs = 2000) {
   const end = Date.now() + limitMs
   while (!ok() && Date.now() < end) await wait(5)
 }
 
-/** @param {Array<boolean>|'dialog'} answers 확인 창 답(차례대로), 'dialog'면 앱 확인 창을 실제로 띄움 */
+/** @param {Array<boolean>|'dialog'} answers */
 async function mount(answers) {
   window.history.replaceState(null, '', '/app/calendar')
   const calls = { confirm: 0, leave: 0 }

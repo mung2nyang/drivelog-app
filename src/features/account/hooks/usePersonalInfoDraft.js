@@ -1,6 +1,4 @@
 // @ts-check
-// 개인정보 화면 입력 임시값: 글자는 즉시 화면에 보이고, 저장은 묶어서 기존 saveProfile로 한 번에 한다.
-// 로그인 상태의 saveProfile은 서버 저장 뒤에야 Store를 바꾸므로, 글자마다 저장하면 입력이 늦게 보이거나 사라졌다.
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { saveProfile } from '../../../data/sync/profileSave.ts'
 import { SERVER_SAVE_FAIL } from '../../../shared/utils/failureMessages.ts'
@@ -12,9 +10,7 @@ import { useToast } from '../../../shared/hooks/useToast.ts'
 export const SAVE_DELAY_MS = 700
 const SAVE_FAIL_TOAST = SERVER_SAVE_FAIL
 
-/**
- * @param {{ ownerKey: string, profile: LocalProfile }} params
- */
+/** @param {{ ownerKey: string, profile: LocalProfile }} params */
 export function usePersonalInfoDraft({ ownerKey, profile }) {
   const showToast = useToast()
   const [draft, setDraft] = useState(/** @type {ProfileDraft} */ ({}))
@@ -47,7 +43,7 @@ export function usePersonalInfoDraft({ ownerKey, profile }) {
       savingRef.current = false
       if (mountedRef.current) setDraft({ ...dirtyRef.current })
     }
-    // oxlint-disable-next-line react/immutability -- 저장 중 바뀐 값이 남으면 한 번 더 저장한다(자기 호출).
+    // oxlint-disable-next-line react/immutability
     if (Object.keys(dirtyRef.current).length) await flush()
   }, [])
 

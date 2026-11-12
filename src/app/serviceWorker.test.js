@@ -1,4 +1,3 @@
-// 로드맵 18-E: 서비스워커 등록 조건 + public/sw.js 동작(화면 주소 열기 실패 때만 안내 화면, 다른 요청은 손 안 댐).
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { test } from 'node:test'
@@ -21,7 +20,6 @@ test('등록: 배포본 + 지원 브라우저일 때만 /sw.js, 아니면 안 �
   assert.equal(await registerServiceWorker({ prod: true, base: '/', nav: failing }), false)
 })
 
-/** 가짜 브라우저 환경에서 public/sw.js를 실행하고 이벤트 처리기를 돌려준다. */
 function loadWorker(/** @type {{ online: boolean }} */ net) {
   /** @type {Record<string, (event: object) => void>} */
   const handlers = {}

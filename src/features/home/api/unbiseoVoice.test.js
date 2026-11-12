@@ -1,5 +1,4 @@
 // @ts-check
-// 로드맵 24-E2 — 운비서 목소리 함수 부르기: 보내는 값, 받은 소리는 mp3로, 실패·빈 소리는 없음(휴대폰 목소리로 대신).
 import assert from 'node:assert/strict'
 import { beforeEach, mock, test } from 'node:test'
 import { FunctionsHttpError } from '@supabase/supabase-js'

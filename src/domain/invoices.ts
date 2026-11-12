@@ -1,4 +1,3 @@
-// 계산서 순수 계산부. 저장은 data/sync/invoicesSave.ts.
 import {
   getTaxInvoiceFlowMeta,
   getTaxInvoiceRecordId,
@@ -9,7 +8,6 @@ import type { JsonValue } from './jsonTypes.ts'
 import type { FinanceSettings, SupplierBiz, WorkDataByLogId } from './financeTypes.ts'
 import type { TaxInvoiceRecord } from './financeTaxInvoiceEntries.ts'
 
-/** 세금계산서 레코드(최소 식별 필드 + 확장 필드). */
 export type InvoiceRecordLike = { id: string, supabaseId?: string | number } & Record<string, JsonValue | undefined>
 
 export function currentMonthKey(): string {
@@ -34,7 +32,6 @@ export function lastDayOfMonth(monthKey: string): string {
   return `${monthKey}-${String(new Date(year, month, 0).getDate()).padStart(2, '0')}`
 }
 
-/** @param logKey 서류 발급 차량별(없으면 전체) */
 export function listMonthInvoices(monthKey: string, flow: 'sales', settings: FinanceSettings, workDataByLogId: WorkDataByLogId, records?: Array<TaxInvoiceRecord>, logKey?: string): ReturnType<typeof listTaxInvoiceEntries> {
   return listTaxInvoiceEntries(monthKey, flow, settings, workDataByLogId, records, logKey)
 }

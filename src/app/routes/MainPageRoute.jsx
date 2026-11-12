@@ -1,6 +1,4 @@
 // @ts-check
-// 달력(`/app/calendar`, 서브 차량 `/app/logs/:logId`)과 일지(`/app/day/:date`) 라우트 묶음. 일지는 스스로 저장하므로 dateKey·ownerKey만 넘긴다.
-// 달력에서 들어온 표시(location.state.from)로 일지 닫기를 뒤로가기/교체 이동 중 고른다(workLogNavigation.js).
 import { useEffect, useMemo } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import CalendarPage from '../../features/calendar/ui/CalendarPage.jsx'
@@ -37,12 +35,10 @@ export default function MainPageRoute({
   const settings = useMemo(() => resolveLogSettings(ownerSettings, logId), [ownerSettings, logId])
   const clients = useOwnerClients(ownerKey)
   const cars = useOwnerCars(ownerKey)
-  // 연동 기사 본인 세션: workData는 항상 logId='main'이지만 거래처는 배정 차량 스코프.
   const clientScopeKey = session?.linkedOwnerId
     ? (cars[0]?.number || 'main')
     : logId
   const knownLog = logId === 'main' || cars.some((car) => car.number === logId)
-  // 운비서가 넘긴 운행·지출·고정 노선은 한 번만 — 받아서 넘기고 주소 상태에서 지운다.
   const assistantCall = readAssistantCall(location.state)
   const assistantExpense = readAssistantExpense(location.state)
   const assistantFixed = readAssistantFixed(location.state)
@@ -71,8 +67,6 @@ export default function MainPageRoute({
     if (rawLogId && !knownLog) return null
     return (
       <DayLogPage
-        // key 필수: 날짜만 바뀌면 React가 화면을 재사용해 A 날짜 편집이 B 날짜로 저장된다.
-        // key로 새로 마운트하면 옛 화면이 A 편집을 A에 저장하고 끝난다.
         key={`${ownerKey}:${logId}:${selected.dateKey}`}
         month={selected.month}
         day={selected.day}
@@ -100,10 +94,6 @@ export default function MainPageRoute({
       userName={userName}
       onOpenMenu={onOpenMenu}
       onBackToAuth={onBackToAuth}
-      // closeWorkLog(DayLogPage 헤더 "뒤로가기")는 DayLogPage.jsx의 handleClose가
-      // 이미 confirmLeaveIfUnsafe()로 감싸서 부른다 — 여기서 또 감싸면 같은 이동에
-      // confirm이 두 번 뜬다. 달력→일지 진입은 그 경로가 아니라서(어디서도 아직
-      // 확인 안 함) 여기서 직접 가드한다.
       onSelectDay={(sel) => {
         if (!confirmLeaveIfUnsafe()) return
         const path = logId === 'main'

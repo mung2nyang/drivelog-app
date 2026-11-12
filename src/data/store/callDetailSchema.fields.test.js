@@ -1,4 +1,3 @@
-// 콜 상세 한 건 검사(24칸·수수료·입금 항목)의 통과/거부를 칸마다 못 박는다 — 검사 코드를 라이브러리로 바꿔도 결과가 같아야 한다.
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { ALLOWED_CALL_DETAIL_KEYS, isPersistedCallDetail, isValidCallDetail } from './callDetailSchema.ts'

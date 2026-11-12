@@ -1,5 +1,3 @@
-/* 요약 카드·토글·입력·세그먼트·백업 버튼 기본형. 월 이동기·설정 헤더·아이콘 버튼은 header-controls.css. App.jsx가 header-controls.css 다음에 import. */
-
 .summary-card {
   background-color: var(--card-bg);
   border-radius: var(--radius-card);
@@ -83,7 +81,6 @@
   font-family: inherit;
 }
 
-/* 다크: 입력칸 안내 글자가 브라우저 기본 회색이라 흐림 — 앱 전체 입력칸(따로 정한 곳은 그쪽 우선) */
 :where([data-theme="dark"]) ::placeholder {
   color: var(--placeholder-color);
 }
@@ -112,9 +109,6 @@
   padding-left: 4px;
 }
 
-/* 결제방식·횟수/금액 공용 세그먼트 */
-/* 차량 등록 선택칩(.car-commission-type)과 같은 모양: 회색 바탕 + 안쪽 둥근 칸, 테두리 없음.
-   보이는 바탕은 36px, 누르는 영역은 44px 그대로(위아래 4px씩 투명). */
 .segment-control {
   position: relative;
   display: flex;
@@ -144,7 +138,6 @@
   font-weight: var(--fw-bold);
 }
 
-/* 게스트 백업 버튼·상태 */
 .backup-btn-group {
   display: flex;
   gap: 10px;
@@ -173,7 +166,6 @@
   font-size: var(--fs-floor);
 }
 
-/* 전역 인라인 아이콘(앱 설정 백업 버튼·달력 월 요약) — App.jsx가 모든 화면에 불러옴. */
 .inline-icon {
   width: 20px;
   height: 20px;

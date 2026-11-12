@@ -1,4 +1,3 @@
-// 로드맵 31: 미수금 목록·상세를 오갈 때 ?back= 표시를 들고 다녀야 목록 뒤로가기가 마이페이지로 돌아간다.
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { receivablesDetailPath, receivablesListPath } from './receivablesPaths.js'

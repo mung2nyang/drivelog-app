@@ -1,5 +1,4 @@
 // @ts-check
-// 서브 차량 달력 모드 배너(메인 복귀).
 import { getShortCarNum } from '../../../domain/cars.ts'
 
 /**

@@ -1,4 +1,3 @@
-// 구글 로그인 G-1·G-3 — 첫 화면은 [Google 계정으로 로그인하기]·[비회원으로 시작하기]만: 누르면 구글 로그인 함수를 한 번 부르고, 실패하면 토스트 + 버튼 다시 누를 수 있음.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

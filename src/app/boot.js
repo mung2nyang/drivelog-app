@@ -1,5 +1,4 @@
 // @ts-check
-// 새로고침 시 Supabase 세션을 복원하는 흐름만 — 세션 만들기(소속기사 판정·ownerKey)는 data/cloud/appSession.ts.
 import { supabase } from '../data/cloud/supabaseClient.ts'
 import { hydrateFromSupabase } from '../data/hydrate/hydrate.ts'
 import { singleFlight } from '../data/cloud/singleFlight.ts'
@@ -8,9 +7,7 @@ import { LINK_RETRY_MS, buildBootSession, isProfileRowMissing, ownerKeyFromSessi
 /** @typedef {import('../data/sync/syncTypes.ts').AppSession} AppSession */
 
 /**
- * needsProfile: 내 profiles 행이 없어 홈 대신 기본 정보 화면(/welcome)으로 보내야 함.
- * linkCheckFailed: 연동 확인이 두 번 다 실패 — 어느 칸으로 들어갈지 몰라 안내 화면.
- * @param {number} [retryMs] 테스트용으로만 바꿈
+ * @param {number} [retryMs]
  * @returns {Promise<{ session: AppSession, hydrateError: boolean, needsProfile: boolean } | { linkCheckFailed: true } | null>}
  */
 export function restoreSessionOnBoot(retryMs = LINK_RETRY_MS) {

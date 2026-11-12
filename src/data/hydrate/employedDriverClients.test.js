@@ -71,12 +71,10 @@ describe('Step 9 ① 슬라이스 C (개정): 기사↔차주 거래처 상호 �
     )
 
     assert.equal(remoteId, 777)
-    // 1. 조회할 때 차주 소유(ownerKey)로 조회했는지
     assert.equal(lookupFilters.length, 1)
     assert.equal(lookupFilters[0].user_id, 'owner-user-99')
     assert.notEqual(lookupFilters[0].user_id, 'driver-user-1')
 
-    // 2. insert할 때도 차주 소유(ownerKey)로 저장되었는지
     assert.equal(insertedRows.length, 1)
     assert.equal(insertedRows[0].user_id, 'owner-user-99')
     assert.notEqual(insertedRows[0].user_id, 'driver-user-1')
@@ -222,7 +220,6 @@ describe('Step 9 ① 슬라이스 C (개정): 기사↔차주 거래처 상호 �
     assert.equal(snapshot.clients[0].companyName, '연동차량거래처')
     assert.equal(snapshot.clients[0].scopedToVehicleNumber, '55구1234')
 
-    // clients 조회 에러 시 throw 검증
     handlers.clients = {
       select: () => ({ data: null, error: { message: 'RLS fail' } }),
     }

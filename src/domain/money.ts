@@ -5,7 +5,6 @@ export function parseCurrencyValue(str: JsonValue | undefined): number {
   return parseInt(String(str).replace(/[^0-9]/g, ''), 10) || 0
 }
 
-/** 부가세 = 공급가의 10%, 원 미만 버림(sot §4-14). 화면마다 같은 값이 나오게 부가세는 모두 이 함수로. */
 export function vatOf(amount: number) {
   return Math.floor(amount / 10)
 }
@@ -19,7 +18,6 @@ export function formatCurrencyInput(value: JsonValue | undefined): string {
   return n ? n.toLocaleString('ko-KR') : ''
 }
 
-/** 금액 칸에 친 글자(소수점 포함)를 반올림한 쉼표 정수 글자로 — 첫 점만 소수점으로 본다. */
 export function roundCurrencyText(text: string | undefined): string {
   const raw = String(text ?? '').replace(/[^0-9.]/g, '')
   const dot = raw.indexOf('.')
@@ -29,10 +27,8 @@ export function roundCurrencyText(text: string | undefined): string {
   return n ? n.toLocaleString('ko-KR') : ''
 }
 
-// 운송료가 이 금액을 넘으면 저장 전에 한 번 묻는다(운송료만).
 export const LARGE_FARE_LIMIT = 10000000
 
-/** @param text 쉼표 금액 글자 */
 export function isLargeFare(text: JsonValue | undefined): boolean {
   return parseCurrencyValue(text) > LARGE_FARE_LIMIT
 }
@@ -42,5 +38,3 @@ export function formatPercentInput(value: JsonValue | undefined): string {
   if (parseFloat(next) > 100) next = '100'
   return next
 }
-
-// formatFareShort(달력 셀 짧은 금액 표기)는 calendarBadges.ts에 있다.

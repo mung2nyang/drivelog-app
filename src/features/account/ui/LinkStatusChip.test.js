@@ -1,4 +1,3 @@
-// 로드맵 85 — 연동 기사 마이페이지 개인정보 카드의 "연동중" 칩과 연동 정보 창.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

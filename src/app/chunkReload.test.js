@@ -1,4 +1,3 @@
-// 로드맵 33 — 업데이트 뒤 옛 화면 파일을 못 받으면 한 번 새로고침, 10초 안 두 번째는 안 함.
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { CHUNK_RELOAD_WINDOW_MS, installChunkReload } from './chunkReload.js'

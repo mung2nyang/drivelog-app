@@ -48,7 +48,6 @@ export function markBackupDone(isoString: string = new Date().toISOString()) {
   }
 }
 
-/** 게스트 업무 데이터 전체를 내보내기용 단일 객체로 조립한다. */
 export function buildGuestBackupData(): Record<string, JsonValue> {
   const ownerKey = 'guest'
   const backup: Record<string, JsonValue> = {
@@ -81,7 +80,6 @@ export function buildGuestBackupData(): Record<string, JsonValue> {
 const INVALID_FILE = '백업 파일이 손상되었거나 운행일지 백업 파일이 아닙니다.'
 const RECORD_DOMAINS: Array<PersistDomain> = ['cars', 'clients', 'drivers', 'expenses', 'invoices', 'settings', 'profile', 'dismissedNotifications', 'workDataDeletedDates']
 
-/** 차량별 일지 묶음(logId → 날짜별 기록)을 검사한다. 하나라도 틀리면 null. */
 function parseLogs(logs: JsonValue | undefined): Record<string, Record<string, DayRecordLike>> | null {
   if (logs === undefined || !isPlainObject(logs)) return null
   const out: Record<string, Record<string, DayRecordLike>> = {}
@@ -93,7 +91,6 @@ function parseLogs(logs: JsonValue | undefined): Record<string, Record<string, D
   return out
 }
 
-/** 파싱된 백업 데이터의 유효성을 검증하고 게스트 스토어에 복원한다. */
 export function applyGuestBackupData(parsed: JsonValue | undefined): { ok: true } | { ok: false, error: string } {
   if (parsed === undefined || !isPlainObject(parsed)) return { ok: false, error: INVALID_FILE }
 
@@ -104,7 +101,6 @@ export function applyGuestBackupData(parsed: JsonValue | undefined): { ok: true 
   ]
   if (!KNOWN_KEYS.some((key) => key in record)) return { ok: false, error: INVALID_FILE }
 
-  // 앱 켤 때 검사(owner-state.ts)와 같은 규칙 — 통과 못 하면 다음 실행이 막기 화면에 갇힌다.
   for (const domain of RECORD_DOMAINS) {
     if (domain in record && !matchesDomainSchema(domain, record[domain])) return { ok: false, error: INVALID_FILE }
   }
@@ -129,7 +125,6 @@ export function applyGuestBackupData(parsed: JsonValue | undefined): { ok: true 
 
   const extraWrites: Array<KeyedWrite> = []
   if (snapshot.workLogs) {
-    // 기사 차량 일지도 메인과 같은 저장으로 기기에 쓰고, 백업에 없는 차량의 옛 일지 키는 지운다.
     const nextLogs = snapshot.workLogs
     for (const [logId, days] of Object.entries(nextLogs)) {
       if (logId !== 'main') extraWrites.push({ key: storageKeyForLog('guest', logId), value: days })

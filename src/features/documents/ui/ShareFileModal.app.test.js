@@ -1,4 +1,3 @@
-// 앱(Capacitor)에서 문자로 보내기 — 파일을 문서/운행일지에 저장하고 위치 안내 뒤 문자 앱으로.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

@@ -1,4 +1,3 @@
-// 비회원 [백업 저장하기] — 파일 저장이 성공한 뒤에만 "마지막 백업"이 바뀌고, 앱이면 알림 끝에 저장 위치 안내.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

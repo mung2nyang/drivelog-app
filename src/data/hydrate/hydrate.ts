@@ -1,4 +1,3 @@
-// hydrate 전체 — 조회 전부 성공 판정, single-flight/세대 보호.
 import { supabase } from '../cloud/supabaseClient.ts'
 import { getState, setHydration } from '../store/app-store.ts'
 import { replaceOwnerState } from '../store/owner-state.ts'
@@ -40,16 +39,11 @@ export function hydrateFromSupabase(userId: string, ownerKey: string, options: {
   })
 }
 
-/**
- * 이 세대가 hydration 슬롯을 아직 쥐고 있을 때만 ready/failed로 닫는다.
- * 로그아웃(idle)이나 더 새 hydrate가 epoch를 갈아탄 뒤에는 덮지 않는다.
- */
 function finishHydration(myEpoch: number, patch: { status: 'ready' | 'failed', userId: string, ownerKey: string }) {
   if (getState().hydration.epoch !== myEpoch) return
   setHydration({ ...patch, epoch: myEpoch })
 }
 
-/** settings LS에서 theme만 읽는다. 파싱 실패를 light로 오인하지 않는다. */
 function localThemeIfReadable(ownerKey: string) {
   const read = readPersistDomain('settings', ownerKey)
   if (!read.ok || !read.value || typeof read.value !== 'object' || Array.isArray(read.value)) return null
@@ -62,8 +56,6 @@ async function performHydrate(userId: string, ownerKey: string, myEpoch: number,
   setHydration({ status: 'hydrating', userId, ownerKey, epoch: myEpoch })
 
   try {
-    // employed_driver: profiles/vehicles 행 SELECT 금지 — 호출부가 linkedOwnerId일 때만 켠다.
-    // (테스트는 userId≠ownerKey로 격리하므로 그 비교로 판별하면 안 된다.)
     if (options.employedDriver) {
       const nextSnapshot = await buildEmployedDriverSnapshot({
         userId,
@@ -72,7 +64,6 @@ async function performHydrate(userId: string, ownerKey: string, myEpoch: number,
         localDrivers: getState().drivers[ownerKey] || [],
       })
       if (isSessionStillCurrent({ userId, ownerKey, epoch: myEpoch })) {
-        // driverExpenses는 차주 hydrate 전용 — 소속기사 세션에서는 빈 배열로 replace(스테일 제거).
         replaceOwnerState(ownerKey, { ...nextSnapshot, driverExpenses: [], driverHistory: [] }, { persist: false })
         finishHydration(myEpoch, { status: 'ready', userId, ownerKey })
         dropLegacyKeys(ownerKey)
@@ -115,8 +106,6 @@ async function performHydrate(userId: string, ownerKey: string, myEpoch: number,
     nextClients = mergeClientsFromRows(nextClients, clientsRes.data || [])
     nextDrivers = mergeDriversFromRows(getState().drivers[ownerKey] || [], nextCars, linksRes.data || [])
 
-    // supabaseId 있는 전 차량(main+기사) daily_logs/transport 병합.
-    // tombstone은 메인만 적용(서브는 서버 직접 저장이라 tombstone을 쓰지 않는다).
     const mainTombstoneKeys = Object.keys(readOwnerWorkDataTombstones(ownerKey))
     const { workLogs, mainCar } = await mergeVehicleDayLogsFromServer({
       cars: nextCars,
@@ -164,7 +153,6 @@ async function performHydrate(userId: string, ownerKey: string, myEpoch: number,
       finishHydration(myEpoch, { status: 'ready', userId, ownerKey })
       dropLegacyKeys(ownerKey)
     } else {
-      // 스냅샷은 반영하지 않는다. 이 세대가 아직 hydrating이면 스위치를 닫아 영원히 잠기지 않게 한다.
       finishHydration(myEpoch, { status: 'ready', userId, ownerKey })
     }
     return nextSnapshot
@@ -178,12 +166,11 @@ async function performHydrate(userId: string, ownerKey: string, myEpoch: number,
   }
 }
 
-// 옛 보낼 편지함·변경 기록장 키는 보내지 않고 지운다 — 더 쓰지 않음.
 function dropLegacyKeys(ownerKey: string) {
   try {
     localStorage.removeItem(`reactPracticeMutationOutbox:${ownerKey}`)
     localStorage.removeItem(`reactPracticeDirtyJournal:${ownerKey}`)
-  } catch { /* 저장소를 못 쓰면 그대로 둠 */ }
+  } catch { }
 }
 
 export async function retryHydrate() {
@@ -192,7 +179,6 @@ export async function retryHydrate() {
   if (!userId || !ownerKey) return undefined
   const { checkLinkedDriverLink } = await import('../sync/driverLinkRpc.ts')
   const check = await checkLinkedDriverLink(userId)
-  // 연동 확인이 실패하면 불러오지 않는다 — "연동 없음"으로 보면 기사 화면이 본인 빈 칸으로 덮인다.
   if (!check.ok) throw new Error('연동 확인 실패')
   const employedDriver = !!(check.link?.owner_id && String(check.link.owner_id) === String(ownerKey))
   return hydrateFromSupabase(userId, ownerKey, { employedDriver })

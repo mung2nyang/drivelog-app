@@ -94,12 +94,7 @@ test.afterEach(async () => {
     await act(async () => { leftoverRoot.unmount() })
   }
   resetOwnerSaveQueueForTests()
-  // 슬라이스 E: 이 파일의 여러 테스트가 렌더 전 commitCars/commitClients로 시드한다.
-  // 로그인 세션이 새면 그 시드가 memory-only가 돼 LS에 안 남고, 다음 hydrate가
-  // 빈 서버로 지운다. 테스트마다 세션을 닫아 시드가 게스트 경로(LS)로 남게 한다.
   endCloudSession()
-  // 공유 ownerKey('user-boot-nav')에 테스트 간 cars/clients가 누적되지 않게 비운다
-  // (게스트 경로라 Store·LS 둘 다). 다음 테스트가 깨끗한 상태에서 시작한다.
   for (const owner of ['user-boot-nav', 'guest']) {
     commitCars(owner, [])
     commitClients(owner, [])
@@ -108,15 +103,10 @@ test.afterEach(async () => {
   }
 })
 
-// 슬라이스 C: hydrate가 "빈 배열 = 서버 정본(로컬 삭제)"으로 바뀌었다. supabaseId 있는
-// 로컬 차량/거래처를 시드한 테스트는 가짜 서버도 같은 행을 돌려줘야 hydrate가 그 데이터를
-// 지우지 않는다. getState를 라이브로 읽으므로 시드/UI 생성 순서와 무관하다.
-// (afterEach의 restoreDefaultHandlers가 select를 원복한다.)
 /** @param {string} ownerKey */
 function mirrorServerFromStore(ownerKey) {
   handlers.vehicles.select = () => ({ data: vehicleRowsFor(getState().cars[ownerKey] || []), error: null })
   handlers.clients.select = () => ({ data: clientRowsFor(getState().clients[ownerKey] || []), error: null })
-  // Step 9 슬라이스 A: hydrate가 전 차량 daily_logs를 조회하므로 Store workLogs를 서버처럼 돌려준다.
   handlers.daily_logs = {
     upsert: () => ({ data: { id: 9000 }, error: null }),
     select: (filters) => {
@@ -367,7 +357,6 @@ test('UI 거래처 추가 후 Store에 supabaseId가 붙고, LS에는 안 남으
   await act(async () => { setNativeInputValue(requireHtmlInput(container, '#clientCompanyName'), '신거래') })
   await act(async () => { findButtonByText(container, '저장')?.dispatchEvent(new window.MouseEvent('click', { bubbles: true })) })
   await waitUntil(() => getState().clients[ownerKey]?.some((item) => item.companyName === '신거래'))
-  // 슬라이스 E: 로그인 저장은 서버 직접 1회 → Store(메모리)만. supabaseId도 Store에 붙는다.
   await waitUntil(() => getState().clients[ownerKey].find((item) => item.companyName === '신거래')?.supabaseId === 'sb-ui-client')
   assert.equal(
     readJsonKey('clients', ownerKey, /** @type {Array<{ companyName?: string }>} */ ([])).some((item) => item.companyName === '신거래'),
@@ -437,7 +426,6 @@ test('서버 응답이 에러면 로그인 거래처 추가는 Fail-Fast로 Stor
     await act(async () => { setNativeInputValue(requireHtmlInput(container, '#clientCompanyName'), '유실거래처') })
     await act(async () => { findButtonByText(container, '저장')?.dispatchEvent(new window.MouseEvent('click', { bubbles: true })) })
     await waitUntil(() => insertCount === 1)
-    // Fail-Fast: Store에서 롤백되어 이 거래처가 남지 않는다(재시도/durable 큐 없음).
     await waitUntil(() => !(getState().clients[ownerKey] || []).some((item) => item.companyName === '유실거래처'))
     assert.equal(insertCount, 1, '재시도 큐가 없으므로 flush로도 다시 insert하지 않는다')
     assert.equal((getState().clients[ownerKey] || []).some((item) => item.companyName === '유실거래처'), false)
@@ -460,8 +448,6 @@ test('차량 insert 대기 중 번호를 바꿔도 서버 insert는 1회다', as
       release = () => resolve({ data: { id }, error: null })
     })
   }
-  // 슬라이스 C: hydrate가 빈 배열을 "삭제됨"으로 보므로, 시드한 supabaseId 차량(main-hold)도
-  // 서버 목록에 있어야 hydrate가 지우지 않는다.
   handlers.vehicles.select = () => ({
     data: /** @type {import('../data/store/atomicPersist.ts').JsonValue} */ ([
       { id: 'main-already', number: '10하1010', type: 'main', raw: { id: 'main-hold' }, legacy_log_id: '10하1010' },
@@ -705,4 +691,3 @@ test('계정 B ready에서 stale owner A 거래처/차량 UI 저장·삭제는 A
   assert.equal(localStorage.getItem(storageKeyFor('cars', ownerB)), snap.lsVB)
   endCloudSession()
 })
-

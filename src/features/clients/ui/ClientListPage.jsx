@@ -42,7 +42,7 @@ export default function ClientListPage({ onBack, onOpenMenu }) {
   const reorder = useClientReorder(ownerKey, clients)
   const visibleClients = clients.filter((client) => !client.scopedToVehicleNumber)
 
-  /** @param {Partial<ClientDraft>} [fields] 운비서가 채운 칸 */
+  /** @param {Partial<ClientDraft>} [fields] */
   function openAdd(fields) {
     setEditingId(null)
     setDraft({ ...emptyDraft, ...fields })

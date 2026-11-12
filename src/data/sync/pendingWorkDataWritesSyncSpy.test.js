@@ -1,4 +1,3 @@
-// 재감사 8차(FAIL 지적 4번) — 재시도가 건너뛸 때 기존 일지·원격 호출이 그대로인지 직접 센다.
 import { resetStubSupabaseCallCounts, stubSupabaseCallCounts } from '../../testSupport/stubSupabaseClient.ts'
 import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
@@ -28,7 +27,6 @@ function readWorkData(ownerKey) {
   return readJsonKey('workData', ownerKey, /** @type {Record<string, DayRecordLike>} */ ({}))
 }
 
-// 양성 대조군 — 정상 재시도는 실제로 커밋된다.
 test('재감사 8차 FAIL 지적 4번 — 양성 대조군: 정상 retry는 커밋된다', () => {
   const ownerKey = 'pw-syncspy-positive'
   const dateKey = '2026-09-10'
@@ -66,10 +64,6 @@ test('재감사 8차 FAIL 지적 4번 — 손상된 owner + 최신 fallback 공�
   assert.equal(totalStubSupabaseCalls(), 0, '원격 호출도 0회여야 한다')
 })
 
-// 재감사 9차(FAIL 지적 1번, P0) — EffectivePatch의 fixedCount/palletCount/
-// fixedRouteCounts 값은 day-log-reducer.js의 실제 DayDraft 계약대로 0 이상의
-// 유한한 정수여야 한다. typeof number만 보던 예전 검증은 문자열·음수·소수를 전부
-// 놓쳤다 — 사용자가 지정한 7가지 경우를 전부 확인한다.
 const NUMERIC_VIOLATION_CASES = [
   {
     label: '기존 fixedCount:5 + fixedCount:"oops"',
@@ -137,9 +131,6 @@ NUMERIC_VIOLATION_CASES.forEach(({ label, seed, patch }, index) => {
   })
 })
 
-// 재감사 9차(FAIL 지적 2번) — callDetails:[{}](id 없음)도 정상 pending으로 통과하면
-// 안 된다. 기존 fixedCount/palletCount/fixedRouteCounts가 있는 상태에서 이 값이
-// 주입되면 그 값들이 전혀 변하지 않아야 한다(사용자 지정 회귀 시나리오).
 test('재감사 9차 FAIL 지적 2번 — callDetails:[{}](id 없음) 주입은 기존 fixedCount/palletCount/fixedRouteCounts를 전혀 바꾸지 않는다', () => {
   const ownerKey = 'pw-syncspy-calldetail-noId'
   const dateKey = '2026-09-14'

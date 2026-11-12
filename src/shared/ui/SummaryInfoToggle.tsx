@@ -1,14 +1,13 @@
-// 정산 카드 한 줄 + 이름 옆 (i) 버튼, 누르면 (i) 바로 아래에 설명 카드가 뜬다.
 import type { ReactNode } from 'react'
 import InfoTip from './InfoTip.tsx'
 
 type Props = {
-  className: string, // 줄 클래스(예: "summary-row total")
+  className: string,
   label: ReactNode,
   labelClassName?: string,
   value: ReactNode,
-  infoName: string, // 화면 읽기용 이름(예: "합계")
-  info: string, // 펼칠 설명
+  infoName: string,
+  info: string,
 }
 
 export default function SummaryInfoToggle({ className, label, labelClassName, value, infoName, info }: Props) {

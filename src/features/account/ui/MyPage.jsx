@@ -101,7 +101,7 @@ export default function MyPage({ onOpen, onOpenMenu, onLinked }) {
   const employed = session?.accountType === 'employed_driver'
   const isOwner = !employed && drivers.length > 0
   const cloud = isCloudSession(session)
-  const canDownload = cloud // 차주·개인 회원은 다운로드·불러오기, 연동 기사는 일지 불러오기만, 비회원은 앱 설정 백업
+  const canDownload = cloud
   const displayName = profile.name || (session?.name && session.name !== '비회원' ? session.name : '') || (!cloud ? '비회원' : employed ? '기사' : '대표자')
 
   return (
@@ -151,7 +151,6 @@ export default function MyPage({ onOpen, onOpenMenu, onLinked }) {
         {cloud && !employed && (
           <button type="button" className="mypage-notice-link" onClick={() => setInviteOpen(true)}>
             <svg viewBox="0 0 24 24" aria-hidden="true">
-              {/* 머리가 오른쪽 위로 쏠려 떠 보여서 그림만 왼쪽 0.5칸·아래 1칸 */}
               <g transform="translate(-0.5 1)">
                 <path d="M18.6664 13.7483C17.6163 14.5595 16.3269 14.9997 15 15C14.299 15 13.625 14.88 12.999 14.658L7.239 20.422C7.05416 20.6072 6.83462 20.7541 6.59293 20.8544C6.35124 20.9546 6.09215 21.0062 5.8305 21.0062C5.56885 21.0062 5.30976 20.9546 5.06807 20.8544C4.82638 20.7541 4.60684 20.6072 4.422 20.422L3 19L4.458 17.542L6.308 17.358L6.536 15.464L8.43 15.237L8.656 13.344L9.876 12.124C9.18512 10.9911 8.88926 9.66119 9.03472 8.34227C9.18018 7.02335 9.75874 5.78985 10.6799 4.83477C11.601 3.87968 12.8128 3.25689 14.1256 3.06384C15.4384 2.87078 16.7782 3.11835 17.9353 3.76782C19.0924 4.41728 20.0016 5.43199 20.5206 6.6532C21.0396 7.87441 21.1391 9.23321 20.8036 10.517C20.4681 11.8008 19.7165 12.9372 18.6664 13.7483Z"></path>
                 <circle cx="15" cy="9" r="2"></circle>

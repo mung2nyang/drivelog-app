@@ -1,7 +1,5 @@
 // @ts-check
 /** @typedef {import('../../../domain/jsonTypes.ts').JsonValue} JsonValue */
-// 회원 데이터 다운로드(B-1): 비회원 백업(guestBackup.js)과 같은 파일 모양을 Store(서버에서 불러온 정본)에서 만들고 일상점검표를 더한다.
-// 회원 업무 기록은 기기에 저장하지 않으므로(batchWrites.js CLOUD_MEMORY_ONLY_DOMAINS) localStorage가 아니라 Store에서 읽는다.
 import {
   readOwnerCars,
   readOwnerClients,
@@ -16,9 +14,8 @@ import { getCloudOwnerKey, isHydrationReady } from '../../../data/cloud/cloudSes
 import { fetchVehiclesDailyInspections } from '../../../data/sync/dailyInspections.ts'
 
 /**
- * 서버에서 다 불러오기 전엔 빈 파일이 나가지 않게 막는다.
  * @param {string} ownerKey
- * @returns {string|null} 막는 이유(없으면 null)
+ * @returns {string|null}
  */
 export function memberBackupBlockedReason(ownerKey) {
   if (!ownerKey || getCloudOwnerKey() !== ownerKey || !isHydrationReady()) {
@@ -28,7 +25,7 @@ export function memberBackupBlockedReason(ownerKey) {
 }
 
 /**
- * @param {string} ownerKey 로그인한 차주·개인 회원 id
+ * @param {string} ownerKey
  * @returns {Promise<Record<string, JsonValue>>}
  */
 export async function buildMemberBackupData(ownerKey) {

@@ -1,5 +1,3 @@
-// 알림 화면 — 목록·날짜 줄·누르면 해당 화면·[닫기], 종류별 끄기(저장 실패면 안내 + 값 그대로),
-// 일상점검 의무화 [바로 사용하기]/[다시 보지 않기](옛 옆 창 NotificationPanel 테스트를 옮김).
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 
@@ -63,7 +61,6 @@ function switchOf(container, kind) {
   return input instanceof window.HTMLInputElement ? input : null
 }
 
-/** 입금 예정일이 지난 미수 1건(연체 알림) */
 function seedOverdue(ownerKey) {
   commitSettings(ownerKey, normalizeSettings({ paymentOn: true }))
   commitWorkData(ownerKey, {
@@ -96,7 +93,6 @@ test('목록: 연체 알림에 날짜 줄(운행·입금 예정), 누르면 미�
 
 test('알림이 없으면 "알림이 없습니다."', async () => {
   const ownerKey = 'np-empty'
-  // 오후 6시 이후엔 "오늘 작성한 운행일지 없음"이 생기므로 그 종류는 꺼 두고 본다(시간에 따라 흔들리지 않게).
   commitSettings(ownerKey, normalizeSettings({ dailyInspectionOn: true, notifOff: ['today'] }))
   const view = await renderPage(ownerKey)
   try {
@@ -209,7 +205,6 @@ test('일상점검 의무화 안내: [바로 사용하기] = 스위치 켜짐 �
   }
 })
 
-// 로드맵 110-B — 일지 저장 실패 알림: [닫기] 없음, 누르면 그 날짜 일지, 알림 받기에 이 종류 없음, 목록이 바뀌면 바로.
 test('일지 저장 실패 알림 — [닫기] 없음, 누르면 그 날짜 일지, 끄기 스위치 없음, 더하고 지우면 바로 바뀜', async () => {
   const ownerKey = 'np-save-failed'
   commitSettings(ownerKey, normalizeSettings({ dailyInspectionOn: true, notifOff: ['today'] }))

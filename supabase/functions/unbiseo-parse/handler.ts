@@ -1,4 +1,3 @@
-// 운비서: 말한 문장을 일지 칸(운행·지출·질문)으로 나눈다(로드맵 24-A). 로그인한 사람만, 저장·계산은 안 하고 말한 내용은 로그에 남기지 않는다.
 import { createClient } from 'npm:@supabase/supabase-js@2.112.3'
 import { AiUnavailableError, askAi } from './grok.ts'
 import type { ParseInput } from './grok.ts'
@@ -23,7 +22,6 @@ function reply(status: number, body: Json): Response {
   return new Response(JSON.stringify(body), { status, headers: { ...CORS, 'Content-Type': 'application/json' } })
 }
 
-/** 앱이 보낸 것 — 모양이 틀리면 null(400). */
 export function readInput(body: Json): ParseInput | null {
   const row = record(body)
   if (!row) return null
@@ -45,7 +43,6 @@ function bearer(req: Request): string {
   return (req.headers.get('Authorization') || '').replace(/^Bearer\s+/i, '').trim()
 }
 
-/** 요청 머리의 로그인 표로 Supabase에 누구인지 묻는다. 앱 공개 키만으로는 사용자가 없어 null. */
 async function signedInUserId(req: Request): Promise<string | null> {
   const token = bearer(req)
   const url = Deno.env.get('SUPABASE_URL')
@@ -55,7 +52,6 @@ async function signedInUserId(req: Request): Promise<string | null> {
   return error || !data.user ? null : data.user.id
 }
 
-/** 그 회원의 오늘(한국 날짜) 횟수를 1 센다 — 한도 안이면 true, 넘었으면 false, 셀 수 없으면 null. */
 async function countToday(req: Request): Promise<boolean | null> {
   const url = Deno.env.get('SUPABASE_URL')
   const key = publishableKey()
@@ -69,7 +65,6 @@ async function countToday(req: Request): Promise<boolean | null> {
   }
 }
 
-/** 함수 기본 값의 공개 키 — SUPABASE_ANON_KEY, 없으면 새 이름(SUPABASE_PUBLISHABLE_KEYS의 default). */
 function publishableKey(): string | null {
   const anon = Deno.env.get('SUPABASE_ANON_KEY')
   if (anon) return anon

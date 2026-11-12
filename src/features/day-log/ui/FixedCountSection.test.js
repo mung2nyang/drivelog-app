@@ -1,4 +1,3 @@
-// 하루 화면 고정 노선·파렛트 금액 줄(로드맵 46-B) — 표시만, 횟수 × 거래처 단가.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

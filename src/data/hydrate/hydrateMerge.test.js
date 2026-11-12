@@ -35,9 +35,6 @@ describe('throwIfAnyHydrateError', () => {
 
 describe('mergeWorkDataFromRows — transport_details 실패 회귀 방지', () => {
   test('transportRows가 undefined/빈 배열이면 callDetails는 빈 배열로 남되, 호출부가 이미 성공을 확인했을 때만 이 함수를 불러야 한다', () => {
-    // 이 함수 자체는 "행이 없으면 빈 배열"이라는 게 맞는 동작이다 — transport_details 조회가
-    // 실패했을 때 이 함수를 아예 안 부르는 책임은 cloudSync.js의 throwIfAnyHydrateError가 진다.
-    // 여기서는 순수 병합 로직만 검증한다: rows가 있으면 반영되고, 없으면 빈 배열이다.
     const result = mergeWorkDataFromRows({}, {
       dailyRows: [{ work_date: '2026-08-01', is_off: false, fixed_count: 1, raw: {} }],
       transportRows: [{ work_date: '2026-08-01', raw: { client: '거래처A', fare: 50000 } }],
@@ -147,8 +144,6 @@ describe('mergeWorkDataFromRows — transport_details 실패 회귀 방지', () 
   })
 })
 
-// 재감사 3차(FAIL 지적 1번) — 아직 서버에 삭제를 못 알린 날짜(tombstone)는 서버가
-// 아직 갖고 있는 stale daily_logs/transport_details row로 되살아나면 안 된다.
 describe('mergeWorkDataFromRows — deletedDateKeys(tombstone)는 절대 되살리지 않는다', () => {
   test('서버 daily_logs에 아직 남아 있는 tombstone 날짜는 결과에서 빠진다', () => {
     const result = mergeWorkDataFromRows({}, {

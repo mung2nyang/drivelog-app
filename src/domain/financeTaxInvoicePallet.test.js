@@ -3,7 +3,6 @@ import { test } from 'node:test'
 import { getTaxInvoiceSourceGroups } from './finance.ts'
 import { monthSettlementSummary } from './monthSettlement.ts'
 
-// 세금계산서에도 파렛트 금액 — 달력·매출과 같은 조건(로드맵 113-A).
 const HANJIN = { id: 'c1', companyName: '한진', fixedRouteLinked: true, fixedUnitPrice: '250,000', palletOn: true, palletPrice: '5,000' }
 
 function mainGroups(settings, day) {
@@ -39,7 +38,6 @@ test('고정 0회에 파렛트만 있는 날도 그 거래처 계산서에(건�
 
 test('부가세는 고정·파렛트를 날마다 따로 버림', () => {
   const clients = [{ ...HANJIN, fixedUnitPrice: '10,005', palletPrice: '1,005' }]
-  // 고정 10,005 → 1,000(버림), 파렛트 1,005 → 100(버림)
   assert.deepEqual(mainGroups({ clients }, { fixedCount: 1, palletCount: 1 }), [['한진', 11010, 1100, 1]])
 })
 

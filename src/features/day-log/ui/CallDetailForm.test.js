@@ -1,4 +1,3 @@
-// 로드맵 4-2 슬라이스 3 — 콜 상세 "산재보험료" 칸은 기사연동 계정 세션에서 숨긴다.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 
@@ -10,7 +9,6 @@ import assert from 'node:assert/strict'
 import { describe, test } from 'node:test'
 import { normalizeSettings } from '../../../domain/practiceSettings.ts'
 
-/** DOM 노드가 없는지 boolean으로만 비교한다 — assert.equal(node, null)은 실패 시 노드 전체를 직렬화하려다 OOM이 난다. */
 function assertMissing(/** @type {Element|null} */ el, /** @type {string} */ message) {
   assert.equal(!!el, false, message)
 }
@@ -50,7 +48,6 @@ test('기사연동 계정이면 결제 및 수금 입력이 켜져 있어도 산
   const view = await mount({ isEmployedDriver: true })
   try {
     assertMissing(view.container.querySelector('#callInsuranceFee'), '산재보험료 칸이 없어야 한다')
-    // 같은 영역의 다른 칸(계산서 종류·부가세 해제·입금 예정일)은 그대로 보여야 한다(범위 밖 — 안 건드림).
     assert.ok(view.container.querySelector('#callVatExempt'))
     assert.ok(view.container.querySelector('#callPaymentDueDate'))
   } finally { await view.cleanup() }
@@ -153,7 +150,6 @@ describe('운송료 1,000만원 초과 저장 확인(로드맵 43-C)', () => {
 
   test('초과 + 취소 → 저장 안 함, 입력 창 그대로', async () => {
     const result = await clickSave('20,000,000', false)
-    // 앱 확인 창을 그릴 곳(AppShell)이 없는 테스트에서는 같은 문구로 기본 창이 대신 묻는다.
     assert.deepEqual(result.asked, ['운송료가 1,000만원을 넘습니다\n입력한 운송료는 20,000,000원입니다. 이 금액이 맞으면 저장해 주세요.'])
     assert.equal(result.saved, 0)
     assert.equal(result.stillOpen, true)

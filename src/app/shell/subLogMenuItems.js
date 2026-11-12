@@ -1,5 +1,4 @@
 // @ts-check
-// 차주 사이드 메뉴 "[번호] 일지" = 연동 안 된 sub만.
 import { getShortCarNum } from '../../domain/cars.ts'
 
 /** @typedef {import('../../domain/financeTypes.ts').CarLike} CarLike */
@@ -8,7 +7,7 @@ import { getShortCarNum } from '../../domain/cars.ts'
 /**
  * @param {Array<CarLike>|null|undefined} cars
  * @param {Array<{ status?: string, vehicleNumber?: string }>|null|undefined} drivers
- * @param {boolean} isOwnerSession 소속기사(linkedOwnerId)면 false
+ * @param {boolean} isOwnerSession
  * @returns {Array<SubLogMenuItem>}
  */
 export function buildSubLogMenuItems(cars, drivers, isOwnerSession) {

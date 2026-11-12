@@ -1,5 +1,4 @@
 // @ts-check
-// 횟수 버튼 설정 — × 버튼 없이 길게 누르면 확인 창 → 확인 시 삭제, 짧게 누르면 삭제 안 됨.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 
@@ -30,7 +29,6 @@ async function mount(presets) {
   document.body.appendChild(container)
   const root = createRoot(container)
   await act(async () => {
-    // 함수로 넘기면 저장 창구처럼 이 설정에 적용한 결과를 기록한다.
     root.render(React.createElement(RunCountChips, { scope: 'main', settings, onPatch: (patch) => { patches.push(typeof patch === 'function' ? patch(settings) : patch) } }))
   })
   return {
@@ -98,7 +96,6 @@ test('버튼이 1개뿐이면 길게 눌러도 삭제 창이 뜨지 않는다', 
   } finally { await cleanup() }
 })
 
-// 로드맵 53 — 평소엔 읽기 전용(손가락이 닿아도 자판 안 뜸), 짧게 떼면 고치기, 길게 누르면 자판 없이 삭제 창.
 test('처음엔 모든 칩이 읽기 전용이다', async () => {
   const { container, cleanup } = await mount([1, 2, 3])
   try {

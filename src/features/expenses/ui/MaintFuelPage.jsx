@@ -1,5 +1,4 @@
 // @ts-check
-// 메인·서브 스코프를 한 화면에서 처리. 날짜별 목록은 MaintFuelDayList, 달 이동은 공용 MonthNavigator.
 import { useMemo, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import MonthNavigator from '../../../shared/ui/MonthNavigator.tsx'
@@ -41,7 +40,6 @@ export default function MaintFuelPage({ logId: logIdProp, onBack, onOpenMenu }) 
   const [editingId, setEditingId] = useState(/** @type {string|null} */ (null))
   const [draft, setDraft] = useState(/** @type {ExpenseDraft} */ (emptyExpenseDraft('maint')))
   const [saving, setSaving] = useState(false)
-  // 저장 중엔 다시 눌러도 무시 — 두 번 저장돼 서버에 같은 지출이 두 줄 생기던 것.
   const busyRef = useRef(false)
   /** @template R @param {() => Promise<R>} run @returns {Promise<R|undefined>} */
   async function once(run) {

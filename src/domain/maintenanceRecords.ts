@@ -1,7 +1,6 @@
 import type { JsonRecord, JsonValue } from './jsonTypes.ts'
 import type { ExpenseItem } from './expenseTypes.ts'
 
-/** 정비 변환 중간형 — ExpenseItem에 fare 등 레거시 필드를 덧붙인 형태. */
 export type MaintExpenseShape = ExpenseItem & { fare?: number | string, type?: string, liter?: number | string }
 export type MaintenanceRecordRow = {
   work_date?: string

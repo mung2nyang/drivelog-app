@@ -1,5 +1,3 @@
-/* 일상점검표 창 본문: 항목 줄, 양호·불량 선택, 결과, 서명 안내, 메모, 아래 버튼. */
-
 .di-row {
   display: flex;
   align-items: center;

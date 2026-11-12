@@ -1,5 +1,4 @@
 // @ts-check
-// 로드맵 24-D-2 — 운비서 질문 숫자는 매출·미수금·세금계산서 화면이 쓰는 함수를 같은 자료로 직접 부른 값과 같다(새 계산 없음 증명).
 import '../../../testSupport/stubSupabaseClient.ts'
 import '../../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
@@ -30,12 +29,10 @@ before(() => {
   commitCars(OWNER, FIXTURE_SETTINGS.cars)
   commitDrivers(OWNER, [{ id: 'link-1', name: '김기사', phone: '', vehicleNumber: '서울12가3456', startDate: '2026-05-01', endDate: '2026-05-31', status: 'linked' }])
   Object.entries(FIXTURE_WORK).forEach(([logId, data]) => commitLogWorkData(OWNER, logId, data))
-  // 연 합 확인용 — 메인 차량 4월 운행 하나(차주 탭에 잡힘).
   commitLogWorkData(OWNER, 'main', { ...FIXTURE_WORK.main, '2026-04-15': { callDetails: [{ id: 'trp-unbiseo-apr', client: '롯데', fare: '50,000' }] } })
   commitExpenses(OWNER, FIXTURE_EXPENSES)
 })
 
-// 화면과 같은 재료 — 매출·미수금 화면이 쓰는 그대로.
 const screen = () => ({ settings: buildFinanceSettings(OWNER), work: readOwnerWorkDataByLogId(OWNER), expenses: readOwnerExpenses(OWNER), driverExpenses: readOwnerDriverExpenses(OWNER) })
 /** @param {string} monthKey */
 const ownerDetail = (monthKey) => { const s = screen(); return getOwnerMonthlyFinanceDetail(monthKey, 'owner', s.settings, s.work, s.expenses, s.driverExpenses) }
@@ -110,7 +107,6 @@ test('거래처 매출 = 서류 발급 [세금계산서] 탭(메인 서류)의 �
   assert.deepEqual(questionNumbers(OWNER, q({ client: '한진', period: YEAR }), false), want, '연은 12달 합(한진은 5월만)')
 })
 
-// 로드맵 24-D3 — 하루 숫자는 일지 "운송료 합계"·달력 칸이 쓰는 함수를 같은 자료로 부른 값(메인 차량, 휴무면 0).
 test('하루: 운송료 = dayFareTotal(일지와 같은 단가·파렛트), 운행 = dayTripCount, 휴무·빈 날은 0', async () => {
   const { dayFareTotal } = await import('../../../domain/calendarBadges.ts')
   const { dayTripCount } = await import('../../../domain/day-record.ts')
@@ -129,7 +125,6 @@ test('하루: 운송료 = dayFareTotal(일지와 같은 단가·파렛트), 운�
   assert.deepEqual(at('2026-10-16'), { amount: 0, count: 0, supply: 0 }, '휴무')
   assert.deepEqual(at('2026-10-16', { type: 'trips' }), { amount: 0, count: 0, supply: 0 })
   assert.deepEqual(at('2026-10-17'), { amount: 0, count: 0, supply: 0 }, '빈 날')
-  // 고정 노선이 꺼졌으면 일지처럼 파렛트 단가 없음.
   commitSettings(owner, normalizeSettings({ fixedOn: false }))
   assert.equal(at(day).amount, dayFareTotal(record, '250,000', 0))
 })

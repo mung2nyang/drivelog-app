@@ -1,4 +1,3 @@
-// 개인정보 화면 입력 — 글자는 즉시 보이고 저장은 묶어서 한 번에(로그인 상태의 느린 서버 저장에도 글자가 안 사라짐).
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

@@ -1,4 +1,3 @@
-// 세금계산서 저장이 중간에 끊긴 뒤 다시 저장해도 서버에 같은 계산서가 한 장만 있다.
 import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { afterEach, describe, mock, test } from 'node:test'
@@ -17,10 +16,7 @@ function field(value, key) {
   return value && typeof value === 'object' && !Array.isArray(value) ? value[key] : undefined
 }
 
-/**
- * 넣은 줄을 기억하는 가짜 tax_invoices. failInsert(로컬 번호)가 'reject'면 넣지 않고 오류, 'lost'면 넣고도 오류(응답 유실).
- * @param {string} ownerKey
- */
+/** @param {string} ownerKey */
 function seedInvoiceServer(ownerKey) {
   resetHandlers()
   Object.assign(handlers, emptyOkHandlers())

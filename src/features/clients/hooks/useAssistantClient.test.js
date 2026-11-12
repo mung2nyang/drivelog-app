@@ -1,5 +1,4 @@
 // @ts-check
-// 로드맵 24-G-2 — 주소 상태로 넘어온 운비서 거래처 칸 검사: 이름은 꼭, 그 밖은 틀린 칸만 뺀다(등록 창 기본값이 남음).
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { readAssistantClient } from './useAssistantClient.js'

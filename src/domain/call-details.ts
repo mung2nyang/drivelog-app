@@ -1,10 +1,8 @@
-// 콜상세(callDetails[]) 한 건을 만들고 배열에 upsert/제거하는 순수 함수.
 import { parseCurrencyValue } from './money.ts'
 import { generateLocalId } from './localId.ts'
 import type { CallDetailLike } from './callDetail.ts'
 import type { ClientLike } from './clients.ts'
 
-/** buildCallDetail이 받는 폼 입력값 — 아직 정규화 전이라 전부 느슨한 문자열이다. */
 export type CallDetailDraft = {
   loadLoc?: string
   unloadLoc?: string
@@ -24,7 +22,6 @@ export type CallDetailDraft = {
   insuranceFee?: string
 }
 
-/** 저장 전 검사 — 운임·상차지·하차지가 모두 비면 상차지 칸에 표시한다. */
 export function checkCallDetailDraft(draft: CallDetailDraft): { field: 'loadLoc', message: string } | null {
   const filled = [draft.fare, draft.loadLoc, draft.unloadLoc].some((value) => String(value ?? '').trim())
   return filled ? null : { field: 'loadLoc', message: '운임, 상차지, 하차지 중 하나를 입력해 주세요.' }
@@ -49,7 +46,6 @@ export function buildCallDetail(draft: CallDetailDraft, existing?: CallDetailLik
 
   return {
     item: ({
-      // 기존 항목은 id를 이어받고, 없거나 임시 "legacy-N"(배열 순서 기반)이면 영구 id를 새로 붙인다.
       id: existing?.id && !String(existing.id).startsWith('legacy-') ? existing.id : generateLocalId('trp'),
       loadLoc,
       unloadLoc,
@@ -64,7 +60,6 @@ export function buildCallDetail(draft: CallDetailDraft, existing?: CallDetailLik
       paymentDueDate: String(draft.paymentDueDate || '').trim(),
       workDate: dateKey,
       distanceType: existing?.distanceType || '',
-      // 값 없는 칸은 저장 대기 검사가 거부하므로 원래 값이 있을 때만 이어받는다.
       ...(existing?.linkedLoadIndex !== undefined ? { linkedLoadIndex: existing.linkedLoadIndex } : {}),
       departureTime: String(draft.departureTime ?? existing?.departureTime ?? '').trim(),
       arrivalTime: String(draft.arrivalTime ?? existing?.arrivalTime ?? '').trim(),
@@ -110,7 +105,6 @@ export function removeCallDetail(details: Array<CallDetailLike>, index: number) 
   return (details || []).filter((_, i) => i !== index)
 }
 
-// 콜 상세 산재보험료(1인 차주가 건마다 적는 칸) 하루 합 — 하루 화면·달력·내역서가 같이 쓴다(모든 화면에서 뺀다).
 export function callInsuranceTotal(record: { isOff?: boolean, callDetails?: Array<CallDetailLike> } | null | undefined) {
   if (!record || record.isOff || !Array.isArray(record.callDetails)) return 0
   return record.callDetails.reduce((sum, detail) => sum + parseCurrencyValue(detail?.insuranceFee), 0)

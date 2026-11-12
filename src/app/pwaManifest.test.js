@@ -1,4 +1,3 @@
-// 로드맵 11번 1단계: 홈 화면 앱(PWA) 설정 파일·아이콘·index.html 연결 — 주소창 없이 열리려면 셋 다 맞아야 한다.
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { test } from 'node:test'

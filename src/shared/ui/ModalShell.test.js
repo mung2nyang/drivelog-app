@@ -1,4 +1,3 @@
-// 로드맵 57-A — 공용 창 껍데기: 바깥 누름·Esc 닫기(끌 수 있음), 겹친 창은 맨 위만 Esc, 열고 닫을 때 키보드 위치.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

@@ -86,9 +86,6 @@ describe('거래처 저장 — 세금계산서 필드', () => {
     assert.deepEqual(reordered.map((c) => c.id), ['c2', 'c3', 'c1', 's1'])
   })
 
-  // §15 슬라이스 D(2026-09-18) — 고정노선 "1곳 제한"이 차주 본인과 연동기사
-  // 각자의 스코프(scopedToVehicleNumber)별로 독립돼야 한다(sot.md §4-4c는
-  // "1곳"까지만 확정, 범위는 이번에 스코프별로 정정).
   test('연동기사(스코프 다름)의 고정노선은 차주 본인 고정노선을 해제하지 않는다', () => {
     const owner = upsertClient([], { companyName: '차주거래처', fixedRouteLinked: true, fixedUnitPrice: '100000' }).clients
     const withDriver = upsertClient(owner, {
@@ -135,10 +132,6 @@ describe('getFixedRouteClient/resolveFixedUnitPrice — 스코프 지정 시 fal
   })
 })
 
-// 재감사 2차(FAIL 지적) — 달력(day-record.js/calendarBadges.js)과 매출·계산서
-// (finance.js)가 "고정노선 1회 단가"를 서로 다른 소스로 계산해서, 같은 달인데도
-// 달력 뱃지/월합계와 매출 화면 합계가 다른 값을 보여줄 수 있었다. resolveFixedUnitPrice
-// 하나로 통일했는지 확인한다.
 describe('resolveFixedUnitPrice — 달력·매출이 같은 단가를 쓰는지', () => {
   test('고정노선 연결 거래처가 있으면 그 fixedUnitPrice를 쓴다', () => {
     const settings = { clients: [{ id: 'c-fixed', companyName: '한진', fixedRouteLinked: true, fixedUnitPrice: '250,000' }], unitPrice: 100000 }
@@ -159,12 +152,6 @@ describe('resolveFixedUnitPrice — 달력·매출이 같은 단가를 쓰는지
     assert.equal(resolveFixedUnitPrice({}), 0)
   })
 
-  // 통합 확인: CalendarPage.jsx(달력)와 finance.js(매출)가 정확히 이 함수를 거쳐서
-  // fixedCount 단가를 계산하므로, 같은 settings/workData를 넣으면 "고정노선분" 금액이
-  // 반드시 같아야 한다 — 되돌려서 확인: resolveFixedUnitPrice 없이 finance.js가 예전처럼
-  // getFixedRouteClient(settings)?.fixedUnitPrice만 보게(연결된 거래처 없으면 0) 하고
-  // 달력 쪽만 settings.unitPrice를 쓰면, 아래 두 값이 달라진다(120000 vs 0) — 지금은
-  // 같은 resolveFixedUnitPrice를 거치므로 항상 같다.
   test('연결된 거래처가 없는 상태에서 달력 월합계와 매출 월합계의 고정노선분이 일치한다', () => {
     const settings = { clients: [], unitPrice: 120000, fixedOn: true, cars: [] }
     const data = { '2026-08-05': { isOff: false, fixedCount: 3, callDetails: [], fixedRouteCounts: {} } }
@@ -175,10 +162,6 @@ describe('resolveFixedUnitPrice — 달력·매출이 같은 단가를 쓰는지
   })
 })
 
-// 2026-09-17: 기사 정산액이 고정노선 운행을 못 잡던 버그(financeCore.js
-// getMonthlyDriverTotals)의 원인 함수. 실제 day record는 fare 필드를 안 저장하고
-// fixedCount만 있다 — record.fare 같은 필드가 있는 픽스처가 아니라 실제 저장
-// 모양으로 검증한다.
 describe('computeFixedRouteFare — 고정노선 단가×횟수(fare 필드 없는 실제 저장 모양)', () => {
   test('fixedCount × fixedUnitPrice', () => {
     const record = { isOff: false, fixedCount: 2 }

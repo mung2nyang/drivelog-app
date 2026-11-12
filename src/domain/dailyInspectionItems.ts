@@ -1,4 +1,3 @@
-// 운수종사자 일상점검표(화물자동차 운수사업법 시행규칙 별지 제14호의5서식) 점검 항목 — 서식 순서·문구 그대로 3묶음 11항목.
 import type { JsonValue } from './jsonTypes.ts'
 
 export type InspectionResult = 'good' | 'bad'
@@ -40,22 +39,18 @@ export const DAILY_INSPECTION_KEYS = DAILY_INSPECTION_SECTIONS.flatMap((section)
 
 export const INSPECTION_RESULT_LABEL: Record<InspectionResult, string> = { good: '양호', bad: '불량' }
 
-/** [모두 양호] — 11항목 전부 양호. */
 export function allGoodItems(): InspectionItems {
   return Object.fromEntries(DAILY_INSPECTION_KEYS.map((key) => [key, 'good' as InspectionResult]))
 }
 
-/** 11항목이 모두 양호·불량 중 하나로 골라졌는지(저장 조건). */
 export function isInspectionComplete(items: InspectionItems) {
   return DAILY_INSPECTION_KEYS.every((key) => items[key] === 'good' || items[key] === 'bad')
 }
 
-/** 11항목이 모두 비었는지(수정에서 다 비우고 저장하면 지우기). */
 export function isInspectionEmpty(items: InspectionItems) {
   return DAILY_INSPECTION_KEYS.every((key) => items[key] !== 'good' && items[key] !== 'bad')
 }
 
-/** 서버에서 읽은 값을 아는 항목키·양호/불량만 남겨 좁힌다. */
 export function sanitizeInspectionItems(raw: JsonValue | undefined): InspectionItems {
   const items: InspectionItems = {}
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return items

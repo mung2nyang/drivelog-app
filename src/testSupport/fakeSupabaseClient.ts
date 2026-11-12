@@ -1,7 +1,3 @@
-// Step 0-4 감사 보완 4차: hydrate 등 테스트가 공유하는 가짜 supabase
-// 클라이언트. mock.module()로 실제 supabaseClient.js를 바꿔치기하는 각 테스트 파일이
-// 이 팩토리로 handlers/callCounts를 매번 새로 만든다(파일 간 상태 공유 없음 — 테스트
-// 독립성).
 import type { JsonValue } from '../data/store/atomicPersist.ts'
 import type { CarLike } from '../domain/financeTypes.ts'
 import type { ClientLike } from '../domain/clientTypes.ts'
@@ -11,7 +7,6 @@ export type FakeQueryResult = { data?: JsonValue, error?: { message?: string } |
 export type FakeHandler = (arg?: EqFilters | JsonValue, extra?: EqFilters | JsonValue) => FakeQueryResult | Promise<FakeQueryResult>
 export type FakeHandlers = Record<string, Record<string, FakeHandler>>
 export type FakeRpcHandler = (args?: JsonValue) => FakeQueryResult | Promise<FakeQueryResult>
-/** 조건 이름과 넘긴 값 */
 export type FakeOp = Array<JsonValue>
 export type FakeCall = { table: string, method: string, args: Array<JsonValue>, ops: Array<FakeOp> }
 type FakeChain = ReturnType<typeof chainable>
@@ -23,9 +18,6 @@ type FakeTable = {
   delete: () => FakeChain,
 }
 
-/**
- * @param ops 붙인 조건을 순서대로 적어 둘 곳
- */
 export function chainable(getResult: (filters: EqFilters) => FakeQueryResult | Promise<FakeQueryResult>, ops: Array<FakeOp> = []) {
   const filters: EqFilters = {}
   const note = (name: string, args: Array<JsonValue | undefined>) => { ops.push([name, ...args.filter((arg) => arg !== undefined)]) }
@@ -60,7 +52,6 @@ export function createFakeSupabase(): {
 } {
   const handlers: FakeHandlers = {}
   const callCounts: Record<string, number> = {}
-  /** 받은 호출을 순서대로: 표·동작·넘긴 값·붙인 조건 */
   const calls: Array<FakeCall> = []
 
   function resetHandlers() {
@@ -88,7 +79,6 @@ export function createFakeSupabase(): {
     return callCounts[`${table}.${method}`] || 0
   }
 
-  // 등록 안 한 호출은 기다리는 곳에서 오류.
   function unregistered(table: string, method: string): never {
     throw new Error(`등록 안 한 호출: ${table}.${method}`)
   }
@@ -114,7 +104,6 @@ export function createFakeSupabase(): {
         delete: () => { bump(table, 'delete'); return chainable(h.delete || (() => unregistered(table, 'delete')), record(table, 'delete', [])) },
       }
     },
-    // handlers.rpc[함수이름]이 있으면 그 답, 없으면 위와 같이 처리.
     rpc(fnName: string, args?: JsonValue) {
       bump('rpc', fnName)
       record('rpc', fnName, [args])
@@ -130,11 +119,6 @@ export function createFakeSupabase(): {
 export function wait(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
-
-// 슬라이스 C: hydrate가 "빈 배열 = 서버 정본(로컬 삭제)"으로 바뀌어서, 로컬 Store에
-// supabaseId 있는 차량/거래처를 시드한 테스트는 가짜 서버에도 같은 행을 돌려줘야
-// hydrate가 그 데이터를 지우지 않는다. buildVehicleRow/buildClientRow처럼 raw에
-// 로컬 객체를 통째로 담는다(mergeCars/ClientsFromRows가 raw.* 를 읽는다).
 
 export function vehicleRowsFor(cars: Array<CarLike>): Array<JsonValue> {
   const rows: Array<JsonValue> = []

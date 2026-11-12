@@ -1,5 +1,4 @@
 // @ts-check
-// 사이드메뉴 구성·동작. 아이콘 그림은 side-menu/SideMenuIcons.jsx.
 import { assetPath } from '../../shared/utils/assetPath.ts'
 import { CarIcon, PeopleIcon, PersonIcon, GearIcon, FuelIcon, ChartIcon, DocIcon, TruckIcon, SupportIcon, AdminIcon } from './side-menu/SideMenuIcons.jsx'
 import useSideMenuBackGuard from './useSideMenuBackGuard.js'
@@ -7,12 +6,10 @@ import useSideMenuBackGuard from './useSideMenuBackGuard.js'
 const BANNER_LIGHT = assetPath('/images/banner_image_Light.png')
 const BANNER_DARK = assetPath('/images/banner_image_dark.png')
 
-/** 지금 테마의 배너 하나만(숨긴 그림도 내려받음) */
 export function sideMenuBannerSrc() {
   return document.documentElement.getAttribute('data-theme') === 'dark' ? BANNER_DARK : BANNER_LIGHT
 }
 
-/** 메뉴를 처음 열 때 그림 칸이 비지 않게 앱이 뜬 뒤 미리 받아 둔다. */
 export function preloadSideMenuBanner() {
   const img = document.createElement('img')
   img.src = sideMenuBannerSrc()
@@ -30,7 +27,7 @@ export function preloadSideMenuBanner() {
  * @param {(linkId: string) => void} [props.onOpenLinkedDriver]
  * @param {Array<SubLogMenuItem>} [props.subLogItems]
  * @param {(vehicleNumber: string) => void} [props.onOpenSubLog]
- * @param {boolean} [props.isAdmin] 관리자 계정이면 "설정" 칸에 "관리자"
+ * @param {boolean} [props.isAdmin]
  */
 export default function SideMenu({
   open, onClose, onSelect,

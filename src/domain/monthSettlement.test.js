@@ -4,7 +4,7 @@ import { monthSettlementSummary } from './monthSettlement.ts'
 import { callVatTotal } from './day-record.ts'
 
 const YEAR = 2026
-const MONTH = 8 // September (0-based)
+const MONTH = 8
 
 /** @param {import('./dayRecordTypes.ts').DayRecordLike} record */
 function day(record) {
@@ -65,14 +65,12 @@ describe('monthSettlementSummary', () => {
           {
             client: '등록사',
             fare: 50000,
-            // 스냅샷 없음 → 거래처 설정 5% 폴백
           },
           {
             client: '미등록사',
             fare: 30000,
           },
           {
-            // 거래처명 없음
             fare: 20000,
           },
         ],
@@ -143,7 +141,6 @@ describe('monthSettlementSummary', () => {
     })
     assert.equal(main.subCarComm, 0)
 
-    // fare=2*10000+40000=60000, commission=0, workCount=2+1=3
     const pct = monthSettlementSummary(workData, YEAR, MONTH, {
       logId: '12가3456',
       unitPrice: 10000,
@@ -233,11 +230,6 @@ describe('monthSettlementSummary', () => {
       activeFixedOn: true,
       clients: [client],
     })
-    // fare = 100000 + 40000 = 140000
-    // pallet = 2 * 5000 = 10000
-    // commission = floor(100000*0.1) + floor(40000*0.1) = 10000 + 4000 = 14000
-    // vat = round((140000+10000)*0.1) = 15000
-    // total = 140000 + 10000 - 14000 - 0 + 15000 = 151000
     assert.equal(result.fare, 140000)
     assert.equal(result.palletFare, 10000)
     assert.equal(result.commissionTotal, 14000)
@@ -254,7 +246,6 @@ describe('monthSettlementSummary — 부가세는 매출과 같은 규칙(로드
       '2026-09-03': day({ callDetails: [{ fare: 12345 }] }),
     }
     const result = monthSettlementSummary(workData, YEAR, MONTH, { clients: [] })
-    // 10000 + floor(1234.5) + floor(1234.5) = 10000 + 1234 + 1234 (로드맵 102, sot §4-14)
     assert.equal(result.vat, 12468)
     const dayScreenVat = Object.values(workData).reduce((sum, record) => sum + callVatTotal(record), 0)
     assert.equal(result.vat, dayScreenVat)
@@ -270,7 +261,6 @@ describe('monthSettlementSummary — 부가세는 매출과 같은 규칙(로드
     const result = monthSettlementSummary(workData, YEAR, MONTH, {
       unitPrice: 12345, fixedRouteClient: client, activeFixedOn: true, clients: [client],
     })
-    // 고정 floor(1234.5)×2 = 2468, 파렛트 floor(123.5)×2 = 246
     assert.equal(result.vat, 2468 + 246)
   })
 })
@@ -292,4 +282,3 @@ describe('monthSettlementSummary — 콜 상세 산재보험료는 합계에서 
     assert.equal(result.total, 110000)
   })
 })
-

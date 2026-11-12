@@ -196,7 +196,6 @@ describe('buildMonthReport', () => {
     const report = buildMonthReport(
       'test-month-report-client', 2026, 8, [], cars, settings, workData, clients, profile,
     )
-    // fare=140000, commission=14000, vat=14000, total=140000
     assert.equal(report.fareByClient['한진'], 140000)
     assert.equal(report.commissionByClient['한진'], 14000)
     assert.equal(report.commissionLabelByClient['한진'], '10%')
@@ -233,7 +232,7 @@ describe('buildMonthReport', () => {
   })
 
   test('고정노선 미연동 금액은 fixedBaseFare에 들어가 기본 운송료 합에 포함된다', () => {
-    const clients = [{ id: 'c1', companyName: '동부' }] // fixedRouteLinked 없음
+    const clients = [{ id: 'c1', companyName: '동부' }]
     const workData = {
       '2026-09-03': {
         fixedCount: 0,
@@ -241,7 +240,6 @@ describe('buildMonthReport', () => {
         dailyDistance: 12,
       },
     }
-    // 단가도 0이므로 fixedBaseFare=0, defaultBaseFare=10000
     const report = buildMonthReport(
       'test-month-report-distance', 2026, 8, [], cars, settings, workData, clients, profile,
     )
@@ -258,7 +256,6 @@ describe('buildMonthReport', () => {
     assert.equal(report.total, 0)
   })
 
-  // 스코프 수정 묶음 2(2026-09-21) — 서브차량 내역서(차주 계정)·연동기사 본인 내역서는 그 차량 스코프 고정노선을 쓴다.
   describe('고정노선 스코프 — 내역서 대상 차량', () => {
     const plate = '서울99가9999'
     const subCars = /** @type {Array<import('../../../domain/financeTypes.ts').CarLike>} */ ([{ id: 's1', type: 'sub', number: plate }])
@@ -306,7 +303,6 @@ describe('buildReportDayRows', () => {
     const rows = buildReportDayRows({
       '2026-09-01': { isOff: true },
       '2026-09-03': { fixedCount: 2 },
-      // 2일은 레코드 없음 → 제외
     }, 2026, 8, { unitPrice: 10000, showPallet: false })
     assert.equal(rows.length, 2)
     assert.deepEqual(rows[0], { day: 1, isOff: true, workVal: 0, palletCount: 0, amount: 0 })
@@ -334,7 +330,7 @@ describe('buildReportDayRows', () => {
       },
     }, 2026, 8, { unitPrice: 0, showPallet: false })
     assert.equal(rows.length, 1)
-    assert.equal(rows[0].workVal, 2) // pending 혼짐 + 일반
+    assert.equal(rows[0].workVal, 2)
     assert.equal(rows[0].amount, 1000 + 2000 + 3000 + 4000)
   })
 
@@ -409,4 +405,3 @@ describe('운송비 내역서 — 회사 제출용이라 콜 상세 산재보험
     assert.equal(hanjin.grandTotal, 100000 + 10000)
   })
 })
-

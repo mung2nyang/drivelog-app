@@ -22,9 +22,7 @@ function pickCodeFromPaste(value) {
   return value.length > 11 ? pickInviteCodeFromText(value) ?? value : value
 }
 
-/**
- * @param {{ onClose: () => void, onLinked: (session: AppSession) => void }} props
- */
+/** @param {{ onClose: () => void, onLinked: (session: AppSession) => void }} props */
 export default function InviteRedeemModal({ onClose, onLinked }) {
   const { session } = useSession()
   const showToast = useToast()

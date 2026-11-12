@@ -1,5 +1,4 @@
 // @ts-check
-// 소속기사 본인 매출은 배정 차량 1대로 좁힌다 — getMonthlyFareRevenue는 그대로, 부르는 쪽이 settings·workData를 좁힌다.
 
 /** @typedef {import('../../../domain/financeTypes.ts').FinanceSettings} FinanceSettings */
 /** @typedef {import('../../../domain/financeTypes.ts').WorkDataByLogId} WorkDataByLogId */

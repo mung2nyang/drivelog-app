@@ -1,4 +1,3 @@
-// 로드맵 110-B — 일지 저장 실패 날짜(110-A 목록)마다 알림: 맨 앞·날짜 오래된 순, 그 날짜 일지로, 닫기·끄기 없음.
 import '../../../testSupport/stubSupabaseClient.ts'
 import '../../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
@@ -26,7 +25,6 @@ test('실패 날짜마다 알림(메인·기사 차량), 맨 앞·날짜 오래�
       title: '10월 22일 운행일지를 저장하지 못했습니다.', body: '일지를 확인한 후 저장이 안 된 내용이 있으면 다시 입력해 주세요.', dateLabel: '', noDismiss: true,
     },
   ])
-  // 저녁이면 "오늘 일지" 알림도 끼므로 순서 대신 포함만 본다.
   assert.ok(items.slice(2).some((item) => item.kind === 'inspectionRequired'), '다른 알림은 그 뒤')
 })
 

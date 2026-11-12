@@ -1,4 +1,3 @@
-/* PDF 출력 모드 — 네비게이션 숨김 + 표/요약 인쇄용 색·여백 */
 body.pdf-export-mode {
   --bg-color: #ffffff !important;
   --text-color: #000000 !important;

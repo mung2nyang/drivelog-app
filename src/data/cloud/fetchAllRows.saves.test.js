@@ -1,4 +1,3 @@
-// 로드맵 67-B — 지출 저장·점검표 읽기도 서버(Max rows 1000)처럼 잘라 주는 가짜 서버에서 끝까지 받는지.
 import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { beforeEach, mock, test } from 'node:test'

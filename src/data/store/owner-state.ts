@@ -1,4 +1,3 @@
-// 앱 시작·hydrate가 거치는 두 관문. 둘 다 commitBatch 한 번으로 반영해 구독자가 반쯤 바뀐 상태를 보지 않게 한다.
 import { readLogWorkData } from './persist.ts'
 import { readPersistDomain } from './persistDomainRead.ts'
 import { commitBatch, getState } from './app-store.ts'
@@ -17,17 +16,8 @@ import type { DriverRecord } from '../../domain/driverTypes.ts'
 import type { LocalProfile as ProfileLike } from '../hydrate/hydrateMergeTypes.ts'
 import type { WorkDataTombstones } from '../../domain/workDataTombstones.ts'
 
-// workData는 readLogWorkData로 따로 읽는다.
 const SLICE_DOMAINS: Array<PersistDomain> = ['cars', 'clients', 'settings', 'expenses', 'invoices', 'drivers', 'profile', 'dismissedNotifications', 'workDataDeletedDates']
 
-/**
- * localStorage에 이미 저장된 값을 store에 읽어 들인다. 아무것도 새로 쓰지 않고,
- * 클라우드 동기화도 예약하지 않는다. 도메인/서브 일지 중 하나라도 읽기·스키마가
- * 실패하면 Store와 workLogs를 전혀 바꾸지 않고 notify 0회로 끝낸다.
- *
- * 로그인 세션이면 업무 도메인은 LS에서 읽지 않는다 — hydrate가 넣은 서버 정본을 옛 LS가 덮지 않게.
- * @returns 하나라도 못 읽었으면 false(비회원은 막기 화면)
- */
 export function initializeOwnerFromPersist(ownerKey: string): boolean {
   const cloud = getCloudOwnerKey() === ownerKey
   const entries: Array<BatchEntry> = []
@@ -74,26 +64,20 @@ export function initializeOwnerFromPersist(ownerKey: string): boolean {
 
 export type OwnerSnapshot = {
   workData?: Record<string, DayRecordLike>
-  workLogs?: Record<string, Record<string, DayRecordLike>> // logId → 날짜별 기록
+  workLogs?: Record<string, Record<string, DayRecordLike>>
   cars?: Array<CarLike>
   clients?: Array<ClientLike>
   drivers?: Array<DriverRecord>
   profile?: ProfileLike
   settings?: FinanceSettings
   expenses?: Array<ExpenseItem>
-  driverExpenses?: Array<DriverExpenseItem> // 메모리 전용 — 있으면 통째 replace
+  driverExpenses?: Array<DriverExpenseItem>
   driverHistory?: Array<DriverLinkLike>
   invoices?: Array<InvoiceLike>
-  dismissedNotifications?: Array<string> // 닫은 알림 id
-  workDataDeletedDates?: WorkDataTombstones // 빈 날 삭제 목록
+  dismissedNotifications?: Array<string>
+  workDataDeletedDates?: WorkDataTombstones
 }
 
-/**
- * owner 전체 상태를 스냅샷으로 원자적으로 교체한다. 각 필드는 있을 때만 반영 — 부분 스냅샷도
- * 안전하다. commitBatch 한 번으로 localStorage 쓰기 + state 갱신 + notify(1회)가 전부
- * 끝난다 — 중간에 구독자가 절반만 반영된 snapshot을 볼 일이 없다.
- * @param options extraWrites는 서브 일지 키처럼 도메인 밖 키를 같은 저장에 넣는다.
- */
 export function replaceOwnerState(ownerKey: string, snapshot: OwnerSnapshot = {}, options: { persist?: boolean, extraWrites?: Array<KeyedWrite> } = {}) {
   const { persist = true, extraWrites = [] } = options
   const entries: Array<BatchEntry> = []

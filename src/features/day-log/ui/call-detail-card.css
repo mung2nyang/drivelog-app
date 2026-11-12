@@ -1,6 +1,3 @@
-/* 콜 카드·결제·연락/문자 버튼 — CallDetailCard.jsx가 직접 import.
-   한 카드 컴포넌트의 상호의존 규칙이라 §6 응집도 우선(~250줄). */
-
 .work-log-page .call-detail-card {
   margin-bottom: 8px;
   padding: 12px;

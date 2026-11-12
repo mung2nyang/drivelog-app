@@ -18,6 +18,6 @@ createRoot(rootEl).render(
     </BrowserRouter>
   </StrictMode>,
 )
-try { installChunkReload(window, window.sessionStorage) } catch { /* 탭 저장소를 못 쓰면 자동 새로고침 없이 안내 화면만 */ }
+try { installChunkReload(window, window.sessionStorage) } catch { }
 installErrorReporting(window)
 void registerServiceWorker({ prod: import.meta.env.PROD, base: import.meta.env.BASE_URL, nav: navigator })

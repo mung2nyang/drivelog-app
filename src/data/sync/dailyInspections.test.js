@@ -1,5 +1,4 @@
 // @ts-check
-// 로드맵 9-B-2 — 일상점검표 서버 읽기·저장: 차량+날짜 1장, 덮어쓰기, 작성자·점검자 이름, 서버 값 형식 검사.
 import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { beforeEach, mock, test } from 'node:test'
@@ -71,7 +70,6 @@ test('9-C-1 점검표가 1장이라도 있는지', async () => {
   assert.equal(await hasAnyDailyInspection('veh-1'), false)
 })
 
-// 로드맵 112 — 지우기: 차량+날짜 1장, 저장과 같은 막기, 권한이 막아 0줄이면 실패.
 test('지우기: 차량·날짜로 지우고 지운 줄을 받는다', async () => {
   beginSessionEpoch('driver-1', 'owner-1')
   setHydration({ status: 'ready', userId: 'driver-1', ownerKey: 'owner-1' })

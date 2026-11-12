@@ -1,5 +1,3 @@
-// 로드맵 24-B-3-B — 홈이 아닌 화면에서 아래 메뉴 위 오른쪽에 떠 있는 운비서 캐릭터 버튼(수정 2). 홈 카드와 같은 대화, 운행·지출은 알아들으면 바로 작게 하고 일지로.
-// 앱 틀(AppShell)을 그대로 그려 아래 메뉴로 화면을 옮긴다. 입력 칸 붙잡기가 브라우저 기록을 보므로 BrowserRouter.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 
@@ -30,10 +28,8 @@ Reflect.set(supabase, 'functions', { invoke: async () => ({ data: replies.shift(
 const callReply = (/** @type {string} */ loadLoc, /** @type {string} */ unloadLoc) => ({ data: { kind: 'call', call: { date: DATE, loadLoc, unloadLoc, fare: 150000, client: '' } } })
 beforeEach(() => { replies = [] })
 
-// 화면을 옮기면 새 화면 파일을 받는 동안 앞 화면이 남는다(주소 바뀜은 startTransition) — 정해진 시간 대신 될 때까지 기다린다.
 /** @param {() => boolean} predicate */
 async function waitUntil(predicate, { timeoutMs = 3000, stepMs = 20 } = {}) {
-  // 한 번 기다릴 때마다 act를 끝내야 React가 그 사이 바뀐 화면을 그린다.
   const deadline = Date.now() + timeoutMs
   while (!predicate() && Date.now() < deadline) {
     await act(async () => { await new Promise((resolve) => { setTimeout(resolve, stepMs) }) })
@@ -71,7 +67,6 @@ async function renderShell(ownerKey, path, loggedIn = true, settings = {}) {
     await act(async () => { setter?.call(el, value); el.dispatchEvent(new window.Event('input', { bubbles: true })) })
   }
   const dock = () => container.querySelector('.unbiseo-dock')
-  /** 떠 있는 버튼을 눌러 카드를 열고 말을 보낸다 */
   const askDock = async (/** @type {string} */ text) => {
     await waitUntil(() => !!dock())
     const fab = dock()?.querySelector('.unbiseo-dock-fab')
@@ -80,7 +75,6 @@ async function renderShell(ownerKey, path, loggedIn = true, settings = {}) {
     await click(dock()?.querySelector('.home-assistant-send'))
   }
   await settle()
-  /** 일지 입력 칸이 그 값으로 채워질 때까지 */
   const waitForLoad = (/** @type {string} */ loadLoc) => waitUntil(() => /** @type {HTMLInputElement|null} */ (container.querySelector('#callLoadLoc'))?.value === loadLoc)
   return {
     container, button, click, type, dock, askDock, settle, waitForLoad,
@@ -111,7 +105,6 @@ test('홈에는 없고, 다른 화면에는 작은 캐릭터 버튼만 — 누�
   } finally { await view.cleanup() }
 })
 
-// 로드맵 108 — 옮긴 자리는 이 휴대폰에 남는다. 카드는 늘 아래 메뉴 위 앱 폭 전체.
 const DOCK_KEY = 'drivelogUnbiseoDockPosition'
 
 test('저장된 자리가 없으면 버튼은 왼쪽 아래(높이 0)', async () => {
@@ -275,7 +268,6 @@ test('받아쓰기 되는 휴대폰: 버튼을 한 번 누르면 카드가 열�
   }
 })
 
-// 지출도 같은 길: 보내면 바로 그 날짜 일지의 지출 창, 이미 열려 있으면 확인 창 먼저.
 const expenseReply = (/** @type {'fuel'|'misc'} */ type, /** @type {number} */ cost) => ({ data: { kind: 'expense', expense: { date: DATE, type, cost, name: type === 'misc' ? '통행료' : '', category: type === 'misc' ? '통행료' : '', fuelType: type === 'fuel' ? '주유' : '', payment: '' } } })
 
 test('지출: 보내면 바로 그 날짜 일지의 지출 창, 같은 날짜에서 또 넘기면 확인 창 [나가기] 뒤 새로 채움', async () => {
@@ -296,7 +288,6 @@ test('지출: 보내면 바로 그 날짜 일지의 지출 창, 같은 날짜에
   } finally { await view.cleanup() }
 })
 
-// 로드맵 24-F-2 — 고정 노선 [기록하기] → 그 날짜 일지에서 바로 더함, 같은 날짜에서 또 넘기면 확인 창 없이 한 번 더.
 test('고정 노선 [기록하기] → 그 날짜 일지 칩이 오르고, 같은 날짜에서 또 넘기면 한 번 더', async () => {
   const fixedReply = () => ({ data: { kind: 'fixed', fixed: { date: DATE, count: 2, route: '평택 → 용인' } } })
   replies = [fixedReply(), fixedReply()]

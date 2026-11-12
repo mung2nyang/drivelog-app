@@ -1,4 +1,3 @@
-// 로드맵 47-B — 하단 메뉴: 버튼은 글자 이름으로 읽고, 그림은 읽기에서 빼고, 지금 탭은 "현재 화면".
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

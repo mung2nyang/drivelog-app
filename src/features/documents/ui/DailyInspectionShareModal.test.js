@@ -1,4 +1,3 @@
-// 로드맵 58-C — 일상점검표 보내기 창: 모양·문구, 카카오톡 공유 값, 공유 못 하는 휴대폰 안내, 문자용 저장.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

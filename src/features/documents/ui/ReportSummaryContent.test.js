@@ -1,4 +1,3 @@
-// ReportSummaryContent — 원본 리포트 요약(일자표·거리·거래처별).
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

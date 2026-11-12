@@ -6,18 +6,12 @@ import { getDriverSettlementBreakdown, hasDriverInsuranceShare } from '../../../
 
 const YEAR_OPTIONS = getYearOptions()
 
-/**
- * 공제 금액 — 0원이면 빼기 기호 없이
- * @param {number} amount
- */
+/** @param {number} amount */
 function deductionWon(amount) {
   return `${Number(amount) > 0 ? '-' : ''}${formatWon(amount)}`
 }
 
-/**
- * detail은 getLinkedDriverSettlementDetail 결과에 그 기사차량(car)을 실은 것 — 카드는 car의 산재·원천징수 설정으로 계산한다.
- * @typedef {{ tripCount?: number, totalFare?: number, commissionAmount?: number, previousPeriods?: Array<{ label: string, fare: number }>, car?: import('../../../domain/financeTypes.ts').CarLike }} SettlementDetail
- */
+/** @typedef {{ tripCount?: number, totalFare?: number, commissionAmount?: number, previousPeriods?: Array<{ label: string, fare: number }>, car?: import('../../../domain/financeTypes.ts').CarLike }} SettlementDetail */
 
 /**
  * @param {Object} props
@@ -34,7 +28,6 @@ export default function SettlementSummaryCard({
   const year = viewDate.getFullYear()
   const month = viewDate.getMonth()
   const breakdown = getDriverSettlementBreakdown(detail, detail?.car)
-  // 기사차량 설정에서 켠 공제만 줄로 보인다(산재 부담이 차주 전액이면 기사 몫 줄 없음).
   const showInsurance = hasDriverInsuranceShare(detail?.car)
   const showWithholding = !!detail?.car?.withholdingOn
   return (

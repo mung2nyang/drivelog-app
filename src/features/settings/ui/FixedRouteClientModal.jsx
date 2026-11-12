@@ -1,5 +1,4 @@
 // @ts-check
-// 고정 노선 거래처 연결 팝업 — 거래처 고르기·1회 단가·파렛트 단가·저장/연결 해제. 저장은 거래처 창과 같은 requestClientSave.
 import { useState } from 'react'
 import { createPortal } from 'react-dom'
 import AppDropdown from '../../../shared/ui/AppDropdown.tsx'
@@ -18,9 +17,9 @@ import { useSession } from '../../../data/cloud/sessionContext.ts'
 
 /**
  * @param {Object} props
- * @param {Array<ClientLike>} props.clients 저장에 넘길 전체 목록
- * @param {Array<ClientLike>} props.candidates 이 스코프에서 고를 수 있는 거래처
- * @param {ClientLike|null} props.linked 지금 연결된 거래처
+ * @param {Array<ClientLike>} props.clients
+ * @param {Array<ClientLike>} props.candidates
+ * @param {ClientLike|null} props.linked
  * @param {() => void} props.onClose
  */
 export default function FixedRouteClientModal({ clients, candidates, linked, onClose }) {
@@ -33,7 +32,6 @@ export default function FixedRouteClientModal({ clients, candidates, linked, onC
   const [saving, setSaving] = useState(false)
   const [confirmUnlink, setConfirmUnlink] = useState(false)
   const [missing, setMissing] = useState(false)
-  // 거래처를 고르면 표시를 거둔다.
   const shown = missing && !candidates.some((item) => item.id === selectedId)
     ? { field: 'client', message: '거래처를 선택해 주세요.' }
     : null

@@ -1,6 +1,3 @@
-/* 비계정 body·480px 앱 컨테이너 — 전역 토큰은 variables.css. */
-
-/* 숫자 폭을 같게 — 금액을 위아래로 놓아도 자릿수가 어긋나지 않게. */
 body { font-variant-numeric: tabular-nums; }
 
 body:not(.account-flow-active) {
@@ -14,45 +11,36 @@ body:not(.account-flow-active) {
   padding: 20px 16px 108px;
   margin: 0 auto;
   text-align: center;
-  /* 내용이 짧은 화면도 만든 곳 표시(© Studio Bori)는 조금 스크롤해야 보이게 */
   display: flex;
   flex-direction: column;
   min-height: calc(100dvh + 100px);
 }
 .page-transition { flex-grow: 1; }
 
-/* 모든 화면 공용 아래 여백 — 화면마다 따로 두지 않는다. */
 .page { padding-bottom: 92px; }
 
-/* 운비서 버튼(unbiseo-dock.css, 60px)이 떠 있는 동안만 그만큼 더 — 화면 끝 내용이 버튼에 가리지 않게. */
 .container.main-app-container:has(.unbiseo-dock) { padding-bottom: calc(108px + 60px); }
 
-/* 누름 효과 — 브라우저 기본 사각형 대신 눌리는 느낌(누를 때 0.12초, 뗄 때 0.2초 부드럽게 복귀(튕김 없음)). scale은 transform과 따로라 위치 이동 버튼과 안 겹친다. */
 html { -webkit-tap-highlight-color: transparent; }
 button { transition: scale 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), background-color 0.12s ease; }
 button:not(:disabled):active { scale: 0.93; transition-duration: 0.12s, 0.12s; transition-timing-function: ease-out, ease; }
 @media (prefers-reduced-motion: reduce) {
   button:not(:disabled):active { scale: none; opacity: 0.75; }
 }
-/* 버튼·링크·그림 길게 누르기 — 글자 선택·복사·미리보기 메뉴 안 뜨게(입력칸은 그대로). */
 button, a, img { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
 
-/* 화면 들어옴 효과(usePageTransition.js가 이름을 붙였다 뗌) — 들어가는 화면만 움직인다. */
 .page-enter-forward { animation: page-enter-forward 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
 .page-enter-back { animation: page-enter-back 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
 .page-enter-fade { animation: page-enter-fade 0.22s ease-out; }
-/* 밀려 들어오는 동안 오른쪽 넘침을 잘라 둔다 — 모바일에서 화면이 넓어지면 스크롤이 맨 위로 튄다. */
 .main-app-container:has(> .page-transition.page-enter-forward) { overflow-x: clip; }
 @keyframes page-enter-forward { from { opacity: 0; transform: translateX(40px); } }
 @keyframes page-enter-back { from { opacity: 0; transform: translateX(-40px); } }
 @keyframes page-enter-fade { from { opacity: 0; } }
 
-/* 팝업: 배경은 서서히, 상자는 아래에서 살짝 올라옴 */
 .modal-overlay { animation: page-enter-fade 0.22s ease-out; }
 .modal-overlay .modal-content { animation: modal-rise 0.26s cubic-bezier(0.2, 0.8, 0.2, 1); }
 @keyframes modal-rise { from { opacity: 0; transform: translateY(20px); } }
 
-/* 동작 줄이기 설정: 밀림·올라옴은 빼고 짧게 서서히만(멀미 없는 효과) — 화면이 툭 바뀌지 않게. */
 @media (prefers-reduced-motion: reduce) {
   .page-enter-forward, .page-enter-back, .page-enter-fade,
   .modal-overlay, .modal-overlay .modal-content { animation: page-enter-fade 0.15s ease-out; }

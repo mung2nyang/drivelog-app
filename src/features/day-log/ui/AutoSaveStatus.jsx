@@ -1,5 +1,4 @@
 // @ts-check
-// 일지 자동 저장 상태 — 제목 옆 작은 아이콘(저장 중·완료·실패). 실패는 아이콘이 남고 날짜를 넣은 알림 문구가 따로 뜬다.
 const LABEL = { idle: '', pending: '저장 중', saved: '저장 완료', failed: '저장 실패' }
 
 /** @param {{ status: 'idle'|'pending'|'saved'|'failed' }} props */

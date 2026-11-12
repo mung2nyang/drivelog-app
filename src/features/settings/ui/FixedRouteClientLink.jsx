@@ -1,5 +1,4 @@
 // @ts-check
-// 앱 설정 고정 노선 카드의 "거래처 연결" 줄 — 연결 요약 + "+ 추가"/"수정" 버튼, 입력·저장은 FixedRouteClientModal 팝업.
 import { useState } from 'react'
 import FixedRouteClientModal from './FixedRouteClientModal.jsx'
 import { fixedRouteCandidates } from '../../../domain/clientDraft.ts'
@@ -10,7 +9,7 @@ import { useSession } from '../../../data/cloud/sessionContext.ts'
 
 /**
  * @param {Object} props
- * @param {string} props.scopeKey 거래처 스코프(차주 메인 = '', 서브차량·연동기사 = 차량번호)
+ * @param {string} props.scopeKey
  */
 export default function FixedRouteClientLink({ scopeKey }) {
   const { ownerKey } = useSession()
@@ -27,7 +26,6 @@ export default function FixedRouteClientLink({ scopeKey }) {
 
   return (
     <div className="setting-item fixed-route-client-setting">
-      {/* 제목 줄 오른쪽에 버튼, 아래에 설명·연결 상태(거래처·단가 한 줄) */}
       <div className="run-count-preset-copy">
         <div className="fixed-route-client-head">
           <label>거래처 연결</label>

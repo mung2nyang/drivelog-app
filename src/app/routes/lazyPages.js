@@ -1,4 +1,3 @@
-// AppShell.jsx가 쓰는 지연 로드 페이지 컴포넌트 목록.
 import { lazy } from 'react'
 
 export const CarManagementPage = lazy(() => import('../../features/cars/ui/CarListPage.jsx'))

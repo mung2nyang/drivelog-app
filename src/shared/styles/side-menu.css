@@ -1,5 +1,3 @@
-/* 전역 토큰(:root / [data-theme="dark"])은 variables.css. */
-
 .side-menu-overlay {
   position: fixed;
   inset: 0;
@@ -13,7 +11,7 @@
   right: 0;
   width: 270px;
   height: 100vh;
-  height: 100dvh; /* 아이폰 주소창에 메뉴 아래가 가리지 않게 */
+  height: 100dvh;
   z-index: 1001;
   display: flex;
   flex-direction: column;
@@ -97,13 +95,11 @@
   stroke-linejoin: round;
 }
 
-/* 마우스 있는 기기에서만 — 휴대폰은 누른 뒤 색이 남음 */
 @media (hover: hover) {
   .side-menu .dropdown-item:hover { background-color: var(--hover-bg); }
 }
 .side-menu .dropdown-item:active { background-color: var(--hover-bg); }
 
-/* 메뉴가 열려 있는 동안 뒤 화면(문서) 스크롤을 잠그고, 회색 영역·메뉴 끝에서 스크롤이 뒤로 새지 않게 한다. */
 html:has(.side-menu.open) {
   overflow: hidden;
 }

@@ -1,5 +1,3 @@
-// 날짜별 운행 기록(workData[dateKey]) 파생 계산 + 저장 형태 정규화. DayRecordLike/CallDetailLike
-// 정본은 각각 dayRecordTypes.ts/callDetail.ts — DayRecordLike는 이 파일 경로로 부르는 곳이 있어 이름만 이어 준다.
 import { dedupeCallDetailsById, withCoercedCallDetailId } from './callDetailIds.ts'
 import { getDetailPaymentSummary } from './finance.ts'
 import { parseCurrencyValue, vatOf } from './money.ts'
@@ -13,14 +11,11 @@ export function getFixedCount(record: DayRecordLike | null | undefined) {
   return Math.max(0, parseInt(String(record?.fixedCount), 10) || 0)
 }
 
-// 파렛트 회수 횟수. 고정노선 거래처의 palletOn이 켜져 있을 때만 집계에 쓰이지만
-// 값 자체는 항상 정확히 저장해 둔다.
 export function getPalletCount(record: DayRecordLike | null | undefined) {
   if (record?.isOff) return 0
   return Math.max(0, parseInt(String(record?.palletCount), 10) || 0)
 }
 
-// 아래 typeof/Array.isArray 확인은 hydrate로 들어온 값처럼 모양이 어긋날 수 있는 데이터 방어라 남긴다.
 export function getFixedRouteCounts(record: { fixedRouteCounts?: Record<string, number> } | null | undefined) {
   const counts = record?.fixedRouteCounts
   if (!counts || typeof counts !== 'object' || Array.isArray(counts)) return {}
@@ -44,14 +39,10 @@ export function isOffDay(record: DayRecordLike | null | undefined) {
   return !!record?.isOff
 }
 
-// id 유무는 신경 쓰지 않는다 — id가 항상 있어야 하는 유일한 소비자(day-log/ UI)는
-// useDayDraft.js가 마운트 시 backfillCallDetailIds로 미리 채운 레코드만 넘긴다.
 export function getCallDetails(record: DayRecordLike | null | undefined) {
   return Array.isArray(record?.callDetails) ? record.callDetails : []
 }
 
-// id 없는 레거시 콜상세를 로드 시 한 번 영구 id로 채운다(순수 계산, 반영은 호출부, 이미 있으면 같은 참조).
-// call-details.ts와 같은 `trp_` 접두어를 순환 참조 없이 여기서 만든다.
 export function backfillCallDetailIds(record: DayRecordLike | undefined): { record: DayRecordLike | undefined, changed: boolean } {
   const list = Array.isArray(record?.callDetails) ? record.callDetails : []
   if (list.length === 0) return { record, changed: false }
@@ -70,7 +61,6 @@ export function backfillCallDetailIds(record: DayRecordLike | undefined): { reco
   return { record: { ...record, callDetails }, changed: true }
 }
 
-/** 콜 한 건이 운행 횟수에 들어가는지 — 공차·다른 운행에 묶인 혼짐은 빼고, 묶일 운행을 안 고른 혼짐은 넣는다. */
 export function callCountsAsTrip(detail: CallDetailLike | null | undefined) {
   const type = detail?.distanceType || ''
   if (type === '공차') return false
@@ -87,7 +77,6 @@ export function dayTripCount(record: DayRecordLike | null | undefined) {
   return getFixedCount(record) + countCallTrips(record)
 }
 
-/** 하루 운행 거리(km) — 콜 상세에 거리가 하나라도 있으면 그 합, 없으면 하루 거리(dailyDistance). */
 export function getRecordTotalDistance(record: DayRecordLike | null | undefined) {
   const details = getCallDetails(record)
   const hasDetailDistance = details.some((d) => String(d?.distanceKm ?? '').trim() !== '')
@@ -139,8 +128,6 @@ export function saveDayRecord(data: Record<string, DayRecordLike>, dateKey: stri
   const routeCounts = off ? {} : getFixedRouteCounts({
     fixedRouteCounts: fixedRouteCounts !== undefined ? fixedRouteCounts : prev.fixedRouteCounts,
   })
-  // palletCount도 파렛트 섹션이 꺼져 있으면 0으로 정규화(fixedCount와 같은 규칙,
-  // "빈 날" 판정에도 반영). 배정차량 값이 있는 날(연동 해제 때 기사 쪽에 복사해 둔 값)은 비워도 지우지 않는다.
   const pallets = off ? 0 : Math.max(0, parseInt(String(palletCount !== undefined ? palletCount : prev.palletCount), 10) || 0)
 
   if (!off && count === 0 && pallets === 0 && details.length === 0 && !prev.assignedVehicleNumber) {
@@ -183,5 +170,3 @@ export function monthWorkTotal(data: Record<string, DayRecordLike>, year: number
   }
   return total
 }
-
-// 하루치 뱃지 계산(dayFareTotal/dayWorkBadgeLabel/dayHasUnpaid)은 calendarBadges.ts로.

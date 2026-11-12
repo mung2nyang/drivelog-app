@@ -1,6 +1,3 @@
-/* 달력 화면 아래쪽 — 정산 카드·아이콘·미수 안내·차량 배너. 달력 판은 calendar-grid.css. */
-
-/* 거래처 수수료 요약 줄(.summary-client-commission-*) — .main-page 안에서만 */
 .main-page .summary-client-commission-row {
   margin-top: -2px;
 }
@@ -28,7 +25,6 @@
   border-bottom-left-radius: 11px;
 }
 
-/* 메인 정산 카드 부가세 제외 합계 줄 — 합계 묶음 위 구분선은 여기, 큰 합계 위엔 없음 */
 .main-page .summary-subtotal {
   margin-top: 14px;
   padding-top: 12px;
@@ -36,10 +32,8 @@
   font-weight: var(--fw-bold);
 }
 .main-page .summary-row.total { border-top: none; padding-top: 0; }
-/* 좁으면 "(부가세 포함)"이 통째로 다음 줄로 */
 .main-page .summary-total-vat { white-space: nowrap; font-size: var(--fs-6); }
 
-/* 메인 정산 카드 합계 아래 구분선 — 얇은 실선 */
 .main-page .summary-expense-first {
   border-top: 1px solid color-mix(in srgb, var(--border-color) 82%, transparent);
 }
@@ -69,7 +63,6 @@
   stroke-linejoin: round;
 }
 
-/* 달력 위 미수금 카드 아래, 빨간 점(.unpaid-dot) 뜻 설명 줄 */
 .unpaid-dot-legend {
   display: flex;
   align-items: center;
@@ -87,7 +80,6 @@
   border-radius: 50%;
 }
 
-/* 서브 차량 달력 모드 배너 */
 .sub-car-log-banner {
   display: flex;
   align-items: center;

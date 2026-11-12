@@ -1,5 +1,4 @@
 // @ts-check
-// 로드맵 9-B-2 — 일상점검표 항목: 법정 서식 순서 3묶음 11항목, [모두 양호]·저장 조건·서버 값 좁히기.
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { DAILY_INSPECTION_KEYS, DAILY_INSPECTION_SECTIONS, allGoodItems, isInspectionComplete, isInspectionEmpty, sanitizeInspectionItems } from './dailyInspectionItems.ts'
@@ -29,7 +28,6 @@ test('서버 값 좁히기: 모르는 키·양호/불량 아닌 값은 버림', 
   assert.deepEqual(sanitizeInspectionItems(['good']), {})
 })
 
-// 로드맵 112 — 다 비었는지(수정에서 다 비우고 저장하면 지우기): 하나라도 고르면 비지 않음, 모르는 값은 빈 것.
 test('모두 비었는지: 빈 칸·모르는 값만이면 빔, 하나라도 양호·불량이면 안 빔', () => {
   assert.equal(isInspectionEmpty({}), true)
   assert.equal(isInspectionEmpty({ tires: 'bad' }), false)

@@ -45,7 +45,6 @@ describe('tax_invoices — 원본 finance-sync 컬럼·upsert 매핑', () => {
     }
     const row = buildTaxInvoiceRow(item, { userId: 'user-1', vehicleId: 'veh-main', clientId: 'cli-1' })
     assert.deepEqual(Object.keys(row), ORIGINAL_COLUMNS)
-    // 원본 finance-sync 행엔 이 3개 컬럼이 없다 — 칸 자체가 없는지 확인
     assert.equal(Object.hasOwn(row, 'daily_log_id'), false)
     assert.equal(Object.hasOwn(row, 'work_date'), false)
     assert.equal(Object.hasOwn(row, 'sequence'), false)

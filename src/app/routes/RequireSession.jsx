@@ -1,6 +1,4 @@
 // @ts-check
-// `/onboarding`·`/app/*`는 세션이 있어야 들어간다 — 주소를 바로 열어 들어오는 경우를 막는다.
-// 판단은 sessionGate.js의 resolveSessionGate, 여기는 결과를 그리기만 한다.
 import { Navigate } from 'react-router-dom'
 import { resolveSessionGate } from './sessionGate.js'
 import { isGuestModePersisted } from '../guestSessionPersist.js'

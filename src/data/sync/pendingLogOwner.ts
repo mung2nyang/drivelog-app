@@ -1,6 +1,3 @@
-// 서브 일지의 durable pending은 메인 owner 키와 섞이지 않게 `::log::`로 구분한다.
-// 메인 일지는 기존 `${ownerKey}` 키를 그대로 쓴다.
-
 export const LOG_OWNER_MARK = '::log::'
 
 export function pendingOwnerForLog(ownerKey: string, logId = 'main') {

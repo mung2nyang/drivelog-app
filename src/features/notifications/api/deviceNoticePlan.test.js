@@ -1,5 +1,4 @@
 // @ts-check
-// 휴대폰 알림 계획 — 오늘 일지 오후 6시(오늘~7일 뒤, 기록 있는 날 빼기), 연체 미수금 다음 날 오전 9시(최대 20개), 비회원 백업 오후 8시, 끈 종류·닫은 알림·지난 시각 빼기.
 import '../../../testSupport/stubSupabaseClient.ts'
 import assert from 'node:assert/strict'
 import { test } from 'node:test'

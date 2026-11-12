@@ -1,7 +1,5 @@
 // @ts-check
 /** @typedef {import('../../../domain/jsonTypes.ts').JsonValue} JsonValue */
-// 마이페이지 "데이터 다운로드 / 불러오기": 내 기록 전체를 비회원 백업과 같은 파일로 기기에 저장(B-1),
-// 받아 둔 파일에서 지금 없는 일지·거래처·지출·세금계산서만 더하기(덮어쓰기·삭제 없음).
 import { useRef, useState } from 'react'
 import { buildMemberBackupData, memberBackupBlockedReason } from '../api/memberBackup.js'
 import { addInspectionPicks, applyMemberRestore, planMemberRestore } from '../api/memberRestore.js'
@@ -25,7 +23,7 @@ function saveJsonFile(data) {
 /**
  * @param {Object} props
  * @param {() => void} props.onClose
- * @param {boolean} [props.employed] 연동 기사: 다운로드 없이 일지 불러오기만
+ * @param {boolean} [props.employed]
  */
 export default function DataDownloadModal({ onClose, employed = false }) {
   const { ownerKey } = useSession()

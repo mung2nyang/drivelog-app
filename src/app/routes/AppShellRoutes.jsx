@@ -1,5 +1,4 @@
 // @ts-check
-// AppShell 라우트 트리만 분리(200줄). 셸 크롬(탭/메뉴/알림)은 AppShell.jsx에 남긴다.
 import { Navigate, Route, Routes, useSearchParams } from 'react-router-dom'
 import HomePage from '../../features/home/ui/HomePage.jsx'
 import ComingSoonRoute from './ComingSoonRoute.jsx'
@@ -37,7 +36,7 @@ import { useSession } from '../../data/cloud/sessionContext.ts'
  * @param {() => void} [props.onGoAuth]
  * @param {(session: AppSession) => void} [props.onSessionUpdate]
  * @param {(to: import('react-router-dom').To | number, options?: import('react-router-dom').NavigateOptions) => void} props.navigate
- * @param {(target: string) => void} props.goBack 화면 위 ← 이동
+ * @param {(target: string) => void} props.goBack
  * @param {(page: string, title?: string, backFallback?: string) => void} props.goToPage
  */
 export default function AppShellRoutes({
@@ -97,7 +96,6 @@ export default function AppShellRoutes({
       <Route path="message-settings" element={<MessageSettingsPage onBack={() => goBack(backTarget)} />} />
       <Route path="notifications" element={<NotificationsPage onBack={() => navigate(-1)} onOpenMenu={onOpenMenu} onOpenPage={(/** @type {string} */ page) => goToPage(page)} />} />
       <Route path="soon" element={<ComingSoonRoute />} />
-      {/* 앱 안에서 모르는 주소는 홈으로 */}
       <Route path="*" element={<Navigate to="/app" replace />} />
     </Routes>
   )

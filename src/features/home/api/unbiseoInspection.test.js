@@ -1,5 +1,4 @@
 // @ts-check
-// 로드맵 24-J-2 — 운비서 점검표: 일지 안내 줄과 같은 조건(설정·계약 기간·휴무·차량·이미 저장)과 같은 저장(11항목 양호·점검자 이름).
 import '../../../testSupport/stubSupabaseClient.ts'
 import '../../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'

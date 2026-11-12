@@ -1,5 +1,4 @@
 // @ts-check
-// 로드맵 6 — 고정노선 1곳 규칙으로 자동 해제된 거래처도 로그인 저장 때 서버에 함께 올라가는지.
 import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { beforeEach, describe, mock, test } from 'node:test'

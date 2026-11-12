@@ -1,5 +1,4 @@
 // @ts-check
-// 로드맵 23-C — 알림용 문의 읽기: 답변 온 내 문의만, 관리자 답변 대기 요약, 이상한 줄 버림.
 import assert from 'node:assert/strict'
 import { beforeEach, mock, test } from 'node:test'
 import { createFakeSupabase } from '../../testSupport/fakeSupabaseClient.ts'

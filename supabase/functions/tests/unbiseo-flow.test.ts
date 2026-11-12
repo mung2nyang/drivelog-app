@@ -1,4 +1,3 @@
-// 운비서 서버 요청 흐름 시험: 로그인 확인 → 입력 → AI·기상청 → 답. 바깥은 fakes.ts 가짜, CI에서 deno test로 돈다.
 import assert from 'node:assert/strict'
 import { handleRequest as parse } from '../unbiseo-parse/handler.ts'
 import { handleRequest as voice } from '../unbiseo-voice/handler.ts'

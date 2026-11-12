@@ -1,4 +1,3 @@
-// 로드맵 24-B-1 — 운비서 카드: 누르면 늘어남, 줄 마이크 한 번에 듣기, 글로 보내기 → 결과 글, 비회원은 안 부름.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 
@@ -9,7 +8,6 @@ import '../../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { beforeEach, mock, test } from 'node:test'
 
-// 점검표 서버 읽기·저장은 가짜로 — 그날 1장, 저장은 모아 둔다(멈춰 두기·실패 가능).
 const inspect = { record: null, holdFetch: null, holdSave: null, saveError: null, saved: [], fetched: [] }
 mock.module('../../../data/sync/dailyInspections.ts', {
   namedExports: {
@@ -20,7 +18,6 @@ mock.module('../../../data/sync/dailyInspections.ts', {
     hasAnyDailyInspection: async () => false,
   },
 })
-// 앱 설정 저장은 진짜를 쓰고, 실패만 흉내 낼 수 있게.
 const realSettingsSave = await import('../../../data/sync/settingsSave.ts')
 const settingsSave = { error: null }
 mock.module('../../../data/sync/settingsSave.ts', {
@@ -195,7 +192,6 @@ test('비회원이 줄 마이크를 누르면 카드만 열려 로그인 안내,
   }
 })
 
-// 운행은 버튼 없이 바로 넘기고, "콜 상세"가 꺼져 있으면 [켜기] 먼저.
 const CALL_REPLY = async () => ({ data: { kind: 'call', call: { date: '2026-10-21', loadLoc: '수원', unloadLoc: '화성', fare: 150000, client: '한진' } }, error: null })
 const CALL_HEARD = { date: '2026-10-21', loadLoc: '수원', unloadLoc: '화성', fare: 150000, client: '한진' }
 const actionButton = (container, label) => [...container.querySelectorAll('.home-assistant-action')].find((el) => el.textContent === label)
@@ -291,7 +287,6 @@ test('질문·실패 결과에는 [기록하기]·[켜기]가 없다', async () 
   } finally { await view.cleanup() }
 })
 
-// 로드맵 24-B-3-A — [기록하기] 전에 일지와 같은 기준으로 계약 기간·휴무를 본다.
 const DRIVER = { userId: 'u-assistant-driver', name: '김기사', accountType: 'employed_driver' }
 const callOn = (date) => async () => ({ data: { kind: 'call', call: { date, loadLoc: '수원', unloadLoc: '화성', fare: 150000, client: '' } }, error: null })
 
@@ -349,7 +344,6 @@ test('그날 휴무: "휴무를 취소하고 운행을 기록할까요?" + [휴�
   } finally { await view.cleanup() }
 })
 
-// 지출도 운행처럼 바로 넘기고, 휴무·기간 안내는 같은 자리(콜 상세 꺼짐은 운행만).
 const expenseOn = (date) => async () => ({ data: { kind: 'expense', expense: { ...EXPENSE_FUEL, date } }, error: null })
 
 test('지출: 콜 상세가 꺼져 있어도 버튼 없이 보내자마자 알아들은 지출을 그대로 넘긴다', async () => {
@@ -395,7 +389,6 @@ test('지출 + 연동 기사 계약 기간 밖: 일지와 같은 안내 두 줄,
   } finally { await view.cleanup() }
 })
 
-// 로드맵 24-D-2 — 질문은 앱이 화면과 같은 계산으로 낸 답 문장, 버튼 없음.
 test('질문: 매출 화면과 같은 숫자의 답 문장, 버튼 없음 · 짧은 기간·그 밖은 안내', async () => {
   const owner = 'u-assistant-question'
   const thisMonth = todayWorkLogSelection(new Date()).dateKey.slice(0, 7)
@@ -436,7 +429,6 @@ test('연동 기사 질문: 기사 본인 매출 화면 이름(정산액)', asyn
   } finally { await view.cleanup() }
 })
 
-// 마이크로 말했을 때만 답을 소리로, 멈춤 버튼은 없고 마이크를 다시 누르면 읽던 것 먼저 멈춤.
 test('읽어 주기: 말로 보낸 답만 읽고, [멈추기] 버튼 없이 다시 듣기·글로 보내기는 읽지 않거나 멈춘다', async () => {
   let last = null
   window.webkitSpeechRecognition = class {
@@ -488,7 +480,6 @@ test('읽어 주기: 말로 보낸 답만 읽고, [멈추기] 버튼 없이 다�
   }
 })
 
-// 로드맵 24-F-2 — 고정 노선: 칩이 보이는 계정만 노선 이름을 보내고, 버튼 자리는 꺼짐 [켜기] → 휴무 → [기록하기].
 test('고정 노선: 노선 칩이 보이면 이름을 같이 보내고, 문장 아래 [기록하기] — 누르면 알아들은 고정 노선을 넘긴다', async () => {
   const owner = 'u-assistant-fixed'
   commitSettings(owner, normalizeSettings({ fixedRouteOn: true, fixedRoutePresets: [{ id: 'r1', loadLoc: '평택', unloadLoc: '용인' }] }))
@@ -539,7 +530,6 @@ test('고정 노선 꺼짐: "켤까요?" + [켜기] → 앱 설정의 고정 노
   } finally { await view.cleanup() }
 })
 
-// 거래처 등록: 새 이름은 바로 넘기고, 이미 있는 이름이면 문장만.
 test('거래처 등록: 버튼 없이 보내자마자 들은 거래처를 넘긴다, 이미 있는 이름이면 넘기지 않고 알림', async () => {
   const owner = 'u-assistant-client'
   commitClients(owner, [{ id: 'c1', companyName: '롯데' }])
@@ -563,7 +553,6 @@ test('거래처 등록: 버튼 없이 보내자마자 들은 거래처를 넘긴
   } finally { await view.cleanup() }
 })
 
-// 로드맵 24-I-2 — 날씨: 기다리는 동안 "날씨를 알아보는 중…"·입력 잠김, 받아 온 뒤 문장, 마이크면 그 문장만 읽기, 계정이 바뀌면 버림.
 const WEATHER_DAY = { date: '', sky: 'cloudy', precip: 'rain', min: 18, max: 23, pop: 60 }
 function weatherReplies() {
   let release = () => {}
@@ -651,7 +640,6 @@ test('날씨: 기다리는 동안 계정이 바뀌면 받아 온 날씨는 버�
   }
 })
 
-// 로드맵 24-J-2 — 점검표: 확인하는 동안 문구·잠김, [저장하기] → 일지 창과 같은 저장 → "저장했어요", 실패면 알림·버튼 남음, 두 번 눌림은 한 번만, 계정이 바뀌면 버림.
 const INSPECT_OWNER = 'u-assistant-inspect'
 const INSPECT_SESSION = { ...CLOUD, userId: INSPECT_OWNER }
 const WILL_SAVE = '오늘 일상점검표를 모두 양호로 저장할게요.'
@@ -794,7 +782,6 @@ test('점검표: 저장하는 동안 계정이 바뀌면 결과도 알림도 붙
   }
 })
 
-// 로드맵 24-K-2 — 휴무: "{날짜}을 휴무로 할게요." + [휴무로 하기] → 그 날짜 일지로 넘김, 이미 휴무·휴무 아님은 문장만, 연동 기사 기간 밖은 기간 안내.
 const offReply = (date, off) => { reply = async () => ({ data: { kind: 'dayOff', dayOff: { date, off } }, error: null }) }
 const offButton = (container) => [...container.querySelectorAll('.home-assistant-action')].find((button) => /휴무로 하기|휴무 취소하기/.test(button.textContent)) || null
 

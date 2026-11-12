@@ -1,4 +1,3 @@
-// 로드맵 96: 앱 안(/app 아래)에서 모르는 주소로 들어오면 빈 칸 대신 홈(/app)으로 바꿔 보낸다.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 
@@ -34,7 +33,7 @@ async function waitUntil(predicate, timeoutMs = 3000) {
   await act(async () => {
     const deadline = Date.now() + timeoutMs
     while (!predicate() && Date.now() < deadline) {
-      // eslint-disable-next-line no-await-in-loop -- 폴링 대기라 순차 await가 맞다.
+      // eslint-disable-next-line no-await-in-loop
       await new Promise((resolve) => setTimeout(resolve, 20))
     }
   })

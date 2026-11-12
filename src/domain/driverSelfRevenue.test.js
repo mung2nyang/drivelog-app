@@ -14,9 +14,6 @@ const REVENUE_CAR = /** @type {CarLike} */ (FIXTURE_SETTINGS.cars.find((c) => c.
 const SALARY_CAR = /** @type {CarLike} */ (FIXTURE_SETTINGS.cars.find((c) => c.number === '부산33나1111'))
 const MAIN_ONLY_WORK = { main: FIXTURE_WORK['서울12가3456'] }
 
-// 로드맵 4-2 슬라이스 2: 산재보험료를 콜 상세 건별 insuranceFee가 아니라 정산액 기준 월 계산으로 바꿨다
-// (driverIncomeDeductions.js와 같은 식, 차주 화면과 동일). 기본 경비율 49.9%·요율 1.76%, 산재 적용 ON.
-/** owner scope: fixed 250000 + call 200000, tripCount 2, 15% → 67500. 월보수액 33818 → 기사 몫 33818×0.88%=297.6 → 290 */
 const FARE_TOTAL = 450000
 const TRIP_COUNT = 2
 const SHARE_GROSS = 67500
@@ -78,10 +75,8 @@ describe('getDriverSelfMonthlyDetail — main 키 전제 (§6)', () => {
     assert.equal(withIns.netProfit + 290, withoutIns.netProfit, '산재 기사 몫 290원만큼 차이')
   })
 
-  // 로드맵 4-2 슬라이스 2 — 원천징수(3.3%) 토글도 차주 화면과 같은 함수로 반영되는지.
   test('(c-2) withholdingOn이면 3.3% 원천징수도 함께 차감된다(산재 공제 전 정산액 기준)', () => {
     const withWithholding = getDriverSelfMonthlyDetail(MONTH_KEY, settingsWithCars([{ ...REVENUE_CAR, withholdingOn: true }]), MAIN_ONLY_WORK)
-    // 67,500 − 산재 기사 몫 290 − 3.3%(67,500×3.3%=2,227) = 64,983
     assert.equal(withWithholding.netProfit, SHARE_NET - 2227)
   })
 
@@ -169,8 +164,6 @@ describe('getDriverSelfMonthlyDetail — main 키 전제 (§6)', () => {
     assert.equal(narrow.income.fare.total, 200000, '운송료 표시 라인은 배정기간 필터 안 함')
   })
 
-  // 로드맵 4-2 슬라이스 2 완료: 기사 본인 화면과 차주 화면이 이제 같은 함수(driverIncomeDeductions.js)를 써서,
-  // 산재 ON 상태에서도 두 화면의 기사 몫 금액이 원 단위까지 같다(슬라이스 1 직후의 임시 조건 해소).
   test('② settlement == 차주 all 탭 김기사 급여 항목 (같은 트립·main↔번호판, 산재 ON)', () => {
     const plateWork = FIXTURE_WORK['서울12가3456']
     const settings = settingsWithCars([REVENUE_CAR])
@@ -188,10 +181,6 @@ describe('getDriverSelfMonthlyDetail — main 키 전제 (§6)', () => {
     assert.equal(self.income.settlement.total, SHARE_GROSS - 290, '기사 본인 실수령 = 정산액 − 산재 기사 몫')
   })
 
-  // 2026-09-17 버그 재현·수정 확인: 고정노선(fare 필드 없이 fixedCount만 저장된
-  // 실제 day record 모양)으로 뛴 매출제(%) 기사의 정산액이 0으로 나오던 문제.
-  // 로드맵 4-2: 산재가 이제 콜 상세 유무와 무관하게 정산액 기준으로 항상 계산되므로,
-  // 옛 계산(콜 상세 없음 → 산재 0원)과 달리 이 달도 산재 기사 몫(160원)이 빠진다.
   test('③ 고정노선만 뛴 기사도 정산액이 0이 아니다(실제 저장 모양, fare 필드 없음)', () => {
     const settings = settingsWithCars([REVENUE_CAR])
     const realisticFixedOnly = { main: { '2026-05-12': { isOff: false, fixedCount: 1 } } }
@@ -201,8 +190,6 @@ describe('getDriverSelfMonthlyDetail — main 키 전제 (§6)', () => {
   })
 })
 
-// 스코프 수정 묶음 1(2026-09-21) — 연동기사 본인 세션은 일지가 main인데 거래처는 배정 차량 스코프만 내려온다.
-// 운송료 줄도 정산 계산과 같은 스코프 단가를 써야 한다(예전엔 운송료 0원 vs 정산액만 값).
 describe('getDriverSelfMonthlyDetail — 배정 차량 스코프 고정노선', () => {
   const scopedClient = { id: 'c-sub', companyName: '기사고정', fixedRouteLinked: true, fixedUnitPrice: '100,000', scopedToVehicleNumber: '서울12가3456' }
   const realisticFixedOnly = { main: { '2026-05-12': { isOff: false, fixedCount: 1 } } }
@@ -243,7 +230,6 @@ test('공제 줄용 breakdown: 기사 몫·산재(기사 부담)·원천징수, 
 
 
 test('산재 부담 선택이 기사 본인 화면에도 그대로: 기사 전액이면 기사 몫 590원, 차주 전액이면 산재 줄 없음', () => {
-  // 정산액 67,500 → 월보수액 33,818 × 1.76% = 595.2 → 590
   const driverPays = getDriverSelfMonthlyDetail(MONTH_KEY, settingsWithCars([{ ...REVENUE_CAR, insuranceSplit: 'driver' }]), MAIN_ONLY_WORK).income.settlement.breakdown
   assert.equal(driverPays?.insurance, 590)
   assert.equal(driverPays?.showInsurance, true)

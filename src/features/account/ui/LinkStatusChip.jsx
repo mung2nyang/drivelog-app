@@ -1,14 +1,10 @@
 // @ts-check
-// 마이페이지 개인정보 카드 옆 "연동중" 칩 — 연동 기사 계정만. 누르면 운송사·배정 차량·계약기간 창, 해제는 개인정보에서.
 import { useId, useState } from 'react'
 import { useOwnerDrivers, useOwnerProfile } from '../../../data/store/ownerDataHooks.ts'
 import ModalShell from '../../../shared/ui/ModalShell.tsx'
 import { useSession } from '../../../data/cloud/sessionContext.ts'
 
-/**
- * 카드 버튼 안에 칩 버튼을 넣지 않으려고 카드를 감싸고 칩을 옆에 겹쳐 둔다.
- * @param {{ employed: boolean, onOpenProfile: () => void, children: import('react').ReactNode }} props
- */
+/** @param {{ employed: boolean, onOpenProfile: () => void, children: import('react').ReactNode }} props */
 export default function LinkStatusChip({ employed, onOpenProfile, children }) {
   const { ownerKey } = useSession()
   const drivers = useOwnerDrivers(ownerKey)

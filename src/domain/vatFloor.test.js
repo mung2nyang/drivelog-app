@@ -1,4 +1,3 @@
-// 로드맵 102 — 부가세는 공급가의 10%, 원 미만 버림(sot §4-14). 화면마다 같은 값인지 15,555원으로 본다.
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { vatOf } from './money.ts'

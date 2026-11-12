@@ -1,4 +1,3 @@
-// 콜 상세 플랫폼 칩 목록 — 기본 6개, 최대 9개, 더하기·지우기의 순수 규칙.
 import type { JsonValue } from './jsonTypes.ts'
 import type { FinanceSettings } from './financeTypes.ts'
 
@@ -16,7 +15,6 @@ export function normalizePlatformPresets(value: JsonValue | undefined): Array<st
   return result
 }
 
-/** 맨 뒤에 붙인다. 빈 이름·이미 있는 이름은 그대로, 가득 차면 안내를 돌려준다. */
 export function addPlatformPreset(settings: FinanceSettings, name: string): { settings: FinanceSettings, error?: string } {
   const trimmed = String(name || '').trim()
   const presets = normalizePlatformPresets(settings.platformPresets)

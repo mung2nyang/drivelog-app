@@ -1,4 +1,3 @@
-// 운비서 서버 함수(unbiseo-parse) 부르기 — 저장 없음, 실패는 쉬운 문구로.
 import { FunctionsHttpError } from '@supabase/supabase-js'
 import type { JsonValue } from '../../../domain/jsonTypes.ts'
 import { supabase } from '../../../data/cloud/supabaseClient.ts'
@@ -15,7 +14,6 @@ const CLIENTS_MAX = 200
 const ROUTES_MAX = 30
 
 export type UnbiseoCall = { date: string, loadLoc: string, unloadLoc: string, fare: number | null, client: string }
-/** [기록하기]·[등록하기]·휴무 버튼으로 넘기는 것 — 운행·지출·고정 노선·휴무는 일지로, 거래처는 거래처 화면으로 */
 export type UnbiseoRecord = UnbiseoCall | UnbiseoExpense | UnbiseoFixed | UnbiseoClient | UnbiseoDayOff
 export type UnbiseoResult =
   | { kind: 'call', call: UnbiseoCall }
@@ -36,7 +34,6 @@ export const NOT_UNDERSTOOD = '내용을 이해하지 못했어요. 다시 말�
 export const TRY_LATER = '잠시 뒤 다시 시도해 주세요.'
 export const USED_UP = '오늘 운비서를 모두 썼어요. 내일 다시 써 주세요.'
 
-/** 서버가 돌려준 값 → 화면용. 모양이 틀리면 알아듣지 못함. */
 export function readAnswer(data: JsonValue | undefined, today: string): UnbiseoResult {
   const row = record(data)
   if (!row) return { kind: 'error', message: NOT_UNDERSTOOD }
@@ -73,7 +70,6 @@ export function readAnswer(data: JsonValue | undefined, today: string): UnbiseoR
   }
 }
 
-/** 거래처 이름 — 빈 이름·긴 이름 빼고 겹침 없이 200개까지. */
 export function clientNamesForAi(names: Array<string>): Array<string> {
   const out: Array<string> = []
   for (const raw of names) {
@@ -84,7 +80,6 @@ export function clientNamesForAi(names: Array<string>): Array<string> {
   return out
 }
 
-/** 등록 노선 → "상차지 → 하차지" 이름(일지 칩과 같은 글자) — 빈 칸·긴 이름 빼고 겹침 없이 30개까지. */
 export function routeNamesForAi(presets: Array<{ loadLoc: string, unloadLoc: string }>): Array<string> {
   const out: Array<string> = []
   for (const preset of presets) {
@@ -102,7 +97,6 @@ function messageForStatus(status: number): string {
   return TRY_LATER
 }
 
-/** 429 답에 실린 하루 한도로 문구를 만든다 — 숫자를 못 읽으면 숫자 없이. */
 export async function usedUpMessage(response: Response): Promise<string> {
   try {
     const limit = record(await response.json())?.limit

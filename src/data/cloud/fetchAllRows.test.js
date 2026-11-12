@@ -1,12 +1,8 @@
-// 로드맵 67-A — 1,000줄씩 끝까지 이어 받는다.
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { PAGE_SIZE, fetchAllRows } from './fetchAllRows.ts'
 
-/**
- * 서버처럼 range로 잘라 주는 가짜 쿼리. errorAtCall번째 요청이면 오류.
- * @param {number} total @param {number} [errorAtCall]
- */
+/** @param {number} total @param {number} [errorAtCall] */
 function fakeTable(total, errorAtCall = -1) {
   const rows = Array.from({ length: total }, (_, i) => ({ id: i }))
   /** @type {Array<[number, number]>} */

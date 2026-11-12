@@ -5,8 +5,6 @@ import { useOwnerCars } from '../../../data/store/ownerDataHooks.ts'
 import { useSession } from '../../../data/cloud/sessionContext.ts'
 
 /**
- * 연동 기사 앱의 거래처 화면 — 내 차량(첫 차량) 거래처만.
- *
  * @param {Object} props
  * @param {() => void} [props.onBack]
  * @param {(() => void)} [props.onOpenMenu]

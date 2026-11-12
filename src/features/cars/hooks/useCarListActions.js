@@ -1,5 +1,4 @@
 // @ts-check
-// 차량 저장·연동 해제·삭제 흐름(서버 요청 순서·알림 문구).
 import { useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { DRIVER_CAR_LIMIT_MESSAGE, canAddDriverCar, validateDriverLinkFields } from '../../../domain/cars.ts'
@@ -14,9 +13,7 @@ import { useToast } from '../../../shared/hooks/useToast.ts'
 /** @typedef {import('../../../domain/financeTypes.ts').CarLike} CarLike */
 /** @typedef {import('../../../domain/driverTypes.ts').DriverRecord} DriverRecord */
 
-/**
- * @param {{ ownerKey: string, cars: Array<CarLike>, drivers: Array<DriverRecord>, cloud: boolean, draft: CarFormDraft, editingId: string|null, closeModal: () => void }} params
- */
+/** @param {{ ownerKey: string, cars: Array<CarLike>, drivers: Array<DriverRecord>, cloud: boolean, draft: CarFormDraft, editingId: string|null, closeModal: () => void }} params */
 export default function useCarListActions({ ownerKey, cars, drivers, cloud, draft, editingId, closeModal }) {
   const showToast = useToast()
   const navigate = useNavigate()
@@ -24,7 +21,6 @@ export default function useCarListActions({ ownerKey, cars, drivers, cloud, draf
   const [pendingDelete, setPendingDelete] = useState(/** @type {CarLike|null} */ (null))
   const [pendingDisconnect, setPendingDisconnect] = useState(false)
   const [saving, setSaving] = useState(false)
-  // 저장·연동 해제·삭제 중엔 다시 눌러도 무시 — 같은 차량이 두 번 등록되지 않게.
   const busyRef = useRef(false)
   /** @param {() => Promise<void>} run */
   async function once(run) {
@@ -63,7 +59,6 @@ export default function useCarListActions({ ownerKey, cars, drivers, cloud, draf
       await commitSave(drivers)
       return
     }
-    // 연동 중이면 바로 끊지 않고 해제 요청 — 동의·3일 전까지 연동 유지라 차량은 미연동으로 저장하지 않는다.
     if (drivers.find((d) => d.id === driverId)?.status === 'linked') {
       const req = await requestDriverUnlinkAction({ ownerKey, drivers, driverId, action: 'request' })
       showToast?.(req.toast)

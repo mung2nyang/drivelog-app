@@ -1,5 +1,4 @@
 // @ts-check
-// 앱 설정의 고정노선 묶음.
 import SwitchRow from '../../../shared/ui/SwitchRow.tsx'
 import RoutePresetEditor from './RoutePresetEditor.jsx'
 import RunCountChips from './RunCountChips.jsx'
@@ -10,7 +9,7 @@ import FixedRouteClientLink from './FixedRouteClientLink.jsx'
 /**
  * @param {Object} props
  * @param {'main'|'sub'} props.scope
- * @param {string} props.clientScopeKey 고정노선 거래처 스코프(docs/sot.md §4-4e)
+ * @param {string} props.clientScopeKey
  * @param {FinanceSettings} props.settings
  * @param {(patch: import('../../../data/sync/settingsSave.ts').SettingsPatch) => void|Promise<void>} props.onPatch
  */

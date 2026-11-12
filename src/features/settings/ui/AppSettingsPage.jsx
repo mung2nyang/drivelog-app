@@ -35,12 +35,9 @@ export default function AppSettingsPage({ onBack, onOpenMenu }) {
   const carLabel = logId ? resolveDriverOrPlateLabel(logId, drivers, cars) : ''
   const fixedOn = logId ? !!settings.subFixedOn : !!settings.fixedOn
   const carSettings = logId ? (settings.subCarSettings?.[logId] || defaultCarSettings(fixedOn)) : defaultCarSettings()
-  // 고정노선 거래처 스코프: 서브차량 = logId, 연동기사 본인 = 배정 차량(MainPageRoute와 같은 규칙), 차주 메인 = 없음.
   const clientScopeKey = logId || (session?.linkedOwnerId ? (cars[0]?.number || 'main') : '')
 
-  /**
-   * @param {import('../../../data/sync/settingsSave.ts').SettingsPatch} nextPatch
-   */
+  /** @param {import('../../../data/sync/settingsSave.ts').SettingsPatch} nextPatch */
   async function patch(nextPatch) {
     try {
       const next = await savePracticeSettings(ownerKey, nextPatch)
@@ -51,7 +48,7 @@ export default function AppSettingsPage({ onBack, onOpenMenu }) {
     }
   }
 
-  /** @param {Partial<SubCarPracticeSettings>} nextPatch 차량별(logId) 전용 항목만 — 결제/고정노선은 patch() 그대로 */
+  /** @param {Partial<SubCarPracticeSettings>} nextPatch */
   function patchActive(nextPatch) {
     if (!logId) return patch(nextPatch)
     return patch((current) => ({
@@ -67,7 +64,6 @@ export default function AppSettingsPage({ onBack, onOpenMenu }) {
     { id: 'theme-dark', value: 'dark', label: '다크', patch: { themeFollowPhone: false, theme: 'dark' } },
   ]
   const activeSettings = logId ? carSettings : settings
-  // 세부 입력 하위 항목은 토글 대신 칩(체크박스) — 토글이 줄지어 보이지 않게
   const detailChipRows = [
     [
       { id: 'timeToggle', label: '운행 시간', checked: !!activeSettings.timeOn, onChange: (/** @type {boolean} */ v) => patchActive({ timeOn: v }) },

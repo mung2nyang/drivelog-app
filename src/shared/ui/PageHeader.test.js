@@ -1,4 +1,3 @@
-// 로드맵 14번 A: 하단 메뉴 첫 화면(매출·마이페이지)은 뒤로가기 없이 빈 자리, 나머지 화면은 그대로.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

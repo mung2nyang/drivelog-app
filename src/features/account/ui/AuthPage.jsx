@@ -12,7 +12,6 @@ export default function AuthPage({ onGuest }) {
   const showToast = useToast()
   const [busy, setBusy] = useState(false)
 
-  // 성공하면 브라우저가 구글 화면으로 넘어가므로 바쁨 표시를 풀지 않는다.
   async function handleGoogle() {
     if (busy) return
     setBusy(true)

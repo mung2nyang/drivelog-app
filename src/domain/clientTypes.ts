@@ -1,4 +1,3 @@
-// ClientLike/ClientDraft 타입 정본(타입 전용 모듈).
 export type ClientLike = {
   id: string
   companyName: string
@@ -25,7 +24,6 @@ export type ClientLike = {
   supabaseId?: string | number
 }
 
-/** upsertClient가 받는 입력 폼 값 — 아직 정규화 전이라 전부 느슨한 문자열/불리언이다. */
 export type ClientDraft = {
   companyName?: string
   managerName?: string

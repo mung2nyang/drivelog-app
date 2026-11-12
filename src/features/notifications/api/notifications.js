@@ -33,7 +33,6 @@ export function collectNotifications(ownerKey = 'guest', session = null) {
   /** @type {Array<{ id: string, kind: string, page: string, title: string, body: string, dateLabel: string, actionLabel?: string, dismissLabel?: string, noDismiss?: boolean }>} */
   const items = []
 
-  // 일지 저장 실패(로그인) — 휴대폰에 남은 실패 날짜마다. 닫기·끄기 없이, 다시 저장되거나 그 날짜 일지를 열면 사라진다.
   const failed = [...listFailedDayLogDates(ownerKey)].sort((a, b) => a.dateKey.localeCompare(b.dateKey) || a.logId.localeCompare(b.logId))
   failed.forEach(({ logId, dateKey }) => {
     const car = logId === 'main' ? '' : `(${getShortCarNum(logId)})`
@@ -86,7 +85,6 @@ export function collectNotifications(ownerKey = 'guest', session = null) {
   if (new Date().getHours() >= TODAY_LOG_REMINDER_HOUR) {
     const dateKey = todayKey()
     const todayId = `today:${dateKey}`
-    // 로그인 계정 일지는 메모리에만 있어 기기 저장소가 아닌 메모리(위 workDataByLogId)에서 읽는다.
     const workMap = /** @type {Record<string, JsonValue|undefined>} */ (workDataByLogId.main || {})
     const todayRecord = workMap[dateKey]
     /** @type {{ isOff?: JsonValue, callDetails?: JsonValue, fixedCount?: JsonValue, palletCount?: JsonValue }|null} */
@@ -111,7 +109,6 @@ export function collectNotifications(ownerKey = 'guest', session = null) {
     }
   }
 
-  // 로그인 계정에서 내 메인 차량 일상점검표가 꺼져 있으면 의무화 안내([바로 사용하기]·[다시 보지 않기]).
   if (ownerKey !== 'guest' && !readOwnerSettings(ownerKey).dailyInspectionOn && !dismissed.has(DAILY_INSPECTION_NOTICE_ID)) {
     items.push({
       id: DAILY_INSPECTION_NOTICE_ID,
@@ -125,7 +122,6 @@ export function collectNotifications(ownerKey = 'guest', session = null) {
     })
   }
 
-  // 게스트 세션 전용: 데이터 백업 권장 알림 (14일 이상 경과 또는 미백업)
   const isGuest = ownerKey === 'guest' && !isCloudSession(session)
   if (isGuest) {
     const lastBackupIso = getLastBackupAt()
@@ -152,7 +148,6 @@ export function collectNotifications(ownerKey = 'guest', session = null) {
     }
   }
 
-  // 알림 화면 "알림 받기"에서 끈 종류는 목록·알림 숫자에서 뺌(일상점검 의무화 안내·일지 저장 실패는 끌 수 없음).
   const off = readOwnerSettings(ownerKey).notifOff || []
   return items.filter((item) => item.kind === SAVE_FAILED_KIND || !off.includes(item.kind))
 }

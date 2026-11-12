@@ -1,4 +1,3 @@
-// CalendarMonthSummary — 합계를 부가세 제외·포함 두 줄로: 순서·값·이름·설명.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

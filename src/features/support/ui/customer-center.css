@@ -1,5 +1,3 @@
-/* 고객센터(CustomerCenterPage.jsx)·공지사항(NoticePage.jsx) 공용 — .support-panel/.support-card/
-   .faq-item/.support-detail은 두 화면이 같이 쓴다. */
 .customer-center-page { text-align: left; }
 .support-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 4px 0 14px; padding: 5px; border-radius: 14px; background: var(--input-bg); }
 .support-tab { min-height: 44px; padding: 7px 4px; border: 0; border-radius: 10px; background: transparent; color: var(--sub-text-color); font: inherit; font-size: var(--fs-floor); font-weight: var(--fw-bold); cursor: pointer; }
@@ -32,7 +30,6 @@
 .my-inquiry-answer { margin-top: 12px; padding-top: 12px; border-top: 1px solid color-mix(in srgb, var(--border-color) 82%, transparent); }
 .my-inquiry-answer-label { display: block; margin-bottom: 4px; color: var(--primary-color); font-size: var(--fs-floor); font-weight: var(--fw-heavy); }
 .my-inquiry-answer p { margin: 0; font-size: var(--fs-3); line-height: 1.55; white-space: pre-wrap; }
-/* 관리자 문의 화면(AdminInquiriesPage.tsx) 전용 — 카드 모양은 위 my-inquiry-*를 그대로 쓴다. */
 .admin-inquiry-count { padding: 2px 4px; color: var(--sub-text-color); font-size: var(--fs-3); font-weight: var(--fw-bold); text-align: left; }
 .admin-inquiry-meta { display: flex; flex-wrap: wrap; gap: 4px 10px; margin-top: 8px; color: var(--sub-text-color); font-size: var(--fs-floor); }
 .admin-inquiry-name { font-weight: var(--fw-bold); color: var(--text-color); }

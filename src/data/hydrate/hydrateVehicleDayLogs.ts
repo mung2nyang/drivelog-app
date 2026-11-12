@@ -1,10 +1,8 @@
-// hydrate가 차량별 daily_logs를 logId 맵으로 합친다.
 import { findMainCar, mergeWorkDataFromRows } from './hydrateMerge.ts'
 import type { DayRecordLike } from '../../domain/dayRecordTypes.ts'
 import type { CarLike } from '../../domain/financeTypes.ts'
 import type { DailyLogRow, DetailRow, SupabaseQueryError } from './hydrateMergeTypes.ts'
 
-/** Car -> Store logId. main -> 'main', sub -> plate number, else null. */
 export function logIdForCar(car: CarLike): string | null {
   if (car?.type === 'main') return 'main'
   const number = String(car?.number || '').trim()

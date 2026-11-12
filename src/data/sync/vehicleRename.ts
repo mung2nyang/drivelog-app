@@ -1,5 +1,3 @@
-// 기사 차량 번호를 바꾸면 그 번호에 묶인 일지·지출·전용 거래처·기사 연결·차량 설정을 새 번호로 함께 옮긴다.
-// 서버는 rename_and_save_sub_vehicle(DB 0029) 한 번으로 차량 번호·전용 거래처·설정 키를 같이 바꾼다.
 import { supabase } from '../cloud/supabaseClient.ts'
 import { buildVehicleRow } from '../cloud/cloudStorage.ts'
 import { getState } from '../store/app-store.ts'
@@ -52,7 +50,6 @@ function plate(value: string | undefined) {
   return String(value || '').trim()
 }
 
-/** 옛 번호를 가리키는 지출·전용 거래처·기사 연결·차량 설정·계산서를 새 번호로 바꾼 commitBatch 항목(바뀐 도메인만). */
 export function planRenamedPlateEntries(ownerKey: string, oldNumber: string, newNumber: string): Array<BatchEntry> {
   const state = getState()
   const entries: Array<BatchEntry> = []
@@ -83,7 +80,6 @@ export function planRenamedPlateEntries(ownerKey: string, oldNumber: string, new
   return entries
 }
 
-/** 서버 차량 번호·전용 거래처·설정 키와 나머지 칸을 한 번에 저장한다(다 되거나 하나도 안 됨). */
 export async function renameSubVehicleOnServer(userId: string, vehicleSupabaseId: string | number, car: CarLike, index: number, captured: SessionCapture) {
   const { error } = await supabase.rpc('rename_and_save_sub_vehicle', {
     p_vehicle_id: vehicleSupabaseId,

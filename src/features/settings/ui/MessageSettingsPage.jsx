@@ -30,7 +30,6 @@ export default function MessageSettingsPage({ onBack }) {
   const [reportShare, setReportShare] = useState(getReportShareMessagePattern(settings))
   const [problemId, setProblemId] = useState('')
   const values = { msgUnpaid: unpaid, msgPaymentRequest: paymentRequest, msgTripComplete: tripComplete, msgReportShare: reportShare }
-  // 위에서부터 첫 빈 칸 하나. 그 칸을 채우면 표시를 거둔다.
   const emptyId = Object.keys(values).find((id) => !values[/** @type {keyof typeof values} */ (id)].trim()) || ''
   const shown = problemId && problemId === emptyId ? { field: problemId, message: '문구를 입력해 주세요.' } : null
 

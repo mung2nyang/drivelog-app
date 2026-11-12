@@ -1,5 +1,4 @@
 // @ts-check
-// 운비서가 넘긴 거래처 칸을 검사해 새 등록 창을 채워 연다 — 저장은 사람이.
 import { useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { PAYMENT_TERMS, needsPaymentTermValue } from '../../../domain/clientPaymentTerms.ts'
@@ -24,8 +23,7 @@ function numberOf(row, key) {
 }
 
 /**
- * 주소 상태 assistantClient → 등록 창에 덮을 칸. 이름이 없거나 모양이 틀리면 null, 그 밖은 틀린 칸만 뺀다.
- * @param {object|null|undefined} state location.state
+ * @param {object|null|undefined} state
  * @returns {Partial<ClientDraft>|null}
  */
 export function readAssistantClient(state) {
@@ -42,7 +40,6 @@ export function readAssistantClient(state) {
     const value = numberOf(row, 'paymentTermValue')
     const max = term === 'after_days' ? 365 : 31
     const valueOk = value !== null && Number.isInteger(value) && value >= 1 && value <= max
-    // 값이 필요한 주기인데 값이 틀리면 주기도 빼서 창 기본값(익월 말일)을 둔다.
     if (!needsPaymentTermValue(term) || valueOk) {
       fields.paymentTerm = term
       fields.paymentTermValue = needsPaymentTermValue(term) && value !== null ? String(value) : ''
@@ -56,18 +53,15 @@ export function readAssistantClient(state) {
   return fields
 }
 
-/**
- * @param {(fields: Partial<ClientDraft>) => void} openWith 채운 칸으로 새 등록 창 열기
- */
+/** @param {(fields: Partial<ClientDraft>) => void} openWith */
 export default function useAssistantClient(openWith) {
   const location = useLocation()
   const navigate = useNavigate()
   useEffect(() => {
     const fields = readAssistantClient(location.state)
     if (!fields) return
-    // 읽은 뒤 주소 상태를 지운다 — 뒤로가기·새로 고침으로 다시 열리지 않게.
     navigate(`${location.pathname}${location.search}`, { replace: true, state: { from: location.state?.from } })
     openWith(fields)
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- 이동(location)마다 한 번
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location, navigate])
 }

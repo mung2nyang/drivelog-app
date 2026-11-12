@@ -1,4 +1,3 @@
-// ReportDetailContent — 세부내역서 본문(타이틀·총 회수·표).
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

@@ -1,6 +1,4 @@
 // @ts-check
-// 회원 데이터 불러오기(22-A·B): 지금 없는 날짜만 더하고, 내 차량이 아니거나 연동 차량이면 건너뛰며, 잘못된 파일은 저장 0회.
-// 22-B: 저장 순서 거래처 → 일지 → 지출 → 계산서, 한 단계 실패하면 다음 단계 0회. 22-C: 점검표는 맨 끝.
 import assert from 'node:assert/strict'
 import { mock, test } from 'node:test'
 

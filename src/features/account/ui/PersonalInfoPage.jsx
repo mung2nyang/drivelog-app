@@ -25,7 +25,7 @@ const WITHDRAW_LINKED_MSG = '연동을 먼저 해제해야 탈퇴할 수 있습�
  * @param {() => void} [props.onBack]
  * @param {() => void} [props.onGoAuth]
  * @param {(() => void)} [props.onOpenMenu]
- * @param {(next: import('../../../data/sync/syncTypes.ts').AppSession) => void} [props.onUnlinked] 기사가 연동 해제를 확정했을 때
+ * @param {(next: import('../../../data/sync/syncTypes.ts').AppSession) => void} [props.onUnlinked]
  */
 export default function PersonalInfoPage({ onBack, onGoAuth, onOpenMenu, onUnlinked }) {
   const { ownerKey, session } = useSession()
@@ -39,12 +39,10 @@ export default function PersonalInfoPage({ onBack, onGoAuth, onOpenMenu, onUnlin
   const [withdrawStep, setWithdrawStep] = useState(/** @type {WithdrawStep} */ (null))
   const [withdrawBusy, setWithdrawBusy] = useState(false)
 
-  // 글자는 즉시 화면에 반영하고 저장은 입력을 멈춘 뒤·칸을 벗어날 때·화면을 나갈 때 묶어서 한다.
   const { get, set, flush } = usePersonalInfoDraft({ ownerKey, profile })
   /** @param {keyof import('../../../data/hydrate/hydrateMergeTypes.ts').LocalProfile} field @param {string} value */
   function update(field, value) { set(field, value) }
 
-  // 연동 중(차주: linked 기사 있음, 기사: employed_driver)이면 탈퇴를 막는다 — 서버 delete_own_account도 거절.
   const employed = session?.accountType === 'employed_driver'
   const linked = employed || drivers.some((driver) => driver.status === 'linked')
   function startWithdraw() {

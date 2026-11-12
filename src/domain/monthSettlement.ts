@@ -1,5 +1,3 @@
-// 월간 운송료 정산 공용 순수 계산.
-// §6: 헬퍼+본문이 한 계산 경로라 분리하면 항상 같이 읽게 됨(~210줄 허용).
 import { getShortCarNum } from './cars.ts'
 import { countCallTrips, getCallDetails, getFixedCount, getPalletCount, getRecordTotalDistance } from './day-record.ts'
 import { monthTotal } from './expenses.ts'
@@ -14,7 +12,6 @@ import type { DayRecordLike } from './dayRecordTypes.ts'
 import type { ExpenseItem } from './expenseTypes.ts'
 import type { CarLike } from './financeTypes.ts'
 
-/** expensesForVehicleDay와 같은 차량 태그 동등비교. */
 function expensesForVehicle(expenses: Array<ExpenseItem>, logId: string) {
   const target = logId === 'main' ? undefined : logId
   return (expenses || []).filter(
@@ -34,7 +31,6 @@ function callCommLabel(detail: CallDetailLike, clients: Array<ClientLike>) {
   return client?.commEnabled ? formatCommLabel(client.commValue, client.commType) : ''
 }
 
-/** @param month 0-based */
 export function monthSettlementSummary(workData: Record<string, DayRecordLike>, year: number, month: number, options: { logId?: string, unitPrice?: number, fixedRouteClient?: ClientLike | null,
   activeFixedOn?: boolean, clients?: Array<ClientLike>, car?: CarLike | null,
   distanceOn?: boolean, expenses?: Array<ExpenseItem> } = {}) {
@@ -54,7 +50,6 @@ export function monthSettlementSummary(workData: Record<string, DayRecordLike>, 
   let fare = 0
   let commissionTotal = 0
   let distanceKm = 0
-  // 부가세는 매출(financeOwnerDetail.ts)과 같은 규칙: 고정노선·파렛트는 날마다, 콜 상세는 건마다 원 미만 버리고 면세면 0.
   let vat = 0
   let insuranceTotal = 0
   const fareByClient: Record<string, number> = {}
@@ -126,7 +121,6 @@ export function monthSettlementSummary(workData: Record<string, DayRecordLike>, 
   const maint = monthTotal(vehicleExpenses, 'maint', year, month)
   const fuel = monthTotal(vehicleExpenses, 'fuel', year, month)
   const misc = monthTotal(vehicleExpenses, 'misc', year, month)
-  // 콜 상세 산재보험료도 합계에서 뺀다(달력·홈 같음, 운송비 내역서는 reportSummary.js에서 다시 더함).
   const total = fare + palletFare - commissionTotal - subCarComm - insuranceTotal + vat
 
   return {

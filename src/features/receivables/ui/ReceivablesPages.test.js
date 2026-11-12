@@ -1,4 +1,3 @@
-// 로드맵 47-B — 미수금 화면: 연동 기사 계정은 차량 배지 없음(차주는 그대로), 남은 건 0건 안내.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

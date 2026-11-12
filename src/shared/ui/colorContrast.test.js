@@ -1,4 +1,3 @@
-// 로드맵 52 — 밝은 화면 달력 배지 글씨·토요일·일요일 색은 바탕과 대비 4.5 이상(WCAG AA 보통 글씨).
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { readFileSync } from 'node:fs'

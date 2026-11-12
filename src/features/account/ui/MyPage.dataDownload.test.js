@@ -1,4 +1,3 @@
-// 데이터 다운로드(B-1): 마이페이지 가로줄 아래·공지사항 위 메뉴는 차주·개인 회원, 누르면 확인 창(22-A부터 불러오기 포함). 22-D 연동 기사는 불러오기만.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

@@ -1,6 +1,4 @@
 // @ts-check
-// 서류 발급 [일상점검표] 탭(피그마 "서류 발급" 1번): 달 이동(위 화면이 줌) + 서류 탭 + 8일 구간 탭 + 머리 칸 + 외관·상태·기타 표(O/X/미, 오늘 이후 빈칸).
-// 그 달 점검표는 서버에서 한 번에 읽고(보기만), 휴무는 그 차량 일지에서 읽는다. 표 아래 내보내기(법정 서식).
 import { useEffect, useMemo, useState } from 'react'
 import { DAILY_INSPECTION_SECTIONS } from '../../../domain/dailyInspectionItems.ts'
 import { RANGE_LABELS, dateKeyOf, initialRangeIndex, inspectionMark, rangeDays } from '../../../domain/dailyInspectionMonth.ts'
@@ -31,7 +29,6 @@ export default function DailyInspectionMonthSheet({ logKey, viewDate, onChangeMo
   const workData = useOwnerWorkDataByLogId(ownerKey)[logKey] || {}
   const vehicleId = vehicleSupabaseIdForLog(ownerKey, logKey)
   const car = (logKey === 'main' ? (cars.find((item) => item.type === 'main') || cars[0]) : cars.find((item) => item.number === logKey)) || null
-  // 결과는 어느 요청 것인지 열쇠(사용자·차량·달·다시 시도)와 같이 — 열쇠가 다르면 불러오는 중.
   const loadKey = `${ownerKey}|${vehicleId}|${year}-${month}|${reloadTick}`
   const [result, setResult] = useState(/** @type {{ key: string, status: 'ready'|'error', byDate: Record<string, MonthInspection> }|null} */ (null))
   const load = result && result.key === loadKey ? result : LOADING

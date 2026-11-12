@@ -1,4 +1,3 @@
-// 로드맵 48 — 카드 안 수정·삭제 버튼은 44px, 거래처 카드 버튼 사이 8px, 거래처 이름 줄은 버튼 자리만큼 비켜 줌.
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -14,7 +13,7 @@ function css(path) {
 
 /**
  * @param {string} text
- * @param {string} selector 규칙 맨 앞 선택자(여러 줄 선택자면 마지막 줄)
+ * @param {string} selector
  */
 function rule(text, selector) {
   const start = text.indexOf(`${selector} {`)

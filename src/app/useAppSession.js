@@ -1,5 +1,4 @@
 // @ts-check
-// App.jsx가 쓰는 세션/부트/토스트 state·이펙트·handleLogout.
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { applyTheme, phoneTheme, settingsTheme, watchPhoneTheme } from '../data/sync/settingsSave.ts'
@@ -25,8 +24,8 @@ export function useAppSession() {
   const [session, setSession] = useState(/** @type {AppSession|null} */ (null))
   const [toast, setToast] = useState('')
   const [booting, setBooting] = useState(true)
-  const [bootLinkFailed, setBootLinkFailed] = useState(false) // 연동 확인 실패 → 안내 화면
-  const [loadFailedOwner, setLoadFailedOwner] = useState('') // 저장된 기록을 못 읽은 owner
+  const [bootLinkFailed, setBootLinkFailed] = useState(false)
+  const [loadFailedOwner, setLoadFailedOwner] = useState('')
   const [phoneScheme, setPhoneScheme] = useState(phoneTheme)
 
   const navigate = useNavigate()
@@ -42,12 +41,8 @@ export function useAppSession() {
     setToast(message)
   }
 
-  // useNavigate()는 라우트가 바뀔 때마다 새 함수를 반환해서, goHome을
-  // useCallback(fn, [navigate])로 감싸면 매 전환마다 재생성돼 부트 이펙트가 다시
-  // 돌고 로그인 계정이 어디로 이동해도 goHome()이 /app으로 되돌려 보냈다(실측
-  // 확인) — navigate를 ref로 감싸 진짜 빈 의존성 배열로 고정한다.
   const navigateRef = useRef(navigate)
-  useEffect(() => { navigateRef.current = navigate }) // 의존성 배열 없음 — 매 렌더 후 최신 navigate로 갱신.
+  useEffect(() => { navigateRef.current = navigate })
 
   const goHome = useCallback(
     /** @type {(nextSession: AppSession|null, message?: string) => void} */
@@ -59,7 +54,6 @@ export function useAppSession() {
     [],
   )
 
-  // 새로고침 시 세션 복원. 로그인 상태가 아니면 /auth에 남는다. 이미 /app·/onboarding이면 홈 이동을 건너뛴다(bootHomeGuard.js).
   const homePathRef = useRef(location.pathname)
   useEffect(() => { homePathRef.current = location.pathname })
 
@@ -73,7 +67,6 @@ export function useAppSession() {
         clearGuestModePersisted()
         const message = restored.hydrateError ? '로그인은 됐지만 기록 일부를 불러오지 못했습니다.' : undefined
         if (restored.needsProfile) {
-          // 구글 첫 로그인: 이름·전화번호부터 받는다(구글 로그인 G-2).
           setSession(restored.session)
           navigateRef.current('/welcome', { replace: true })
         } else if (isAlreadyInAppOnBoot(homePathRef.current)) {
@@ -93,15 +86,10 @@ export function useAppSession() {
       setBooting(false)
     })
     return () => { cancelled = true }
-    // goHome은 이제 useCallback(fn, [])로 항상 같은 참조라 여기 넣어도 재실행을
-    // 유발하지 않는다 — 린트 경고 없이 "마운트 시 한 번만" 계약을 유지한다.
   }, [goHome])
 
-  // ownerKey가 정해질 때마다(게스트든 로그인이든) store를 persist된
-  // 값으로 채운다. hydrate는 그 위에 서버 값을 덮어쓸 뿐 — 이 초기화 없이는 hydrate가
-  // 없는 게스트 세션에서 store가 계속 비어 있게 된다.
   useEffect(() => {
-    // oxlint-disable-next-line react/set-state-in-effect -- 저장된 기록 채우기는 화면 밖 작업이라 effect에서 하고 결과만 담는다.
+    // oxlint-disable-next-line react/set-state-in-effect
     setLoadFailedOwner(initializeOwnerFromPersist(ownerKey) ? '' : ownerKey)
   }, [ownerKey])
 
@@ -109,23 +97,21 @@ export function useAppSession() {
 
   const { theme, themeFollowPhone } = practiceSettings
   useEffect(() => {
-    // 계정 화면·세션 없음은 휴대폰 설정, 앱 안은 계정 설정(기본 휴대폰 설정)으로 칠한다. 앱 준비 중엔 로딩 화면 색을 둔다.
     if (booting) return
     applyTheme(!session || inAccountFlow ? phoneScheme : settingsTheme({ theme, themeFollowPhone }, phoneScheme))
   }, [booting, session, inAccountFlow, theme, themeFollowPhone, phoneScheme, location.pathname])
 
   useEffect(() => {
     if (!toast) return undefined
-    buzz() // 안내 문구가 뜰 때 짧은 진동
-    const timer = setTimeout(() => setToast(''), isFailureMessage(toast) ? 6000 : 4000) // 실패 알림은 놓치지 않게 6초
+    buzz()
+    const timer = setTimeout(() => setToast(''), isFailureMessage(toast) ? 6000 : 4000)
     return () => clearTimeout(timer)
   }, [toast])
 
   async function handleLogout({ signOut = false } = {}) {
-    // 로그아웃도 전역 이동 경로다 — DayLogPage를 안 거치므로 여기서 직접 가드한다.
     if (!confirmReloadIfUnsaved()) return
     if (signOut) {
-      try { await supabase.auth.signOut() } catch { /* ignore */ }
+      try { await supabase.auth.signOut() } catch { }
     }
     endCloudSession()
     clearGuestModePersisted()
@@ -140,7 +126,6 @@ export function useAppSession() {
     showToast,
     booting,
     bootLinkFailed,
-    // 비회원 기록을 못 읽었으면 입력 전에 막음(빈 화면에서 쓰면 기존 기록을 덮어씀). 로그인 화면·회원은 그대로.
     guestLoadFailed: !!session?.guestMode && loadFailedOwner === ownerKey,
     ownerKey,
     cars,

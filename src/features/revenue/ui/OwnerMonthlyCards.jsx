@@ -1,6 +1,4 @@
 // @ts-check
-// 오너 월별 손익 카드 3장(순이익/수입/지출)과 접이식 상세 행.
-// variant='driverSelf' — 소속기사(급여·유가보조금 숨김, 순이익에 정산율).
 import { useState } from 'react'
 import { dateLabel, driverSelfNetProfitLabel, won } from './revenueFormat.js'
 
@@ -49,13 +47,10 @@ function RevenueDetailRow({ label, amount, items, showDate = false }) {
   )
 }
 
-/**
- * @param {{ detail: MonthlyCardsDetail, scope?: string, variant?: 'owner'|'driverSelf' }} props
- */
+/** @param {{ detail: MonthlyCardsDetail, scope?: string, variant?: 'owner'|'driverSelf' }} props */
 export default function OwnerMonthlyCards({ detail, scope, variant = 'owner' }) {
   const isDriverSelf = variant === 'driverSelf'
   const netTitle = isDriverSelf ? driverSelfNetProfitLabel(detail.income.settlement) : '당월 순이익'
-  // 기사 화면: 큰 숫자(실수령)가 어떻게 나왔는지 기사 몫·공제 줄로 보인다.
   const breakdown = isDriverSelf ? detail.income.settlement?.breakdown : undefined
 
   return (

@@ -1,11 +1,9 @@
 // @ts-check
-// 로드맵 24-I-2 — 위도·경도 → 기상청 격자: 기상청 격자 표(2026-10판)의 위치와 nx·ny가 같아야 한다.
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { kmaGridOf } from './kmaGrid.ts'
 
 test('기상청 표의 시·군·구 위치 → 표와 같은 격자 번호', () => {
-  // [이름, 위도, 경도, nx, ny] — 서버 kmaGrid.json과 같은 값.
   const places = [
     ['서울 종로구', 37.5703777777777, 126.981641666666, 60, 127],
     ['경기 평택시', 36.9894388888888, 127.114655555555, 62, 114],

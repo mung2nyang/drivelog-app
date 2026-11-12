@@ -1,4 +1,3 @@
-// 준비 중 화면. `/app/soon?title=...&back=mypage|home` — SideMenu는 back=home, MyPage는 back=mypage로 링크한다.
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { ComingSoonPage } from './lazyPages.js'
 

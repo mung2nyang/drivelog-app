@@ -1,7 +1,5 @@
-// 위도·경도 → 기상청 5km 격자 번호(기상청 단기예보 격자 변환식). 좌표는 휴대폰 밖으로 보내지 않는다.
 export type KmaGrid = { nx: number, ny: number }
 
-// 기상청 활용 가이드의 람베르트 정각 원추 도법 값.
 const EARTH_KM = 6371.00877
 const GRID_KM = 5
 const STANDARD_LAT_1 = 30
@@ -10,7 +8,6 @@ const ORIGIN_LON = 126
 const ORIGIN_LAT = 38
 const ORIGIN_X = 43
 const ORIGIN_Y = 136
-// 기상청 격자 크기(가로 149, 세로 253칸) — 밖이면 null.
 const NX_MAX = 149
 const NY_MAX = 253
 const RAD = Math.PI / 180

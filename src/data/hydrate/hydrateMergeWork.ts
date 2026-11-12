@@ -44,8 +44,6 @@ export function mergeWorkDataFromRows(localWorkData: Record<string, DayRecordLik
   Object.values(byDate).forEach((day) => {
     day.callDetails = dedupeCallDetailsById(day.callDetails)
   })
-  // dailyRows가 배열이면(빈 배열 포함) 서버 날짜 맵이 정본이다 — 로컬 dateKey를 깔면 지운 날짜가 hydrate 뒤 부활한다.
-  // fallback은 dailyRows가 배열이 아닐 때(조회 실패 등)만.
   const base = Array.isArray(dailyRows) ? {} : (localWorkData || {})
   const merged = { ...base, ...byDate }
   tombstoned.forEach((dateKey) => { delete merged[dateKey] })

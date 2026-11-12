@@ -1,5 +1,4 @@
 // @ts-check
-// 한 차량 거래처 목록·추가 단추·입력 창·삭제 확인 창 — useScopedClients와 짝.
 import ConfirmModal from '../../../shared/ui/ConfirmModal.tsx'
 import ClientFormModal from './ClientFormModal.jsx'
 import ClientListItem from './ClientListItem.jsx'
@@ -10,9 +9,9 @@ import { useSession } from '../../../data/cloud/sessionContext.ts'
 
 /**
  * @param {Object} props
- * @param {string} props.scopeKey 거래처를 묶는 차량 번호
+ * @param {string} props.scopeKey
  * @param {string} props.listId
- * @param {import('react').ReactNode} [props.notice] 목록 위 안내
+ * @param {import('react').ReactNode} [props.notice]
  */
 export default function ScopedClientsList({ scopeKey, listId, notice }) {
   const { ownerKey } = useSession()

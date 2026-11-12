@@ -1,10 +1,8 @@
-// 로드맵 33 — 화면 오류 때 앱 전체가 사라지는 대신 안내, 다른 화면으로 가면 풀림.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 
 /** @type {Array<{ kind: string, message?: string }>} */
 const reported = []
-// 로드맵 55-B — 화면 오류를 오류 기록으로 보내는지 본다(서버 대신 받아 적기).
 mock.module('../errorReport.js', {
   namedExports: { reportClientError: (/** @type {{ kind: string, message?: string }} */ report) => { reported.push(report); return true } },
 })
@@ -31,7 +29,6 @@ test('정상 화면은 그대로, 오류면 안내, 다른 화면으로 가면 �
   const container = document.createElement('div')
   document.body.appendChild(container)
   const root = createRoot(container)
-  // 예상한 오류(일부러 던진 화면 오류·경계 기록)만 숨기고, 나머지는 원래대로 내보낸다(플레이북 §6).
   const original = console.error
   const expected = (/** @type {Array<string | Error>} */ args) => args.some((arg) => /Failed to fetch dynamically imported module|\[PageLoadErrorBoundary\]/.test(String(arg instanceof Error ? arg.message : arg)))
   const logged = mock.method(console, 'error', (/** @type {Array<string | Error>} */ ...args) => { if (!expected(args)) original(...args) })
@@ -50,7 +47,6 @@ test('정상 화면은 그대로, 오류면 안내, 다른 화면으로 가면 �
     assert.ok(container.querySelector('.page-ok'), '다른 화면으로 가면 안내가 풀린다')
     assert.equal(container.querySelector('[role="alert"]'), null)
     assert.ok(logged.mock.calls.some((call) => String(call.arguments[0]).includes('[PageLoadErrorBoundary]')))
-    // 개발 모드 React는 오류 처리를 두 번 부를 수 있다 — 같은 문구 거르기는 reportClientError가 한다(errorReport.test.js).
     assert.ok(reported.length >= 1, '화면 오류를 오류 기록으로 보낸다')
     assert.ok(reported.every((r) => r.kind === 'render' && r.message === 'Failed to fetch dynamically imported module'))
   } finally {

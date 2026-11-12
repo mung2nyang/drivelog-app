@@ -20,7 +20,6 @@ test('재감사 12차 — 통화는 천 단위 쉼표 또는 쉼표 없는 정�
   assert.equal(isValidCurrencyAmount('1,000 원'), true)
   assert.equal(isValidCurrencyAmount(' 1,000 '), true)
 
-  // 빈 값 = 미입력(0) — parseCurrencyValue('')===0과 같은 규약(게스트 데이터 유실 버그 수정).
   assert.equal(isValidCurrencyAmount(''), true)
   assert.equal(isValidCurrencyAmount('   '), true)
   assert.equal(isValidCurrencyAmount(','), false)

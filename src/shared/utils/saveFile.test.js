@@ -1,4 +1,3 @@
-// 앱 안 파일 저장(Capacitor C-3-A) — 앱이면 문서/운행일지 폴더에 쓰고 위치 안내, 웹이면 지금처럼 링크 내려받기.
 import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { mock, test } from 'node:test'

@@ -11,7 +11,6 @@ const BANNER = assetPath('/images/banner_image.png')
 const STEP_SEQUENCE = [1, 2, 3, 4]
 
 /**
- * accountType prop은 App.jsx가 아직 넘기지만 쓰지 않는다 — 시퀀스는 항상 STEP_SEQUENCE.
  * @param {Object} props
  * @param {string} [props.accountType]
  * @param {(wizard: OnboardingWizard) => void|Promise<void>} props.onFinish
@@ -39,7 +38,6 @@ export default function OnboardingPage({ accountType: _accountType, onFinish }) 
   else if (step === 4) nextDisabled = (wizard.carNumber || '').trim().length < 2
 
   const [finishing, setFinishing] = useState(false)
-  // 마지막 단계 저장 중엔 다시 눌러도 무시 — 메인 차량이 두 번 등록되지 않게.
   const busyRef = useRef(false)
 
   async function goNext() {

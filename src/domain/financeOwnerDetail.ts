@@ -1,4 +1,3 @@
-// 오너/기사 월별 손익 상세(getOwnerMonthlyFinanceDetail) — 반환 모양을 features/revenue/ui/OwnerMonthlyCards.jsx가 ReturnType으로 참조한다.
 import { getShortCarNum, isVehicleRevenueSharedWithOwner } from './cars.ts'
 import { getFixedRouteClient, resolveFixedUnitPrice } from './clients.ts'
 import { parseCurrencyValue, vatOf } from './money.ts'
@@ -14,8 +13,6 @@ import type { FinanceSettings, WorkDataByLogId } from './financeTypes.ts'
 import type { ExpenseLike } from './financeOwnerExpenseSweep.ts'
 import { getRecordTotalDistance, type DayRecordLike } from './day-record.ts'
 
-// 비용은 financeOwnerExpenseSweep이 맡는다 — expenses(차주 본인)와 driverExpenses(기사 차량)를 섞지 않고 record의 비용 필드는 읽지 않는다(Q3).
-/** @param mainFixedScopeKey 메인 소스의 고정노선 스코프 키 — 연동기사 본인 세션(일지는 main, 거래처는 배정 차량 스코프)만 넘긴다 */
 export function getOwnerMonthlyFinanceDetail(monthKey: string, scope = 'owner', settings: FinanceSettings = {}, workDataByLogId: WorkDataByLogId = {}, expenses: Array<ExpenseLike> = [], driverExpenses: Array<ExpenseLike> = [], mainFixedScopeKey = '') {
   const cars = Array.isArray(settings.cars) ? settings.cars : []
   const subCarsInScope = cars.filter((car) => car.type === 'sub' && isVehicleRevenueSharedWithOwner(car))
@@ -40,7 +37,6 @@ export function getOwnerMonthlyFinanceDetail(monthKey: string, scope = 'owner', 
   sources.forEach((source) => {
     const isMain = source.logId === 'main'
     const activeFixedOn = isMain ? settings.fixedOn : settings.subFixedOn
-    // 소스(차량)별 스코프 고정노선 우선, 없으면 차주 것 fallback(getFixedRouteClient).
     const fixedScopeKey = isMain && mainFixedScopeKey ? mainFixedScopeKey : source.logId
     const fixedRouteClientForTotals = getFixedRouteClient(settings, fixedScopeKey)
     const fixedClientLabel = fixedRouteClientForTotals?.companyName || '고정 노선'
@@ -59,7 +55,6 @@ export function getOwnerMonthlyFinanceDetail(monthKey: string, scope = 'owner', 
           const amount = count * fixedUnitPrice
           fareByClient.set(fixedClientLabel, (fareByClient.get(fixedClientLabel) || 0) + amount)
           vatAmount += vatOf(amount)
-          // 고정노선도 거래처 수수료를 뗀다(달력 monthSettlement와 같은 함수).
           const fixedComm = getFixedRouteCommissionAmount(fixedRouteClientForTotals, amount, count)
           if (fixedComm > 0) commissionByClient.set(fixedClientLabel, (commissionByClient.get(fixedClientLabel) || 0) + fixedComm)
         }
@@ -72,7 +67,6 @@ export function getOwnerMonthlyFinanceDetail(monthKey: string, scope = 'owner', 
         ;(Array.isArray(record.callDetails) ? record.callDetails : []).forEach((detail) => {
           const type = detail?.distanceType || ''
           if (type === '공차') {
-            // 0회 처리
           } else if (type === '혼짐') {
             if (detail.linkedLoadIndex === 'pending' || detail.linkedLoadIndex === '-1' || detail.linkedLoadIndex === undefined) tripCount += 1
           } else {
@@ -88,7 +82,6 @@ export function getOwnerMonthlyFinanceDetail(monthKey: string, scope = 'owner', 
           const commission = getCallDetailCommissionAmount(detail, fare, settings)
           if (commission > 0) commissionByClient.set(clientLabel, (commissionByClient.get(clientLabel) || 0) + commission)
 
-          // 콜 상세 산재보험료는 수입에서 뺀다(달력 callInsuranceTotal과 같은 값).
           const insurance = parseCurrencyValue(detail?.insuranceFee)
           if (insurance > 0) insuranceByClient.set(clientLabel, (insuranceByClient.get(clientLabel) || 0) + insurance)
 

@@ -1,4 +1,3 @@
-// 로드맵 32 — 비회원 기록을 못 읽으면 앱 대신 막기 화면(빈 화면에서 입력해 기존 기록을 덮어쓰지 않게).
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

@@ -1,17 +1,9 @@
-// Step 0-4 감사 보완 2차/3차 — 커밋 전 자체 교차검증에서 발견한 결함의
-// 회귀 테스트. commitBatch가 여러 localStorage 키를 쓰는 도중 하나가 실패하면
-// (용량 초과, 순환 참조로 인한 JSON.stringify 실패 등) 이미 쓴 키가 새 값으로 남고
-// 나머지는 그대로인 "부분 반영" 상태가 될 수 있었다 — writeAllOrNothing이 이걸 막는다.
-// 3차 보완에서 (domain, ownerKey, value) 대신 (key, value) 쌍을 직접 받도록
-// 바뀌었다(도메인 계약 밖의 임의 키도 같은 배열에 섞어 넣을 수 있어야 해서).
 import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { describe, mock, test } from 'node:test'
 import { writeAllOrNothing } from './atomicPersist.ts'
 import { readJsonKey, storageKeyFor, writeJsonKey } from './persist.ts'
 
-// Storage 전역 이름에 기대지 않고 프로토타입에서 원본 setItem을 직접 캡처한다 —
-// jsdom이 항상 전역 Storage 생성자를 노출한다는 보장이 없다.
 /**
  * @param {(key: string) => boolean} shouldFail
  * @param {() => void} fn

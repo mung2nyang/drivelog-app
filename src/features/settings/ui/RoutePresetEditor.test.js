@@ -1,4 +1,3 @@
-// 로드맵 82-C — 앱 설정 노선 등록: 빈 칸은 추가 전에 빨간 표시·칸 아래 문구·커서(상차지 → 하차지).
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

@@ -1,4 +1,3 @@
-// 옆 메뉴 뒤로가기 — 열면 붙잡기 기록 1장, 휴대폰 뒤로가기는 메뉴만 닫음, 바깥 누르기는 그 기록을 조용히 뺌, 항목으로 간 화면에서 뒤로가기 한 번이면 원래 화면.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 
@@ -24,7 +23,6 @@ async function waitFor(check) {
 
 const guardOnTop = () => Boolean(Reflect.get(window.history.state || {}, 'menuGuard'))
 
-/** 실제 앱처럼 열림 값은 바깥(AppShell)이 들고, 메뉴는 onClose로 닫는다. */
 async function mount() {
   window.history.replaceState({ idx: 3, key: 'home' }, '', '/app')
   const startLength = window.history.length

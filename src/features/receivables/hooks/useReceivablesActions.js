@@ -38,7 +38,6 @@ export function useReceivablesActions({
   const [partialAmount, setPartialAmount] = useState('')
   const [historyKey, setHistoryKey] = useState('')
   const [problem, setProblem] = useState(/** @type {(NonNullable<ReturnType<typeof checkPartialAmount>> & { key: string, value: string })|null} */ (null))
-  // 같은 카드에서 입금액을 고치기 시작하면 표시를 거둔다.
   const partialProblem = problem && problem.key === partialKey && problem.value === partialAmount ? problem : null
 
   function clearPartialUi() {
@@ -89,7 +88,6 @@ export function useReceivablesActions({
   /** @param {string} clientName @param {string} monthKey @param {boolean} stay */
   async function payGroup(clientName, monthKey, stay) {
     if (saving) return false
-    // 한 달치를 한 번에 바꾸고 되돌리기는 한 건씩이라 먼저 묻는다.
     const items = groupItems(getReceivableItems(settings, workDataByLogId), clientName, monthKey)
     const amount = items.reduce((sum, item) => sum + item.remainingAmount, 0)
     const month = parseInt(monthKey.slice(5, 7), 10)

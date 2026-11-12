@@ -1,4 +1,3 @@
-// 결제 주기·입금 예정일 계산(거래처 CRUD와 독립). clients.ts가 재수출한다.
 import type { ClientLike } from './clientTypes.ts'
 
 export const PAYMENT_TERMS = [

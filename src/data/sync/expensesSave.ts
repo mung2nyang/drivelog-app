@@ -1,4 +1,3 @@
-// 지출 저장(saveExpenses)과 두 화면이 같이 쓰는 입력값 저장·삭제. 화면 읽기는 useOwnerExpenses, 계산 규칙은 domain/expenses.ts.
 import { commitExpenses } from '../store/commitHelpers.ts'
 import { dedupeExpensesById } from '../../domain/expenses.ts'
 import { removeExpense, upsertExpense } from '../../domain/expenseDraft.ts'
@@ -28,7 +27,6 @@ export async function saveExpenses(ownerKey: string, items: Array<ExpenseItem>) 
   if (blocked) throw new Error(blocked)
   const logs = getState().workLogs[ownerKey] || {}
   const captured = captureSession()
-  // 연동 기사 세션(ownerKey = 차주 id, appSession.ts ownerKeyFromSession): 배정 차량 칸을 항목 단위로.
   if (userId !== ownerKey) {
     const assignedCar = (getState().cars[ownerKey] || []).find((car) => car.supabaseId)
     const previous = (getState().expenses[ownerKey] || []) as Array<ExpenseItem>
@@ -45,14 +43,11 @@ export async function saveExpenses(ownerKey: string, items: Array<ExpenseItem>) 
   const previousAll = (getState().expenses[ownerKey] || []) as Array<ExpenseItem>
   const previousByLog = new Map(planExpenseVehicleTargets(cars, drivers, previousAll).map((target) => [target.logId, target.expenses]))
   const mainVehicleId = targets.find((target) => target.logId === 'main')?.vehicleId ?? null
-  // 모든 칸 넣기·고치기 먼저, 지우기는 맨 뒤 — 중간 실패 시 유실 대신 중복(불러올 때 id로 정리).
   const deletes: Array<ExpenseRowRef> = []
   for (const target of targets) {
     const ownIds = new Set(target.expenses.map((item) => item.id))
-    // 내가 알던 항목 = 저장 전 이 칸 항목 + 이번에 다른 칸으로 간 항목(이 칸에 남은 옛 줄을 지운다).
     const previous = [...(previousByLog.get(target.logId) || []), ...next.filter((item) => !ownIds.has(item.id))]
     const linked = target.mode === 'items'
-    // 연동 서브는 메인 칸의 옛 항목을 옮겨 넣고, 차주만 쓰는 칸은 서버에서 빠진 항목을 다시 넣는다.
     deletes.push(...await upsertExpenseItemsForVehicle((userId) as string, target.vehicleId, previous, target.expenses, logs[target.logId] || {}, linked ? mainVehicleId : null, !linked))
   }
   await deleteExpenseRows(deletes)
@@ -64,11 +59,9 @@ function latestExpenses(ownerKey: string): Array<ExpenseItem> {
   return (getState().expenses[ownerKey] || []) as Array<ExpenseItem>
 }
 
-/** 입력값을 최신 목록에 반영해 저장. 알림 문구(검사·실패)를 돌려주고, 성공이면 null. */
 export async function saveExpenseDraft(ownerKey: string, draft: ExpenseDraft, editingId: string | null): Promise<string | null> {
   const result = upsertExpense(latestExpenses(ownerKey), draft, editingId)
   if (result.error) return result.error
-  // 저장할 서버 차량이 없으면 화면에만 남으므로 저장하지 않고 알린다.
   if (hasNoCloudVehicle(ownerKey, 'main')) return NO_VEHICLE_SAVE_FAIL
   try {
     await saveExpenses(ownerKey, result.items)
@@ -79,7 +72,6 @@ export async function saveExpenseDraft(ownerKey: string, draft: ExpenseDraft, ed
   }
 }
 
-/** 최신 목록에서 빼고 저장. 실패 문구를 돌려주고, 성공이면 null. */
 export async function deleteExpense(ownerKey: string, id: string): Promise<string | null> {
   try {
     await saveExpenses(ownerKey, removeExpense(latestExpenses(ownerKey), id))

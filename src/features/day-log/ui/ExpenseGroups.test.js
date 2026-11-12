@@ -1,4 +1,3 @@
-// 하루 화면 주유 카드의 유가보조금 표시(로드맵 46-A) — 표시만, 합계는 그대로.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

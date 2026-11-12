@@ -1,5 +1,3 @@
-/* 로그인 단계 화면(환영·처음 정보 입력이 같이 씀) — 위 줄·뒤로·작은 로고·제목·입력칸·아래 고정. */
-
 .auth-topbar {
   display: grid;
   grid-template-columns: 48px minmax(0, 1fr) 48px;

@@ -1,5 +1,4 @@
 // @ts-check
-// 앱 설정의 노선 이름표(프리셋) 편집.
 import { useState } from 'react'
 import { addFixedRoutePreset, checkRoutePreset, FIXED_ROUTE_PRESET_MAX, removeFixedRoutePreset } from '../../../domain/practiceSettings.ts'
 import FieldError, { focusField, invalidProps } from '../../../shared/ui/FieldError.tsx'
@@ -21,10 +20,8 @@ export default function RoutePresetEditor({ scope, settings, onPatch }) {
   const presets = settings[key] || []
   const ids = { loadLoc: `routePresetLoad-${scope}`, unloadLoc: `routePresetUnload-${scope}` }
   const [problem, setProblem] = useState(/** @type {ReturnType<typeof checkRoutePreset>} */ (null))
-  // 문제 칸을 채우면 표시를 거둔다.
   const shown = problem && checkRoutePreset(loadLoc, unloadLoc)?.field === problem.field ? problem : null
 
-  // 저장 차례가 왔을 때의 최신 설정에서 노선 목록만 바꾼다.
   /** @param {(current: FinanceSettings) => FinanceSettings} change */
   function patchPresets(change) {
     onPatch((current) => ({ [key]: change(current)[key] }))

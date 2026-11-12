@@ -1,4 +1,3 @@
-// 로드맵 63: 아래 메뉴·← 이동이 기록을 쌓지 않게 — 메뉴끼리는 교체, 홈은 처음 기록으로 되감기.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

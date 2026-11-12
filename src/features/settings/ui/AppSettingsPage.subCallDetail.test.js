@@ -1,4 +1,3 @@
-// 기사 차량 앱 설정: 차량 설정을 저장한 적 없어도 고정 노선이 꺼져 있으면 세부 입력이 켜짐(잠김)으로 보인다.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

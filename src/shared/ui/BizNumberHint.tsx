@@ -1,4 +1,3 @@
-// 사업자번호 10자리를 다 쳤는데 검증번호가 안 맞으면 칸 아래 안내만 띄운다(저장은 막지 않음).
 import { isBizNumberChecksumOk } from '../../domain/formatPhone.ts'
 
 export default function BizNumberHint({ value }: { value: string | undefined }) {

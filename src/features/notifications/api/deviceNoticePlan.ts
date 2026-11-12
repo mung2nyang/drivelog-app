@@ -1,4 +1,3 @@
-// 휴대폰 알림창에 미리 걸어 둘 알림 계획 — 지금 휴대폰 값으로 "언제·무슨 알림"을 정한다(앱 안 알림과 같은 문구).
 import type { JsonValue } from '../../../domain/jsonTypes.ts'
 import type { ReceivableItemLike } from '../../../domain/financeReceivables.ts'
 import type { WorkDataByLogId } from '../../../domain/financeTypes.ts'
@@ -36,7 +35,6 @@ function dateKeyOf(date: Date) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
 }
 
-/** 그 날짜(자정 기준)에서 days일 뒤 hour시. */
 function dayAt(base: Date, days: number, hour: number) {
   return new Date(base.getFullYear(), base.getMonth(), base.getDate() + days, hour, 0, 0, 0)
 }
@@ -107,7 +105,6 @@ function backupNotices(input: DeviceNoticeInput): Array<DeviceNotice> {
   }]
 }
 
-/** "알림 받기"에서 끈 종류·닫은 알림·이미 지난 시각은 뺀다. */
 export function planDeviceNotices(input: DeviceNoticeInput): Array<DeviceNotice> {
   const kinds: Array<[string, (value: DeviceNoticeInput) => Array<DeviceNotice>]> = [
     ['today', todayNotices],
@@ -117,7 +114,6 @@ export function planDeviceNotices(input: DeviceNoticeInput): Array<DeviceNotice>
   return kinds.flatMap(([kind, plan]) => (input.off.includes(kind) ? [] : plan(input)))
 }
 
-/** 지금 휴대폰(Store) 값으로 계획에 넣을 값을 모은다. */
 export function readDeviceNoticeInput(ownerKey: string, session: AppSession | null, now: Date = new Date()): DeviceNoticeInput {
   const workDataByLogId = loadWorkDataByLogId(ownerKey)
   return {

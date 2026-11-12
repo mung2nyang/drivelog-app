@@ -1,5 +1,4 @@
 // @ts-check
-// 새 홈 "오늘" 카드: 날짜·상태 제목·운행 줄(고정 노선 횟수 + 콜 최대 3줄)·오늘 일지 열기 버튼. 숫자는 달력 칸과 같은 함수.
 import { dayFareTotal, dayWorkBadgeLabel } from '../../../domain/calendarBadges.ts'
 import { getCallDetails, getFixedCount, isOffDay } from '../../../domain/day-record.ts'
 import { formatWon, parseCurrencyValue } from '../../../domain/money.ts'
@@ -11,10 +10,10 @@ const MAX_CALL_ROWS = 3
  * @param {Object} props
  * @param {import('../../../domain/dayRecordTypes.ts').DayRecordLike|undefined} props.record
  * @param {{ dateKey: string, month: number, day: number }} props.today
- * @param {number} props.weekday 0 = 일요일
+ * @param {number} props.weekday
  * @param {'count'|'fare'} props.inputMode
  * @param {number|string} props.unitPrice
- * @param {number} props.palletPrice 파렛트 꺼졌으면 0
+ * @param {number} props.palletPrice
  * @param {(dateKey: string) => void} props.onOpenToday
  */
 export default function HomeTodayCard({ record, today, weekday, inputMode, unitPrice, palletPrice, onOpenToday }) {
@@ -22,7 +21,6 @@ export default function HomeTodayCard({ record, today, weekday, inputMode, unitP
   const label = dayWorkBadgeLabel(record, { inputMode, unitPrice, palletPrice })
   const fare = dayFareTotal(record, unitPrice, palletPrice)
   const showFare = inputMode === 'count' && fare > 0
-  // 금액 입력 계정은 달력 짧은 표기 대신 원 단위 전체 금액.
   const title = inputMode === 'fare' ? formatWon(fare) : `${label}${showFare ? `, ${formatWon(fare)}` : ''}`
   const status = off ? '오늘은 휴무입니다' : label ? `오늘 ${title}` : '아직 기록이 없습니다'
   const fixedCount = off ? 0 : getFixedCount(record)

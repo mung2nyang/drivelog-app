@@ -1,5 +1,3 @@
-// 운행 횟수 버튼·노선 이름표(프리셋) 정규화와 scope별 추가·삭제·교체 — practiceSettings.ts가 다시 내보낸다.
-// 서로 얽혀 있는 프리셋 함수끼리 한 파일에 둔다.
 import type { JsonValue } from './jsonTypes.ts'
 import type { FinanceSettings } from './financeTypes.ts'
 
@@ -44,7 +42,6 @@ export function normalizeFixedRoutePresets(value: JsonValue | undefined): Array<
   return presets
 }
 
-/** 노선 추가 전 검사 — 빈 칸을 상차지 → 하차지 순서로 하나 돌려준다. */
 export function checkRoutePreset(loadLoc: JsonValue | undefined, unloadLoc: JsonValue | undefined): { field: 'loadLoc' | 'unloadLoc', message: string } | null {
   if (!String(loadLoc || '').trim()) return { field: 'loadLoc', message: '상차지를 입력해 주세요.' }
   if (!String(unloadLoc || '').trim()) return { field: 'unloadLoc', message: '하차지를 입력해 주세요.' }
@@ -80,7 +77,6 @@ export function addRunCountPreset(settings: FinanceSettings, scope: 'main' | 'su
   return { settings: { ...settings, [key]: [...current, nextRunCountPreset(current)] } }
 }
 
-/** 값으로 찾아 지운다 — 앞 저장으로 순서가 바뀌어도 같은 버튼(1개 남으면 그대로). */
 export function removeRunCountPreset(settings: FinanceSettings, scope: 'main' | 'sub', count: number): FinanceSettings {
   const key = scope === 'sub' ? 'subRunCountPresets' : 'runCountPresets'
   const current = [...normalizeRunCountPresets(settings[key])]
@@ -90,7 +86,6 @@ export function removeRunCountPreset(settings: FinanceSettings, scope: 'main' | 
   return { ...settings, [key]: normalizeRunCountPresets(current) }
 }
 
-/** 값으로 찾아 바꾼다 — 없으면 그대로. */
 export function replaceRunCountPreset(settings: FinanceSettings, scope: 'main' | 'sub', count: number, value: JsonValue): FinanceSettings {
   const key = scope === 'sub' ? 'subRunCountPresets' : 'runCountPresets'
   const current: Array<JsonValue> = [...normalizeRunCountPresets(settings[key])]

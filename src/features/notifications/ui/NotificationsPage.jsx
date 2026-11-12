@@ -1,5 +1,4 @@
 // @ts-check
-// 알림 화면(알림 단추 → /app/notifications): 맨 위 "알림 받기" 종류별 스위치 + 알림 목록(날짜 줄·[닫기]). 옆 창(NotificationPanel)을 대체.
 import { isCloudSession } from '../../../data/cloud/cloudSession.ts'
 import { dismissNotice } from '../api/dismissNotice.ts'
 import useNotifications from '../hooks/useNotifications.js'
@@ -21,7 +20,7 @@ const DISMISS_FAIL = '알림을 닫지 못했습니다. 잠시 뒤 다시 시도
  * @param {Object} props
  * @param {() => void} props.onBack
  * @param {() => void} [props.onOpenMenu]
- * @param {(page: string) => void} props.onOpenPage 알림을 누르면 그 화면으로
+ * @param {(page: string) => void} props.onOpenPage
  */
 export default function NotificationsPage({ onBack, onOpenMenu, onOpenPage }) {
   const { ownerKey, session } = useSession()

@@ -1,4 +1,3 @@
-// CalendarMonthSummary — 거래처/파렛트/서브수수료/지출 행 표시·숨김.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

@@ -1,4 +1,3 @@
-// 달력 보던 달 기억: 달을 넘긴 뒤 다른 화면에 갔다 [달력](주소에 달 없음)으로 오면 그 달, 다른 계정·앱을 다시 켜면 이번 달.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

@@ -1,4 +1,3 @@
-// 창 뒤로가기 장치 + 일지 입력 칸 장치를 함께: 입력 칸이 열린 채 창을 열고 뒤로가기 → 창만 닫히고 입력 칸 그대로, 그다음은 입력 칸 규칙대로.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

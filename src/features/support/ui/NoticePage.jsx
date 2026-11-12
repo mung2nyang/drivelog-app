@@ -3,7 +3,6 @@ import { useState } from 'react'
 import PageHeader from '../../../shared/ui/PageHeader.tsx'
 import './customer-center.css'
 
-// 새 공지는 맨 앞에 추가.
 /** @type {Array<{ title: string, date: string, body: string }>} */
 const NOTICES = [
   {

@@ -1,4 +1,3 @@
-// 서버 알림 보내기 시험: 암호 틀림 거절, 모양 검사, 끈 종류 안 보냄, 기기마다 보냄, 없는 주소 지움, 글에 개인정보 없음. CI에서 deno test로 돈다.
 import assert from 'node:assert/strict'
 import { callWith } from './fakes.ts'
 import type { Answer } from './fakes.ts'
@@ -22,7 +21,6 @@ const ACCOUNT = JSON.stringify({ project_id: 'fake-project', client_email: EMAIL
 
 const unbase64url = (part: string) => Uint8Array.from(atob(part.replace(/-/g, '+').replace(/_/g, '/')), (c) => c.charCodeAt(0))
 
-/** 진짜 구글처럼 서명·발급자·범위·받는 곳을 확인하고 맞으면 접근 표를 준다. */
 async function googleToken(request: Request): Promise<Response> {
   const form = new URLSearchParams(await request.text())
   const [head, claims, signature] = (form.get('assertion') || '').split('.')
@@ -42,7 +40,6 @@ function trigger(body: object | string, secret: string | null = SECRET): Request
 
 type World = { settings: { [id: string]: object }, devices: Array<{ token: string, user_id: string }>, gone: Array<string> }
 
-/** 가짜 DB(프로필 설정·기기 표)와 구글. 지운 주소는 deleted에 모인다. */
 function fakes(world: World) {
   const deleted: Array<string> = []
   const sent: Array<{ token: string, body: string }> = []

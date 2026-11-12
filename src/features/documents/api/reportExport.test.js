@@ -1,5 +1,4 @@
 // @ts-check
-// 9-D: PDF·이미지 방향 고르기 — 안 넘기면 세로(운송비 내역서 그대로), 가로를 넘기면 가로(일상점검표 법정 서식).
 import '../../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { mock, test } from 'node:test'
@@ -17,7 +16,6 @@ const fakeWorker = {
 }
 mock.module('html2pdf.js', { defaultExport: () => fakeWorker })
 
-// jsdom 그림판엔 그리기가 없어 기록용 가짜를 붙인다 — 여백 바탕 크기와 그린 자리를 남긴다.
 /** @type {Array<Array<string|number>>} */
 const drawCalls = []
 /** @type {Array<{ width: number, height: number }>} */
@@ -86,7 +84,6 @@ test('이미지: 그린 그림을 여백만큼 큰 흰 바탕 가운데에 놓�
   ])
 })
 
-// 로드맵 99-B — 운송비 내역서 화면과 공유 창이 같이 쓰는 내보내기·내려받기.
 test('buildReportExportFile: 그리는 동안만 내보내기 모드, 실패해도 뗀다', async () => {
   const element = document.createElement('div')
   /** @type {Array<boolean>} */

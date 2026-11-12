@@ -1,4 +1,3 @@
-// 차주 지출 저장: 모든 칸 넣기·고치기가 끝난 뒤에 지운다 — 중간에 끊겨도 유실 대신 중복.
 import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { afterEach, describe, mock, test } from 'node:test'
@@ -20,10 +19,7 @@ function filterValue(filters, column) {
 /** @type {import('../../domain/expenseTypes.ts').ExpenseItem} */
 const SUB_ITEM = { id: 'f-back', kind: 'fuel', date: '2026-08-03', name: '주유', cost: 4000, vehicleNumber: '22나2222' }
 
-/**
- * 메인 501(08-03 하루 기록 10)·미연동 서브 802. 서브 칸에 SUB_ITEM 줄(srv-sub-back).
- * @param {string} ownerKey @param {{ error: { message: string } } | null} [insertError]
- */
+/** @param {string} ownerKey @param {{ error: { message: string } } | null} [insertError] */
 function seedMoveToMain(ownerKey, insertError = null) {
   resetHandlers()
   Object.assign(handlers, emptyOkHandlers())

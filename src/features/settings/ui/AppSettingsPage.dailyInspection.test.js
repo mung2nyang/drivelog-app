@@ -1,4 +1,3 @@
-// 로드맵 9-B-1 — 앱 설정의 "일상점검표 사용" 스위치: 메인 = 계정 설정, 기사차량 운행일지 설정 = 그 차량 설정, 비회원은 숨김.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

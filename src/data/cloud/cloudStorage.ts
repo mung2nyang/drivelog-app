@@ -1,4 +1,3 @@
-// 서버 저장 행 만들기와 번호 읽기 도우미(차량·거래처·일지 서버 저장이 공유).
 import type { JsonValue } from '../../domain/jsonTypes.ts'
 import type { CarLike } from '../../domain/financeTypes.ts'
 import type { ClientLike } from '../../domain/clientTypes.ts'
@@ -32,10 +31,6 @@ export function buildVehicleRow(userId: string, car: CarLike, index: number) {
   }
 }
 
-/**
- * 행 소유자 = ownerKey, 로그인한 사람의 auth id 아님.
- * 소속기사 세션에서도 거래처는 연동된 차주(ownerKey)의 소유로 저장된다.
- */
 export function buildClientRow(ownerId: string, client: ClientLike, index: number) {
   return {
     user_id: ownerId,

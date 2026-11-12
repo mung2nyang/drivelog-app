@@ -1,9 +1,3 @@
-/* 운행 입력 창 입력칸 세부: 날짜·시간 칸, 숫자 칸, 단위 붙은 칸, 둥근 선택 버튼. 일지 화면의 다른 칸에도 닿는다. */
-
-/* 가운데 정렬 자체는 TemporalInput의 `centered` prop(공용 .is-centered 모디파이어,
-   temporal-input.css) 담당. 여기는 이 화면에만 있는 추가 디테일만
-   — 말줄임표·트리거 gap·아이콘 크기/색·열림 상태 모서리.
-   라벨-입력창 간격(margin-top: 6px)은 위 label + * 규칙이 이미 커버함. */
 .work-log-page .app-temporal-trigger {
   gap: 8px;
   overflow: hidden;
@@ -22,7 +16,6 @@
   color: var(--text-color);
 }
 
-/* 시계/달력 아이콘 삭제 — expense-form.css의 같은 처리와 동일. */
 .work-log-page .app-temporal-icon {
   display: none;
 }
@@ -31,7 +24,6 @@
   border-radius: 8px 8px 0 0;
 }
 
-/* 일지 화면 숫자칸 위아래 스핀 버튼 삭제(화물 톤수·운행 횟수·파렛트 회수). */
 .work-log-page input[type='number']::-webkit-outer-spin-button,
 .work-log-page input[type='number']::-webkit-inner-spin-button {
   margin: 0;
@@ -118,4 +110,3 @@
   border-color: var(--primary-fill);
   color: #fff;
 }
-

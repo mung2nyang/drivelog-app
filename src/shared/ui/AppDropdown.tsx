@@ -7,16 +7,12 @@ type Props = {
   options: Array<{ value: string, label: string }>,
   onChange: (next: string) => void,
   className?: string,
-  placeholder?: string, // 값과 맞는 항목이 없을 때 버튼에 보일 글자(없으면 첫 항목)
-  id?: string, // 단추 id(칸 오류 표시에서 커서를 옮길 때)
-  invalid?: boolean, // 입력이 잘못된 칸 — 단추에 빨간 표시(FieldError.tsx)
-  describedBy?: string, // 칸 아래 오류 문구 id
+  placeholder?: string,
+  id?: string,
+  invalid?: boolean,
+  describedBy?: string,
 }
 
-/**
- * 버튼+목록으로 된 드롭다운.
- * 네이티브 select 색만 바꾸는 방식은 쓰지 않는다.
- */
 export default function AppDropdown({ label, value, options, onChange, className = '', placeholder, id, invalid = false, describedBy }: Props) {
   const listId = useId()
   const rootRef = useRef<HTMLDivElement | null>(null)

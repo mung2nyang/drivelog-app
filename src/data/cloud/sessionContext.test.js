@@ -1,4 +1,3 @@
-// 로드맵 59-I2 — ownerKey·session은 공급자에서 꺼내 쓴다. 공급자 밖은 비회원(guest).
 import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { test } from 'node:test'

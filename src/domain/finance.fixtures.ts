@@ -2,13 +2,10 @@ import type { CarLike, DriverLinkLike, FinanceSettings, WorkDataByLogId } from '
 import type { ClientLike } from './clientTypes.ts'
 import type { ExpenseItem } from './expenseTypes.ts'
 
-// 픽스처는 FinanceSettings로 통하되, 소비 측(finance.test.js 등)이 cars/clients/
-// driverLinks를 옵셔널 체크 없이 바로 쓰므로 그 3개만 필수로 좁힌다.
 export type FixtureSettings = FinanceSettings & { cars: Array<CarLike>, clients: Array<ClientLike>, driverLinks: Array<DriverLinkLike> }
 
 export const MONTH_KEY = '2026-05'
 
-/** receivables-invoices.test.js 부분입금·전액수금 시나리오용 */
 export const FIXTURE_DETAIL_ID_MAY10_MAIN: string = 'trp-fixture-may10-0'
 
 export const FIXTURE_SETTINGS: FixtureSettings = {
@@ -110,7 +107,6 @@ export const FIXTURE_WORK: WorkDataByLogId = {
           linkedLoadIndex: '0',
         },
       ],
-      // 비용 필드는 finance.ts가 안 읽는다 — hydrate가 이 필드를 채운다는 별개 계약(hydrateMerge.test.js 등)의 예시라 남긴다.
       maintItems: [{ name: '오일', fare: '30,000' }],
       fuelItems: [{ type: '주유', cost: '80,000', subsidy: '5,000', liter: 40 }],
       miscItems: [{ name: '통행료', fare: '8,000' }],
@@ -139,7 +135,6 @@ export const FIXTURE_WORK: WorkDataByLogId = {
   },
 }
 
-// getOwnerMonthlyFinanceDetail이 비용을 읽는 정본 expenses — 위 FIXTURE_WORK.main 비용 필드와 같은 날짜·금액이라 합계가 같은지 테스트가 확인한다.
 export const FIXTURE_EXPENSES: Array<ExpenseItem> = [
   { id: 'fx-maint-1', kind: 'maint', date: '2026-05-10', name: '오일', cost: 30000 },
   { id: 'fx-fuel-1', kind: 'fuel', date: '2026-05-10', fuelType: '주유', cost: 80000, subsidy: 5000, liters: 40 },

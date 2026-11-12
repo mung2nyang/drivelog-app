@@ -1,4 +1,3 @@
-// 닫은 알림 id 목록(계정 설정) — 정리·더하기의 순수 규칙. 지난 날짜 "오늘 일지 없음"은 빼고 최대 200개.
 import type { JsonValue } from './jsonTypes.ts'
 import type { FinanceSettings } from './financeTypes.ts'
 
@@ -19,7 +18,6 @@ export function normalizeDismissedNotices(value: JsonValue | undefined): Array<s
   return keepLast(result)
 }
 
-/** 맨 뒤에 붙인다. 지난 날짜 "오늘 일지 없음"은 빼고, 넘치면 오래된 것부터 뺀다. */
 export function addDismissedNotices(settings: FinanceSettings, ids: Array<string>, today: string): FinanceSettings {
   const merged = normalizeDismissedNotices([...normalizeDismissedNotices(settings.dismissedNotices), ...ids])
   const fresh = merged.filter((id) => !id.startsWith(TODAY_PREFIX) || id === `${TODAY_PREFIX}${today}`)

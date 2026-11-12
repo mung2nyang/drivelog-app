@@ -1,4 +1,3 @@
-// 로드맵 17번: 설치 앱 홈에서 뒤로가기 1번 → 안내, 안내 시간 안엔 붙잡기 안 쌓음(한 번 더 = 종료), 지나면 다시 쌓음. 브라우저 탭은 그대로.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 
@@ -25,7 +24,6 @@ function setStandalone(standalone) {
 /** @param {number} ms */
 const wait = (ms) => new Promise((resolve) => { setTimeout(resolve, ms) })
 
-// 정해진 시간 대신 실제로 그 일이 일어날 때까지 기다림(전체 테스트 실행 중 느려져도 안 깨지게).
 /** @param {() => boolean} ok @param {number} [limitMs] */
 async function waitUntil(ok, limitMs = 2000) {
   const end = Date.now() + limitMs

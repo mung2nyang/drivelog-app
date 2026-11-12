@@ -1,4 +1,3 @@
-// 앱 설정의 켜기/끄기 줄 한 개.
 type SwitchRowProps = {
   id: string
   label: string

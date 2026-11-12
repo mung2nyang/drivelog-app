@@ -1,5 +1,4 @@
 // @ts-check
-// 순서: 경로·톤수 → 거래처 → 운송료·부가세 → 계산서·입금일 → 시간·계기판·플랫폼 → 산재보험료·비고.
 import { useState } from 'react'
 import { dueDateForClient, getClientsForLog, getPaymentTermLabel, pinnedClients } from '../../../domain/clients.ts'
 import { parseCurrencyValue, vatOf } from '../../../domain/money.ts'
@@ -26,21 +25,21 @@ import { useSession } from '../../../data/cloud/sessionContext.ts'
 
 /**
  * @param {Object} props
- * @param {CallDetailLike|null} props.value 수정 중인 콜상세(없으면 신규)
- * @param {CallDetailLike|null} props.previousItem 직전 항목(신규일 때만 "동일하게 채우기"에 쓴다)
- * @param {{ loadLoc: string, unloadLoc: string, fare: number|null, client: string }|null} [props.prefill] 새 입력의 처음 값(운비서) — 수정 아님
+ * @param {CallDetailLike|null} props.value
+ * @param {CallDetailLike|null} props.previousItem
+ * @param {{ loadLoc: string, unloadLoc: string, fare: number|null, client: string }|null} [props.prefill]
  * @param {string} props.dateKey
  * @param {Array<ClientLike>} props.clients
  * @param {Settings} props.settings
- * @param {string} [props.logId] 일지 차량 키(`main` 또는 서브 번호). workData용.
- * @param {string} [props.clientScopeKey] 거래처 스코프. 없으면 logId로 폴백.
+ * @param {string} [props.logId]
+ * @param {string} [props.clientScopeKey]
  * @param {Array<string>} [props.locationShortcuts]
  * @param {Array<string>} [props.pinnedLocations]
  * @param {(location: string) => void} [props.onTogglePinnedLocation]
  * @param {(name: string) => void} [props.onRemovePlatform]
  * @param {(item: CallDetailDraft) => void} props.onSave
  * @param {() => void} props.onClose
- * @param {boolean} [props.isEmployedDriver] 기사연동 계정(고용된 기사 본인) 세션이면 산재보험료 칸을 숨긴다 — 자기 명의로 플랫폼 일을 받는 게 아니라서 의미가 없다.
+ * @param {boolean} [props.isEmployedDriver]
  */
 export default function CallDetailForm({
   value, previousItem, prefill = null, dateKey, clients, settings, logId, clientScopeKey, onSave, onClose,
@@ -55,7 +54,6 @@ export default function CallDetailForm({
   const scopedClients = /** @type {Array<ClientLike>} */ (getClientsForLog(clients, scopeKey))
   const shortcuts = /** @type {Array<ClientLike>} */ (pinnedClients(scopedClients))
   const [problem, setProblem] = useState(/** @type {ReturnType<typeof checkCallDetailDraft>} */ (null))
-  // 세 칸 중 하나라도 채우면 표시를 거둔다.
   const shown = problem && checkCallDetailDraft(draft)
   const fareNumber = parseCurrencyValue(draft.fare)
   const vatPreview = !fareNumber

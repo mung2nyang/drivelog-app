@@ -1,10 +1,9 @@
 // @ts-check
-// 콜 상세 출발·마감 계기판 칸과 운행거리. 마감이 출발보다 작으면 마감 칸에 표시만 하고 저장은 막지 않는다.
 import { computeDistanceKm } from '../../../domain/call-details.ts'
 import CurrencyInput from '../../../shared/ui/CurrencyInput.tsx'
 import FieldError, { invalidProps } from '../../../shared/ui/FieldError.tsx'
 
-/** @typedef {typeof import('./callDetailFormHelpers.js').emptyDraft} CallDetailDraft 폼 입력 중 초안(CallDetailForm 상태와 같은 모양) */
+/** @typedef {typeof import('./callDetailFormHelpers.js').emptyDraft} CallDetailDraft */
 
 /**
  * @param {Object} props

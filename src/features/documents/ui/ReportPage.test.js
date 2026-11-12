@@ -1,4 +1,3 @@
-// ReportPage — 위 카드 [전체][세부 내역 (거래처 선택)] 탭(9-C-2), 버튼 카드는 내용 아래.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 
@@ -11,9 +10,7 @@ import { mock, test } from 'node:test'
 
 globalThis.IS_REACT_ACT_ENVIRONMENT = true
 
-// 내려받기 테스트용 가짜 html2pdf — 그리는 동안 pdf-export-mode가 붙어 있었는지 적어 둔다.
 const html2pdfCalls = /** @type {Array<string>} */ ([])
-/** 그리기 시작할 때 날짜 표가 두 줄(내보내기 모양)이었는지 */
 const layoutAtFrom = /** @type {Array<string>} */ ([])
 const canvasFail = { on: false }
 const fakeWorker = {
@@ -29,7 +26,6 @@ const fakeWorker = {
   async get() { return { width: 100, height: 100 } },
 }
 mock.module('html2pdf.js', { defaultExport: () => fakeWorker })
-// jsdom 그림판엔 그리기·PNG 만들기가 없어 가짜를 붙인다 — canvasFail.on이면 PNG를 못 만든다.
 Object.defineProperty(window.HTMLCanvasElement.prototype, 'getContext', {
   configurable: true,
   value: () => ({ fillStyle: '', fillRect() {}, drawImage() {} }),
@@ -153,7 +149,6 @@ test('세부 보기에서도 머리 뒤로가기는 화면 나가기', async () 
   }
 })
 
-// 로드맵 99-B — 내려받기 코드를 공용으로 옮기기 전 동작(알림·파일 이름·내보내기 모드 떼기)을 적어 둔다.
 /** @param {string} ownerKey */
 async function renderForDownload(ownerKey) {
   commitWorkData(ownerKey, {})
@@ -180,9 +175,8 @@ async function renderForDownload(ownerKey) {
   async function saveAs(label) {
     await act(async () => { buttonByText(container, label).click() })
     await act(async () => { buttonByText(container, '저장').click() })
-    // 성공·실패 모두 알림으로 끝나므로, 알림이 뜰 때까지 짧게 여러 번 기다린다(느린 CI에서도 끝까지 기다림).
     for (let i = 0; i < 100 && toasts.length === 0; i += 1) {
-      // eslint-disable-next-line no-await-in-loop -- 폴링 대기라 순차 await가 맞다.
+      // eslint-disable-next-line no-await-in-loop
       await act(async () => { await new Promise((resolve) => { setTimeout(resolve, 20) }) })
     }
     assert.ok(toasts.length > 0, '알림이 안 뜸')
@@ -275,7 +269,7 @@ test('[공유] 파일도 내려받기와 같은 두 줄 날짜 표로 만들고,
     assert.ok(kakaoPdf instanceof window.HTMLButtonElement)
     await act(async () => { kakaoPdf.click() })
     for (let i = 0; i < 100 && !view.toasts.some((m) => m.includes('파일 공유를 할 수 없습니다')); i += 1) {
-      // eslint-disable-next-line no-await-in-loop -- 폴링 대기라 순차 await가 맞다.
+      // eslint-disable-next-line no-await-in-loop
       await act(async () => { await new Promise((resolve) => { setTimeout(resolve, 20) }) })
     }
     assert.ok(view.toasts.some((m) => m.includes('파일 공유를 할 수 없습니다')), '공유 파일을 다 만듦')

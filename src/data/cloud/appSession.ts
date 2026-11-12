@@ -1,4 +1,3 @@
-// 로그인 세션 만들기 — 프로필·연동 기사 여부로 AppSession과 ownerKey를 정한다(앱 시작·초대 코드 입력·연동 해제가 같이 씀).
 import type { JsonValue } from '../../domain/jsonTypes.ts'
 import { supabase } from './supabaseClient.ts'
 import { checkLinkedDriverLink, fetchLinkedDriverLink } from '../sync/driverLinkRpc.ts'
@@ -24,7 +23,6 @@ async function fetchAccountProfile(userId: string): Promise<{ name: string, phon
   }
 }
 
-/** 구글 첫 로그인처럼 내 profiles 행이 아직 없는지. 조회가 실패하면 false(지금처럼 홈으로). */
 export async function isProfileRowMissing(userId: string) {
   try {
     const { data, error } = await supabase.from('profiles').select('id').eq('id', userId).maybeSingle()
@@ -35,17 +33,14 @@ export async function isProfileRowMissing(userId: string) {
   }
 }
 
-/** 프로필 + driver_links linked 행으로 AppSession을 만든다. */
 export async function buildCloudAppSession(userId: string, overrides: { name?: string, phone?: string } = {}): Promise<AppSession> {
   const profile = await fetchAccountProfile(userId)
-  // 3일 지난 해제 요청을 먼저 처리해야 기사가 열 때도 해제된 상태로 시작한다.
   await settleExpiredDriverUnlinks()
   return sessionFromLink(userId, overrides, profile, await fetchLinkedDriverLink(userId))
 }
 
 export const LINK_RETRY_MS = 1000
 
-/** 앱 켤 때만 — 연동 확인이 실패하면 1초 뒤 1번 더, 그래도 실패하면 null(본인 칸으로 들어가지 않게). */
 export async function buildBootSession(userId: string, overrides: { name?: string, phone?: string }, retryMs: number): Promise<AppSession | null> {
   const profile = await fetchAccountProfile(userId)
   await settleExpiredDriverUnlinks()

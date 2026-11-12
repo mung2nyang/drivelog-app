@@ -1,5 +1,4 @@
 // @ts-check
-// ConfirmModal.tsx 패턴의 로컬 확인 창 훅(Context/Provider 없음).
 import { useCallback, useRef, useState } from 'react'
 import ConfirmModal from '../../../shared/ui/ConfirmModal.tsx'
 
@@ -8,7 +7,6 @@ import ConfirmModal from '../../../shared/ui/ConfirmModal.tsx'
 
 export function useConfirm() {
   const [pending, setPending] = useState(/** @type {PendingConfirm|null} */ (null))
-  // 열 때 담고 닫을 때 비운다 — 그리는 중에는 건드리지 않는다.
   const pendingRef = useRef(/** @type {PendingConfirm|null} */ (null))
 
   const confirm = useCallback((/** @type {string} */ message, /** @type {ConfirmOptions} */ options = {}) => new Promise((resolve) => {

@@ -1,4 +1,3 @@
-// 재감사 16차 — oops+quota 실패가 디바운스·unmount 뒤에도 Store·저장소를 작업 전 값으로 두는지 본다.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 
@@ -42,9 +41,7 @@ function committedRecord(ownerKey, dateKey) {
   return main ? (/** @type {Record<string, DayRecordLike>} */ (main))[dateKey] : undefined
 }
 
-/**
- * @typedef {{ first: string, second: Error }} DayLogSaveFailLog
- */
+/** @typedef {{ first: string, second: Error }} DayLogSaveFailLog */
 
 /** @param {string} expectedFirstArg */
 function spyConsoleError(expectedFirstArg) {

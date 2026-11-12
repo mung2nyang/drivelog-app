@@ -1,5 +1,4 @@
 // @ts-check
-// 파일 보내기 공용 창 — 카카오톡(파일+문구 공유)·문자(파일 저장 뒤 문자 앱) × PDF·이미지. 운송비 내역서·일상점검표가 같이 쓴다.
 import './report.css'
 import './report-pdf-export.css'
 import ModalShell from '../../../shared/ui/ModalShell.tsx'
@@ -13,15 +12,15 @@ const formatLabel = (type) => (type === 'image' ? '이미지' : 'PDF')
 
 /**
  * @param {Object} props
- * @param {string} props.title 창 제목
+ * @param {string} props.title
  * @param {string} props.kakaoHint
  * @param {string} props.smsHint
- * @param {string} props.shareTitle 공유 제목
- * @param {string} props.kakaoText 카카오톡에 함께 보낼 문구
- * @param {string} props.unsupportedToast 공유를 못 하는 휴대폰 안내
- * @param {string} props.logLabel 오류 기록 이름
+ * @param {string} props.shareTitle
+ * @param {string} props.kakaoText
+ * @param {string} props.unsupportedToast
+ * @param {string} props.logLabel
  * @param {(type: 'pdf'|'image') => Promise<File>} props.buildFile
- * @param {() => { phone: string, message: string } | string} props.smsTarget 받는 사람·문구, 못 보내면 안내 문구
+ * @param {() => { phone: string, message: string } | string} props.smsTarget
  * @param {() => void} props.onClose
  */
 export default function ShareFileModal({

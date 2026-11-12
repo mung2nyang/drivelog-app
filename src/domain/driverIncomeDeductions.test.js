@@ -10,15 +10,11 @@ import { upsertCar } from './cars.ts'
 
 /** @typedef {import('./financeTypes.ts').CarLike} CarLike */
 
-/** 사업소득자(3.3%): 산재·원천징수 둘 다 켬 */
 const BUSINESS_CAR = /** @type {CarLike} */ ({ number: '12가3456', driverIncomeType: 'business', insuranceOn: true, withholdingOn: true })
-/** 4대보험 근로자: 산재 켬(차주 전액 부담)·원천징수 끔 */
 const EMPLOYEE_CAR = /** @type {CarLike} */ ({ number: '12가3456', driverIncomeType: 'employee', insuranceOn: true, withholdingOn: false })
 
-// 기본값 = 2026년 고시(화물차주 경비 공제율 49.9%, 산재보험료율 1.76%). 근거는 docs/industry-settlement-reference.md.
 describe('getDriverIncomeDeductions — 확정 규칙 예시', () => {
   test('매출제 20%, 운송료 1,000,000 → 정산액 200,000, 사업소득자(둘 다 ON)', () => {
-    // 월보수액 200,000 − 99,800 = 100,200 → 각자 100,200 × 0.88% = 881.76 → 880(10원 미만 버림), 3.3% 6,600
     assert.deepEqual(getDriverIncomeDeductions(BUSINESS_CAR, 200000), {
       settlementAmount: 200000,
       insuranceBase: 100200,
@@ -41,7 +37,6 @@ describe('getDriverIncomeDeductions — 확정 규칙 예시', () => {
   })
 
   test('월급제 2,000,000, 4대보험 근로자(산재 ON·원천징수 OFF) — 산재 전부 차주 몫, 기사 공제 없음', () => {
-    // 1,002,000 × 1.76% = 17,635.2 → 17,630
     const result = getDriverIncomeDeductions(EMPLOYEE_CAR, 2000000)
     assert.equal(result.insuranceTotal, 17630)
     assert.equal(result.insuranceDriverShare, 0)
@@ -68,7 +63,6 @@ describe('getDriverIncomeDeductions — 토글·요율·경계', () => {
   })
 
   test('사업소득자는 기사·차주 몫을 각자 계산해 10원 미만을 버리고, 총액은 두 몫의 합이다', () => {
-    // 정산액 100,001: 월보수액 50,101 → 각자 50,101 × 0.88% = 440.88… → 440
     const result = getDriverIncomeDeductions(BUSINESS_CAR, 100001)
     assert.equal(result.insuranceDriverShare, 440)
     assert.equal(result.insuranceOwnerShare, 440)
@@ -76,7 +70,6 @@ describe('getDriverIncomeDeductions — 토글·요율·경계', () => {
   })
 
   test('근로복지공단 계산 방식과 같다 — 사업소득 9,000,000원, 경비 30.3%면 월보수액 6,273,000원, 각자 55,200원', () => {
-    // 6,273,000 × 1.76% ÷ 2 = 55,202.4 → 55,200
     const result = getDriverIncomeDeductions({ ...BUSINESS_CAR, expenseRate: '30.3' }, 9000000)
     assert.equal(result.insuranceBase, 6273000)
     assert.equal(result.insuranceDriverShare, 55200)
@@ -103,7 +96,6 @@ describe('getDriverIncomeDeductions — 토글·요율·경계', () => {
   })
 
   test('10원 미만은 버리되 소수 요율 곱셈 오차로 10원 어긋나지 않는다(90,000원의 0.7%는 정확히 630원)', () => {
-    // 90000 * 0.7 / 100 은 부동소수점으로 629.99999…가 되어 그대로 버림하면 620원이 된다.
     const result = getDriverIncomeDeductions({ ...EMPLOYEE_CAR, expenseRate: '0', insuranceRate: '0.7' }, 90000)
     assert.equal(result.insuranceTotal, 630)
   })

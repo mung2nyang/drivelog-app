@@ -1,5 +1,4 @@
 // @ts-check
-// 로드맵 24-I-2 — 운비서 날씨: 범위 밖은 바로 문장, 지역 이름 또는 휴대폰 위치(격자 번호만)로 서버, 다섯 가지 답 문장.
 import assert from 'node:assert/strict'
 import { afterEach, beforeEach, mock, test } from 'node:test'
 import { FunctionsFetchError, FunctionsHttpError } from '@supabase/supabase-js'

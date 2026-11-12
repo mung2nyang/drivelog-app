@@ -1,4 +1,3 @@
-// 문의 카드 한 장 + 답변 쓰기·고치기 칸.
 import { useLayoutEffect, useRef, useState } from 'react'
 import { requestAdminAnswerSave } from '../api/adminInquiries.ts'
 import type { AdminInquiry } from '../api/adminInquiries.ts'
@@ -8,7 +7,6 @@ import AnswerTemplateButtons from './AnswerTemplateButtons.tsx'
 const ANSWER_MAX = 2000
 const TOO_LONG_TOAST = '답변은 2000자까지 쓸 수 있습니다.'
 
-// 문구는 글 끝에 붙인다(글이 있으면 줄바꿈). 2000자를 넘으면 넣지 않는다.
 function appendTemplate(draft: string, text: string): string | null {
   const next = !draft ? text : draft.endsWith('\n') ? `${draft}${text}` : `${draft}\n${text}`
   return next.length > ANSWER_MAX ? null : next
@@ -37,7 +35,6 @@ function AnswerEditor({ inquiry, onClose, onSaved, onReload }: EditorProps) {
   const areaRef = useRef<HTMLTextAreaElement>(null)
   const moveCursorRef = useRef(false)
 
-  // 문구를 넣은 뒤 글 칸에 커서를 맨 끝으로 둔다.
   useLayoutEffect(() => {
     const area = areaRef.current
     if (!moveCursorRef.current || !area) return

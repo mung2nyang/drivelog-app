@@ -1,5 +1,4 @@
 // @ts-check
-// 금액 칸 — 칸 안엔 친 글자(소수점 포함), 폼엔 반올림한 쉼표 정수만(로드맵 43).
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 
@@ -103,4 +102,3 @@ test('clearable이면 X 버튼 칸으로 그리고, X를 누르면 비워진다(
     container.remove()
   }
 })
-

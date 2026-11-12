@@ -1,4 +1,3 @@
-// 기사차량별 사업자정보·정산 계좌 — 입력폼 값 ↔ car.businessInfo / car.personalInfo 변환(순수).
 import type { JsonValue } from './jsonTypes.ts'
 import type { CarLike } from './financeTypes.ts'
 
@@ -20,7 +19,6 @@ function text(value: JsonValue | undefined) {
   return typeof value === 'string' ? value.trim() : ''
 }
 
-/** 차량 → 입력폼 초기값. businessInfo가 없거나 sameAsOwner면 "내 사업자 정보와 동일". */
 export function carToBusinessForm(car: CarLike | null | undefined): CarBusinessForm {
   const biz = car?.businessInfo
   const person = car?.personalInfo
@@ -40,12 +38,6 @@ export function carToBusinessForm(car: CarLike | null | undefined): CarBusinessF
   }
 }
 
-/**
- * 입력폼 → 차량. 동일 스위치 켜짐이면 businessInfo는 값을 복사하지 않고 플래그만 저장하고,
- * personalInfo의 사업자 6칸(기사 매입 계산서 상대방 정보)과 계좌 3칸은 비운다(차주 것을 따라감).
- * 꺼짐이면 입력값을 businessInfo에 저장하고 대표자→name·사업자번호·주소·업태·종목·이메일과
- * 계좌(그 사업자 명의)를 personalInfo에 복사한다. personalInfo의 그 밖 기존 값(driverName·phone 등)은 보존한다.
- */
 export function applyBusinessForm(car: CarLike, form: CarBusinessForm): CarLike {
   const same = !!form.sameAsOwner
   const pick = (value: string) => (same ? '' : text(value))

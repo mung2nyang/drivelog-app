@@ -1,9 +1,7 @@
-// 로드맵 108 — 운비서 버튼 위치: 놓은 곳 → 가까운 가장자리·높이 한계, 저장 값이 깨졌으면 기본 자리.
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { snapDockPosition, toDockPosition } from './useDockPosition.ts'
 
-// 앱 폭 480px(가운데 240), 자리 틀 아래 끝 700px — 기본 동그라미 아래 끝은 692px(틈 8px).
 const dock = { left: 0, right: 480, top: 640, bottom: 700 }
 /** @param {number} left @param {number} bottom */
 const fab = (left, bottom) => ({ left, right: left + 52, top: bottom - 52, bottom })

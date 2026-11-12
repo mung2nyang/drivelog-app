@@ -1,4 +1,3 @@
-// 첫 설정 마지막 단계 저장 중에 [완료하기]·[건너뛰기]를 또 눌러도 저장은 한 번만.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

@@ -1,10 +1,4 @@
 // @ts-check
-// 서류 발급: 탭 [세금계산서][운송비 내역서][일상점검표]. 메인·기사차량(연동 포함)·연동 기사 앱 공통(/app/report, /app/logs/:번호/report).
-// [세금계산서]는 그 차량 계산서만, 연동 기사 본인 앱엔 없음(차주가 발행하는 서류).
-// 처음 탭: [세금계산서] → 없으면 [일상점검표](보일 때) → [운송비 내역서].
-// 보는 달은 여기서 들고 두 탭이 같이 쓴다. 서류 탭 줄은 각 탭 위 카드 안 달 이동 아래에 들어간다.
-// 탭·보는 달은 주소(`?tab=&y=&m=`)에 둔다 — 앱이 정리됐다 다시 열려도 보던 탭·달이 나온다. 바꿀 때는 주소를 바꿔 끼워 뒤로가기 기록은 늘지 않는다.
-// [일상점검표] 탭은 그 차량 "일상점검표 사용"이 켜져 있거나 서버에 점검표가 있을 때만 — 없으면 탭 줄 없이 운송비 내역서만.
 import { useEffect, useMemo, useState } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
 import { searchParamsForViewDate, viewDateFromSearchParams } from '../../../domain/calendarViewDate.ts'
@@ -23,7 +17,7 @@ import { useSession } from '../../../data/cloud/sessionContext.ts'
  * @param {Object} props
  * @param {() => void} [props.onBack]
  * @param {(() => void)} [props.onOpenMenu]
- * @param {boolean} [props.isEmployedDriver] 연동 기사 본인 앱이면 세금계산서 탭 숨김
+ * @param {boolean} [props.isEmployedDriver]
  */
 export default function DocumentIssuePage({ onBack, onOpenMenu, isEmployedDriver = false }) {
   const { ownerKey } = useSession()

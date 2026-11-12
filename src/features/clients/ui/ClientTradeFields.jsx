@@ -7,9 +7,8 @@ import FieldError, { invalidProps } from '../../../shared/ui/FieldError.tsx'
  * @param {Object} props
  * @param {import('../../../domain/clientTypes.ts').ClientDraft} props.draft
  * @param {import('react').Dispatch<import('react').SetStateAction<import('../../../domain/clientTypes.ts').ClientDraft>>} props.setDraft
- * @param {import('../../../shared/ui/FieldError.tsx').FieldProblem|null} [props.problem] 저장 전 검사에서 걸린 칸
+ * @param {import('../../../shared/ui/FieldError.tsx').FieldProblem|null} [props.problem]
  */
-// 고정노선 연동·파렛트 단가는 앱 설정 "거래처 연결"(FixedRouteClientLink)로 옮겼다 — 저장된 값은 draft로 보존된다.
 export default function ClientTradeFields({ draft, setDraft, problem = null }) {
   const commInvalid = invalidProps(problem, 'commValue', 'clientCommValue')
   /** @param {'percent'|'direct'} nextType */

@@ -4,8 +4,6 @@ import { upsertDriver } from './drivers.ts'
 import { buildClientRow, buildVehicleRow } from '../data/cloud/cloudStorage.ts'
 import { deleteClientFromSupabase, deleteVehicleFromSupabase } from '../data/sync/directMutations.ts'
 
-// 2026-09-01 결정: 기사 할당 "기간 겹침" 계산 차단(findOverlappingDriverLink 등)은
-// 요구한 적 없는 코드라 제거했다. 남긴 규칙은 "같은 차량번호는 한 기사에게만"(기간 무관).
 describe('기사 할당 — 같은 차량번호는 한 기사에게만', () => {
   const base = { name: '박기사', phone: '010-3333-4444', inviteCode: 'B2C3D4E5F6', vehicleNumber: '서울12가3456', startDate: '2026-05-20', endDate: '' }
   const cars = [{ type: 'sub', number: '서울12가3456' }]
@@ -14,7 +12,6 @@ describe('기사 할당 — 같은 차량번호는 한 기사에게만', () => {
     const items = [
       { id: 'a', name: '김기사', phone: '010-1111-2222', inviteCode: 'A2A3A4A5A6', vehicleNumber: '서울12가3456', startDate: '2026-05-01', endDate: '2026-05-31', status: 'pending' },
     ]
-    // 기존 할당(5/1~5/31)과 겹치지 않는 6월 기간이어도 같은 차량이면 거절.
     const result = upsertDriver(items, { ...base, startDate: '2026-07-01', endDate: '2026-07-31' }, null, cars)
     assert.equal(result.error, '이미 다른 기사에게 배정된 차량입니다.')
   })
@@ -27,10 +24,6 @@ describe('기사 할당 — 같은 차량번호는 한 기사에게만', () => {
     assert.equal(result.error, undefined)
     assert.equal(result.items.length, 2)
   })
-
-  // 수정 시 자기 자신 제외(item.id !== editingId)는 upsertDriver 내부 가드로 처리한다.
-  // domain/drivers.js가 @ts-check 대상이 아니라(editingId 기본값 null이 타입을 좁힘)
-  // 문자열 editingId를 타입 우회 없이 넘길 수 없어 여기서는 생성 케이스만 검증한다.
 
   test('메인 차량은 할당할 수 없다', () => {
     const result = upsertDriver([], {

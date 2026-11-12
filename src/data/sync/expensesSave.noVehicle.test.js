@@ -1,4 +1,3 @@
-// 서버에 차량이 없는 로그인 계정: 지출 [저장]은 화면만 바꾸지 않고 알림 ④를 돌려준다.
 import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { afterEach, describe, mock, test } from 'node:test'

@@ -1,4 +1,3 @@
-// 로드맵 24-K-2 — 운비서가 주소 상태로 넘긴 휴무를 그날 일지에 한 번 적용: 휴무 단추와 같은 확인(콜 있음)·같은 저장(고정 0)·알림.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

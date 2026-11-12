@@ -1,4 +1,3 @@
-// 달력·매출 보던 달 기억: 화면별·계정별, 앱을 다시 켜면(기억 비움) 없음.
 import assert from 'node:assert/strict'
 import { beforeEach, test } from 'node:test'
 import { forgetViewMonths, recallViewMonth, rememberViewMonth } from './viewMonthMemory.ts'

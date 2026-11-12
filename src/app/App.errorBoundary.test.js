@@ -1,4 +1,3 @@
-// 로드맵 55 — 로그인 화면을 그리다 오류가 나도 하얀 빈 화면이 아니라 "화면을 불러오지 못했습니다" 안내가 뜬다.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 
@@ -17,7 +16,6 @@ mock.module('../data/cloud/supabaseClient.ts', {
     ensureProfileRow: async () => {},
   },
 })
-// 로그인 화면이 그릴 때 쓰는 배너 그림 주소가 글자로 바뀌는 순간 오류를 내게 바꿔치기한다(그리는 중 오류).
 mock.module('../shared/utils/assetPath.ts', {
   namedExports: {
     assetPath: () => ({ [Symbol.toPrimitive]() { throw new Error('로그인 화면 오류(시험)') } }),

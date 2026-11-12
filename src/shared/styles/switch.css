@@ -1,5 +1,3 @@
-/* 켜고 끄는 스위치(앱 전체). 키보드 표시는 controls-common.css. */
-
 .switch { position: relative; display: inline-block; width: 48px; height: 26px; flex-shrink: 0; }
 .switch input { opacity: 0; width: 0; height: 0; }
 .slider {

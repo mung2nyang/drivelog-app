@@ -6,7 +6,6 @@ import {
 import { CAR_FUEL_KINDS } from '../../domain/cars.ts'
 import type { JsonValue } from '../../domain/jsonTypes.ts'
 
-// isPlainObject는 공용 조각(domain/schemaParts.ts) 것 — 이 파일에서 가져다 쓰던 곳이 많아 그대로 내보낸다.
 export { isPlainObject }
 
 function isFiniteNumber(value: JsonValue) {
@@ -22,18 +21,11 @@ function hasOnlyKeys(value: Record<string, JsonValue>, allowed: ReadonlyArray<st
   return Object.keys(value).every((key) => set.has(key))
 }
 
-// personalInfo는 phone/bank/account/accountHolder도 쓴다 — 앞의 7개는 옛 저장값 호환으로 남긴다.
 const PERSONAL_INFO_KEYS = [
   'driverName', 'bizNumber', 'name', 'address', 'bizType', 'bizItem', 'email',
   'phone', 'bank', 'account', 'accountHolder',
 ]
 const BUSINESS_INFO_KEYS = ['sameAsOwner', 'name', 'bizNumber', 'representative', 'address', 'bizType', 'bizItem', 'email']
-/**
- * hydrate 정규화(hydrateMergeCars.ts)가 재사용한다 — personalInfo/businessInfo raw
- * 백업이 정본 키셋 밖 필드나 잘못된 타입을 가지면(전체) 이 함수가 false를 돌려주고,
- * 그 차량은 해당 중첩 필드만 생략한 채 나머지 필드는 정상 정규화된다(검증기 자체는
- * 그대로 두고 producer만 이 함수로 걸러 쓴다 — 새 검증 로직을 추가하지 않는다).
- */
 export function isStringRecord(value: JsonValue, keys: ReadonlyArray<string>) {
   if (!isPlainObject(value) || !hasOnlyKeys(value, keys)) return false
   return Object.entries(value).every(([key, field]) => (key === 'sameAsOwner' ? typeof field === 'boolean' : typeof field === 'string'))
@@ -41,11 +33,9 @@ export function isStringRecord(value: JsonValue, keys: ReadonlyArray<string>) {
 
 export { PERSONAL_INFO_KEYS, BUSINESS_INFO_KEYS }
 
-// 칸 이름 → 그 칸이 있을 때의 모양(Valibot, 공용 조각은 domain/schemaParts.ts). 목록 밖 칸·값이 비어 있는 칸은 거부.
 const CAR = v.strictObject({
   number: str,
   id: opt(str), supabaseId: opt(stringOrNumber), tonnage: opt(str), type: opt(v.picklist(['main', 'sub'])), fuelKind: opt(v.picklist(CAR_FUEL_KINDS)),
-  // settlementMode: 옛 "계산서 처리 방식"(없앰) — 옛 저장분 읽기용.
   settlementMode: opt(v.picklist(CAR_SETTLEMENT_MODES)),
   commEnabled: opt(bool), commType: opt(v.picklist(COMM_TYPES)), commission: opt(stringOrNumber),
   insuranceOn: opt(bool), withholdingOn: opt(bool), logEnabled: opt(bool), driverLinkEnabled: opt(bool), shareRevenueWithOwner: opt(bool), archived: opt(bool),

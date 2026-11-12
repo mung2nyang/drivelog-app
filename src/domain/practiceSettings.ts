@@ -1,5 +1,3 @@
-// 앱 설정 순수 계산부. 저장과 화면 테마 적용(applyTheme)은 data/sync/settingsSave.ts.
-// 프리셋(운행 횟수 버튼·노선 이름표) 함수는 practicePresets.ts — 여기서 다시 내보낸다.
 import { normalizePinnedLocations } from './locationShortcuts.ts'
 import { normalizeFixedRoutePresets, normalizeRunCountPresets } from './practicePresets.ts'
 import { normalizePlatformPresets } from './platformPresets.ts'
@@ -9,10 +7,8 @@ import type { FinanceSettings, SubCarPracticeSettings } from './financeTypes.ts'
 
 export * from './practicePresets.ts'
 
-/** 알림 화면에서 끌 수 있는 종류(features/notifications/api/notifications.js kind와 같은 이름). */
 export const NOTIF_KINDS = ['overdue', 'today', 'driverInvite', 'backup', 'inquiryAnswer', 'adminInquiry']
 
-/** 끈 알림 종류 — 아는 이름만, 겹침 없이. */
 function normalizeNotifOff(raw: JsonValue | undefined): Array<string> {
   if (!Array.isArray(raw)) return []
   return NOTIF_KINDS.filter((kind) => raw.includes(kind))
@@ -49,7 +45,6 @@ function asBool(value: JsonValue | undefined, fallback: boolean): boolean {
   return fallback
 }
 
-// 문자 문구는 바꾼 것만 둔다(없으면 기본 문구) — 모양이 틀리면 칸을 만들지 않는다.
 function pickMessageTemplates(raw: JsonValue | undefined): { messageTemplates?: [string, string, string] } {
   if (!Array.isArray(raw) || raw.length !== 3 || !raw.every((item) => typeof item === 'string' && item.trim())) return {}
   return { messageTemplates: [String(raw[0]).trim(), String(raw[1]).trim(), String(raw[2]).trim()] }
@@ -97,10 +92,6 @@ export function normalizeSettings(raw: FinanceSettings = {}): FinanceSettings {
   }
 }
 
-/**
- * 서브차량 전용 설정(세부입력 5종+달력 표시방식만). `subFixedOn`
- * 꺼지면 메인과 동일 규칙으로 `callDetail` 강제 켬(고정노선은 여전히 공용).
- */
 export function normalizeCarSettings(raw: Partial<SubCarPracticeSettings> = {}, subFixedOn = true): SubCarPracticeSettings {
   return {
     inputMode: raw.inputMode === 'fare' ? 'fare' : 'count',

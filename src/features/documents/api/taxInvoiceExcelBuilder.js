@@ -1,6 +1,5 @@
 // @ts-check
 /** @typedef {import('../../../domain/jsonTypes.ts').JsonValue} JsonValue */
-// 세금계산서 엑셀 양식 — 셀 주소·병합이 한 덩어리라 §6 응집도 우선(~250+ 허용).
 import { getTaxInvoiceFlowMeta, getTaxInvoiceSupplierBiz } from '../../../domain/financeTaxInvoiceEntries.ts'
 
 /** @typedef {import('../../../domain/financeTaxInvoiceEntries.ts').InvoiceLike} InvoiceLike */
@@ -33,7 +32,6 @@ export function buildTaxInvoiceWorkbook(ExcelJS, item, settings, profile, monthK
     bizItem: item.clientBizItem || '',
     email: item.clientEmail || '',
   }
-  // 매출 계산서만: 공급자 = 차주(또는 그 차량 사업자), 공급받는 자 = 거래처.
   const supplier = companyParty
   const buyer = otherParty
   const issueDate = item.issueDate || `${monthKey}-01`

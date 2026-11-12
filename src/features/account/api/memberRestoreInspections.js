@@ -1,7 +1,4 @@
 // @ts-check
-// 회원 데이터 불러오기: 파일의 일상점검표 중 서버에 없는 날짜만 더한다.
-// 점검표는 Store에 없고 저장이 "차량+날짜 덮어쓰기"라, 고르기 전에 서버에 있는 날짜를 먼저 읽는다.
-// 점검자 이름·조치 기록은 파일 그대로(그날 점검한 사람 기록), 점검 항목은 기존 정리 규칙으로 거른다.
 import { readOwnerCars } from '../../../data/store/ownerDataHooks.ts'
 import { isPlainObject } from '../../../data/store/persistDomainRecords.ts'
 import { isValidCalendarDateKey } from '../../../domain/dateKey.ts'
@@ -19,7 +16,6 @@ const FETCH_FAIL = '점검표를 확인하지 못했습니다. 잠시 후 다시
 const SAVE_FAIL = SERVER_SAVE_FAIL
 
 /**
- * 파일의 점검표를 차량 칸(main·서브 번호) → 날짜별로 꺼낸다. 칸이 없으면 빈 값, 하나라도 틀리면 null.
  * @param {JsonValue} parsed
  * @returns {Record<string, Record<string, DailyInspection>>|null}
  */
@@ -54,7 +50,6 @@ function vehicleIdFor(ownerKey, plate) {
 }
 
 /**
- * 서버에 없는 날짜의 점검표만 고른다(저장 안 함).
  * @param {string} ownerKey @param {JsonValue} parsed
  * @returns {Promise<{ ok: true, picks: InspectionPick[], skipped: number } | { ok: false, error: string }>}
  */
@@ -91,7 +86,6 @@ export async function pickInspections(ownerKey, parsed) {
 }
 
 /**
- * 고른 점검표를 날짜마다 저장한다. 하나라도 실패하면 거기서 멈춘다.
  * @param {InspectionPick[]} picks
  * @returns {Promise<{ ok: boolean, count: number, toast: string|null }>}
  */

@@ -36,7 +36,6 @@ describe('Step 9 ② 1차: 계정별 화면 권한 정리 UI 검증', () => {
     const root = createRoot(container)
 
     try {
-      // 1) 소속 기사 세션
       await act(async () => {
         root.render(
           withSession(React.createElement(MyPage, {
@@ -48,7 +47,6 @@ describe('Step 9 ② 1차: 계정별 화면 권한 정리 UI 검증', () => {
       assert.equal(container.querySelector('.mypage-role-pill'), null)
       assert.equal(container.textContent?.includes('소속 기사'), false)
 
-      // 2) 차주 세션
       await act(async () => {
         root.render(
           withSession(React.createElement(MyPage, {
@@ -90,11 +88,9 @@ describe('Step 9 ② 1차: 계정별 화면 권한 정리 UI 검증', () => {
       const buttons = Array.from(container.querySelectorAll('button'))
       const buttonTexts = buttons.map((b) => b.textContent?.trim() || '')
 
-      // 1) "기사 연동 관리" 텍스트 버튼이 없어야 함
       const hasDriverConnectionBtn = buttonTexts.some((txt) => txt === '기사 연동 관리' || txt.includes('기사 연동 관리'))
       assert.equal(hasDriverConnectionBtn, false, 'SideMenu에 기사 연동 관리 버튼이 없어야 한다')
 
-      // 2) 동적 연동 기사 목록("이소속 기사 관리")은 유지되어야 함
       const linkedDriverBtn = buttons.find((b) => b.textContent?.includes('이소속 기사 관리'))
       assert.ok(linkedDriverBtn, '동적 연동 기사 목록 버튼이 존재해야 한다')
 
@@ -118,7 +114,6 @@ describe('Step 9 ② 1차: 계정별 화면 권한 정리 UI 검증', () => {
     const root = createRoot(container)
 
     try {
-      // 1) 소속기사 세션
       await act(async () => {
         root.render(
           React.createElement(MemoryRouter, null,
@@ -135,7 +130,6 @@ describe('Step 9 ② 1차: 계정별 화면 권한 정리 UI 검증', () => {
       assert.equal(buttons.includes('수정'), false)
       assert.equal(buttons.includes('삭제'), false)
 
-      // 2) 차주 세션
       await act(async () => {
         root.render(
           React.createElement(MemoryRouter, null,

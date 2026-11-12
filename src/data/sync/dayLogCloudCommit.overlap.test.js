@@ -1,4 +1,3 @@
-// 일지 저장이 겹쳐도 먼저 끝난 다른 날짜 저장이 화면(Store)에서 되돌아가지 않는다.
 import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { mock, test } from 'node:test'
@@ -40,8 +39,8 @@ function startSave(ownerKey, dateKey, fixedCount) {
 test('A4: 다른 날짜 저장 두 개가 겹쳐도 둘 다 화면(Store)에 남는다', async () => {
   const ownerKey = 'a4-owner'
   beginOwner(ownerKey, { '2026-10-01': 40, '2026-10-02': 5 })
-  const first = startSave(ownerKey, '2026-10-01', 3) // 먼저 시작, 늦게 끝남
-  const second = startSave(ownerKey, '2026-10-02', 5) // 나중 시작, 먼저 끝남
+  const first = startSave(ownerKey, '2026-10-01', 3)
+  const second = startSave(ownerKey, '2026-10-02', 5)
   const results = await Promise.all([first, second])
   assert.deepEqual(results.map((r) => r.cloud && 'ok' in r && r.ok), [true, true], '둘 다 서버 저장 성공')
   const work = readOwnerLogWorkData(ownerKey, 'main')
@@ -59,7 +58,6 @@ test('A4: 여러 날짜 저장 중 먼저 끝난 다른 날짜 저장도 화면(
     '2026-10-01': { isOff: false, fixedCount: 1, palletCount: 0, callDetails: [], fixedRouteCounts: {} },
     '2026-10-02': { isOff: false, fixedCount: 2, palletCount: 0, callDetails: [], fixedRouteCounts: {} },
   }
-  // 미수금 일괄 입금처럼 두 날짜를 차례로 저장하는 사이에 일지 화면이 10월 3일을 저장한다.
   const many = commitMainDayLogMapToCloud({ ownerKey, logId: 'main', dateKeys: ['2026-10-01', '2026-10-02'], previousData: latest, nextData: nextMany })
   const one = startSave(ownerKey, '2026-10-03', 7)
   const [manyResult] = await Promise.all([many, one])

@@ -1,4 +1,3 @@
-/* 기사 관리 화면 하단 "사업자·정산 계좌 정보" 카드(CarBusinessInfoSection 전용). */
 .car-biz-card {
   display: flex;
   flex-direction: column;

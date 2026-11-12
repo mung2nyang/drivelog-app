@@ -22,7 +22,6 @@ import {
 import { shouldCommitDayLogToCloud } from './mainDayLogRouting.ts'
 import { SESSION_CHANGED_FAIL } from '../../shared/utils/failureMessages.ts'
 import type { DayRecordLike } from '../../domain/day-record.ts'
-// WorkDataByLogId의 정본은 domain/financeTypes.ts다 — alias만 한다(중복 선언 금지).
 import type { FinanceSettings, WorkDataByLogId } from '../../domain/financeTypes.ts'
 
 export function loadWorkDataByLogId(ownerKey = 'guest'): WorkDataByLogId {
@@ -31,7 +30,6 @@ export function loadWorkDataByLogId(ownerKey = 'guest'): WorkDataByLogId {
 
 const SESSION_CHANGED_TOAST = SESSION_CHANGED_FAIL
 
-/** 한 차량 일지의 바뀐 날짜를 서버(있으면) 또는 기기에 저장한다. */
 async function persistLogChange(ownerKey: string, logId: string, previous: Record<string, DayRecordLike>, next: Record<string, DayRecordLike>, dateKeys: string[]): Promise<{ ok: boolean, applied: number, toast: string | null }> {
   if (shouldCommitDayLogToCloud(ownerKey, logId)) {
     if (dateKeys.length === 1) {
@@ -47,9 +45,7 @@ async function persistLogChange(ownerKey: string, logId: string, previous: Recor
   return { ok: true, applied: dateKeys.length, toast: null }
 }
 
-/** 미수 화면 쓰기 창구. */
 export async function persistReceivableWorkDataChange(ownerKey: string, nextWorkDataByLogId: WorkDataByLogId): Promise<{ ok: boolean, partial: boolean, toast: string | null }> {
-  // 차량마다(메인 → 기사 차량) 서버에 있으면 서버 저장, 없으면 기기 저장. 실패한 차량에서 멈춘다.
   const logIds = ['main', ...Object.keys(nextWorkDataByLogId).filter((logId) => logId !== 'main')]
   const changes = logIds.flatMap((logId) => {
     const next = nextWorkDataByLogId[logId]

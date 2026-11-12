@@ -1,4 +1,3 @@
-// 플랫폼 칩 목록: 기본 6개, 정리(빈칸·겹침·9개), 맨 뒤에 더하기, 가득 차면 안내, 기본 칩도 지우기.
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import {

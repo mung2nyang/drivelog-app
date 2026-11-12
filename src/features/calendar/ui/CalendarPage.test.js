@@ -1,14 +1,8 @@
-// 재감사 3차(FAIL 지적 3번) — "연결 거래처가 있는 상태에서 달력 단가 편집 →
-// Store/localStorage → 달력 합계 → 매출 합계가 모두 새 값으로 바뀌는 컴포넌트
-// 테스트"를 추가한다. App.test.js와 같은 jsxLoaderHook 인프라를 재사용하지만, 이
-// 화면 하나만 가볍게 MemoryRouter로 렌더한다(전체 App 부트가 필요 없다).
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 
 register(pathToFileURL('./src/testSupport/jsxLoaderHook.mjs').href, import.meta.url)
 
-// app-store.js가 (다른 모듈을 거쳐) 실제 supabaseClient.js를 불러 Node
-// 테스트 프로세스가 매달리는 문제를 막는다 — app-store.test.js와 같은 이유.
 import '../../../testSupport/stubSupabaseClient.ts'
 import '../../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
@@ -349,7 +343,6 @@ test('슬라이스 B: 서브 달력은 해당 차량 workData·subPaymentOn·수
     assert.ok(container.querySelector('.sub-car-log-banner'), '서브 배너가 있어야 한다')
     assert.ok(container.textContent.includes('9999 운행일지'))
     assert.equal(container.querySelector('.summary-client-commission-row'), null, '이 픽스처엔 수수료 없음')
-    // 고정 2×20,000 + 콜 50,000 = 거래처 버킷 90,000 (구조 통일 후 한 행으로 합산)
     assert.ok(container.textContent.includes('서브거래처 기본 운송료'))
     assert.ok(container.textContent.includes('90,000원'), '서브 고정+콜 합산')
     assert.equal(container.textContent.includes('180,000원'), false, '메인 fixedCount 9는 안 보임')
@@ -441,8 +434,6 @@ test('메인 fixedOn:false + 고정횟수 → 달력 고정운임이 0이 아님
   }
 })
 
-// 미연동 고정노선 슬라이스(2026-09-19) — 서브차량 달력이 그 차량 스코프 고정노선을 먼저 쓰고,
-// 없으면 차주 고정노선으로 fallback한다.
 /** @param {string} ownerKey @param {Array<import('../../../domain/clientTypes.ts').ClientLike>} clients */
 async function renderSubLogCalendar(ownerKey, clients) {
   const plate = '서울99가9999'
@@ -493,8 +484,6 @@ test('서브 달력: 스코프 고정노선이 없으면 차주 고정노선 단
   }
 })
 
-// 스코프 수정 묶음 1(2026-09-21) — 연동기사 본인 세션은 일지가 main인데 거래처는 배정 차량 스코프만 내려온다.
-// 달력이 그 스코프(clientScopeKey)로 고정노선 단가를 찾아야 한다.
 test('연동기사 본인 달력: clientScopeKey로 배정 차량 스코프 고정노선 단가를 쓴다(안 넘기면 못 찾음)', async () => {
   const plate = '서울99가9999'
   /** @param {string} ownerKey @param {string|undefined} clientScopeKey */
@@ -555,7 +544,6 @@ test('새 홈 3단계 — 달력 탭 위쪽은 홈과 같은 한 줄(작은 로�
   }
 })
 
-// 로드맵 109-A — 금액 입력 계정 달력 칸에 파렛트, 한 달 칸 합 = 달 정산 운송료 + 파렛트.
 test('파렛트 켠 고정 노선 거래처: 하루 칸에 파렛트 금액, 칸 합 = 달 정산 운송료 + 파렛트', async () => {
   const ownerKey = 'test-calendar-pallet-day'
   const client = { id: 'client-pl', companyName: '파렛트거래처', fixedRouteLinked: true, fixedUnitPrice: 100000, palletOn: true, palletPrice: 3000 }

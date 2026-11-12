@@ -1,4 +1,3 @@
-// 설정에 문자 문구 칸(messageTemplates·reportShareMessage)이 들어가도 이 휴대폰 설정 읽기가 형식 오류가 되지 않아야 한다.
 import '../../testSupport/stubSupabaseClient.ts'
 import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'

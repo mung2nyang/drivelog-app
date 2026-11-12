@@ -1,5 +1,4 @@
 // @ts-check
-// 주소 상태로 넘어온 운비서 운행·지출·고정 노선·거래처(거래처는 거래처 화면이 읽음) — 칸마다 모양을 보고, 이상한 칸은 빈 칸으로.
 import { FUEL_TYPES, MAINT_CATEGORIES, MISC_CATEGORIES } from '../../domain/expenses.ts'
 
 const TEXT_MAX = 100
@@ -38,7 +37,7 @@ function rowOf(state, key) {
 }
 
 /**
- * @param {object|null|undefined} state location.state
+ * @param {object|null|undefined} state
  * @returns {AssistantCall|null}
  */
 export function readAssistantCall(state) {
@@ -49,14 +48,12 @@ export function readAssistantCall(state) {
     unloadLoc: textOf(row, 'unloadLoc'),
     fare: wonOf(row, 'fare'),
     client: textOf(row, 'client'),
-    // 휴무를 끄라는 표시 — 참일 때만 참.
     cancelOff: Reflect.get(row, 'cancelOff') === true,
   }
 }
 
 /**
- * 분류는 그 종류의 앱 목록 안만(주유는 분류 없음), 주유 종류는 주유일 때만.
- * @param {object|null|undefined} state location.state
+ * @param {object|null|undefined} state
  * @returns {AssistantExpense|null}
  */
 export function readAssistantExpense(state) {
@@ -78,8 +75,7 @@ export function readAssistantExpense(state) {
 }
 
 /**
- * 횟수가 1~20 정수가 아니면 통째로 버린다(더할 수가 없음).
- * @param {object|null|undefined} state location.state
+ * @param {object|null|undefined} state
  * @returns {AssistantFixed|null}
  */
 export function readAssistantFixed(state) {
@@ -90,8 +86,7 @@ export function readAssistantFixed(state) {
 }
 
 /**
- * 휴무로 할지(참)·취소할지(거짓) — 참·거짓이 아니면 버린다.
- * @param {object|null|undefined} state location.state
+ * @param {object|null|undefined} state
  * @returns {AssistantDayOff|null}
  */
 export function readAssistantDayOff(state) {
@@ -100,8 +95,7 @@ export function readAssistantDayOff(state) {
 }
 
 /**
- * 운비서 [기록하기] → 일지로 갈 때 주소 상태. 일지 닫기는 온 곳으로 뒤로가기(from: 'home').
- * @param {import('../../features/home/api/unbiseoParse.ts').UnbiseoRecord} record 운행·지출·고정 노선
+ * @param {import('../../features/home/api/unbiseoParse.ts').UnbiseoRecord} record
  * @param {{ cancelOff: boolean }} options
  */
 export function assistantCallNavState(record, options) {
@@ -116,7 +110,6 @@ export function assistantCallNavState(record, options) {
 }
 
 /**
- * 운비서 버튼 → navigate에 넘길 [갈 곳, { 주소 상태 }]. 거래처는 거래처 화면, 그 밖은 그 날짜 일지.
  * @param {import('../../features/home/api/unbiseoParse.ts').UnbiseoRecord} record
  * @param {{ cancelOff: boolean }} options
  * @returns {[string, { state: object }]}

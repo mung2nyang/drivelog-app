@@ -1,5 +1,4 @@
 // @ts-check
-// 한 차량 거래처(scopedToVehicleNumber) 목록의 추가·수정·삭제 — 연동 기사 앱 거래처·차주의 기사 거래처가 같이 쓴다.
 import { useState } from 'react'
 import { requestClientSave } from '../../../data/sync/clientMutations.ts'
 import { requestClientDeletion } from '../../../data/sync/directMutationActions.ts'
@@ -36,9 +35,7 @@ function clientToDraft(item, scopeKey) {
   }
 }
 
-/**
- * @param {{ ownerKey: string, scopeKey: string }} params
- */
+/** @param {{ ownerKey: string, scopeKey: string }} params */
 export function useScopedClients({ ownerKey, scopeKey }) {
   const showToast = useToast()
   const clients = useOwnerClients(ownerKey)
@@ -49,7 +46,7 @@ export function useScopedClients({ ownerKey, scopeKey }) {
 
   const scopedClients = clients.filter((c) => scopeKey && c.scopedToVehicleNumber === scopeKey)
 
-  /** @param {Partial<ClientDraft>} [fields] 운비서가 채운 칸 */
+  /** @param {Partial<ClientDraft>} [fields] */
   function openAdd(fields) {
     setEditingId(null)
     setDraft({ ...emptyDraft, ...fields, scopedToVehicleNumber: scopeKey })

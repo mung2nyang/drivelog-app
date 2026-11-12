@@ -1,5 +1,4 @@
 // @ts-check
-// 알림 화면 — 알림마다 날짜 줄(dateLabel)과 끈 종류(notifOff) 빼기.
 import '../../../testSupport/stubSupabaseClient.ts'
 import '../../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
@@ -23,7 +22,7 @@ describe('notifications — 날짜 줄·끈 종류', () => {
   test('백업 권장 = 마지막 백업 날짜(이 휴대폰 날짜 기준), 한 번도 안 했으면 날짜 없음', () => {
     mock.timers.enable({ apis: ['Date'], now: new Date(2026, 9, 10, 9, 0, 0).getTime() })
     assert.equal(collectNotifications('guest').find((n) => n.kind === 'backup')?.dateLabel, '')
-    mock.timers.setTime(new Date(2026, 8, 1, 0, 30, 0).getTime()) // 자정 직후 — UTC로 바꾸면 하루 앞 날짜가 되는 시각
+    mock.timers.setTime(new Date(2026, 8, 1, 0, 30, 0).getTime())
     markBackupDone()
     mock.timers.setTime(new Date(2026, 9, 10, 9, 0, 0).getTime())
     assert.equal(collectNotifications('guest').find((n) => n.kind === 'backup')?.dateLabel, '마지막 백업 09.01')

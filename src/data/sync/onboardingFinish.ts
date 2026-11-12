@@ -14,11 +14,6 @@ export type OnboardingWizard = {
   carFuelKind?: string
 }
 
-/**
- * 온보딩 wizard → practiceSettings patch.
- * `both`일 때 fixedOn·callDetail을 둘 다 true로 명시한다(normalizeSettings가
- * fixedOn===true면 callDetail 기본값이 false라 생략하면 탈락함).
- */
 export function buildOnboardingSettingsPatch(wizard: OnboardingWizard | null | undefined) {
   const workStyle = wizard?.workStyle
   const fixedOn = workStyle === 'fixed' || workStyle === 'both'
@@ -34,7 +29,6 @@ export function buildOnboardingSettingsPatch(wizard: OnboardingWizard | null | u
   }
 }
 
-/** 온보딩 답변을 기존 설정/차량 저장 경로로 반영한다. 실패해도 throw하지 않고 toast만 돌려준다. */
 export async function applyOnboardingWizard({ ownerKey, userId, cars = [], wizard }: {
   ownerKey: string,
   userId: string | null | undefined,
@@ -43,7 +37,6 @@ export async function applyOnboardingWizard({ ownerKey, userId, cars = [], wizar
 }): Promise<{ toast?: string }> {
   let toast: string | undefined
   try {
-    // 새 계정의 첫 테마는 휴대폰 다크 모드 설정을 따른다.
     await savePracticeSettings(ownerKey, { ...buildOnboardingSettingsPatch(wizard), theme: phoneTheme() })
   } catch (error) {
     console.error('온보딩 설정 저장 실패:', error)

@@ -157,7 +157,6 @@ test('로드맵 25: 비회원 기사 차량 지출(vehicleNumber)이 있어도 �
   const owner = 'roundtrip-guest-sub-expense'
   commitCars(owner, [{ id: 'c-main', type: 'main', number: '12가3456' }, { id: 'c-sub', type: 'sub', number: '34나5678' }])
   commitClients(owner, [{ id: 'cl-1', companyName: '한빛물류' }])
-  // 지출 번호는 저장 시각(1/1000초)이라 테스트처럼 빠르면 겹침 — 번호는 직접 정한다.
   const mainItem = { ...upsertExpense([], { ...emptyExpenseDraft('fuel', '2026-10-09'), cost: '50000' }).items[0], id: 'exp-main' }
   await saveExpenses(owner, [mainItem])
   const subItem = { ...upsertExpense([], { ...emptyExpenseDraft('maint', '2026-10-09', '34나5678'), name: '엔진오일', cost: '80000' }).items[0], id: 'exp-sub' }

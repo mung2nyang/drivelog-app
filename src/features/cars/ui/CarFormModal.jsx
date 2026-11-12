@@ -48,7 +48,7 @@ const INPUT_IDS = { number: 'newCarNumber', driverName: 'newDriverName', driverP
  * @param {string|null} props.editingId
  * @param {() => void} props.onCancel
  * @param {() => void|Promise<void>} props.onSave
- * @param {boolean} [props.saving] 저장 중이면 [저장] 잠금
+ * @param {boolean} [props.saving]
  * @param {boolean} [props.cloud]
  * @param {Array<import('../../../domain/driverTypes.ts').DriverRecord>} [props.drivers]
  */
@@ -60,11 +60,9 @@ export default function CarFormModal({
   const isSalary = draft.driverPayMode === 'salary'
   const showConnect = isSub && cloud
   const [problem, setProblem] = useState(/** @type {(CarProblem & { value: string })|null} */ (null))
-  // 문제 칸 값을 고치기 시작하면 표시를 거둔다.
   const shown = problem && String(draft[problem.field] ?? '') === problem.value ? problem : null
 
   function handleSave() {
-    // 기사 연동 탭 사전 검사는 CarListPage.jsx save()와 같은 조건.
     const found = checkCarDraft(draft, { linkRequired: showConnect && draft.connectMode === 'link' })
     if (!found) {
       setProblem(null)

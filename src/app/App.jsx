@@ -1,5 +1,4 @@
 // @ts-check
-// 라우터 최상위. 세션·부트·토스트 상태만 두고 화면별 로직은 AuthRoute/AppShell이 맡는다.
 import { useMemo } from 'react'
 import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import OnboardingPage from '../features/account/ui/OnboardingPage.jsx'
@@ -71,7 +70,6 @@ export default function App() {
     <SessionProvider value={sessionValue}>
       <PendingWriteRetryBridge />
 
-      {/* 로그인·처음 정보 입력 화면도 그리다 오류가 나면 빈 화면 대신 안내. 로그인 뒤 화면은 AppShell 안쪽 안내가 먼저 잡는다. */}
       <PageLoadErrorBoundary resetKey={location.pathname}>
       <Routes>
         <Route
@@ -105,7 +103,6 @@ export default function App() {
                       showToast('정보를 저장하지 못했습니다. 잠시 후 다시 시도해 주세요.')
                       return false
                     }
-                    // 가입과 같이 다시 불러와 Store 프로필을 채운다 — 안 하면 첫 설정 저장이 빈 전화번호로 행을 덮어씀.
                     try {
                       await hydrateFromSupabase(session.userId, ownerKeyFromSession(session))
                     } catch (hydrateError) {

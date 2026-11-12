@@ -1,4 +1,3 @@
-// 가짜 서버가 받은 호출을 순서대로·조건까지 적어 두는지, 등록 안 한 호출은 오류인지, 기존 filters·countOf는 그대로인지.
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { createFakeSupabase } from '../../testSupport/fakeSupabaseClient.ts'

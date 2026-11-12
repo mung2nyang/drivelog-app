@@ -1,5 +1,3 @@
-// 기사 정산 관련 월 지출 — 매출 손익 "기사 급여" 라인용. I/O 없음.
-// getMonthlyDriverSalaryExpense와 반환 모양을 맞춘다.
 import { getShortCarNum } from './cars.ts'
 import { getDriverIncomeDeductions, getDriverSettlementAmount } from './driverIncomeDeductions.ts'
 import {
@@ -11,18 +9,15 @@ import { driverShareBaseAmount, getMonthlyDriverClientCommission } from './drive
 import type { CarLike, DriverLinkLike, FinanceSettings, WorkDataByLogId } from './financeTypes.ts'
 import type { DayRecordLike } from './day-record.ts'
 
-// 기사 급여는 계약 기간 안만 센다. 해제된 예전 계약은 "이전 기사" 줄로, 겹친 날은 뒤 계약 몫.
 function activeLinkForCar(links: Array<DriverLinkLike>, car: CarLike): DriverLinkLike | null {
   return links.find((item) => item.status === 'linked' && (item.id === car.driverLinkId || item.vehicleNumber === car.number)) || null
 }
 
-/** @param dateKey `YYYY-MM-DD` → `M/D` */
 function shortDate(dateKey: string | undefined) {
   const [, m, d] = String(dateKey || '').split('-').map(Number)
   return m && d ? `${m}/${d}` : ''
 }
 
-/** @param dateKey `YYYY-MM-DD` → 하루 전 `YYYY-MM-DD` */
 function dayBefore(dateKey: string) {
   const [y, m, d] = dateKey.split('-').map(Number)
   return new Date(Date.UTC(y, m - 1, d - 1)).toISOString().slice(0, 10)
@@ -56,7 +51,6 @@ function periodShare(carData: Record<string, DayRecordLike>, monthKey: string, p
   return { gross: totals.grossAmount, count: totals.count, share: calculateDriverVehicleCommission(car, base) }
 }
 
-/** 해제된 예전 계약마다 그 달 몫(시작일 순). 월급제는 기간과 무관해 빈 목록. */
 export function getPreviousDriverPeriods(monthKey: string, settings: FinanceSettings, car: CarLike, carData: Record<string, DayRecordLike>, link: DriverLinkLike | null): Array<PreviousDriverPeriod> {
   if (car.driverPayMode === 'salary') return []
   return previousContracts(settings, car, link).map((period) => ({
@@ -65,7 +59,6 @@ export function getPreviousDriverPeriods(monthKey: string, settings: FinanceSett
   }))
 }
 
-/** 차량 하나의 기사 급여 줄들 — 이전 기사(시작일 순) 다음 지금 기사. */
 function driverPayLines(monthKey: string, settings: FinanceSettings, car: CarLike, workDataByLogId: WorkDataByLogId): Array<DriverPayLine> {
   const links = Array.isArray(settings?.driverLinks) ? settings.driverLinks : []
   const link = activeLinkForCar(links, car)
@@ -86,17 +79,12 @@ function driverPayLines(monthKey: string, settings: FinanceSettings, car: CarLik
   return lines
 }
 
-/**
- * 매출제 기사 월 정산액(기사 몫) — 기사 정산액 전체가 차주 지출이다. 산재 기사 몫·3.3%는 기사에게 줄 돈에서
- * 떼어 대신 내는 돈이라 지출이 아니고, 산재 차주 몫은 getMonthlyDriverInsuranceOwnerShare가 따로 더한다.
- */
 export function getMonthlyDriverRevenueShareExpense(monthKey: string, settings: FinanceSettings, subCars: Array<CarLike>, workDataByLogId: WorkDataByLogId = {}): { total: number, items: Array<{ date: string, label: string, amount: number }> } {
   const monthStart = `${monthKey}-01`
   const items: Array<{ date: string, label: string, amount: number }> = []
   let total = 0
 
   for (const car of subCars || []) {
-    // 월급제는 salary 함수가 담당. driverPayMode 미설정(레거시)은 매출제 기본값.
     if (car.driverPayMode === 'salary') continue
     if (car.driverPayMode && car.driverPayMode !== 'revenue') continue
 
@@ -110,7 +98,6 @@ export function getMonthlyDriverRevenueShareExpense(monthKey: string, settings: 
   return { total, items: items.sort((a, b) => a.date.localeCompare(b.date)) }
 }
 
-/** 산재보험료 차주 부담분(월) — 기사 정산액(매출제 몫·월급제 월급) 기준. 산재 적용 토글이 꺼진 차량은 총액 전부가 차주 몫이다. */
 export function getMonthlyDriverInsuranceOwnerShare(monthKey: string, settings: FinanceSettings, subCars: Array<CarLike>, workDataByLogId: WorkDataByLogId = {}): { total: number, items: Array<{ date: string, label: string, amount: number }> } {
   const monthStart = `${monthKey}-01`
   const items: Array<{ date: string, label: string, amount: number }> = []

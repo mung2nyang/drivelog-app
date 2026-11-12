@@ -1,5 +1,4 @@
 // @ts-check
-// 로드맵 24-H-2 — 운비서 미수금 문자: 답 읽기, 고를 거리·숫자는 미수금 화면과 같은 함수, 문구 값({운행구간} 4가지·{운송료} 남은 합계), 연락처.
 import '../../../testSupport/stubSupabaseClient.ts'
 import '../../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'

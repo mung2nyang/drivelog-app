@@ -1,8 +1,3 @@
-/* DriverConnectionPage — 요약/연동카드 + 초대 모달.
-   200줄 규칙(§6) 때문에 linked-driver.css와 나눔. */
-/* text-align:left — 부모 .main-app-container가
-   text-align:center라 h3/p 각각의 짧은 줄이 개별적으로 가운데 정렬돼 보이는
-   문제까지 명시적으로 상쇄 */
 .driver-section-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 12px; text-align: left; }
 .driver-section-heading h3, .driver-section-heading p { margin: 0; }
 .driver-section-heading h3 { color: var(--text-color); font-size: var(--title-3-size); font-weight: var(--title-3-weight); }
@@ -42,7 +37,6 @@
   font-size: var(--fs-floor);
 }
 
-/* DriverConnectionPage 카드 — tax-invoice-entry-card와 같은 방식(도메인 전용 카드) */
 .driver-connection-card {
   margin-bottom: 14px;
   padding: 14px 15px 12px;
@@ -101,7 +95,6 @@
   gap: 7px;
   margin-top: 10px;
 }
-/* 해제 요청 안내 문구는 버튼 위 한 줄 전체 */
 .driver-unlink-status {
   flex-basis: 100%;
   order: -1;
@@ -129,8 +122,6 @@
   color: var(--sunday-color);
 }
 
-/* 기사 초대 모달 — 시계/달력 아이콘 삭제(expense-form.css/call-detail-form.css와 같은 처리,
-   이 모달 범위로만 scoped). 차량번호 datalist 네이티브 드롭다운 화살표도 같이 숨김. */
 .driver-form-modal .app-temporal-icon {
   display: none;
 }
@@ -138,7 +129,6 @@
   display: none;
 }
 
-/* CarDriverConnectPanel/DriverFormModal 초대코드 줄 */
 .driver-code-row {
   display: flex;
   gap: 8px;
@@ -148,7 +138,6 @@
   flex: 1;
 }
 
-/* 기사 개인정보 "소속 연결" 카드 안내 글씨 — 개인정보 카드 설명줄(PersonalInfoPage.css)과 같은 모양 */
 .employer-link-card .car-sub-text {
   margin: 4px 0 0;
   color: var(--sub-text-color);

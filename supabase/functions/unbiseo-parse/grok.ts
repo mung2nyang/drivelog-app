@@ -1,11 +1,8 @@
-// AI 회사(xAI Grok) 부르기만 — 회사를 바꿀 땐 이 파일과 비밀값만 바꾼다(로드맵 24-A2, 2026-10-23 Gemini 무료 구간 503이 잦아 바꿈).
 const API_URL = 'https://api.x.ai/v1/chat/completions'
 const MODEL = 'grok-4.20-0309-non-reasoning'
 const TIMEOUT_MS = 15000
-// 답이 끝없이 길어지는 걸 막는 상한 — 칸 서른두 개가 다 차도 넉넉하게.
 const MAX_OUTPUT_TOKENS = 500
 
-/** 키 없음·AI 회사 장애 — 잠시 뒤 다시. */
 export class AiUnavailableError extends Error {}
 
 export type ParseInput = { text: string, today: string, clientNames: Array<string>, routeNames: Array<string> }
@@ -54,16 +51,13 @@ function dateKeyOf(time: number): string {
   return new Date(time).toISOString().slice(0, 10)
 }
 
-// 날짜 계산은 AI가 못 해서 여기서 미리 계산한 표를 같이 준다.
 export function dateTable(today: string): string {
   const base = Date.parse(`${today}T00:00:00Z`)
   const weekday = new Date(base).getUTCDay()
   const label = (time: number) => `${dateKeyOf(time)}(${WEEKDAYS[new Date(time).getUTCDay()]})`
   const lines = [`오늘: ${label(base)}`, `어제: ${label(base - DAY_MS)}`, `그제(그저께): ${label(base - 2 * DAY_MS)}`]
-  // 앞날은 날씨·휴무에만 쓴다(운행·지출은 answer.ts가 오늘로 바꿈).
   lines.push(`내일: ${label(base + DAY_MS)}`, `모레: ${label(base + 2 * DAY_MS)}`, `글피: ${label(base + 3 * DAY_MS)}`)
   for (let n = 3; n <= 6; n += 1) lines.push(`${n}일 전: ${label(base - n * DAY_MS)}`)
-  // 한 주는 월요일부터 일요일까지.
   const monday = base - ((weekday + 6) % 7) * DAY_MS
   const week = (start: number) => WEEKDAYS.slice(1).concat(WEEKDAYS[0]).map((name, i) => `${name} ${dateKeyOf(start + i * DAY_MS)}`).join(', ')
   lines.push(`이번 주: ${week(monday)}`, `지난주: ${week(monday - 7 * DAY_MS)}`)
@@ -72,7 +66,6 @@ export function dateTable(today: string): string {
   return lines.join('\n')
 }
 
-// 달·연도 AI가 계산하지 않게 표로 준다.
 export function monthTable(today: string): string {
   const year = Number(today.slice(0, 4))
   const month = Number(today.slice(5, 7))
@@ -82,7 +75,6 @@ export function monthTable(today: string): string {
   return [`이번 달: ${key(year, month)}`, `지난달: ${last}`, `올해: ${year}`, `작년: ${year - 1}`, `올해 달: ${months}`].join('\n')
 }
 
-// 모든 칸을 필수로 두고 null을 허용 — 말하지 않은 칸은 AI가 null을 골라 비운다.
 const RESPONSE_SCHEMA = {
   type: 'object',
   properties: {
@@ -132,7 +124,6 @@ type ChatAnswer = {
   usage?: { completion_tokens?: number }
 }
 
-/** AI가 돌려준 JSON 글자. 길이 초과·빈 답·시간 넘김이면 null(알아듣지 못함). */
 export async function askAi(input: ParseInput): Promise<string | null> {
   const apiKey = Deno.env.get('XAI_API_KEY')
   if (!apiKey) throw new AiUnavailableError('no key')
@@ -168,7 +159,6 @@ export async function askAi(input: ParseInput): Promise<string | null> {
   }
   const choice = answer.choices?.[0]
   const finish = String(choice?.finish_reason ?? '')
-  // 원인 확인용 — 끝난 이유·쓴 양·걸린 시간만, 말한 문장과 답 내용은 남기지 않는다.
   console.log('[unbiseo-parse] ai', JSON.stringify({
     finish,
     out: answer.usage?.completion_tokens ?? null,

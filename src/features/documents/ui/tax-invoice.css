@@ -1,7 +1,3 @@
-/* 세금계산서 전용 화면 스타일 — 응집도 우선 §6 예외, ~250줄까지 허용 */
-
-/* 서류 발급 [세금계산서] 탭(위 카드·작은 탭은 documents.css). */
-
 .tax-invoice-amount-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -37,7 +33,6 @@
   color: var(--text-color);
 }
 
-/* 위 카드 안, [작성 전][발급 완료] 아래 사업자 정보 안내 두 줄 */
 .tax-invoice-guide {
   margin: 14px 2px 0;
   color: var(--sub-text-color);
@@ -48,7 +43,6 @@
   margin: 0;
 }
 
-/* 서류 발급 위 카드 안, [작성 전][발급 완료] 아래 발행 회사 한 줄 */
 .tax-invoice-issuer-line {
   margin: 0;
   color: var(--sub-text-color);

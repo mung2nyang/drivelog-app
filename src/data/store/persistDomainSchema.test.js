@@ -1,4 +1,3 @@
-// 앱을 켤 때·비회원 백업 불러오기의 자료 검사 입구(matchesDomainSchema)와 설정·개인정보·지운 날 검사의 통과/거부를 칸마다 못 박는다.
 import assert from 'node:assert/strict'
 import { describe, test } from 'node:test'
 import { isPersistedProfile, isPersistedSettings, isPersistedWorkDataDeletedDates, matchesDomainSchema } from './persistDomainSchema.ts'

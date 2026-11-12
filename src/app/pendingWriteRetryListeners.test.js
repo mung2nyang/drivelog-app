@@ -1,11 +1,4 @@
 // @ts-check
-// 재감사 3차(FAIL 지적 2번) — attachPendingWriteRetryListeners가 (1) 붙는 즉시 한 번
-// 재시도하고(reload 복구), (2) online/beforeunload/타이머를 전부 정확히 등록·해제하는지
-// (listener cleanup) 실측한다. app-store.test.js와 같은 이유로 mock.module은 파일당
-// 한 번만 등록하고(모듈은 한 번만 링크된다), 이후 각 테스트는 그 mock의 내부 함수
-// 자체를 바꿔치기하는 방식으로 서로 다른 시나리오를 만든다 — 테스트마다 다시
-// mock.module + 재-import를 하면 이미 링크된 모듈은 최초 mock에 그대로 묶여 있어
-// 새 mock이 반영되지 않는다.
 import assert from 'node:assert/strict'
 import { mock, test } from 'node:test'
 

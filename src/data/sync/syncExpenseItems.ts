@@ -1,4 +1,3 @@
-// 지출 칸 저장 — 항목 id 기준으로 넣기·고치기·(내가 알던 것만) 지우기. 연동 차량 칸은 차주·기사 공용 장부.
 import type { JsonValue } from '../../domain/jsonTypes.ts'
 import { supabase } from '../cloud/supabaseClient.ts'
 import { fetchAllRows } from '../cloud/fetchAllRows.ts'
@@ -22,8 +21,8 @@ export type SyncContext = {
   next: Array<ExpenseItem>
   workData: Record<string, JsonValue | undefined>
   idByDate: Map<string, string>
-  legacyVehicleId: string | number | null // 옛 항목이 잘못 쌓여 있을 수 있는 칸(차주 메인 차량)
-  restoreMissing: boolean // 차주만 쓰는 칸(메인·미연동)이면 true
+  legacyVehicleId: string | number | null
+  restoreMissing: boolean
   deletes: Array<ExpenseRowRef>
 }
 export type ExpenseRowRef = { table: string, id: string }
@@ -40,7 +39,6 @@ async function dailyLogIdsByDate(vehicleId: string | number): Promise<Map<string
   return new Map((data || []).map((row) => [row.work_date, row.id]))
 }
 
-/** 그날 하루 기록 줄이 없을 때만 만든다 — 이미 있으면(상대가 방금 만든 것 포함) 덮어쓰지 않는다. */
 async function ensureDailyLog(ctx: SyncContext, workDate: string): Promise<string> {
   const known = ctx.idByDate.get(workDate)
   if (known) return known
@@ -92,8 +90,6 @@ async function syncKind(spec: KindSpec, ctx: SyncContext) {
     const row = serverByItemId.get(item.id)
     const previous = previousById.get(item.id)
     const unchanged = !!previous && JSON.stringify(previous) === JSON.stringify(item)
-    // 안 바뀐 항목: 서버에 있으면 그대로, 없으면 상대가 지운 것이므로 되살리지 않는다(단 메인 칸 옛 항목은 옮겨 넣는다).
-    // 차주만 쓰는 칸은 서버에서 빠진 항목을 다시 넣는다(앞선 저장이 끊긴 경우).
     if (unchanged && (row || (!legacyIds.has(item.id) && !ctx.restoreMissing))) continue
     const dailyLogId = await ensureDailyLog(ctx, item.date)
     const rowContext = { dailyLogId, userId: ctx.userId, vehicleId: ctx.vehicleId, workDate: item.date }
@@ -104,13 +100,11 @@ async function syncKind(spec: KindSpec, ctx: SyncContext) {
       if (insertError) throw insertError
       continue
     }
-    // 고치기는 원래 쓴 사람(user_id)을 유지한다.
     const { user_id: _userId, ...changes } = spec.buildRow(item, Number(row.sequence) || 0, rowContext)
     const { error: updateError } = await supabase.from(spec.table).update(changes).eq('id', row.id)
     if (updateError) throw updateError
   }
 
-  // 지우기는 모아 두었다가 모든 넣기·고치기 뒤에 한다 — 중간에 끊겨도 유실 대신 중복.
   for (const id of previousById.keys()) {
     if (nextIds.has(id)) continue
     const row = serverByItemId.get(id)
@@ -118,16 +112,10 @@ async function syncKind(spec: KindSpec, ctx: SyncContext) {
   }
 }
 
-/**
- * 한 차량 칸의 정비/주유/기타를 항목 단위로 맞춘다. previous = 저장 전 화면 목록(내가 알던 항목).
- * @param legacyVehicleId 옛 항목을 찾을 칸(차주 메인 차량). 기사 쪽은 없음
- * @param restoreMissing 차주만 쓰는 칸이면 true
- */
 export async function syncExpenseItemsForVehicle(userId: string, vehicleId: string | number, previous: Array<ExpenseItem>, next: Array<ExpenseItem>, workData: Record<string, JsonValue | undefined>, legacyVehicleId: string | number | null = null, restoreMissing = false) {
   await deleteExpenseRows(await upsertExpenseItemsForVehicle(userId, vehicleId, previous, next, workData, legacyVehicleId, restoreMissing))
 }
 
-/** 넣기·고치기만 하고, 지울 서버 행 목록을 돌려준다(지우기는 deleteExpenseRows). */
 export async function upsertExpenseItemsForVehicle(userId: string, vehicleId: string | number, previous: Array<ExpenseItem>, next: Array<ExpenseItem>, workData: Record<string, JsonValue | undefined>, legacyVehicleId: string | number | null = null, restoreMissing = false): Promise<Array<ExpenseRowRef>> {
   const ctx: SyncContext = { userId, vehicleId, previous, next, workData, legacyVehicleId, restoreMissing, idByDate: await dailyLogIdsByDate(vehicleId), deletes: [] }
   for (const spec of KIND_SPECS) {
@@ -136,7 +124,6 @@ export async function upsertExpenseItemsForVehicle(userId: string, vehicleId: st
   return ctx.deletes
 }
 
-/** 모아 둔 서버 행을 지운다. */
 export async function deleteExpenseRows(rows: Array<ExpenseRowRef>) {
   for (const row of rows) {
     const { error } = await supabase.from(row.table).delete().eq('id', row.id)

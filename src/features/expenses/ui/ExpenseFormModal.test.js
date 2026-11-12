@@ -1,5 +1,3 @@
-// 2026-09-14 결정 검증 — 날짜/누적거리 5:5 그리드, 날짜 트리거 아이콘 삭제,
-// 결제방식 세그먼트 컨트롤로 변경이 정비/주유/기타 공용으로 실제 렌더되는지 확인.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 
@@ -145,7 +143,6 @@ test('비용 칸에 12345.6을 치면 비용은 반올림한 12346(로드맵 43-
   }
 })
 
-// 로드맵 82-B — 지출 창에서 빠진 칸은 저장 전에 빨간 표시·칸 아래 문구·커서.
 /** @param {object} draft */
 async function renderForSave(draft) {
   const saves = []

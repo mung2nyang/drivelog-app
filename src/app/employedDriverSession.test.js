@@ -73,7 +73,6 @@ describe('carFromAssignedSummary', () => {
     assert.equal(car.commission, '')
   })
 
-  // 서버 함수가 돌려주는 산재 적용 여부(insurance_on)만 진짜 true일 때 산재 차감이 켜진다.
   test('insurance_on true → insuranceOn true (기사 본인 매출이 산재를 차감)', () => {
     const car = carFromAssignedSummary({ id: 'veh-4', number: '서울12가3456', type: 'sub', insurance_on: true })
     assert.equal(car.insuranceOn, true)
@@ -86,7 +85,6 @@ describe('carFromAssignedSummary', () => {
     assert.equal(carFromAssignedSummary(base).insuranceOn, false)
   })
 
-  // 로드맵 4-2 슬라이스 2 — 산재보험료·3.3% 원천징수 계산에 쓰는 4개 필드(서버가 0007로 돌려줌).
   test('driver_income_type·withholding_on·expense_rate·insurance_rate를 그대로 옮긴다', () => {
     const car = carFromAssignedSummary({
       id: 'veh-6', number: '서울12가3456', type: 'sub',

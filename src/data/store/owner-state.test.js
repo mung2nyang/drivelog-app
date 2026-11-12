@@ -1,5 +1,3 @@
-// owner-state.js → app-store.js → cloudSync.js → supabaseClient.js로 이어지는 정적 import
-// 체인이 있어서, app-store.test.js와 같은 이유로 mock.module 등록 뒤 동적 import를 쓴다.
 import { resetStubSupabaseCallCounts, stubSupabaseCallCounts } from '../../testSupport/stubSupabaseClient.ts'
 import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
@@ -148,8 +146,6 @@ describe('replaceOwnerState — sync:false는 클라우드 동기화를 예약�
     assert.deepEqual(state.cars[owner], [{ id: 'car-server' }])
     assert.deepEqual(state.profile[owner], { name: '서버값' })
     assert.deepEqual(state.workLogs[owner], { main: { '2026-08-01': { isOff: false } } })
-    // 감사 지적 9번: state만 보고 "동기화 안 했겠지"라고 넘기지 않는다 — 실제로 supabase
-    // 스텁이 몇 번 불렸는지 직접 센다.
     assert.equal(totalStubCalls(), 0, 'sync:false면 Supabase 호출이 0회여야 한다')
   })
 
@@ -180,12 +176,6 @@ describe('hydrate 산출물 → persist → fresh initialize 왕복', () => {
     assert.equal(Object.hasOwn(getState().cars[owner]?.[0] ?? {}, 'settlementMode'), false)
   })
 
-  // Step 7 후속 재감사 — 위 최소 row(raw:{})는 `...raw` 스프레드가 있던 예전 코드에서도
-  // 통과했다(라 추가할 게 없어서). 아래 3개는 raw에 "정본 밖/잘못된" 값이 실제로 섞인
-  // 경우라 예전 코드였다면 hydrate 직후 persist는 됐어도 이 initialize 왕복에서
-  // cars/clients 도메인 전체가 schema 실패로 사라졌을 시나리오다(감지력 확인: 이 3개
-  // 테스트는 hydrateMergeCars.js/hydrateMergeClients.js의 `...raw`를 되돌리면 실패한다 —
-  // 되돌려서 확인 후 복원함).
   test('바닐라 personalInfo(phone/bank/account/accountHolder) raw는 initialize 왕복 후 보존된다', async () => {
     const { mergeCarsFromRows } = await import('../hydrate/hydrateMerge.ts')
     const { readPersistDomain } = await import('./persistDomainRead.ts')
@@ -227,8 +217,6 @@ describe('hydrate 산출물 → persist → fresh initialize 왕복', () => {
     const owner = 'hydrate-bogus-enum'
     resetStubSupabaseCallCounts()
     const merged = mergeCarsFromRows([], [{ id: 701, number: '33다3333', type: 'main', raw: JSON.parse('{"settlementMode":"bogus"}') }])
-    // producer는 옛 settlementMode 값을 아예 읽지 않는다(검증기를 느슨하게 만드는 게 아니라
-    // producer가 스키마를 맞춘다).
     assert.equal('settlementMode' in merged[0], false)
     replaceOwnerState(owner, { cars: merged })
     assert.equal(readPersistDomain('cars', owner).kind, 'value')
@@ -237,8 +225,6 @@ describe('hydrate 산출물 → persist → fresh initialize 왕복', () => {
     assert.equal(Object.hasOwn(getState().cars[owner]?.[0] ?? {}, 'settlementMode'), false)
     assert.equal(totalStubCalls(), 0)
 
-    // 검증기(isPersistedCar) 자체는 그대로다 — 'bogus'가 직접 저장돼 있으면 여전히
-    // 거부하고, 그 실패는 Store/원문/notify를 하나도 건드리지 않는다.
     const beforeCarsState = JSON.stringify(getState().cars[owner])
     localStorage.setItem(storageKeyFor('cars', owner), JSON.stringify([{ number: '33다3333', settlementMode: 'bogus' }]))
     let notifyCount = 0
@@ -257,10 +243,6 @@ describe('hydrate 산출물 → persist → fresh initialize 왕복', () => {
     const { commitBatch } = await import('./app-store.ts')
     const owner = 'hydrate-client-extra-key'
     resetStubSupabaseCallCounts()
-    // raw는 실제 Supabase JSONB(정본 밖 키가 실제로 섞일 수 있는 "미확인 JSON")라
-    // JsonRecord로 별도 선언한다 — ClientRow.raw의 선언 타입(RawClientBackup =
-    // Partial<ClientLike>)에 정본 밖 키를 인라인 리터럴로 바로 넣으면 TS의 신선한
-    // 객체 리터럴 초과 프로퍼티 검사에 걸린다(런타임 안전성과는 무관한 검사다).
     /** @type {import('../../domain/jsonTypes.ts').JsonRecord} */
     const rawWithExtraKey = { managerName: '박담당', phone: '010-9999-8888', extraFromVanilla: '레거시전용필드' }
     const merged = mergeClientsFromRows([], [{
@@ -285,11 +267,6 @@ describe('hydrate 산출물 → persist → fresh initialize 왕복', () => {
     assert.equal(totalStubCalls(), 0)
   })
 
-  // 재감사(불리언 기본값) — insuranceOn/logEnabled/driverLinkEnabled/
-  // shareRevenueWithOwner/archived를 boolOrFalse로 채우면 "없음"과 "명시적 false"가
-  // 구분 안 돼, shareRevenueWithOwner처럼 "없음 = true(공유)"인 필드가 hydrate 왕복
-  // 한 번으로 전부 false(비공유)가 돼 버린다(감지력: 아래 3개는 hydrateMergeCars.js의
-  // boolOrOmit을 boolOrFalse로 되돌리면 실패한다 — 되돌려서 확인 후 복원함).
   test('raw:{}인 최소 row는 shareRevenueWithOwner 키가 없고, 소비 쪽 기본값(공유)으로 읽힌다', async () => {
     const { mergeCarsFromRows } = await import('../hydrate/hydrateMerge.ts')
     const { readPersistDomain } = await import('./persistDomainRead.ts')
@@ -348,8 +325,6 @@ describe('hydrate 산출물 → persist → fresh initialize 왕복', () => {
     assert.equal(totalStubCalls(), 0)
   })
 
-  // 로드맵 4-2 — 새 차량 필드(기사 유형·원천징수·필요경비율·산재요율)가 저장 화이트리스트(CAR_KEYS)에서 빠지면
-  // 다음 새로고침 때 cars 도메인 전체가 사라진다(과거 subCarSettings 누락 사고와 같은 종류).
   test('기사 유형·원천징수·필요경비율·산재요율은 서버 raw→hydrate→저장→새로고침 왕복 후에도 유지된다', async () => {
     const { mergeCarsFromRows } = await import('../hydrate/hydrateMerge.ts')
     const { readPersistDomain } = await import('./persistDomainRead.ts')
@@ -385,7 +360,6 @@ describe('hydrate 산출물 → persist → fresh initialize 왕복', () => {
     const { commitBatch } = await import('./app-store.ts')
     const owner = 'hydrate-income-fields-bad'
     resetStubSupabaseCallCounts()
-    // 서버가 준 JSON을 흉내 낸다 — 타입이 어긋난 값을 그대로 담기 위해 JSON.parse를 쓴다.
     const raw = JSON.parse('{"driverIncomeType":"근로자","withholdingOn":"yes","expenseRate":{},"insuranceRate":[],"insuranceOn":true}')
     const merged = mergeCarsFromRows([], [{ id: 912, number: '88아8888', type: 'sub', raw }])
     for (const key of ['driverIncomeType', 'withholdingOn', 'expenseRate', 'insuranceRate']) assert.equal(key in merged[0], false, key)

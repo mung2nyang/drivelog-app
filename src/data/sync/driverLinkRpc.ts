@@ -1,15 +1,8 @@
-// 로그인 사용자의 기사 초대 저장을 upsert_driver_link_idempotent RPC 1회로 끝낸다(outbox·재시도 큐 없음) — 그 RPC 호출과,
-// RPC no-op update로는 못 바꾸는 기존 행 필드 보정만 담는다. 같은 차량번호 1명 규칙은 domain/drivers.ts upsertDriver가 저장 전에 본다.
 import type { DriverLinkRow } from './syncTypes.ts'
 import { supabase } from '../cloud/supabaseClient.ts'
 import { assertCloudWriteReady } from '../cloud/cloudSession.ts'
 import { normalizeInviteCode } from '../../domain/drivers.ts'
 
-/**
- * upsert_driver_link_idempotent RPC 1회. 같은 p_idempotency_key면 서버가 기존 행을
- * 그대로 돌려준다(멱등) — 응답만 유실됐던 성공을 재사용한다. 겹침 검사는 호출부가
- * 이 함수 *전에* 따로 한다.
- */
 export async function upsertDriverLinkViaRpc({ idempotencyKey, vehicleId, inviteCode, assignmentStart, assignmentEnd }: { idempotencyKey: string, vehicleId: string, inviteCode: string,
   assignmentStart: string, assignmentEnd: string | null }): Promise<DriverLinkRow> {
   assertCloudWriteReady()
@@ -26,11 +19,6 @@ export async function upsertDriverLinkViaRpc({ idempotencyKey, vehicleId, invite
   return row
 }
 
-/**
- * 기존 서버 행의 기간/코드/차량을 직접 1회 update한다. RPC의 no-op update로는
- * 수정 필드가 반영되지 않는 구멍(로그인 수정, 또는 응답 유실 재시도 중 필드 변경)을
- * 메운다. insert 재시도 루프도, outbox도 쓰지 않는다.
- */
 export async function updateDriverLinkFields({ supabaseId, vehicleId, inviteCode, assignmentStart, assignmentEnd }: { supabaseId: number | string, vehicleId: string, inviteCode: string,
   assignmentStart: string, assignmentEnd: string | null }): Promise<DriverLinkRow> {
   assertCloudWriteReady()
@@ -50,7 +38,6 @@ export async function updateDriverLinkFields({ supabaseId, vehicleId, inviteCode
   return (data) as DriverLinkRow
 }
 
-/** 서버 행이 원하는 기간/코드와 다른지 — 다르면 updateDriverLinkFields로 보정한다. */
 export function driverLinkRowNeedsUpdate(row: DriverLinkRow, { inviteCode, assignmentStart, assignmentEnd }: { inviteCode: string, assignmentStart: string, assignmentEnd: string | null }) {
   return (
     String(row.assignment_start ?? '') !== assignmentStart
@@ -59,10 +46,7 @@ export function driverLinkRowNeedsUpdate(row: DriverLinkRow, { inviteCode, assig
   )
 }
 
-/** 기사가 초대코드로 스스로를 차주에 연결. Fail-Fast — durable 큐 없음. */
 export async function redeemDriverInviteCode(inviteCode: string): Promise<DriverLinkRow> {
-  // hydrate ready를 요구하지 않는다 — 연동 전·hydrate 실패 상태에서도 초대코드로
-  // 차주에 붙을 수 있어야 한다. auth만 확인(RPC도 auth.uid() 검사).
   const { data: authData, error: authError } = await supabase.auth.getSession()
   if (authError || !authData?.session?.user) {
     throw new Error('로그인이 필요합니다.')
@@ -72,15 +56,10 @@ export async function redeemDriverInviteCode(inviteCode: string): Promise<Driver
   })
   if (error) throw new Error(error.message || '초대 코드 연동에 실패했습니다.')
   const row = (Array.isArray(data) ? data[0] : data) as DriverLinkRow | undefined
-  // 0019: 틀리거나 만료된 코드는 실패 횟수를 남기려고 오류 대신 빈 결과로 온다.
   if (!row) throw new Error('초대 코드가 맞지 않거나 기한(7일)이 지났습니다. 차주에게 새 코드를 요청해 주세요.')
   return row
 }
 
-/**
- * 로그인 사용자가 이미 linked인 driver_links 행(자기 행만 — RLS). 확인 실패와 "연동 없음"을 구별한다
- * (실패를 "없음"으로 보면 기사가 차주 칸 대신 본인 칸으로 들어감).
- */
 export async function checkLinkedDriverLink(userId: string): Promise<{ ok: true, link: DriverLinkRow | null } | { ok: false }> {
   if (!userId) return { ok: true, link: null }
   const { data, error } = await supabase
@@ -96,7 +75,6 @@ export async function checkLinkedDriverLink(userId: string): Promise<{ ok: true,
   return { ok: true, link: data ? (data) as DriverLinkRow : null }
 }
 
-/** 위 확인의 예전 모양(실패도 null) — 앱이 켜진 뒤 사용처(연동 해제·초대코드)는 그대로 쓴다. */
 export async function fetchLinkedDriverLink(userId: string): Promise<DriverLinkRow | null> {
   const result = await checkLinkedDriverLink(userId)
   return result.ok ? result.link : null
@@ -108,7 +86,6 @@ export async function fetchAssignedVehicleSummary(): Promise<Array<{ id: string,
   return Array.isArray(data) ? data : []
 }
 
-/** 연동 기사 앱 개인정보의 "사업자 정보·정산 계좌"에 보여 줄 차주 값(0015 — 지금 연동 중인 기사 본인만 조회). */
 export async function fetchLinkedOwnerBusinessInfo(ownerId: string): Promise<{ name?: string | null, business_name?: string | null, business_representative?: string | null, business_number?: string | null, business_address?: string | null, business_type?: string | null, business_item?: string | null, business_email?: string | null, bank_name?: string | null, account_number?: string | null, account_holder?: string | null } | null> {
   const { data, error } = await supabase.rpc('get_linked_owner_business_info', {
     p_owner_id: ownerId,

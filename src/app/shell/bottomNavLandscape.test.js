@@ -1,4 +1,3 @@
-// 로드맵 54 — 눕힌 낮은 화면에서만 아래 메뉴를 납작하게(여백 0·그림 18px), 그림 위·글자 아래 배치와 누르는 칸 44px는 그대로.
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { readFileSync } from 'node:fs'

@@ -1,5 +1,3 @@
-// 차량/거래처 클라우드 upsert. 로그인 저장은 목록을 인자로 받아 Store 반영 전에 서버에
-// 쓰고 remote id를 돌려준다.
 import { supabase } from '../cloud/supabaseClient.ts'
 import { buildClientRow, buildVehicleRow } from '../cloud/cloudStorage.ts'
 import { assertSessionStillCurrent } from '../cloud/cloudSession.ts'

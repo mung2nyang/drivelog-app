@@ -1,5 +1,4 @@
 // @ts-check
-// 로드맵 72 — 열린 일지 목록과 새로고침·앱 닫기 확인.
 import '../../testSupport/stubSupabaseClient.ts'
 import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
@@ -10,14 +9,12 @@ const { confirmReloadIfUnsaved, guardBeforeUnload } = await import('./durableWri
 
 const SAVING_MESSAGE = '방금 고친 내용을 아직 저장하는 중입니다. 그래도 나가시겠습니까?'
 
-/** 비회원처럼: 지금 저장하면 그 자리에서 끝난다. */
 function guestDraft() {
   const state = { waiting: true, flushes: 0 }
   const token = registerDayDraft(() => state.waiting, () => { state.flushes += 1; state.waiting = false })
   return { state, token }
 }
 
-/** 로그인처럼: 지금 저장해도 서버 응답 전까지 저장 중. */
 function cloudDraft() {
   const state = { waiting: true, saving: false, flushes: 0 }
   const token = registerDayDraft(() => state.waiting || state.saving, () => { state.flushes += 1; state.waiting = false; state.saving = true })

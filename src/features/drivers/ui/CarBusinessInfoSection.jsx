@@ -1,5 +1,4 @@
 // @ts-check
-// 기사 관리 화면 하단 카드 — 기사차량별 사업자정보(세금계산서 공급자)·정산 계좌 입력.
 import { useState } from 'react'
 import { carToBusinessForm } from '../../../domain/carBusinessInfo.ts'
 import { BIZ_NUMBER_PLACEHOLDER, formatBizNumber } from '../../../domain/formatPhone.ts'
@@ -42,9 +41,9 @@ function Field({ id, label, value, onChange, inputMode, placeholder, hint }) {
 
 /**
  * @param {Object} props
- * @param {import('../../../domain/financeTypes.ts').CarLike} props.car 서브(기사) 차량
+ * @param {import('../../../domain/financeTypes.ts').CarLike} props.car
  * @param {Array<import('../../../domain/financeTypes.ts').CarLike>} props.cars
- * @param {{ bizName?: string, bizNumber?: string, bankName?: string, accountNumber?: string, accountHolder?: string }} props.profile 차주 사업자·계좌(동일 스위치 켜짐 때 표시용)
+ * @param {{ bizName?: string, bizNumber?: string, bankName?: string, accountNumber?: string, accountHolder?: string }} props.profile
  */
 export default function CarBusinessInfoSection({ car, cars, profile }) {
   const { ownerKey } = useSession()

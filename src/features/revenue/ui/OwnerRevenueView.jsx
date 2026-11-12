@@ -1,5 +1,4 @@
 // @ts-check
-// 차주(오너) 손익 화면. 기사 탭에서 개별 기사(차량) 드롭다운 필터.
 import { useMemo, useState } from 'react'
 import { isVehicleRevenueSharedWithOwner } from '../../../domain/cars.ts'
 import { getOwnerMonthlyFinanceDetail } from '../../../domain/finance.ts'
@@ -46,7 +45,6 @@ export default function OwnerRevenueView() {
     [hasSubCar],
   )
 
-  // 기사 차량이 없어지면 "차주", 고른 기사가 없어지면 "전체 기사 합산"으로 보인다(고른 값은 남겨 둠).
   const scope = pickedScope === 'driver' && !hasSubCar ? 'owner' : pickedScope
   const driverVehicle = pickedDriver && subCars.some((car) => String(car.number || '').trim() === pickedDriver) ? pickedDriver : ALL_DRIVERS
 

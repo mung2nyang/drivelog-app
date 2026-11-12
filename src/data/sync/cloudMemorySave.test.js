@@ -174,7 +174,7 @@ describe('슬라이스 E — 로그인 프로필·설정·비용·계산서는 �
 
   test('saveExpenses: 서버 기록 후 Store, expenses LS setItem 0', async () => {
     const ownerKey = 'cms-exp-ok'
-    const userId = ownerKey // 차주 세션은 로그인 id = ownerKey(appSession.js ownerKeyFromSession)
+    const userId = ownerKey
     beginReady(userId, ownerKey)
     commitCars(ownerKey, [{ id: 'car-1', type: 'main', number: '11가1111', supabaseId: 501 }])
     writeJsonKey('expenses', ownerKey, [{ id: 'old', kind: 'fuel', date: '2026-08-01' }])
@@ -227,7 +227,6 @@ describe('슬라이스 E — 로그인 프로필·설정·비용·계산서는 �
   }
 
   /**
-   * 로드맵 5-A: 메인 501·서브 802. 70번부터 항목 단위 — fuelRows는 차량 칸별 서버 주유 줄.
    * @param {string} ownerKey
    * @param {Array<import('../../domain/driverTypes.ts').DriverRecord>} drivers
    * @param {Record<string, Array<import('../store/atomicPersist.ts').JsonValue>>} [fuelRows]

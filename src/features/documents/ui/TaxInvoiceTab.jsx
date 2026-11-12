@@ -1,6 +1,4 @@
 // @ts-check
-// 서류 발급 [세금계산서] 탭: 거래처 매출 계산서를 그 차량(logKey) 것만 + 엑셀 저장.
-// 달은 서류 발급이 주고, 위 카드 = 달 이동 → 서류 탭 줄 → [작성 전][발급 완료].
 import { useMemo, useState } from 'react'
 import { getTaxInvoiceFlowMeta } from '../../../domain/finance.ts'
 import { saveInvoices } from '../../../data/sync/invoicesSave.ts'
@@ -29,7 +27,6 @@ import { useSession } from '../../../data/cloud/sessionContext.ts'
 
 /** @typedef {import('../../../domain/financeTaxInvoiceEntries.ts').InvoiceLike} InvoiceLike */
 
-/** 월간 정산 제목 옆 (i) 설명 — 홈택스 일괄 발급 순서. */
 const HOMETAX_GUIDE = [
   '1. 엑셀 파일을 저장한 뒤 [발급하러 가기]를 누르세요.',
   '2. 홈택스에 사업자 계정으로 로그인하세요.',
@@ -40,7 +37,7 @@ const HOMETAX_GUIDE = [
 
 /**
  * @param {Object} props
- * @param {string} props.logKey 'main' 또는 차량번호
+ * @param {string} props.logKey
  * @param {Date} props.viewDate
  * @param {(next: Date) => void} props.onChangeMonth
  * @param {import('react').ReactNode} [props.tabs]

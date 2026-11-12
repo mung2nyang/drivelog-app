@@ -15,7 +15,6 @@ const LOG_INFO = `기사님이 앱을 쓰지 않을 때 고릅니다. 차주님�
 ${DRIVER_CAR_LIMIT_MESSAGE}`
 
 /**
- * 서브차량 "기사 연동 / 운행일지" 패널.
  * @param {Object} props
  * @param {'link'|'log'} props.tab
  * @param {(tab: 'link'|'log') => void} props.onTab

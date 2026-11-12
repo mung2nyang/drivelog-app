@@ -1,4 +1,3 @@
-// 차량 번호 변경·삭제의 저장 결과와 Supabase 호출 횟수를 직접 센다.
 import { resetStubSupabaseCallCounts, stubSupabaseCallCounts, stubSupabaseMethodImpls } from '../../testSupport/stubSupabaseClient.ts'
 import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'

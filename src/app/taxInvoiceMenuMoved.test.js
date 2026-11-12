@@ -1,4 +1,3 @@
-// 세금계산서 정리 ②: 세금계산서는 서류 발급 첫 탭으로 옮겨 사이드메뉴·마이페이지 따로 된 메뉴가 없다.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

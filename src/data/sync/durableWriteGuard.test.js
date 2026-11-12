@@ -1,15 +1,4 @@
 // @ts-check
-// 재감사 10차(FAIL 지적 2번) — registerPendingDayWrite가 dateKey/patch 계약 위반으로
-// 접수 자체를 거부하면(useDayDraft.js가 그 반환값을 무시하면 안 된다는 방어적 요구),
-// 그 최신 draft는 durable에도 fallback에도 전혀 안 남는다. durableWriteGuard.js에 새로
-// 추가된 markUnsafeRegistrationFailure/clearUnsafeRegistrationFailure/isDurableWriteBroken이
-// 이 경우를 실제로 broken으로 표시하고, 성공 시 다시 healthy로 되돌리는지 이 파일에서
-// 직접 검증한다 — pendingWorkDataWrites.js의 다른 owner/fallback 상태를 전혀 건드리지
-// 않는 새 프로세스(별도 파일)에서 검증해 전역 오염(다른 테스트가 남긴 broken owner)
-// 없이 정확한 before/after를 관찰할 수 있게 한다.
-// 재감사 11차 hang: pendingWorkDataWrites → app-store가 실제 supabaseClient의
-// realtime/auth 타이머를 붙잡는다. stub을 다른 import보다 먼저 올려야
-// `--test-force-exit` 없이 프로세스가 스스로 끝난다.
 import '../../testSupport/stubSupabaseClient.ts'
 import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'

@@ -1,5 +1,3 @@
-/* 미수금 운행 카드 본문: 날짜·경로·금액·기한·비고. */
-
 .receivable-item-row {
   display: flex;
   justify-content: space-between;

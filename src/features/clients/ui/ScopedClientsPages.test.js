@@ -1,4 +1,3 @@
-// 로드맵 58-A — 한 차량 거래처 화면 두 벌(연동 기사 앱 거래처, 차주의 기사 거래처): 목록·추가·수정·삭제·제목·찾을 수 없음.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

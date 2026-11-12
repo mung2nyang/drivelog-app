@@ -6,9 +6,6 @@ import {
 } from '../store/persistDomainRecords.ts'
 import type { LocalCar, RawCarBackup, VehicleRow } from './hydrateMergeTypes.ts'
 
-// CAR_KEYS에 있는 필드만 정본 타입으로 정규화한다 — raw(JSONB)를 통째로 펼치면 스키마와 다른 값 하나로
-// 다음 새로고침 때 cars 전체가 사라진다. 검증기는 느슨하게 하지 않고 producer만 맞춘다.
-
 function stringOrEmpty(value: string | undefined) {
   return typeof value === 'string' ? value : ''
 }
@@ -17,8 +14,6 @@ function boolOrFalse(value: boolean | undefined) {
   return typeof value === 'boolean' ? value : false
 }
 
-// insuranceOn/logEnabled/driverLinkEnabled/shareRevenueWithOwner/archived는 false를 심지 않는다 — "없음"과 "false"는 뜻이 다르다
-// (shareRevenueWithOwner는 없음 = 공유). raw에 boolean이 없으면 키를 생략해 소비 쪽 기본값이 적용되게 한다.
 function boolOrOmit(value: boolean | undefined) {
   return typeof value === 'boolean' ? value : undefined
 }
@@ -32,7 +27,6 @@ function enumOrDefault(value: string | undefined, allowed: ReadonlyArray<string>
 }
 
 export function mergeCarsFromRows(localCars: Array<LocalCar>, vehicleRows: Array<VehicleRow> | null | undefined) {
-  // vehicleRows가 배열이면(빈 배열 포함) 서버가 정본 — 로컬로 되돌리면 방금 삭제한 차량이 hydrate 뒤 부활한다. fallback은 조회 실패일 때만.
   if (!Array.isArray(vehicleRows)) {
     return Array.isArray(localCars) ? localCars : []
   }
@@ -55,7 +49,6 @@ export function mergeCarsFromRows(localCars: Array<LocalCar>, vehicleRows: Array
       commission: numericOrEmpty(row.comm_value ?? raw.commission),
       infoType: enumOrDefault(raw.infoType, INFO_TYPES, 'existing'),
     }
-    // 아래 boolean들은 raw에 진짜 boolean이 있을 때만 키를 채운다 — 없으면 생략해 소비 쪽 기본값(shareRevenueWithOwner는 true)이 적용된다.
     const insuranceOn = boolOrOmit(raw.insuranceOn)
     if (insuranceOn !== undefined) car.insuranceOn = insuranceOn
     const withholdingOn = boolOrOmit(raw.withholdingOn)
@@ -74,7 +67,6 @@ export function mergeCarsFromRows(localCars: Array<LocalCar>, vehicleRows: Array
     if (shareRevenueWithOwner !== undefined) car.shareRevenueWithOwner = shareRevenueWithOwner
     const archived = boolOrOmit(raw.archived)
     if (archived !== undefined) car.archived = archived
-    // 중첩 객체는 통째로 정본 키셋·타입(isStringRecord, 검증기와 같은 함수)을 만족할 때만 옮기고, 안 맞으면 이 필드만 생략한다(hydrate 전체를 막지 않음 — 사용자 승인).
     if (isPlainObject(raw.personalInfo ?? null) && isStringRecord(raw.personalInfo ?? null, PERSONAL_INFO_KEYS)) {
       car.personalInfo = raw.personalInfo
     }

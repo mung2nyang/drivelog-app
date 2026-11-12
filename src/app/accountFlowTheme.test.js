@@ -1,4 +1,3 @@
-// 계정 화면(로그인·환영·첫 설정)은 휴대폰 다크 설정대로, 앱 안은 계정 설정(기본 휴대폰 설정)대로 칠한다.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

@@ -1,5 +1,4 @@
 // @ts-check
-// 운비서 하루 횟수를 다 썼을 때(429): 서버가 실어 보낸 한도로 문구, 못 읽으면 숫자 없이.
 import assert from 'node:assert/strict'
 import { mock, test } from 'node:test'
 import { FunctionsHttpError } from '@supabase/supabase-js'

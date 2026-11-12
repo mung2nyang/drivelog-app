@@ -5,11 +5,11 @@ import CalendarDateSelect from '../../../shared/ui/CalendarDateSelect.tsx'
 /**
  * @param {Object} props
  * @param {number} props.year
- * @param {number} props.month 0-based
+ * @param {number} props.month
  * @param {Array<number>} props.yearOptions
- * @param {(year: number, month: number) => void} props.onChangeMonth 월이 -1/12처럼 범위를 벗어나도(이전/다음 달 이동) 그대로 넘긴다 — new Date()가 알아서 연도로 넘긴다.
+ * @param {(year: number, month: number) => void} props.onChangeMonth
  * @param {(() => void)} [props.onOpenMenu]
- * @param {import('react').ReactNode} [props.banner] 년·월 줄 위에 둔다 — 년·월 줄과 달력 판이 붙어야 한 카드가 된다.
+ * @param {import('react').ReactNode} [props.banner]
  */
 export default function CalendarHeader({
   year,

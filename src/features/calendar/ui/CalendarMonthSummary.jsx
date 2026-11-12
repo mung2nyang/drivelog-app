@@ -1,11 +1,8 @@
 // @ts-check
-// 미수금 미니 카드 + 월간 운송료 정산 카드. monthSettlementSummary 결과로 거래처별·파렛트·서브수수료·지출 행을 그린다.
 import { formatWon } from '../../../domain/money.ts'
 import SummaryInfoToggle from '../../../shared/ui/SummaryInfoToggle.tsx'
 
-/**
- * @typedef {ReturnType<typeof import('../../../domain/monthSettlement.ts').monthSettlementSummary>} MonthSettlementSummary
- */
+/** @typedef {ReturnType<typeof import('../../../domain/monthSettlement.ts').monthSettlementSummary>} MonthSettlementSummary */
 
 const TOTAL_INFO = '부가세 제외 합계는 운송료와 파렛트 회수 청구액에서 수수료와 산재보험료를 뺀 금액이고, 부가세 포함 합계는 여기에 부가세를 더한 금액입니다. 아래 정비비, 주유비, 통행료는 이 합계에서 차감하지 않은 이번 달 차량 지출입니다.'
 
@@ -20,10 +17,7 @@ function clientCommInfo(setting) {
   return `거래처를 등록할 때 설정한 수수료${shown}를 이 거래처의 운송료에서 차감합니다.`
 }
 
-/**
- * 라벨 "3456 차량 10%" → 설정 부분만, 기사 몫 기준에 맞는 설명.
- * @param {string} label @param {'gross'|'afterClientCommission'} base
- */
+/** @param {string} label @param {'gross'|'afterClientCommission'} base */
 function subCarCommInfo(label, base) {
   const setting = label.replace(/^\S+ 차량 (?=\d)/, '')
   const shown = setting && setting !== label ? `(${setting})` : ''
@@ -40,7 +34,6 @@ function subCarCommInfo(label, base) {
  */
 export default function CalendarMonthSummary({ paymentOn, unpaidTotal, summary, distanceOn = false }) {
   const clientNames = Object.keys(summary.fareByClient || {})
-  // 지출 줄 중 맨 처음 나오는 줄 위에만 구분선.
   const firstExpense = summary.maint > 0 ? 'maint' : summary.fuel > 0 ? 'fuel' : 'misc'
   const expenseRow = (/** @type {string} */ kind, /** @type {string} */ color) => (kind === firstExpense
     ? { className: 'summary-row summary-expense-first', style: { marginTop: 8, paddingTop: 8, color } }

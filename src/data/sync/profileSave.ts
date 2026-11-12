@@ -1,4 +1,3 @@
-// 개인정보 저장(saveProfile→commitProfile). 화면 읽기는 useOwnerProfile / readOwnerProfile.
 import { commitProfile } from '../store/commitHelpers.ts'
 import { readOwnerSettings } from '../store/ownerDataHooks.ts'
 import {

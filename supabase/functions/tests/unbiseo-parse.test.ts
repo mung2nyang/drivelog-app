@@ -1,4 +1,3 @@
-// 운비서 말 읽기 서버 시험: AI 답 읽기 규칙과 날짜·달 표. CI에서 deno test로 돈다.
 import assert from 'node:assert/strict'
 import { readAiAnswer } from '../unbiseo-parse/answer.ts'
 import { dateTable, monthTable } from '../unbiseo-parse/grok.ts'

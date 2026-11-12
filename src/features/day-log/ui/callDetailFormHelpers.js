@@ -1,5 +1,4 @@
 // @ts-check
-// 콜상세 폼 순수 헬퍼(초기값 구성·포맷팅).
 import { dueDateForClient } from '../../../domain/clients.ts'
 import { getCallDetailDurationMinutes } from '../../../domain/finance.ts'
 import { formatCurrencyInput, formatWon, isLargeFare, parseCurrencyValue } from '../../../domain/money.ts'
@@ -83,9 +82,8 @@ export function durationSuffix(detail) {
 }
 
 /**
- * 운송료가 1,000만원을 넘으면 저장 전에 한 번 묻는다(앱 확인 창). 넘지 않으면 바로 true.
- * @param {string|number|undefined} fare 쉼표 금액 글자
- * @returns {Promise<boolean>} true면 저장해도 된다.
+ * @param {string|number|undefined} fare
+ * @returns {Promise<boolean>}
  */
 export async function confirmLargeFareSave(fare) {
   if (!isLargeFare(fare)) return true

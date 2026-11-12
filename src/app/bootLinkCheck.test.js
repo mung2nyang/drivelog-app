@@ -1,4 +1,3 @@
-// 로드맵 19 — 앱 켤 때 연동 확인이 실패하면 1번 더, 그래도 실패하면 본인 칸으로 들어가지 않고 안내 화면.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

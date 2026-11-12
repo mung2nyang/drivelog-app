@@ -1,4 +1,3 @@
-// 로드맵 10-A: 사이드메뉴는 지금 테마의 배너 그림 하나만 넣는다(숨긴 그림도 브라우저가 내려받으므로 둘 다 넣지 않음).
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

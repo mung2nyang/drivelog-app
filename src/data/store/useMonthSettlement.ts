@@ -1,4 +1,3 @@
-// 달력 "월간 운송료 정산" 카드와 새 홈 "이번 달 정산 합계"가 같은 입력으로 같은 합계를 내도록 모은 훅.
 import { useMemo } from 'react'
 import { resolveLogSettings } from '../../domain/carSettingsScope.ts'
 import { getFixedRouteClient, resolveFixedUnitPrice } from '../../domain/clients.ts'
@@ -12,7 +11,6 @@ import type { DayRecordLike } from '../../domain/dayRecordTypes.ts'
 
 const EMPTY_WORK = ({}) as Record<string, DayRecordLike>
 
-/** @param input month는 0-based */
 export default function useMonthSettlement({ ownerKey, logId = 'main', clientScopeKey, year, month }: { ownerKey: string, logId?: string, clientScopeKey?: string, year: number, month: number }) {
   const isMain = logId === 'main'
   const mainWorkData = useOwnerWorkData(ownerKey)
@@ -28,7 +26,6 @@ export default function useMonthSettlement({ ownerKey, logId = 'main', clientSco
 
   const fixedRouteClient = getFixedRouteClient({ clients }, fixedScopeKey)
   const activeFixedOn = isMain ? !!settings.fixedOn : !!settings.subFixedOn
-  // 하루 금액(달력 칸·홈)용 — 달 합계와 같은 조건일 때만 파렛트 단가.
   const palletPrice = activeFixedOn && fixedRouteClient?.palletOn ? parseCurrencyValue(fixedRouteClient.palletPrice) : 0
   const car = isMain ? null : (cars || []).find((c) => c.number === logId) || null
 

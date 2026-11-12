@@ -1,20 +1,18 @@
-// 창(팝업) 공용 껍데기 — 바깥 누름·Esc 닫기, 겹친 창은 맨 위만 Esc, 열 때·닫을 때 키보드 위치.
 import { useEffect, useRef } from 'react'
 import type { ReactNode, RefObject } from 'react'
 
-/** 지금 열린 창 순서(맨 뒤가 맨 위). 메모리에만 있다. */
 const openShells: Array<object> = []
 
 type Props = {
   onClose: () => void,
-  closeOnOverlay?: boolean, // 바깥(회색) 누르면 닫기(기본 켬)
-  closeOnEscape?: boolean, // Esc 키로 닫기(기본 켬)
+  closeOnOverlay?: boolean,
+  closeOnEscape?: boolean,
   role?: 'dialog' | 'alertdialog',
-  label?: string, // 화면 읽기용 창 이름
-  labelledBy?: string, // 창 이름이 적힌 요소 id
-  contentClassName?: string, // 안쪽 상자 CSS 이름(기본 modal-content)
-  overlayClassName?: string, // 바깥막 CSS 이름(기본 modal-overlay)
-  initialFocusRef?: RefObject<HTMLElement | null>, // 열릴 때 키보드 위치(없으면 창 자체)
+  label?: string,
+  labelledBy?: string,
+  contentClassName?: string,
+  overlayClassName?: string,
+  initialFocusRef?: RefObject<HTMLElement | null>,
   children?: ReactNode,
 }
 

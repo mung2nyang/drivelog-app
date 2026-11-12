@@ -1,4 +1,3 @@
-// 운송비 내역서 월간 정산 — "파렛트 회수 청구액" 줄(로드맵 113-D, 달력과 같은 자리·이름).
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

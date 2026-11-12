@@ -15,7 +15,6 @@ import ModalShell from '../../../shared/ui/ModalShell.tsx'
 /** @typedef {import('../../../domain/clientTypes.ts').ClientDraft} ClientDraft */
 /** @typedef {NonNullable<ReturnType<typeof checkClientDraft>>} ClientProblem */
 
-// 이 창에 있는 칸만 표시 — 창에 없는 칸(고정 노선·파렛트 단가) 문제는 저장 함수가 지금처럼 알림으로.
 /** @type {Partial<Record<ClientProblem['field'], string>>} */
 const INPUT_IDS = { companyName: 'clientCompanyName', paymentTermValue: 'clientPaymentTermValue', commValue: 'clientCommValue' }
 
@@ -31,16 +30,14 @@ function valueOf(draft, field) {
  * @param {string|null} props.editingId
  * @param {() => void} props.onCancel
  * @param {() => void|Promise<void>} props.onSave
- * @param {Array<import('../../../domain/clientTypes.ts').ClientLike>} [props.clients] 같은 이름 검사용
+ * @param {Array<import('../../../domain/clientTypes.ts').ClientLike>} [props.clients]
  */
 export default function ClientFormModal({ draft, setDraft, editingId, onCancel, onSave, clients = [] }) {
   const termValueLabel = draft.paymentTerm === 'after_days' ? '며칠 후' : '날짜'
   const [problem, setProblem] = useState(/** @type {(ClientProblem & { value: string })|null} */ (null))
-  // 문제 칸 값을 고치기 시작하면 표시를 거둔다.
   const shown = problem && valueOf(draft, problem.field) === problem.value ? problem : null
 
   const [saving, setSaving] = useState(false)
-  // 저장 중엔 다시 눌러도 무시 — 같은 거래처가 두 번 생기지 않게.
   const busyRef = useRef(false)
 
   async function handleSave() {

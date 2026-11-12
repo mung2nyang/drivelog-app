@@ -1,5 +1,4 @@
 // @ts-check
-// 구글 첫 로그인 기본 정보(구글 로그인 G-2): 이름·휴대전화 번호를 받아 profiles 행을 만든 뒤 첫 설정 화면으로.
 import { useState } from 'react'
 import { assetPath } from '../../../shared/utils/assetPath.ts'
 import { formatPhoneNumber } from '../../../domain/formatPhone.ts'
@@ -10,8 +9,8 @@ const BANNER = assetPath('/images/banner_image.png')
 
 /**
  * @param {Object} props
- * @param {string} [props.initialName] 구글 계정 이름(미리 채움)
- * @param {(fields: { name: string, phone: string }) => Promise<boolean>} props.onSubmit 성공하면 true
+ * @param {string} [props.initialName]
+ * @param {(fields: { name: string, phone: string }) => Promise<boolean>} props.onSubmit
  */
 export default function WelcomeProfileView({ initialName = '', onSubmit }) {
   const [name, setName] = useState(initialName)
@@ -30,7 +29,6 @@ export default function WelcomeProfileView({ initialName = '', onSubmit }) {
     <div className="account-flow-page">
       <div className="auth-view">
         <div className="auth-topbar">
-          {/* 뒤로가기 버튼 자리(세 칸 구조라 비워 두면 로고가 좁은 첫 칸에 들어감) */}
           <span aria-hidden="true" />
           <div className="auth-brand-sm">
             <img src={BANNER} alt="" className="auth-logo-sm" />

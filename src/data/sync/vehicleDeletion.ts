@@ -1,5 +1,3 @@
-// 로그인 차량 삭제는 deleteVehicleFromSupabase 직접 1회(Fail-Fast) — 성공했을 때만 Store(cars + 서브 일지 키)를 원자적으로 반영하고, 실패면 로컬 그대로 토스트만.
-// supabaseId 없는 로컬 전용 차량은 commitLocalOnly.
 import { removeCar } from '../../domain/cars.ts'
 import {
   assertSessionStillCurrent,
@@ -26,7 +24,6 @@ export async function requestVehicleDeletion({ ownerKey, userId, cars, vehicleId
   if (ownerBlocked) return { cars, blocked: ownerBlocked, toast: ownerBlocked, failed: true, closeModal: false }
   const car = cars.find((item) => item.id === vehicleId)
   if (!car) return { cars, blocked: null, toast: null, failed: true, closeModal: false }
-  // 연동 중인 차량을 지우면 서버에서 연동 기록이 같이 지워지므로 먼저 막는다.
   const drivers = getState().drivers[ownerKey] || []
   if (drivers.some((driver) => driver.status === 'linked' && driver.vehicleNumber === car.number)) {
     return { cars, blocked: LINKED_VEHICLE_TOAST, toast: LINKED_VEHICLE_TOAST, failed: true, closeModal: false }
@@ -65,8 +62,6 @@ export async function requestVehicleDeletion({ ownerKey, userId, cars, vehicleId
   try {
     await deleteVehicleFromSupabase(car.supabaseId, captured)
     assertSessionStillCurrent(captured)
-    // 서버 삭제 성공 뒤에만 로컬(cars + 서브 일지 키)을 원자적으로 반영한다.
-    // 서버 쓰기는 이미 끝났다.
     commitBatch([{ domain: 'cars', ownerKey, value: nextCars }], { extraWrites, replaceWorkLogs })
     afterPersist()
     return { cars: nextCars, blocked: null, toast: '차량을 삭제했습니다.', failed: false, closeModal: true }
@@ -75,7 +70,6 @@ export async function requestVehicleDeletion({ ownerKey, userId, cars, vehicleId
       return { cars, blocked: null, toast: SESSION_CHANGED_TOAST, failed: true, closeModal: false }
     }
     console.error('[requestVehicleDeletion] 삭제 실패:', error)
-    // 서버가 연동 중 삭제를 거절하면(P0001, 0020) 그 문구를 그대로 보여 준다.
     const serverReason = error && typeof error === 'object' && 'code' in error && error.code === 'P0001' && 'message' in error && typeof error.message === 'string' ? error.message : null
     const toast = serverReason || SAVE_FAIL_TOAST
     return { cars, blocked: toast, toast, failed: true, closeModal: false }

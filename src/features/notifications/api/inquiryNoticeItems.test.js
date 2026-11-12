@@ -1,5 +1,4 @@
 // @ts-check
-// 로드맵 23-C — 문의 알림 줄: 답변 시각·최근 대기 문의가 id에 들어가 바뀌면 다시 뜨고, 닫은 id·끈 종류는 빠진다.
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 

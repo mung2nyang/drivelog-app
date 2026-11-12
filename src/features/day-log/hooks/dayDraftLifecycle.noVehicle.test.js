@@ -1,4 +1,3 @@
-// 서버에 차량이 하나도 없는 로그인 계정: 일지가 어디에도 저장되지 않으면 "저장됨" 대신 실패로 알린다.
 import '../../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { mock, test } from 'node:test'

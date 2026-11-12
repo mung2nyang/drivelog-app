@@ -12,7 +12,7 @@ import { useToast } from '../../../shared/hooks/useToast.ts'
 
 /**
  * @param {Object} props
- * @param {CallDetailLike} props.item 콜상세 한 건(항상 id를 가진다 — domain/day-record.ts의 getCallDetails 참고)
+ * @param {CallDetailLike} props.item
  * @param {PaymentSummary} props.payment
  * @param {Settings} props.settings
  * @param {ClientLike|undefined} props.client
@@ -25,7 +25,6 @@ export default function CallDetailCard({ item, payment, settings, client, onEdit
   const showToast = useToast()
   const fare = parseCurrencyValue(item.fare)
   const unpaid = payment.status !== 'paid'
-  // 받을 돈이 없는 0원 운행은 미수가 아니라 결제 단추를 안 보인다(미수 목록과 같은 기준).
   const nothingToCollect = unpaid && payment.remainingAmount <= 0
   const distance = parseFloat(item.distanceKm || '') || 0
   const specs = [

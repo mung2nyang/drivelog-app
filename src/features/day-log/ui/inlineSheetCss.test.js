@@ -17,10 +17,6 @@ test('일지 인라인 호스트는 max-height:0 + is-open 트릭을 쓰지 않�
 })
 
 test('일지 인라인 시트의 취소/저장 액션 바는 sticky/fixed가 아니라 일반 문서 흐름이다', () => {
-  // 재감사(sticky 제거) — position: sticky의 bottom이 스크롤 포트(.work-log-page)
-  // 하단 기준으로 붙어, 시트가 열리는 순간 취소/저장이 폼 바닥이 아니라 화면
-  // 위쪽에 먼저 뜨는 문제가 있었다. fixed로 화면에 띄우는 방식도 금지(과거 롤백된
-  // 방식) — 이 두 selector엔 position: sticky/fixed가 전혀 없어야 한다.
   const dayLog = readFileSync(join(here, 'day-log.css'), 'utf8')
   const actionsBlockMatch = dayLog.match(/\.call-detail-form-actions,[\s\S]*?\.modal-btns\s*\{([\s\S]*?)\}/)
   assert.ok(actionsBlockMatch, '취소/저장 액션 바 규칙을 day-log.css에서 찾지 못했다')
@@ -29,8 +25,6 @@ test('일지 인라인 시트의 취소/저장 액션 바는 sticky/fixed가 아
   assert.equal(/position:\s*fixed/.test(actionsBlock), false)
 })
 
-// 로드맵 20-A(2026-10-08 결정, sot 4-9 변경): 칸이 열린 뒤 그 자리로 내려가는 scrollIntoView는 InlineSheet에서만 허용.
-// 펼쳐짐이 끝난 뒤(transitionend)·고르는 항목이 바뀔 때만 — 렌더 중 동기 측정(useLayoutEffect)은 여전히 금지.
 test('InlineSheet: 자동 스크롤은 펼쳐짐이 끝난 뒤에만, useLayoutEffect는 쓰지 않는다', () => {
   const source = readFileSync(join(here, 'InlineSheet.jsx'), 'utf8')
   assert.equal(source.includes('useLayoutEffect'), false)

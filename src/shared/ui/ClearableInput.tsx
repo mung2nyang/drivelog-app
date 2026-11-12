@@ -1,4 +1,3 @@
-// 입력 중이고 글자가 있을 때만 오른쪽 X로 한 번에 지우는 입력칸. 지우기는 "글자를 다 지운 입력"과 똑같이 onChange를 거친다.
 import { useRef, useState } from 'react'
 import type { InputHTMLAttributes } from 'react'
 import './clearable-input.css'

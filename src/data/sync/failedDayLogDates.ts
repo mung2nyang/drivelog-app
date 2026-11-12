@@ -1,4 +1,3 @@
-// 로그인 일지 서버 저장에 실패한 날짜 목록 — 앱을 껐다 켜도 알림이 남게 휴대폰에 날짜만 둔다(입력 내용·재시도 없음).
 import { isValidCalendarDateKey } from '../../domain/dateKey.ts'
 import type { JsonValue } from '../../domain/jsonTypes.ts'
 
@@ -16,7 +15,6 @@ function toEntry(value: JsonValue): FailedDayLogDate | null {
   return { logId, dateKey }
 }
 
-/** 휴대폰 값 읽기 — 못 읽거나 깨졌으면 빈 목록, 깨진 항목만 뺀다. */
 function readAll(): Stored {
   try {
     const parsed = (JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}')) as JsonValue
@@ -35,7 +33,6 @@ function writeAll(next: Stored) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
   } catch {
-    /* 저장 못 하면 이번만 기록 없이 — 일지 저장 흐름은 그대로 */
   }
   version += 1
   listeners.forEach((listener) => listener())
@@ -60,12 +57,10 @@ export function removeFailedDayLogDate(ownerKey: string, logId: string, dateKey:
   writeAll({ ...all, [ownerKey]: next })
 }
 
-/** 화면 구독용 지금 값 — 목록이 바뀔 때만 달라진다. */
 export function failedDayLogDatesVersion() {
   return version
 }
 
-/** 목록이 바뀌면 부른다. 돌려준 함수가 구독 해제. */
 export function subscribeFailedDayLogDates(listener: () => void) {
   listeners.add(listener)
   return () => { listeners.delete(listener) }

@@ -24,7 +24,6 @@ test('AppSettingsPage 백업 섹션: 게스트 세션에서만 노출되고 비�
   const root = createRoot(container)
 
   try {
-    // 1. 게스트 세션 (ownerKey === 'guest')
     await act(async () => {
       root.render(withSession(React.createElement(AppSettingsPage, { onBack: () => {} }), { ownerKey: 'guest' }))
     })
@@ -35,7 +34,6 @@ test('AppSettingsPage 백업 섹션: 게스트 세션에서만 노출되고 비�
     assert.ok(container.textContent?.includes('데이터 관리(백업/복원)'))
     assert.ok(container.textContent?.includes('아직 백업한 적 없음') || container.textContent?.includes('마지막 백업:'))
 
-    // 2. 비게스트(로그인/소속기사/차주) 세션 (ownerKey !== 'guest')
     await act(async () => {
       root.render(withSession(React.createElement(AppSettingsPage, { onBack: () => {} }), { ownerKey: 'owner-user-99' }))
     })

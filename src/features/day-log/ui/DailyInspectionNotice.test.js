@@ -1,4 +1,3 @@
-// 로드맵 9-B-2 — 일지 안내 줄 + 점검표 모달: 보이는 조건, 작성 전·후 문구, 입력(모두 양호·전부 선택해야 저장)→저장→완료, 보기→연필→수정·취소, 바깥 클릭 규칙.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 
@@ -217,7 +216,6 @@ test('불러오기 실패 → "불러오지 못했습니다 [다시 시도]" →
   }
 })
 
-// 로드맵 112 — 지우기: 저장된 점검표를 수정에서 다 비우고 [저장] → 확인 창 → 지우기. 처음 입력은 지금처럼 막음.
 /** @param {boolean} answer @param {Array<string>} asked */
 function fakeConfirm(answer, asked) {
   const original = window.confirm
@@ -339,19 +337,16 @@ test('처음 입력·일부만 고른 수정은 지금처럼 "모든 항목을 �
   }
 })
 
-// 휴대폰 뒤로가기: 점검표 창이 열린 동안 기록 1장을 쌓아 뒤로가기는 창만 닫는다(실제 window.history로).
 const { ConfirmDialogHost } = await import('../../../shared/ui/confirmDialog.tsx')
 const DAY_PATH = '/app/day/2026-10-01'
 const guardOnTop = () => Boolean(Reflect.get(window.history.state || {}, 'modalGuard'))
 const pause = (/** @type {number} */ ms) => new Promise((resolve) => { setTimeout(resolve, ms) })
 
-/** 달력 → 일지 순서로 기록을 깐다(뒤로가기가 일지를 빠져나가면 달력 주소가 된다). */
 function startAtDayLog() {
   window.history.replaceState({ idx: 1, key: 'calendar' }, '', '/app/calendar')
   window.history.pushState({ idx: 2, key: 'day' }, '', DAY_PATH)
 }
 
-/** 휴대폰 뒤로가기 한 번 — 기록이 옮겨질 때까지(최대 0.5초) 기다린다. */
 async function pressBack() {
   await act(async () => {
     const popped = new Promise((resolve) => { window.addEventListener('popstate', () => resolve(undefined), { once: true }) })

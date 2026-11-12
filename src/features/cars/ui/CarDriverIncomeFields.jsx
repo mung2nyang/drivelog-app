@@ -1,6 +1,4 @@
 // @ts-check
-// 기사차량 폼의 "기사 유형·산재보험·원천징수(3.3%)·필요경비율·산재보험료율" 블록(CarFormModal이 씀).
-// 계산 규칙은 domain/driverIncomeDeductions.ts, 값은 draft에만 두고 저장은 차량 저장 경로가 한다.
 import { formatPercentInput } from '../../../domain/money.ts'
 import { DEFAULT_EXPENSE_RATE, DEFAULT_INSURANCE_RATE, insuranceSplitOf } from '../../../domain/driverIncomeDeductions.ts'
 import InfoTip from '../../../shared/ui/InfoTip.tsx'
@@ -23,12 +21,10 @@ export default function CarDriverIncomeFields({ draft, setDraft }) {
   const isEmployee = draft.driverIncomeType === 'employee'
   const insuranceSplit = insuranceSplitOf(draft)
 
-  /** 유형이 원천징수와 산재 부담 기본값(근로자: 차주 전액, 사업소득자: 반반)을 정한다. */
   function setType(/** @type {'employee'|'business'} */ type) {
     setDraft((prev) => ({ ...prev, driverIncomeType: type, withholdingOn: type === 'business', insuranceSplit: type === 'employee' ? 'owner' : 'half' }))
   }
 
-  /** 산재 끄면 두 요율 0·숨김, 켜면 기본값으로 다시 채워 보인다. */
   function setInsuranceOn(/** @type {boolean} */ on) {
     setDraft((prev) => ({
       ...prev,

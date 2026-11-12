@@ -1,4 +1,3 @@
-// 로드맵 0-3-B — 개발 모드 StrictMode(켜기→끄기→다시 켜기)에서도 열기만 하면 저장이 안 돌고, 저장 후 상태가 "저장됨"이 되는지.
 import '../../../testSupport/stubSupabaseClient.ts'
 import '../../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'

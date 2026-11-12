@@ -1,5 +1,3 @@
-// 로드맵 24-B-2 — 운비서가 주소 상태로 넘긴 운행으로 그날 일지의 새 입력 창을 채워 연다(한 번만, 저장은 지금 그대로).
-// 입력 칸의 뒤로가기 붙잡기가 브라우저 기록을 보므로 BrowserRouter로 그린다.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 
@@ -25,7 +23,6 @@ const { readOwnerExpenses } = await import('../../data/store/ownerDataHooks.ts')
 const { readAssistantCall, readAssistantExpense, readAssistantFixed } = await import('./assistantCallState.js')
 const { default: MainPageRoute } = await import('./MainPageRoute.jsx')
 
-// 열자마자 "저장하지 않은 입력" 확인 창이 뜨면 안 된다(뒤로가기 붙잡기와 주소 상태 지우기가 겹칠 때).
 let confirms = 0
 window.confirm = () => { confirms += 1; return true }
 
@@ -56,7 +53,6 @@ async function render(ownerKey, usr, { callDetail = true, workData = {}, setting
   }
   /** @param {string} id */
   const valueOf = (id) => /** @type {HTMLInputElement|null} */ (container.querySelector(`#${id}`))?.value
-  // 닫힘 애니메이션 끝 — 브라우저처럼 입력 창을 내린다.
   const settle = async () => {
     const host = container.querySelector('.call-detail-inline-host')
     assert.ok(host)
@@ -97,7 +93,6 @@ test('[저장] → 지금 저장 그대로 1건, 다시 "+ 추가"는 빈 입력
     assert.equal(view.valueOf('callFare'), '')
     await view.click(view.button('취소'))
   } finally { await view.cleanup() }
-  // 일지는 닫을 때 남은 편집을 저장한다(useDayDraft).
   const saved = readOwnerLogWorkData('assist-save', 'main')[DATE]?.callDetails || []
   assert.equal(saved.length, 1)
   assert.equal(saved[0].loadLoc, '수원')
@@ -161,7 +156,6 @@ test('이상한 값은 그 칸만 빈 칸 — 음수·소수 금액, 100자 넘�
   } finally { await view.cleanup() }
 })
 
-// 로드맵 24-B-3-A — "휴무 취소하고 기록"이면 휴무를 끄고(휴무 단추와 같은 저장) 채운 입력 창을 연다.
 const OFF_DAY = { [DATE]: { isOff: true } }
 
 test('cancelOff: 휴무가 꺼지고 채운 입력 창이 눌리는 상태로 열린다, 닫아도 휴무는 꺼진 채', async () => {
@@ -211,7 +205,6 @@ test('휴무를 끈 뒤 주소 상태가 지워져 다시 그려도 휴무를 �
   assert.equal(readOwnerLogWorkData('assist-off-again', 'main')[DATE]?.isOff, true)
 })
 
-// 로드맵 24-C-2 — 운비서가 넘긴 지출로 그 종류 지출 창을 채워 한 번 연다(저장은 지금 지출 창 그대로).
 const FUEL = { type: 'fuel', cost: 120000, name: '경유', category: '', fuelType: '주유', payment: '' }
 const MAINT = { type: 'maint', cost: 150000, name: '엔진오일 교환', category: '소모품', fuelType: '', payment: '현금' }
 /** @param {HTMLElement} container @param {string} selector */
@@ -252,7 +245,6 @@ test('지출 [취소] → 아무것도 안 남는다', async () => {
   const view = await render('assist-expense-cancel', { from: 'home', assistantExpense: MAINT })
   try {
     await view.click(view.button('취소'))
-    // 닫힘 애니메이션 끝 — 브라우저처럼 지출 창을 내린다.
     const host = view.container.querySelector('.maint-fuel-inline-host')
     assert.ok(host)
     const event = new window.Event('transitionend', { bubbles: true })
@@ -330,7 +322,6 @@ test('지출 이상한 값은 그 칸만 빈 칸 — 모르는 종류는 정비,
   } finally { await view.cleanup() }
 })
 
-// 로드맵 24-F-2 — 운비서가 넘긴 고정 노선을 그 날짜 일지에 한 번 더한다(노선 칩·횟수 칸과 같은 동작, 저장은 일지 자동 저장).
 const ROUTES = { fixedRouteOn: true, fixedRoutePresets: [{ id: 'r1', loadLoc: '평택', unloadLoc: '용인' }, { id: 'r2', loadLoc: '화성', unloadLoc: '오산' }] }
 
 test('고정 노선이 칩 이름과 같으면 그 칩 횟수와 운행 횟수를 같이 올리고 알림, 주소 상태에서는 지워진다', async () => {
@@ -415,7 +406,6 @@ test('고정 노선 이상한 값: 횟수가 1~20 정수가 아니면 통째로 
   assert.equal(readAssistantFixed({ assistantCall: CALL }), null)
 })
 
-// 로드맵 24-G-2 — 운비서 버튼이 갈 곳: 거래처는 거래처 화면, 그 밖은 그 날짜 일지.
 test('갈 곳: 거래처는 /app/clients(assistantClient), 운행·고정 노선은 그 날짜 일지', async () => {
   const { assistantNavTarget } = await import('./assistantCallState.js')
   const heard = { name: '한진', manager: '', phone: '', paymentTerm: '', paymentTermValue: null, commType: '', commValue: null }

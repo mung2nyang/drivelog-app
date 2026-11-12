@@ -1,5 +1,3 @@
-/* 운행 입력 창 배치: 제목, 칸 묶음, 라벨, 플랫폼·영수 선택, 입금일, 저장 버튼. */
-
 .work-log-page .call-detail-modal-title {
   margin: 0;
   padding: 0 2px 11px;
@@ -64,7 +62,6 @@
   color: var(--text-color);
 }
 
-/* 일지 입력 라벨 공통: 0.85rem·750·흰색 (상·하차지는 색만 유지) */
 .work-log-page .call-detail-panel label:not(.switch),
 .work-log-page .fixed-route-input-row > label {
   color: var(--text-color);
@@ -141,7 +138,7 @@
 }
 
 .work-log-page .payment-term-guide {
-  margin: 14px 0 0;   /* 위 여백만 늘림, 아래는 원래대로 0 */
+  margin: 14px 0 0;
   color: var(--sub-text-color);
   font-size: var(--fs-floor);
   line-height: 1.4;

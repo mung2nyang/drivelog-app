@@ -1,5 +1,4 @@
 // @ts-check
-// 운행일지의 콜 상세 저장·삭제·수금 바꾸기, 고정 노선 횟수, 고정 장소·플랫폼 칩 저장 — 화면(DayLogPage)은 그리기만.
 import { applyFixedRouteRun, getFixedRouteCounts } from '../../../domain/day-record.ts'
 import { removeCallDetail, upsertCallDetail } from '../../../domain/call-details.ts'
 import { getDetailPaymentSummary } from '../../../domain/finance.ts'
@@ -41,7 +40,6 @@ export default function useCallDetailActions(draft, dispatch, { dateKey, clients
     const editingIndex = editingCallId ? indexOfCall(editingCallId) : -1
     const result = upsertCallDetail(draft.callDetails, formDraft, editingIndex, dateKey, clients)
     if (result.error) { showToast?.(result.error); return }
-    // buildCallDetail이 항상 id를 붙이므로 "id 항상 있음" 일지 타입으로 좁힌다.
     patchDraft({ callDetails: /** @type {Array<DayDraft['callDetails'][number]>} */ (result.items) })
     dispatch({ type: 'closeCallForm' })
     const added = settings.platformOn ? addPlatformPreset(settings, formDraft.platform || '') : null

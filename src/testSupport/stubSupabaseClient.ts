@@ -1,6 +1,3 @@
-// supabaseClient를 가져오는 순간 실제 createClient()가 돌아 Node 테스트 프로세스가 안 끝나므로
-// (realtime/auth 타이머가 붙잡음), 다른 임포트보다 먼저 이 파일을 임포트해 아무것도 안 하는 스텁으로 바꾼다.
-// --experimental-test-module-mocks 플래그가 있어야 동작한다(package.json의 test 스크립트).
 import { mock } from 'node:test'
 import type { JsonValue } from '../data/store/atomicPersist.ts'
 

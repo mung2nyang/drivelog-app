@@ -8,7 +8,6 @@ type Props = {
   onChange: (next: string) => void,
 }
 
-/** 연/월 전용 래퍼 — 로직은 `AppDropdown`, 날짜 네비 레이아웃만 남긴다. */
 export default function CalendarDateSelect({ label, value, options, onChange }: Props) {
   return (
     <AppDropdown

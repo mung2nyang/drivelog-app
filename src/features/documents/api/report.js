@@ -1,6 +1,5 @@
 // @ts-check
 /** @typedef {import('../../../domain/jsonTypes.ts').JsonValue} JsonValue */
-// 리포트 공용 — 파일명·표시용 짧은 헬퍼(공유 모달도 여기만 씀).
 /** @typedef {import('../../../domain/clientTypes.ts').ClientLike} ClientLike */
 
 /** @param {JsonValue|undefined} value */
@@ -10,16 +9,14 @@ export function dash(value) {
 }
 
 /**
- * 월간 운송비 내역서 PDF 파일명(월은 0-based monthIndex).
  * @param {number} year
- * @param {number} monthIndex 0=1월 … 11=12월
+ * @param {number} monthIndex
  */
 export function buildReportFileName(year, monthIndex) {
   return `${year}년_${monthIndex + 1}월_운송비내역서.pdf`
 }
 
 /**
- * 세부 내역서 PDF 파일명.
  * @param {number} year
  * @param {number} monthIndex
  * @param {string} clientFilter
@@ -30,7 +27,6 @@ export function buildDetailReportFileName(year, monthIndex, clientFilter) {
 }
 
 /**
- * 내려받기·공유 파일의 확장자 없는 이름(요약이면 월간, 세부면 거래처 붙음).
  * @param {'summary'|'detail'} viewMode
  * @param {number} year
  * @param {number} monthIndex

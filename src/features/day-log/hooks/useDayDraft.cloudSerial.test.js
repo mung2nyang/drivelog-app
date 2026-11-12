@@ -1,4 +1,3 @@
-// 로드맵 65 — 로그인 일지 서버 저장은 한 번에 하나, 도는 중에 고치면 끝난 뒤 최신 draft로 한 번 더.
 import '../../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { mock, test } from 'node:test'
@@ -29,10 +28,7 @@ function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
-/**
- * 일지 저장 서버 함수(save_day_log)를 붙잡아 두는 가짜 서버. gated 수만큼 앞 호출을 붙잡고 나머지는 바로 성공.
- * @param {{ gated: number, failFirst?: boolean }} options
- */
+/** @param {{ gated: number, failFirst?: boolean }} options */
 function holdUpserts({ gated, failFirst = false }) {
   /** @type {Array<number>} */
   const fixedCounts = []
@@ -192,7 +188,6 @@ test('72-7 로그인 저장 중에는 "저장 중", 화면을 닫아도 서버 �
   endCloudSession()
 })
 
-// 로드맵 110-A — 서버 저장 실패 날짜는 휴대폰 목록에, 다음 저장 성공이나 그 날짜 일지를 열면 지운다.
 test('F-1 서버 저장 실패 → 날짜가 목록에, 다음 저장 성공 → 지움', async () => {
   beginLoggedIn('u-f1', 'own-f1')
   holdUpserts({ gated: 0, failFirst: true })

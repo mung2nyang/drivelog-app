@@ -1,4 +1,3 @@
-// 로드맵 61 — 매출제 기사 몫 기준(운송료 전체 / 거래처 수수료 뗀 뒤): 달력·매출·기사 관리·연동 기사 본인 매출이 같은 값.
 import assert from 'node:assert/strict'
 import { describe, test } from 'node:test'
 import { driverShareBaseAmount, getMonthlyDriverClientCommission, resolveDriverShareBase } from './driverShareBase.ts'
@@ -13,7 +12,6 @@ import { getDriverSelfMonthlyDetail } from './driverSelfRevenue.ts'
 const PLATE = '22나2222'
 const MONTH = '2026-10'
 const CLIENT = { id: 'c-1', companyName: '한진', commEnabled: true, commType: 'percent', commValue: '10' }
-/** 운송료 100만원(한진, 거래처 수수료 10%) */
 const WORK = { '2026-10-05': { callDetails: [{ id: 'a', fare: '1,000,000', client: '한진' }] } }
 const OPEN_LINK = { id: '', vehicleNumber: PLATE, assignmentStart: '', assignmentEnd: '' }
 

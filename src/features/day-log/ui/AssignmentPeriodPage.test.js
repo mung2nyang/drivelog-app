@@ -1,4 +1,3 @@
-// 로드맵 26 — 연동 기사: 계약기간 밖 날짜 일지는 입력칸 대신 안내, 소속 연결 카드에 계약기간.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

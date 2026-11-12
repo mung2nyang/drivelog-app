@@ -1,4 +1,3 @@
-// 로그인 계정이 서버 기록을 못 불러오면 맨 위 띠 — 기록이 빠져 있을 수 있다고 알리고 [다시 시도].
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 
@@ -17,7 +16,7 @@ const { act } = React
 const { setHydration } = await import('../../data/store/app-store.ts')
 const { default: HydrationRetryBanner } = await import('./HydrationRetryBanner.jsx')
 
-/** @returns {Promise<string|null>} 띠 글씨(없으면 null) */
+/** @returns {Promise<string|null>} */
 async function bannerText() {
   const container = document.createElement('div')
   document.body.appendChild(container)

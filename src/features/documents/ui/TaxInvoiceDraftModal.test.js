@@ -1,5 +1,3 @@
-// 이관 감사 5-5 검증 — 계산서 작성 모달에 이메일·업태·종목·사업장 주소 입력칸이 있고,
-// 입력하면 그 필드만 바뀐 값으로 onChange가 호출되는지 확인.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 
@@ -47,7 +45,6 @@ async function mount(onChange, override = {}) {
   return { container, root }
 }
 
-/** React 제어 입력에 값을 넣고 input 이벤트를 보낸다. */
 function typeInto(input, value) {
   const setter = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(input), 'value').set
   setter.call(input, value)

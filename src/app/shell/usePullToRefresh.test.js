@@ -1,4 +1,3 @@
-// 로드맵 21: 당겨서 새로고침 — 시작해도 되나·당긴 정도·놓았을 때.
 import '../../testSupport/stubSupabaseClient.ts'
 import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'

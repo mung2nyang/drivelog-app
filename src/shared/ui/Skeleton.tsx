@@ -1,8 +1,6 @@
-// 불러오는 동안 글자·트럭 그림 대신 회색 뼈대(빛이 지나감). 모양은 skeleton.css.
 import PageHeader from './PageHeader.tsx'
 import './skeleton.css'
 
-/** 막대 줄 뼈대 — 글자 자리. lines: 막대 줄 수, label: 화면 읽기용 문구 */
 export function SkeletonLines({ lines = 2, label = '불러오는 중' }: { lines?: number, label?: string }) {
   return (
     <div className="skeleton-lines" role="status" aria-busy="true">
@@ -20,7 +18,6 @@ function range(count: number) {
   return Array.from({ length: count }, (_, index) => index)
 }
 
-/** 마이페이지 모양 — 개인정보 카드 + 바로가기 6칸 + 목록 3줄. 크기는 mypage.css를 따름. */
 function MyPageShape() {
   return (
     <>
@@ -43,7 +40,6 @@ function MyPageShape() {
   )
 }
 
-/** 매출 모양 — 위쪽 카드(날짜·년/월 탭·범위 탭) + 요약 카드 2. 크기는 revenue.css를 따름. */
 function RevenueShape() {
   return (
     <>
@@ -61,10 +57,6 @@ function RevenueShape() {
   )
 }
 
-/**
- * 화면 뼈대 — 화면 파일을 처음 받는 동안(AppShell Suspense).
- * 마이페이지·매출은 실제 화면 모양, 나머지는 제목 막대 + 카드 틀 3. path: 지금 주소(어느 모양을 그릴지)
- */
 export function PageSkeleton({ path = '', onOpenMenu }: { path?: string, onOpenMenu?: () => void }) {
   const route = path.replace(/\/+$/, '')
   const shape = route === '/app/me' ? 'me' : route === '/app/revenue' ? 'revenue' : 'common'

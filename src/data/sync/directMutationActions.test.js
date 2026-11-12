@@ -1,7 +1,3 @@
-// Step 0-4 감사 보완 4차: API 함수만 시험하고 화면 쪽 로컬 유지까지 보장된다고
-// 주장하지 않기 위해 — 이 파일은 컴포넌트가 실제로 호출하는 서비스
-// 함수(requestVehicleDeletion 등)를 직접 부른다. 이게 UI가 타는 실제 코드 경로이므로,
-// 여기서 검증한 것이 곧 UI 안전성 검증이다(렌더 테스트 없이도).
 import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { describe, mock, test } from 'node:test'
@@ -24,7 +20,6 @@ const { STORAGE_FAIL_TOAST } = await import('./localCommit.ts')
 const { commitCars } = await import('../store/commitHelpers.ts')
 
 /**
- * 로드맵 29: 비회원 로컬 저장 실패 — 예상 console.error 1건만 확인하고 나머지는 그대로 통과시킨다.
  * @template T
  * @param {string} domain
  * @param {() => Promise<T>} fn
@@ -61,8 +56,6 @@ function beginFailed(userId, ownerKey) {
   setHydration({ status: 'failed', userId, ownerKey })
 }
 
-// async: fn이 첫 await 뒤에 setItem을 부르는 경우(슬라이스 C 서버 삭제 성공 후 commit)도
-// 스파이가 살아 있게 fn 완료까지 기다렸다가 복원한다.
 async function withFailingSetItem(shouldFail, fn) {
   const proto = Object.getPrototypeOf(localStorage)
   const original = proto.setItem
@@ -112,7 +105,6 @@ describe('requestVehicleDeletion — 필수 시나리오', () => {
     const result = await requestVehicleDeletion({ ownerKey, userId: 'user-1', cars, vehicleId: 'car-1' })
 
     assert.deepEqual(result.cars, [])
-    // 슬라이스 E: 로그인 cars는 LS에 미러하지 않는다 — 서버·Store가 정본, LS는 그대로.
     assert.deepEqual(readJsonKey('cars', ownerKey, []), cars)
     assert.deepEqual(getState().cars[ownerKey], [], 'Store에서도 사라져야 한다')
     assert.equal(countOf('vehicles', 'delete'), 1)
@@ -163,7 +155,7 @@ describe('requestVehicleDeletion — 필수 시나리오', () => {
     beginReady('user-1', ownerKey)
     const cars = [{ id: 'car-1', number: '11가1111', supabaseId: 907 }]
     writeJsonKey('cars', ownerKey, cars)
-    handlers.vehicles = { delete: () => ({ data: [], error: null }) } // 삭제됐지만 0행
+    handlers.vehicles = { delete: () => ({ data: [], error: null }) }
 
     const result = await requestVehicleDeletion({ ownerKey, userId: 'user-1', cars, vehicleId: 'car-1' })
 
@@ -186,7 +178,7 @@ describe('requestVehicleDeletion — 필수 시나리오', () => {
 
     const promise = requestVehicleDeletion({ ownerKey, userId: 'user-1', cars, vehicleId: 'car-1' })
     await wait(10)
-    endCloudSession() // 응답 대기 중 로그아웃
+    endCloudSession()
 
     let notifyCount = 0
     const unsubscribe = subscribe(() => { notifyCount += 1 })
@@ -214,7 +206,6 @@ describe('requestVehicleDeletion — 필수 시나리오', () => {
     const retryResult = await requestVehicleDeletion({ ownerKey, userId: 'user-1', cars: blockedResult.cars, vehicleId: 'car-1' })
 
     assert.deepEqual(retryResult.cars, [])
-    // 슬라이스 E: 로그인 cars는 LS에 미러하지 않는다 — Store가 정본.
     assert.deepEqual(getState().cars[ownerKey], [])
     assert.deepEqual(readJsonKey('cars', ownerKey, []), cars)
     assert.equal(countOf('vehicles', 'delete'), 1)
@@ -247,9 +238,6 @@ describe('requestVehicleDeletion — 필수 시나리오', () => {
 })
 
 describe('슬라이스 E — 로그인 차량 삭제는 cars를 localStorage에 쓰지 않는다', () => {
-  // 슬라이스 E: 로그인 세션의 cars 커밋은 memory-only다(LS·dirty 없음). 서버 삭제가
-  // 끝난 뒤 Store만 갱신되므로, cars 키 setItem이 실패하도록 막아도 삭제는 그대로
-  // 완료된다(애초에 cars 키를 쓰지 않는다). LS는 저장 전 값 그대로다.
   test('cars 키 setItem을 막아도 서버 삭제 후 Store에서 사라지고 cars localStorage는 불변이다', async () => {
     const ownerKey = 'dma-vehicle-atomic-fail'
     beginReady('user-1', ownerKey)
@@ -424,7 +412,6 @@ describe('requestClientDeletion — 필수 시나리오', () => {
   })
 })
 
-// 슬라이스 A·B 공통 Fail-Fast 실패 토스트.
 const FAIL_FAST_TOAST = '저장에 실패했습니다. 네트워크 상태를 확인해 주세요.'
 
 describe('requestDriverStatusChange / requestDriverDeletion — 슬라이스 B: outbox 없이 직접 1회(Fail-Fast)', () => {
@@ -504,7 +491,7 @@ describe('requestDriverStatusChange / requestDriverDeletion — 슬라이스 B: 
     beginReady('user-1', ownerKey)
     const drivers = asDrivers([{ id: 'drv-1', name: '기사', supabaseId: 611, status: 'pending' }])
     writeJsonKey('drivers', ownerKey, drivers)
-    handlers.driver_links = { delete: () => ({ data: [], error: null }) } // 삭제됐지만 0행
+    handlers.driver_links = { delete: () => ({ data: [], error: null }) }
 
     let notifyCount = 0
     const unsubscribe = subscribe(() => { notifyCount += 1 })
@@ -570,7 +557,7 @@ describe('requestDriverStatusChange / requestDriverDeletion — 슬라이스 B: 
     await wait(10)
     assert.equal(countOf('driver_links', 'update'), 1, 'update가 이미 나갔어야 한다')
 
-    endCloudSession() // 응답 대기 중 로그아웃한다.
+    endCloudSession()
     let notifyCount = 0
     const unsubscribe = subscribe(() => { notifyCount += 1 })
     releaseUpdate()
@@ -584,7 +571,7 @@ describe('requestDriverStatusChange / requestDriverDeletion — 슬라이스 B: 
 
   test('cloud:false(로컬 전용)면 hydration 상태와 무관하게 로컬만 반영한다', async () => {
     const ownerKey = 'dma-driver-guest'
-    beginFailed('user-1', ownerKey) // failed여도 cloud:false면 영향 없어야 한다
+    beginFailed('user-1', ownerKey)
     const drivers = asDrivers([{ id: 'drv-1', name: '기사', status: 'pending' }])
     writeJsonKey('drivers', ownerKey, drivers)
 
@@ -697,8 +684,6 @@ describe('requestDriverInviteSave — 슬라이스 A: outbox 없이 RPC 직접 1
     beginReady('user-1', ownerKey)
     const cars = [{ id: 'car-1', number: '88가8888', type: 'sub', supabaseId: 802 }]
     writeJsonKey('cars', ownerKey, cars)
-    // 첫 시도가 이미 서버에 만들었다(응답만 유실). 같은 p_idempotency_key면 RPC가
-    // 기존 행(id 950)을 그대로 돌려준다 — 중복 insert 없음.
     handlers.rpc = {
       [RPC_FN]: () => ({ data: [{ id: 950, invite_code: '777777', assignment_start: '2026-08-01', assignment_end: null, status: 'pending' }], error: null }),
     }
@@ -767,8 +752,6 @@ describe('requestDriverInviteSave — 슬라이스 A: outbox 없이 RPC 직접 1
     endCloudSession()
   })
 
-  // AGENTS §9: RPC 응답 대기 중 로그아웃하면 결과를 폐기하고 Store/localStorage/
-  // session은 RPC 시작 전 캡처, await 직후 재검증.
   test('RPC 응답 대기 중 로그아웃하면 결과를 폐기하고 Store/localStorage가 그대로다', async () => {
     const ownerKey = 'dma-invite-epoch-logout'
     beginReady('user-1', ownerKey)
@@ -784,7 +767,7 @@ describe('requestDriverInviteSave — 슬라이스 A: outbox 없이 RPC 직접 1
     await wait(10)
     assert.equal(countOf('rpc', RPC_FN), 1, 'RPC가 이미 나갔어야 한다')
 
-    endCloudSession() // RPC 응답을 기다리는 도중 로그아웃한다.
+    endCloudSession()
     let notifyCount = 0
     const unsubscribe = subscribe(() => { notifyCount += 1 })
     releaseRpc()

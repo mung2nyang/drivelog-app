@@ -8,7 +8,6 @@ import { saveDayRecord } from './day-record.ts'
 const dateKey = '2026-05-10'
 const clients = [{ id: 'c1', companyName: '한진' }]
 
-// 달력 셀 뱃지용 짧은 금액 표기 — 만원 이상은 천 원 단위까지 "35.2만", 미만은 "N원".
 describe('formatFareShort — 달력 셀 fare 뱃지 표기', () => {
   test('1만~100만 미만은 천 원 단위까지 "N.N만"(백 원 이하 버림, 딱 떨어지면 "N만")', () => {
     assert.equal(formatFareShort(150000), '15만')
@@ -39,8 +38,6 @@ describe('formatFareShort — 달력 셀 fare 뱃지 표기', () => {
   })
 })
 
-// 달력 셀 뱃지(workBadge/isOff/hasUnpaid)를 domain에서 계산한다. CalendarGrid.jsx는
-// 이 세 함수의 결과만 그대로 그린다(순수 표시).
 describe('dayFareTotal / dayWorkBadgeLabel — 달력 셀 뱃지', () => {
   test('휴무일은 항상 null(뱃지 숨김) — 기록에 남은 횟수/운임과 무관하다', () => {
     assert.equal(dayWorkBadgeLabel({ isOff: true, fixedCount: 3 }, { inputMode: 'count', unitPrice: 10000 }), null)
@@ -69,7 +66,6 @@ describe('dayFareTotal / dayWorkBadgeLabel — 달력 셀 뱃지', () => {
   })
 })
 
-// 로드맵 109-A — 하루 금액에 파렛트(장수 × 파렛트 단가, 꺼졌으면 쓰는 쪽이 0을 넘김).
 describe('dayFareTotal / dayWorkBadgeLabel — 파렛트', () => {
   test('파렛트 장수 × 파렛트 단가를 더한다', () => {
     const record = { fixedCount: 2, palletCount: 4 }

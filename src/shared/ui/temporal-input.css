@@ -1,5 +1,3 @@
-/* .app-temporal* 기본 스타일. 화면별 오버라이드는 각 화면 CSS에서. */
-
 .app-temporal {
   position: relative;
   display: block;
@@ -111,8 +109,6 @@
   font-weight: var(--fw-bold);
 }
 
-/* `centered` prop — 콜 상세·지출 창이 함께 쓰는 가운데 정렬 트리거.
-   화면 두 곳 이상에서 똑같이 필요해 공용 modifier로 둔다(화면별 override 대신). */
 .app-temporal-trigger.is-centered {
   position: relative;
   justify-content: center;

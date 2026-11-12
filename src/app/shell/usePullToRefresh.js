@@ -1,15 +1,12 @@
 // @ts-check
-// 설치 앱에서 화면 맨 위를 당기면 우리 표시가 내려오고, 충분히 당겼다 놓으면(저장 확인 후) 화면 전체 다시 불러오기.
-// 상태는 표시 부품(PullRefreshIndicator) 안에서만 바뀌게 — 손가락 움직임마다 앱 전체가 다시 그려지지 않게.
 import { useEffect, useRef, useState } from 'react'
 import { Capacitor } from '@capacitor/core'
 import { confirmReloadIfUnsaved } from '../../data/sync/durableWriteGuard.ts'
 
-export const PULL_MAX = 90 // 표시가 내려오는 최대 거리(px)
-export const PULL_TRIGGER = 70 // 이만큼 내려오면 "놓으면 새로고침"
+export const PULL_MAX = 90
+export const PULL_TRIGGER = 70
 
 /**
- * 화면 고정 상자(팝업·사이드메뉴·알림 등)나 안쪽 스크롤 상자 안에서 시작했나.
  * @param {Element|null} target
  * @param {(el: Element) => { position: string, overflowY: string }} [getStyle]
  */
@@ -32,17 +29,13 @@ export function pullDistance(fingerDy) {
   return fingerDy <= 0 ? 0 : Math.min(PULL_MAX, fingerDy / 2)
 }
 
-/**
- * 놓았을 때 — 충분히 당겼고 저장 확인을 통과하면 다시 불러오기.
- * @param {number} distance @param {() => boolean} confirm @param {() => void} reload
- */
+/** @param {number} distance @param {() => boolean} confirm @param {() => void} reload */
 export function releasePull(distance, confirm, reload) {
   if (distance < PULL_TRIGGER || !confirm()) return false
   reload()
   return true
 }
 
-// Capacitor 앱도 설치 앱으로 본다(앱 화면은 display-mode가 browser).
 function isStandalone() {
   if (Capacitor.isNativePlatform()) return true
   try {

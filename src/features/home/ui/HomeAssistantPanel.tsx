@@ -1,4 +1,3 @@
-// 운비서 카드가 늘어난 부분 — 글 칸과 알아들은 내용을 글로 보여 준다. 문장은 앱이 만든다.
 import type { FormEvent } from 'react'
 import { TEXT_MAX } from '../api/unbiseoParse.ts'
 import type { UnbiseoRecord } from '../api/unbiseoParse.ts'
@@ -31,7 +30,6 @@ export default function HomeAssistantPanel({ assistant, onOpenCall }: Props) {
     if (await enableSetting({ callDetail: true }) && !dayOff) onOpenCall?.(record, { cancelOff: false })
   }
 
-  // 버튼 자리는 하나만 — 계약 기간 밖 → 휴무 버튼 → 기능 꺼짐 → 휴무 → 고정 노선 [기록하기] 순서. 운행·지출·거래처는 버튼 없이 바로 연다.
   function actionFor(record: UnbiseoRecord) {
     if (answer?.client) return null
     if (periodNotice) {
@@ -42,7 +40,6 @@ export default function HomeAssistantPanel({ assistant, onOpenCall }: Props) {
         </div>
       )
     }
-    // 휴무는 그 날짜 일지로 가서 휴무 단추와 같이 바꾼다.
     if (answer?.dayOff) return <button type="button" className="home-assistant-action" onClick={() => onOpenCall?.(record, { cancelOff: false })}>{answer.dayOff.off ? '휴무로 하기' : '휴무 취소하기'}</button>
     if ((isFixed && !fixedOn) || (isCall && !callDetailOn)) {
       return (
@@ -84,7 +81,6 @@ export default function HomeAssistantPanel({ assistant, onOpenCall }: Props) {
         <div className="home-assistant-answer" aria-live="polite">
           <p className="home-assistant-result">{answer.sentence}</p>
           {record && actionFor(record)}
-          {/* 점검표는 [저장하기]로 바로 저장한다(저장 중 잠금). */}
           {answer.inspection && <button type="button" className="home-assistant-action" disabled={saving} onClick={() => void saveInspection()}>저장하기</button>}
           {answer.sms && <UnbiseoSmsSteps sms={answer.sms} onStep={reportStep} />}
         </div>

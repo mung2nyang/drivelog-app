@@ -26,7 +26,6 @@ const MAINT_ROWS = [
 /** @type {Array<string>} */
 let events = []
 
-// 연동 차량 veh-1: 09-10 하루 기록 dl-1. 정비 3행 — 차주 것(기사는 모름)·기사가 알던 것·id 없는 옛 행.
 beforeEach(() => {
   resetHandlers()
   events = []

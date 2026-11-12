@@ -1,5 +1,4 @@
 // @ts-check
-// 입력칸 X — 입력 중이고 글자가 있을 때만 보이고, 누르면 그 칸의 입력 처리를 빈 글자로 거쳐 비운다.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

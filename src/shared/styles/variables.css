@@ -1,6 +1,3 @@
-/* 디자인 토큰 단일 출처 — 라이트/다크 CSS 변수는 이 파일에만 둔다.
-   App.jsx가 다른 CSS보다 먼저 import. */
-
 :root {
   --fs-floor: 0.75rem;
   --fs-2: 0.78rem;
@@ -37,8 +34,8 @@
   --border-color: #e2e8f0;
   --input-bg: #f1f4f8;
   --primary-color: #2b6cb0;
-  --primary-fill: #2b6cb0; /* 흰 글씨를 얹는 파란 바탕(라이트·다크 공통, 대비 5.42:1) */
-  --danger-fill: #c53030; /* 흰 글씨를 얹는 빨간 바탕(라이트·다크 공통, 대비 5.9:1) */
+  --primary-fill: #2b6cb0;
+  --danger-fill: #c53030;
   --saturday-color: #2b6cb0;
   --sunday-color: #c53030;
   --hover-bg: #edf2f7;
@@ -51,10 +48,10 @@
   --maint-badge-bg: #e53e3e;
   --maint-badge-text: #ffffff;
   --switch-off-bg: #cbd5e0;
-  --google-btn-bg: #ffffff; /* 구글 로그인 버튼 색은 구글 규칙 값 그대로 */
+  --google-btn-bg: #ffffff;
   --google-btn-border: #747775;
   --google-btn-text: #1f1f1f;
-  --accent-soft-color: #3b56b0; /* 작은 제목·약관 문서 이름 연한 강조 */
+  --accent-soft-color: #3b56b0;
 }
 
 [data-theme="dark"] {
@@ -78,7 +75,7 @@
   --maint-badge-bg: #e53e3e;
   --maint-badge-text: #ffffff;
   --switch-off-bg: #4a4a4a;
-  --placeholder-color: #949494; /* 입력칸 #2a2a2a 위 대비 4.7 */
+  --placeholder-color: #949494;
   --google-btn-bg: #131314;
   --google-btn-border: #8e918f;
   --google-btn-text: #e3e3e3;

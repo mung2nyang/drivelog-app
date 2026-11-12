@@ -1,4 +1,3 @@
-// 슬라이스 E(2026-09-01): App.test.js 로그인 하네스 durable/quota 통합 12건 → 게스트 전용.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 
@@ -94,7 +93,6 @@ async function waitUntil(predicate, { timeoutMs = 2000, stepMs = 20 } = {}) {
   if (!ok) throw new Error('waitUntil timeout')
 }
 
-/** 디바운스(600ms) 커밋이 act 안에서 끝나도록 기다린다. */
 async function waitDebounceCommit() {
   await act(async () => { await wait(700) })
 }
@@ -180,11 +178,6 @@ test.afterEach(async () => {
   localStorage.removeItem(`reactPracticeDurablePendingWrites:guest`)
 })
 
-// 재감사 4차(FAIL 지적 3번) — durable 기록 자체가 실패한 상태(durableWriteGuard.js가
-// broken)에서, DayLogPage 헤더 "뒤로가기"뿐 아니라 BottomNav/SideMenu/로그아웃 같은
-// 실제 전역 이동 경로도 확인 없이 진행되면 안 된다. workData 커밋과 durable
-// 큐(pendingWorkDataWrites.js)의 durable 기록 둘 다 실패하게 만들어(진짜 "이 편집이
-// 메모리 fallback에만 있다"는 상태) 재현한다.
 function forceDurableWriteBroken(ownerKey) {
   const proto = Object.getPrototypeOf(localStorage)
   const original = proto.setItem
@@ -196,9 +189,7 @@ function forceDurableWriteBroken(ownerKey) {
   })
 }
 
-/**
- * @param {string} ownerKey
- */
+/** @param {string} ownerKey */
 function seedPalletClient(ownerKey) {
   const clients = [
     /** @type {import('../domain/clientTypes.ts').ClientLike} */ ({
@@ -232,10 +223,6 @@ test('재감사 3차 FAIL 지적 2번 — 재진입 시 durable pending patch가
   const proto = Object.getPrototypeOf(localStorage)
   const originalSetItem = proto.setItem
   const failKey = storageKeyFor('workData', ownerKey)
-  // 부트/hydrate가 끝나기 전에 이 플래그를 켜면 hydrate 자신의 replaceOwnerState
-  // 쓰기까지 막혀 hydration.status가 'failed'로 굳어 버리고, 그 뒤로는
-  // isHydrationReady()가 계속 false라 이 테스트의 나머지 어떤 커밋도 클라우드 동기화를
-  // 예약하지 못한다 — 다른 quota 테스트들처럼 반드시 부트가 끝난 뒤에만 켠다.
   let shouldFail = false
   const spy = mock.method(proto, 'setItem', /** @this {Storage} @param {string} key @param {string} value */ function patchedSetItem(key, value) {
     if (shouldFail && key === failKey) throw new Error('quota exceeded (simulated)')
@@ -246,9 +233,6 @@ test('재감사 3차 FAIL 지적 2번 — 재진입 시 durable pending patch가
     await setupGuestDayLog(container, root, dateKey, () => { seedPalletClient(ownerKey) })
     await waitUntil(() => !!container.querySelector('#modalFixedCountInput'))
 
-    // 재감사 7차(FAIL 지적 3번) — 이 아래에서 useDayDraft.js가 실패할 때마다 정확히
-    // 이 메시지로 console.error를 부른다. 숫자까지 직접 Assert한다(그냥 화면에
-    // 흘려 보내지 않는다).
     const errSpy = spyConsoleError('일지 자동 저장 실패:')
     shouldFail = true
     await act(async () => { setNativeInputValue(container.querySelector('#modalFixedCountInput'), '5') })
@@ -257,10 +241,6 @@ test('재감사 3차 FAIL 지적 2번 — 재진입 시 durable pending patch가
     assert.equal(pendingDayWriteCount() > 0, true, '실패한 편집이 durable 큐에 남아야 한다')
     assert.equal(errSpy.count(), 1, '디바운스 커밋 실패로 정확히 1번 로깅돼야 한다')
 
-    // 화면을 나갔다(언마운트 flush도 quota가 여전히 막혀 있어 실패) 같은 날짜로 재진입한다 —
-    // <App/> 전체를 다시 마운트하면 세션/hydrate epoch가 다시 올라가 버리므로(다른
-    // 재진입 테스트들과 달리 이 테스트는 그 사이에 성공 커밋까지 하므로 실제로
-    // 문제가 됐다), 다른 재진입 테스트들과 같은 in-app 라우팅(pushState/popstate)만 쓴다.
     await act(async () => {
       window.history.pushState({}, '', '/app')
       window.dispatchEvent(new window.PopStateEvent('popstate'))
@@ -278,7 +258,6 @@ test('재감사 3차 FAIL 지적 2번 — 재진입 시 durable pending patch가
       '재진입 시 durable 큐의 pending patch(fixedCount=5)가 store의 오래된 값(없음) 위에 덮여 보여야 한다',
     )
 
-    // 이제 공간이 확보됐다고 가정하고, 다른 필드(palletCount)를 편집해 저장을 성공시킨다.
     errSpy.restore()
     shouldFail = false
     await act(async () => { setNativeInputValue(container.querySelector('#modalPalletCount'), '3') })
@@ -305,9 +284,6 @@ test('재감사 4차 FAIL 지적 3번 — durable 기록이 깨진 상태에서 
   document.body.appendChild(container)
   const root = createTrackedRoot(container)
 
-  // 부트/hydrate가 끝나기 전에 workData 쓰기를 막으면 hydrate 자신의
-  // replaceOwnerState 쓰기까지 막혀 hydration.status가 'failed'로 굳는다(실측 확인 —
-  // 다른 quota 테스트들과 같은 이유) — 반드시 부트가 끝난 뒤에만 스파이를 심는다.
   const confirmSpy = mock.method(window, 'confirm', () => false)
   let spy
 
@@ -330,17 +306,11 @@ test('재감사 4차 FAIL 지적 3번 — durable 기록이 깨진 상태에서 
 
     assert.equal(confirmSpy.mock.callCount(), 1, 'confirm으로 사용자에게 물어봤어야 한다')
     assert.equal(window.location.pathname, `/app/day/${dateKey}`, 'confirm에서 취소했으니 실제로 이동하면 안 된다')
-    // 취소했으니 DayLogPage가 언마운트되지 않는다 — 추가 로깅이 없어야 한다.
     assert.equal(errSpy.count(), 1, 'confirm 취소로 이동이 안 일어났으니 추가로 로깅되면 안 된다')
     errSpy.restore()
   } finally {
     confirmSpy.mock.restore()
     spy.mock.restore()
-    // 공간이 풀렸다고 가정하고 fallback에 남은 편집을 정리한다 — 안 하면 이 owner의
-    // durable 큐가 broken인 채로 다음 테스트로 새어(재감사 2차의 "테스트 격리" 교훈과
-    // 같은 이유) 배경 재시도가 다음 테스트의 Supabase 호출 수 계측을 흔든다.
-    // 재감사 5차(FAIL 지적 3번) — retryPendingDayWrites()가 store를 커밋해 이미 홈으로
-    // 이동해 구독 중인 CalendarPage/AppShell을 갱신시키니 act()로 감싼다.
     await act(async () => { retryPendingDayWrites() })
     await unmountTracked(root)
     container.remove()
@@ -374,21 +344,13 @@ test('재감사 4차 FAIL 지적 3번 — confirm에서 "그래도 이동"을 �
 
     assert.equal(confirmSpy.mock.callCount(), 1)
     assert.equal(window.location.pathname, '/app', 'confirm에서 "그래도 이동"을 선택했으니 실제로 이동해야 한다')
-    // 화면을 나가도 durable 큐(fallback)는 컴포넌트 생애주기와 무관한 모듈 전역
-    // 상태라 그대로 남는다 — "전역 이동을 막지 않을 durable 큐 자체는 안전하게
-    // 유지된다"는 계약(popstate처럼 진짜로 막을 수 없는 경로와 동일하게 적용된다).
     assert.equal(isDurableWriteBroken(), true, '이동 후에도 fallback 편집은 유실되지 않고 broken 상태 그대로 남아야 한다')
-    // 이동으로 DayLogPage가 언마운트되고, hasPendingRef가 여전히 true라 언마운트
-    // flush가 한 번 더 시도한다 — spy가 아직 안 풀렸으니 그 시도도 똑같이 실패해
-    // 총 2번 로깅돼야 한다.
     assert.equal(errSpy.count(), 2, '이동으로 인한 언마운트 flush도 여전히 막혀 있어 한 번 더(총 2번) 로깅돼야 한다')
     errSpy.restore()
   } finally {
     confirmSpy.mock.restore()
     spy.mock.restore()
-    // 재감사 5차(FAIL 지적 3번) — retryPendingDayWrites()가 store를 커밋해 이미 홈으로
-    // 이동해 구독 중인 CalendarPage/AppShell을 갱신시키니 act()로 감싼다.
-    await act(async () => { retryPendingDayWrites() }) // 다음 테스트로 broken 상태가 안 새게 정리한다.
+    await act(async () => { retryPendingDayWrites() })
     await unmountTracked(root)
     container.remove()
   }
@@ -413,7 +375,6 @@ test('재감사 4차 FAIL 지적 3번 — 브라우저 back(popstate)은 막을 
     await waitForDurableBroken()
     assert.equal(errSpy.count(), 1, '디바운스 커밋 실패로 정확히 1번 로깅돼야 한다')
 
-    // 물리 뒤로가기를 흉내낸다 — popstate는 취소 불가라 confirm 없이 그냥 진행된다.
     await act(async () => {
       window.history.pushState({}, '', '/app')
       window.dispatchEvent(new window.PopStateEvent('popstate'))
@@ -421,23 +382,15 @@ test('재감사 4차 FAIL 지적 3번 — 브라우저 back(popstate)은 막을 
     await waitUntil(() => window.location.pathname === '/app')
 
     assert.equal(isDurableWriteBroken(), true, 'popstate 이동 후에도 fallback 편집(모듈 전역 상태)은 그대로 남아야 한다')
-    // popstate로 DayLogPage가 언마운트되고, hasPendingRef가 여전히 true라 언마운트
-    // flush가 한 번 더 시도한다 — spy가 아직 안 풀렸으니 그 시도도 똑같이 실패해
-    // 총 2번 로깅돼야 한다.
     assert.equal(errSpy.count(), 2, 'popstate로 인한 언마운트 flush도 여전히 막혀 있어 한 번 더(총 2번) 로깅돼야 한다')
 
-    // pendingWriteRetryListeners.js가 App 마운트 시 등록한 실제 beforeunload
-    // 리스너(PendingWriteRetryBridge)에 진짜 네이티브 이벤트를 쏴서, popstate로
-    // 이동한 뒤에도 여전히 경고하는지 확인한다.
     const beforeUnloadEvent = new window.Event('beforeunload', { cancelable: true })
     window.dispatchEvent(beforeUnloadEvent)
     assert.equal(beforeUnloadEvent.defaultPrevented, true, 'popstate로 이동한 뒤에도 beforeunload는 여전히 막아야 한다(fallback이 안 사라졌으므로)')
     errSpy.restore()
   } finally {
     spy.mock.restore()
-    // 재감사 5차(FAIL 지적 3번) — retryPendingDayWrites()가 store를 커밋해 이미 홈으로
-    // 이동해 구독 중인 CalendarPage/AppShell을 갱신시키니 act()로 감싼다.
-    await act(async () => { retryPendingDayWrites() }) // 다음 테스트로 broken 상태가 안 새게 정리한다.
+    await act(async () => { retryPendingDayWrites() })
     await unmountTracked(root)
     container.remove()
   }
@@ -463,12 +416,8 @@ test('재감사 FAIL 지적 9번 — 자동 저장 quota 초과: store/localStor
     await setupGuestDayLog(container, root, dateKey)
     await waitUntil(() => !!container.querySelector('#modalFixedCountInput'))
 
-    // 재감사 7차(FAIL 지적 3번) — 이 실패로 정확히 몇 번 console.error가 나는지 직접 Assert한다.
     const errSpy = spyConsoleError('일지 자동 저장 실패:')
     shouldFail = true
-    // 재감사 2차(FAIL 지적) — "notify 0회 / Supabase 호출 0회"를 말로만 보증하지
-    // 않고 직접 센다. notifyCount는 이 실패한 커밋 시도 도중 store 구독자가 몇 번
-    // 불렸는지, supabaseCallsBefore는 그 직전까지의 누적 Supabase 호출 총수다.
     let notifyCount = 0
     const unsubscribe = subscribe(() => { notifyCount += 1 })
     const supabaseCallsBefore = totalSupabaseCalls()
@@ -488,8 +437,6 @@ test('재감사 FAIL 지적 9번 — 자동 저장 quota 초과: store/localStor
     const toastText = container.querySelector('.toast-message')?.textContent || ''
     assert.ok(toastText.includes('저장'), `실패 토스트가 떠야 한다 — 실제: "${toastText}"`)
 
-    // quota 압박이 풀렸다고 가정하고 화면을 나간다 — 언마운트 flush가 마지막
-    // 편집(4)을 유실 없이 재시도해야 한다.
     shouldFail = false
     const backButton = Array.from(container.querySelectorAll('button')).find((btn) => btn.title === '뒤로가기')
     assert.ok(backButton, '뒤로가기 버튼을 찾아야 한다')
@@ -503,8 +450,6 @@ test('재감사 FAIL 지적 9번 — 자동 저장 quota 초과: store/localStor
       '실패했던 편집(4)이 언마운트 시 재시도로 결국 store에 반영돼야 한다(유실되면 안 된다)',
     )
     assert.equal(readWorkData(ownerKey)[dateKey]?.fixedCount, 4, 'localStorage에도 반영돼야 한다')
-    // shouldFail을 재시도 전에 이미 false로 풀어 뒀으니 언마운트 flush는 성공한다
-    // — 추가 로깅 없이 그대로 1이어야 한다.
     assert.equal(errSpy.count(), 1, '복구 후 언마운트 flush는 성공했으니 추가로 로깅되면 안 된다')
     errSpy.restore()
   } finally {
@@ -607,7 +552,6 @@ test('일지 비용 저장 성공: 그날 날짜로 저장소에 더해지고, �
     assert.equal(saved[1].date, dateKey, '일지는 그날 날짜로 저장')
     assert.deepEqual(readJsonKey('expenses', ownerKey, []), JSON.parse(JSON.stringify(saved)), '기기에도 같은 값')
     assert.equal(container.querySelector('.toast-message')?.textContent || '', '내역을 등록했습니다.')
-    // 일지 칸은 닫히는 애니메이션이 끝날 때까지 내용을 남기므로 칸의 닫힘 표시로 본다.
     assert.equal(container.querySelector('.maint-fuel-inline-host')?.getAttribute('aria-hidden'), 'true', '저장되면 칸이 닫혀야 한다')
   } finally {
     await unmountTracked(root)
@@ -688,21 +632,14 @@ test('재감사 2차 FAIL 지적 — persistent quota + 라우트 이동에도 d
     await setupGuestDayLog(container, root, dateKey)
     await waitUntil(() => !!container.querySelector('#modalFixedCountInput'))
 
-    // 재감사 7차(FAIL 지적 3번) — 최초 실패 + 언마운트 시점의 마지막 재시도 실패,
-    // 정확히 2번 로깅돼야 한다.
     const errSpy = spyConsoleError('일지 자동 저장 실패:')
     shouldFail = true
-    // 재감사 2차(FAIL 지적) — notify/Supabase 호출을 직접 센다. 실패한 첫 시도부터
-    // 언마운트 시점의 두 번째(마지막) 재시도까지 전부 포함해서, quota가 막혀 있는
-    // 동안은 단 한 번도 notify/Supabase 호출이 없어야 한다.
     let notifyCount = 0
     const unsubscribe = subscribe(() => { notifyCount += 1 })
     const supabaseCallsBefore = totalSupabaseCalls()
     await act(async () => { setNativeInputValue(container.querySelector('#modalFixedCountInput'), '4') })
     await waitForAutosaveFailed(container)
 
-    // quota는 계속 막혀 있는 채로(shouldFail 그대로 true) 화면을 나간다 — 언마운트
-    // 시점의 마지막 재시도(useDayDraft.js)도 실패해야 진짜 "persistent" 재현이다.
     const backButton = Array.from(container.querySelectorAll('button')).find((btn) => btn.title === '뒤로가기')
     assert.ok(backButton, '뒤로가기 버튼을 찾아야 한다')
     await act(async () => {
@@ -718,8 +655,6 @@ test('재감사 2차 FAIL 지적 — persistent quota + 라우트 이동에도 d
     assert.equal(totalSupabaseCalls(), supabaseCallsBefore, 'quota가 막혀 있는 동안은 Supabase 호출이 늘면 안 된다')
     assert.equal(errSpy.count(), 2, '최초 실패 + 언마운트 재시도 실패, 정확히 2번 로깅돼야 한다')
 
-    // quota 압박이 풀렸다고 가정한다 — online 이벤트가 PendingWriteRetryBridge를
-    // 통해 재시도를 유발해야 한다(컴포넌트는 이미 언마운트된 지 오래다).
     shouldFail = false
     await act(async () => {
       window.dispatchEvent(new window.Event('online'))
@@ -1049,8 +984,6 @@ test('재감사 11차 — confirm으로 이동을 허용한 뒤 재진입해도 
 
   try {
     await setupGuestDayLog(container, root, dateKey, () => { seedPalletClient(ownerKey) })
-    // 시험 일지는 [비회원으로 시작하기]로 저장소를 다 읽은 뒤 메모리에만 넣는다 — 저장소에 써지면 로드맵 32 막기 화면,
-    // 시작 전에 넣으면 시작할 때 저장소 값으로 바뀐다(이 테스트는 메모리 쪽 복원만 봄). 넣은 뒤 일지 화면을 다시 연다.
     await act(async () => {
       commitWorkData(ownerKey, {
         [dateKey]: {

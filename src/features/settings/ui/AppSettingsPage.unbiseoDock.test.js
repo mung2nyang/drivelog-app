@@ -1,4 +1,3 @@
-// 앱 설정의 "운비서" 스위치: 로그인 계정 메인 설정에만, 처음 켜짐, 끄면 계정 설정 unbiseoDockOn=false.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

@@ -1,5 +1,3 @@
-/* 마이페이지 "업무 바로가기" 카드 — mypage.css에서 나눔. 아이콘 칸 공통 모양은 mypage.css. */
-
 .mypage-shortcut-section {
   margin-top: 12px;
   padding: 16px 8px;
@@ -36,7 +34,6 @@
   gap: 4px;
 }
 
-/* 아이콘 위·이름 아래, 배경 카드 없음 */
 .mypage-shortcut {
   display: flex;
   flex-direction: column;

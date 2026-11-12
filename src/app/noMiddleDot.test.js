@@ -1,4 +1,3 @@
-// 로드맵 87 — 화면 글자에 가운뎃점(·)을 쓰지 않는다(쉼표·"와/과"·빗금으로). 주석·개발자용 console 기록은 화면에 안 보여 뺀다.
 import assert from 'node:assert/strict'
 import { readdirSync, readFileSync, statSync } from 'node:fs'
 import { join } from 'node:path'

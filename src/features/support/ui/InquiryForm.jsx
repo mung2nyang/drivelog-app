@@ -1,5 +1,4 @@
 // @ts-check
-// 고객센터 1:1 문의 작성 칸 — 접수하면 알림, 성공이면 칸을 비운다.
 import { useState } from 'react'
 import { requestSupportInquirySave } from '../api/supportInquiryMutations.js'
 import AppDropdown from '../../../shared/ui/AppDropdown.tsx'

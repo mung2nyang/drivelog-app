@@ -1,6 +1,4 @@
 // @ts-check
-// 앱에서 난 오류를 서버 client_errors 표에 한 줄 남긴다 — 로그인 사용자만, 보내고 끝(기다림·재시도·기기 저장 없음).
-// 화면 주소는 경로만(? 뒤 안 보냄), 한 번 켠 앱에서 최대 10건, 같은 문구는 한 번만.
 import { supabase } from '../data/cloud/supabaseClient.ts'
 import { getCloudUserId } from '../data/cloud/cloudSession.ts'
 
@@ -14,7 +12,6 @@ function cut(text, max) {
 }
 
 /**
- * window 오류·거부 이유는 Error일 수도, 글자일 수도 있다.
  * @param {{ message?: string, stack?: string }|string|null|undefined} value
  * @returns {{ message: string, stack: string }}
  */
@@ -26,7 +23,7 @@ export function describeError(value) {
 
 /**
  * @param {{ kind: 'render'|'error'|'unhandledrejection', message?: string, stack?: string }} report
- * @returns {boolean} 보냈으면 true
+ * @returns {boolean}
  */
 export function reportClientError({ kind, message = '', stack = '' }) {
   if (!getCloudUserId() || sentMessages.size >= MAX_REPORTS_PER_LOAD) return false
@@ -42,7 +39,6 @@ export function reportClientError({ kind, message = '', stack = '' }) {
       user_agent: cut(window.navigator.userAgent, 200),
     }).then(() => {}, () => {})
   } catch {
-    // 기록 실패는 조용히 넘긴다 — 오류 기록이 또 오류를 부르지 않게.
   }
   return true
 }

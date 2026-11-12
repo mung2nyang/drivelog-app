@@ -50,7 +50,7 @@ describe('assertCloudWriteReady / blockedReasonForCloudWrite', () => {
   })
 
   test('cloudId가 없으면(로컬 전용 레코드) hydration 상태와 무관하게 항상 허용한다', () => {
-    endCloudSession() // idle
+    endCloudSession()
     assert.equal(blockedReasonForCloudWrite(null), null)
     assert.equal(blockedReasonForCloudWrite(undefined), null)
     assert.equal(blockedReasonForCloudWrite(''), null)

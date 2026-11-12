@@ -1,4 +1,3 @@
-// 로드맵 58-B — 차주·연동 기사 매출 화면의 같은 부분: 달·해 이동, 년/월 단추, 12달 순이익 목록과 합계.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 
@@ -48,7 +47,6 @@ async function mount(View, ownerKey) {
   }
 }
 
-/** 이번 달 다음 달 이름(12월이면 1월). */
 const nextMonthLabel = `${((MONTH + 1) % 12) + 1}월`
 
 /** @param {Awaited<ReturnType<typeof mount>>} view */

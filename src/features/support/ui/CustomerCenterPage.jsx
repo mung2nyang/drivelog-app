@@ -1,5 +1,4 @@
 // @ts-check
-// 고객센터 탭 화면(FAQ는 여기, 문의 작성은 InquiryForm, 내 문의는 MyInquiriesList).
 import { useState } from 'react'
 import { isCloudSession } from '../../../data/cloud/cloudSession.ts'
 import PageHeader from '../../../shared/ui/PageHeader.tsx'
@@ -71,7 +70,7 @@ function GuestLoginPrompt({ onGoAuth }) {
  * @param {() => void} [props.onBack]
  * @param {() => void} [props.onGoAuth]
  * @param {(() => void)} [props.onOpenMenu]
- * @param {SupportTab} [props.initialTab] 처음 탭(알림 "답변 도착"은 myInquiries)
+ * @param {SupportTab} [props.initialTab]
  */
 export default function CustomerCenterPage({ onBack, onGoAuth, onOpenMenu, initialTab = 'faq' }) {
   const { session } = useSession()

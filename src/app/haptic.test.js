@@ -1,4 +1,3 @@
-// 로드맵 18-B: 짧은 진동 — 진동 기능 있으면 0.01초 1번, 없으면 조용히. 안내 문구가 뜨면 진동 1번.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

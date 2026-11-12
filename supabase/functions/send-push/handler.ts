@@ -1,5 +1,3 @@
-// 서버 알림 보내기 — DB 트리거(0034)만 부른다(보내기 암호 확인). 받는 사람이 끈 종류는 빼고, 그 사람 기기마다 보낸다.
-// 알림 글에는 문의 제목·내용·이름을 넣지 않는다(구글을 거쳐 감). 기록에는 개수만 남긴다.
 import { createClient } from 'npm:@supabase/supabase-js@2.112.3'
 import { accessToken, readServiceAccount, sendToDevice } from './fcm.ts'
 import type { Json, Message } from './fcm.ts'
@@ -9,7 +7,6 @@ type Input = { kind: Kind, userIds: Array<string> }
 
 const MAX_USERS = 50
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
-// 종류마다 보낼 글·누르면 열 화면·"알림 받기" 스위치 이름(기사 연결은 "기사 초대 대기" 스위치를 같이 씀).
 const KINDS: { [kind in Kind]: Message & { switchKind: string } } = {
   adminInquiry: { title: '새 문의가 도착했습니다', body: '관리자 화면에서 확인해 주세요.', path: '/app/admin/inquiries', switchKind: 'adminInquiry' },
   inquiryAnswer: { title: '문의에 답변이 도착했습니다', body: '고객센터 나의 문의에서 확인해 주세요.', path: '/app/support?tab=my', switchKind: 'inquiryAnswer' },
@@ -24,7 +21,6 @@ function isKind(value: Json | undefined): value is Kind {
   return typeof value === 'string' && Object.hasOwn(KINDS, value)
 }
 
-/** 트리거가 보낸 것 — 종류와 받는 사람 id 목록. 모양이 틀리면 null(400). */
 export function readInput(body: Json): Input | null {
   const row = body && typeof body === 'object' && !Array.isArray(body) ? body : null
   const ids = row?.userIds

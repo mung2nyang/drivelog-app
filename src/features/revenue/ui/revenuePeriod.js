@@ -1,5 +1,4 @@
 // @ts-check
-// 차주·연동 기사 매출 화면이 같이 쓰는 것: 보는 달·탭과 이동, 계산 설정 준비, 12달 순이익 줄.
 import { useEffect, useMemo, useState } from 'react'
 import { shiftMonth } from '../../../domain/calendar.ts'
 import { useSession } from '../../../data/cloud/sessionContext.ts'
@@ -8,7 +7,6 @@ import { buildFinanceSettings } from '../../../data/sync/ownerFinance.ts'
 import { useOwnerCars, useOwnerDriverHistory, useOwnerDrivers, useOwnerProfile, useOwnerSettings } from '../../../data/store/ownerDataHooks.ts'
 import { monthKeyOf } from './revenueFormat.js'
 
-/** 년 매출이면 1년, 월 매출이면 1달씩 옮긴다. 보던 달·탭은 앱이 켜진 동안 기억한다. */
 export function useRevenuePeriod() {
   const { ownerKey } = useSession()
   const [tab, setTab] = useState(() => (recallViewMonth('revenue', ownerKey)?.yearly ? 'yearly' : 'monthly'))

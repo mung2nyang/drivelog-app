@@ -1,4 +1,3 @@
-// getOwnerMonthlyFinanceDetail의 비용(정비/주유/기타/유가보조금) sweep — owner expenses와 driverExpenses를 같은 규칙으로 나눈다.
 import { parseCurrencyValue } from './money.ts'
 import { fuelAmountUnit } from './expenses.ts'
 
@@ -12,18 +11,15 @@ export type ExpenseSweepBuckets = {
   fuelSubsidyTotal: number
 }
 
-/** scope → 비용 소스. owner=expenses 중 표시 없음 / driver=driverExpenses + expenses 중 서브 표시 / all=둘 다. */
 export function selectExpensesForScope(scope: string, expenses: Array<ExpenseLike> = [], driverExpenses: Array<ExpenseLike> = []): Array<ExpenseLike> {
   const ownerList = Array.isArray(expenses) ? expenses : []
   const driverList = Array.isArray(driverExpenses) ? driverExpenses : []
-  // 차주 목록의 서브 표시 항목은 그 서브차량 비용 — 수입과 같이 "기사" 탭에 센다.
   const ownerSub = ownerList.filter((item) => String(item?.vehicleNumber || '').trim())
   if (scope === 'owner') return ownerList.filter((item) => !String(item?.vehicleNumber || '').trim())
   if (scope === 'driver') return driverList.concat(ownerSub)
   return ownerList.concat(driverList)
 }
 
-/** 기사 드롭다운 차량번호로 driverExpenses만 좁힌다. */
 export function filterDriverExpensesByVehicle(driverExpenses: Array<ExpenseLike> = [], vehicleNumber?: string): Array<ExpenseLike> {
   const list = Array.isArray(driverExpenses) ? driverExpenses : []
   const want = String(vehicleNumber || '').trim()

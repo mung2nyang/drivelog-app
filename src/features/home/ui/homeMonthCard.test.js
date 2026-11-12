@@ -1,4 +1,3 @@
-// 로드맵 51 — 홈 "이번 달 정산 합계" 금액은 숫자와 "원"이 한 줄, 자리가 모자라면 "달력에서 보기"만 아래 줄로.
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { readFileSync } from 'node:fs'

@@ -1,21 +1,19 @@
 // @ts-check
-// 콜상세 입력의 돈 관련 칸(계산서·입금 예정일, 부가세 없음, 산재보험료).
 import CurrencyInput from '../../../shared/ui/CurrencyInput.tsx'
 import TemporalInput from '../../../shared/ui/TemporalInput.tsx'
 import InfoTip from '../../../shared/ui/InfoTip.tsx'
 import './call-detail-payment.css'
 
 const RECEIPT_PRESETS = ['전자', '일반', '카드', '현금', '송금']
-// 예시는 줄 안 나뉘는 띄어쓰기로 한 덩어리.
 const VAT_INPUT_INFO = '부가가치세가 포함된 금액이라면 1.1로 나눈 공급가액을 입력해 주세요.\n(예:\u00a0110,000원\u00a0→\u00a0100,000원)'
 
-/** @typedef {typeof import('./callDetailFormHelpers.js').emptyDraft} CallDetailDraft 폼 입력 중 초안(CallDetailForm 상태와 같은 모양) */
+/** @typedef {typeof import('./callDetailFormHelpers.js').emptyDraft} CallDetailDraft */
 
 /**
  * @param {Object} props
  * @param {CallDetailDraft} props.draft
  * @param {(next: CallDetailDraft) => void} props.setDraft
- * @param {string} props.paymentGuide 입금 예정일 아래 안내(거래처 결제 조건)
+ * @param {string} props.paymentGuide
  */
 export default function CallDetailPaymentFields({ draft, setDraft, paymentGuide }) {
   return (
@@ -57,11 +55,10 @@ export function CallInsuranceFeeField({ draft, setDraft }) {
 }
 
 /**
- * 운송료 바로 아래 한 줄 — 작은 "부가세 없음(면세)" 체크 칸 + (i) 공급가액 안내 + 오른쪽 끝 부가세 미리보기.
  * @param {Object} props
  * @param {CallDetailDraft} props.draft
  * @param {(next: CallDetailDraft) => void} props.setDraft
- * @param {string} props.preview 운송료가 없으면 빈 글
+ * @param {string} props.preview
  */
 export function CallVatExemptRow({ draft, setDraft, preview }) {
   return (

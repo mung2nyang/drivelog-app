@@ -1,4 +1,3 @@
-// 미수(콜상세 단위) 목록·연체 목록 — 오너 손익 상세(financeOwnerDetail.ts)의 unpaidItems도 이 파일의 getReceivableItems를 쓴다.
 import { getShortCarNum } from './cars.ts'
 import { resolveCallDetailId } from './callDetailIds.ts'
 import { parseCurrencyValue } from './money.ts'
@@ -51,7 +50,6 @@ export function getReceivableItems(settings: FinanceSettings = {}, workDataByLog
         const detailId = resolveCallDetailId(detail)
         if (!detailId) return
         const paymentSummary = getDetailPaymentSummary(detail)
-        // 받을 돈이 남은 운행만 미수다 — 0원 운행·다 받은 운행은 뺀다(매출 미입금과 같은 기준).
         if (paymentSummary.status === 'paid' || paymentSummary.remainingAmount <= 0) {
           return
         }

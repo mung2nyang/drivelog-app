@@ -1,5 +1,4 @@
 // @ts-check
-// 기사 연동 화면. 저장·상태 변경·삭제는 data/sync/directMutationActions.ts, 초대 폼은 DriverFormModal.jsx.
 /** @typedef {import('../../../data/sync/syncTypes.ts').AppSession} AppSession */
 /** @typedef {import('../../../domain/driverTypes.ts').DriverRecord} DriverRecord */
 import { useState } from 'react'
@@ -22,9 +21,7 @@ import { useSession } from '../../../data/cloud/sessionContext.ts'
 
 const emptyDraft = { name: '', phone: '', inviteCode: '', vehicleNumber: '', startDate: '', endDate: '' }
 
-/**
- * @param {{ onBack: () => void, navigate?: (to: import('react-router-dom').To | number, options?: import('react-router-dom').NavigateOptions) => void }} props
- */
+/** @param {{ onBack: () => void, navigate?: (to: import('react-router-dom').To | number, options?: import('react-router-dom').NavigateOptions) => void }} props */
 export default function DriverConnectionPage({ onBack, navigate }) {
   const { ownerKey, session } = useSession()
   const showToast = useToast()
@@ -68,9 +65,6 @@ export default function DriverConnectionPage({ onBack, navigate }) {
       showToast?.(editingId ? '초대를 수정했습니다.' : '초대를 저장했습니다.')
       return
     }
-    // editingId를 그대로 넘긴다(newId로 바꿔치기하지 않는다) — requestDriverInviteSave
-    // 내부의 idx 조회가 "id로 못 찾으면 마지막 항목"으로 이미 신규 생성 케이스를
-    // 처리하고, 토스트 문구(수정 vs 저장)도 이 원래 editingId(신규면 null)로 갈린다.
     const saveResult = await requestDriverInviteSave({
       ownerKey,
       userId: cloudUserId,

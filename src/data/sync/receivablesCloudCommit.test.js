@@ -1,5 +1,3 @@
-// 8-B — 미수 쓰기 창구 통일: persistReceivableWorkDataChange + commitMainDayLogMapToCloud
-// 일지↔미수 교차 반영 및 일괄 부분 실패 시나리오(G-2/G-3/G-4) 검증.
 import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { describe, test } from 'node:test'
@@ -20,7 +18,7 @@ const { FIXTURE_DETAIL_ID_MAY10_MAIN, FIXTURE_SETTINGS, FIXTURE_WORK } = await i
 const { markReceivableItemPaid, addPartialPayment, toggleCallPaymentStatus } = await import('../../domain/payments.ts')
 
 const FAIL_FAST = '저장에 실패했습니다. 네트워크 상태를 확인해 주세요.'
-const SESSION_CHANGED = '로그인 정보가 바뀌어 저장하지 못했습니다. 화면을 새로고침한 뒤 다시 시도해 주세요.' // 로드맵 56-B-1 ③
+const SESSION_CHANGED = '로그인 정보가 바뀌어 저장하지 못했습니다. 화면을 새로고침한 뒤 다시 시도해 주세요.'
 const DK = '2026-05-10'
 
 /** @param {string} userId @param {string} ownerKey @param {boolean} [ready] */
@@ -253,7 +251,6 @@ describe('8-B receivables cloud commit — 시나리오 A~G', () => {
   })
 })
 
-// 로드맵 64 — 기사(서브) 차량 운행도 미수 화면에서 서버에 저장한다.
 describe('64 receivables cloud commit — 기사 차량', () => {
   const PLATE = '34나5678'
   const SUB_DK = '2026-05-11'

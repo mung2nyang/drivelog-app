@@ -1,4 +1,3 @@
-// 차량 등록/수정 draft → 저장할 기사 관련 필드 정규화(순수 함수).
 import { driverIncomeFieldsFromDraft } from './driverIncomeDeductions.ts'
 
 export type CarUpsertDraft = {
@@ -22,7 +21,6 @@ export type CarUpsertDraft = {
   driverShareBase?: string
 }
 
-/** 메인 차량은 기사 정산 필드 없이 기본값만 돌려준다 */
 export type DriverFields = {
   driverName: string
   driverPhone: string
@@ -37,7 +35,6 @@ export type DriverFields = {
   expenseRate?: string
   insuranceRate?: string
   insuranceSplit?: 'owner' | 'half' | 'driver'
-  /** 매출제 기사 몫 기준 */
   driverShareBase?: 'gross' | 'afterClientCommission'
 }
 

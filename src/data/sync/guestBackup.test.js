@@ -86,7 +86,6 @@ describe('guestBackup — 게스트 데이터 내보내기/가져오기', () => 
     }
 
     replaceOwnerState('guest', seedSnapshot)
-    // 서브 차량 로컬 일지 저장 (실제 앱에서는 commitLogWorkData 로 쓰임)
     localStorage.setItem('reactPracticeWorkData:guest:log:22나2222', JSON.stringify({
       '2026-09-02': { isOff: true },
     }))
@@ -106,7 +105,6 @@ describe('guestBackup — 게스트 데이터 내보내기/가져오기', () => 
     assert.equal(backupWorkLogs.main['2026-09-01'].fixedCount, 2)
     assert.equal(backupWorkLogs['22나2222']['2026-09-02'].isOff, true)
 
-    // 스토어를 초기 상태로 비움
     replaceOwnerState('guest', {
       cars: [],
       clients: [],
@@ -127,7 +125,6 @@ describe('guestBackup — 게스트 데이터 내보내기/가져오기', () => 
     assert.equal((getState().cars.guest || []).length, 0)
     assert.equal((getState().clients.guest || []).length, 0)
 
-    // 복원 적용
     const restoreResult = applyGuestBackupData(backup)
     assert.equal(restoreResult.ok, true)
 
@@ -147,17 +144,14 @@ describe('guestBackup — 게스트 데이터 내보내기/가져오기', () => 
   })
 
   test('손상된 JSON 거부: null, 배열, 유효 도메인 없는 객체는 거부되고 스토어 불변', () => {
-    // 1. null / 원시값 / 배열
     assert.equal(applyGuestBackupData(null).ok, false)
     assert.equal(applyGuestBackupData(undefined).ok, false)
     assert.equal(applyGuestBackupData('not-json-object').ok, false)
     assert.equal(applyGuestBackupData([1, 2, 3]).ok, false)
 
-    // 2. 유효 도메인 키가 전혀 없는 객체
     assert.equal(applyGuestBackupData({}).ok, false)
     assert.equal(applyGuestBackupData({ randomKey: 123 }).ok, false)
 
-    // 3. 도메인 타입이 손상된 경우
     assert.equal(applyGuestBackupData({ cars: 'not-an-array' }).ok, false)
     assert.equal(applyGuestBackupData({ cars: [null] }).ok, false)
     assert.equal(applyGuestBackupData({ clients: 'not-an-array' }).ok, false)

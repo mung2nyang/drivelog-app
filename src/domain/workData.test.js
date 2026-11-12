@@ -166,14 +166,6 @@ describe('입금 예정일', () => {
   })
 })
 
-// Step 5(달력 홈 재작성) 재감사 3번: dayFareTotal/dayWorkBadgeLabel/dayHasUnpaid는
-// calendarBadges.js(타입 전용 모듈)로 옮겼다 — 그 테스트도 calendarBadges.test.js로
-// 함께 옮겼다.
-
-// Step 6 재감사(FAIL 지적 3번) — backfillCallDetailIds: id 없는 레거시 콜상세를
-// "로드 시 정확히 한 번" 영구 id로 채운다. 예전 getCallDetails의 `legacy-${index}`는
-// 배열 인덱스 기반이라 삭제·재정렬·재로드마다 값이 흔들렸다 — 아래 테스트들이
-// 그 세 시나리오 모두에서 안정적인지 확인한다.
 describe('backfillCallDetailIds — 레거시 콜상세 id를 로드 시 한 번만 채운다', () => {
   test('id 없는 항목만 채우고, id 있는 항목은 그대로 둔다', () => {
     const record = { callDetails: [{ id: 'kept', fare: '1' }, { fare: '2' }] }
@@ -206,7 +198,6 @@ describe('backfillCallDetailIds — 레거시 콜상세 id를 로드 시 한 번
   test('한 번 채운 뒤 다시 호출해도(재로드 시뮬레이션) 같은 id가 유지된다', () => {
     const first = backfillCallDetailIds({ callDetails: [{ fare: '1' }, { fare: '2' }] })
     const idsFirst = first.record.callDetails.map((item) => item.id)
-    // "재로드"를 흉내낸다 — 첫 결과를 그대로 store에서 다시 읽었다고 가정.
     const second = backfillCallDetailIds(first.record)
     assert.equal(second.changed, false)
     assert.deepEqual(second.record.callDetails.map((item) => item.id), idsFirst)
@@ -215,12 +206,8 @@ describe('backfillCallDetailIds — 레거시 콜상세 id를 로드 시 한 번
   test('삭제 후에도 남아있는 항목의 id는 배열 인덱스가 아니라 그 자체로 유지된다', () => {
     const migrated = backfillCallDetailIds({ callDetails: [{ fare: '1' }, { fare: '2' }, { fare: '3' }] })
     const [first, second, third] = migrated.record.callDetails
-    // 맨 앞 항목을 삭제(인덱스가 하나씩 당겨짐)해도, 남은 항목의 id 자체는 안 바뀐다.
     const afterDelete = migrated.record.callDetails.filter((item) => item.id !== first.id)
     assert.deepEqual(afterDelete.map((item) => item.id), [second.id, third.id])
-    // 예전(legacy-${index}) 방식이었다면 이 시점에서 second가 legacy-0으로, third가
-    // legacy-1로 값이 바뀌어(삭제 전엔 각각 legacy-1/legacy-2였다) 재감사에서 지적된
-    // 불안정성이 재현됐을 것이다 — backfillCallDetailIds는 인덱스와 무관한 값이라 안 바뀐다.
     const reread = backfillCallDetailIds({ callDetails: afterDelete })
     assert.equal(reread.changed, false, '이미 다 id가 있으니 재계산이 없어야 한다')
     assert.deepEqual(reread.record.callDetails.map((item) => item.id), [second.id, third.id])
@@ -236,12 +223,8 @@ describe('backfillCallDetailIds — 레거시 콜상세 id를 로드 시 한 번
   })
 
   test('hydrate 왕복(클라우드에서 raw.id로 되돌아온 값)에서도 같은 id가 유지된다', () => {
-    // syncWorkData.js는 transport_details.raw에 콜상세 객체를 그대로 저장하고,
-    // hydrateMerge.js의 mergeWorkDataFromRows는 그 raw를 그대로 되돌려 놓는다 — 즉
-    // "클라우드에 한 번 실제 id로 올라간 뒤 다시 내려온" 상황은 id가 이미 있는
-    // 레코드를 다시 backfillCallDetailIds에 넣는 것과 동일하다.
     const migrated = backfillCallDetailIds({ callDetails: [{ fare: '1' }] })
-    const cloudRoundTrip = JSON.parse(JSON.stringify(migrated.record)) // raw로 직렬화/역직렬화 흉내
+    const cloudRoundTrip = JSON.parse(JSON.stringify(migrated.record))
     const afterHydrate = backfillCallDetailIds(cloudRoundTrip)
     assert.equal(afterHydrate.changed, false)
     assert.equal(afterHydrate.record.callDetails[0].id, migrated.record.callDetails[0].id)

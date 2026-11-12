@@ -1,4 +1,3 @@
-// 휴대폰 크롬 받아쓰기(한국어), 앱이면 안드로이드 받아쓰기. 지원 안 하면 글로만 쓴다.
 import { useEffect, useRef, useState } from 'react'
 import { isApp, listenInApp, stopListeningInApp, type AppListenFailure } from './appSpeech.ts'
 
@@ -34,12 +33,10 @@ function errorMessage(code: string): string {
   return SPEECH_FAILED
 }
 
-/** 말이 끝나면 받아쓴 글자를 onFinal로 넘긴다. */
 export default function useSpeechInput(onFinal: (text: string) => void) {
   const [listening, setListening] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const recognizerRef = useRef<Recognizer | null>(null)
-  // 앱에서 듣는 한 번 — 화면이 사라지면 비워서 늦게 온 결과를 버린다.
   const appListenRef = useRef<object | null>(null)
   const onFinalRef = useRef(onFinal)
   const supported = isApp() || recognizerCtor() !== null

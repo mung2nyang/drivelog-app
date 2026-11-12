@@ -1,4 +1,3 @@
-// 로드맵 82-B — 기사 초대 창에서 빠지거나 틀린 칸은 저장 전에 빨간 표시·칸 아래 문구·커서(날짜 칸은 단추).
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

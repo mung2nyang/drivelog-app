@@ -1,5 +1,4 @@
 // @ts-check
-// 로드맵 73 — 설정 저장은 한 번에 하나, 앞 저장이 끝난 최신 설정 위에 얹는다.
 import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { mock, test } from 'node:test'
@@ -23,10 +22,7 @@ function beginReady(ownerKey) {
   setHydration({ status: 'ready', userId: ownerKey, ownerKey })
 }
 
-/**
- * profiles upsert를 붙잡아 두는 가짜 서버. 보낸 settings를 차례로 모은다.
- * @param {{ failFirst?: boolean }} [options]
- */
+/** @param {{ failFirst?: boolean }} [options] */
 function holdProfileUpserts({ failFirst = false } = {}) {
   /** @type {Array<JsonValue>} */
   const sent = []

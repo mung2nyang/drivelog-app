@@ -1,4 +1,3 @@
-// 로드맵 7-A — 연동 중(차주: linked 기사 있음, 기사: employed_driver)이면 탈퇴 확인 창 대신 안내만 뜬다.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

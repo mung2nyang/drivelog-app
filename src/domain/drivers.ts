@@ -1,5 +1,3 @@
-// 기사 순수 계산부. 저장은 data/sync/driversSave.ts.
-// 겹침 규칙은 "같은 차량번호는 한 기사에게만" 하나뿐(기간 무관, 연결 해제된 기사는 제외).
 import { generateLocalId } from './localId.ts'
 import type { JsonValue } from './jsonTypes.ts'
 import type { DriverRecord } from './driverTypes.ts'
@@ -7,7 +5,6 @@ import type { DriverRecord } from './driverTypes.ts'
 export type CarRef = { number?: string, type?: string }
 export type DriverDraft = Pick<DriverRecord, 'name' | 'phone' | 'inviteCode' | 'vehicleNumber' | 'startDate' | 'endDate'> & { assignmentStart?: string, assignmentEnd?: string }
 
-// 헷갈리는 0·O·1·I·L을 뺀 31종 10자리. 서버(0019)도 같은 형식만 받는다.
 const INVITE_ALPHABET = '23456789ABCDEFGHJKMNPQRSTUVWXYZ'
 export const INVITE_CODE_PATTERN = /^[23456789ABCDEFGHJKMNPQRSTUVWXYZ]{10}$/
 
@@ -17,7 +14,6 @@ export function normalizeInviteCode(value: JsonValue | undefined) {
 
 const INVITE_CODE_IN_TEXT = /^[23456789ABCDEFGHJKMNPQRSTUVWXYZ]{5}-?[23456789ABCDEFGHJKMNPQRSTUVWXYZ]{5}$/
 
-// 붙여넣은 글에 초대 코드 모양(5자-5자 또는 10자)이 하나뿐일 때만 그 코드를 돌려준다.
 export function pickInviteCodeFromText(text: string) {
   const words = text.toUpperCase().replace(/[^0-9A-Z-]+/g, ' ').split(' ')
   const found = new Set(words.filter((word) => INVITE_CODE_IN_TEXT.test(word)).map((word) => word.replace('-', '')))
@@ -35,7 +31,6 @@ export function generateInviteCode(items: Array<{ inviteCode?: string }> | null 
   do {
     code = ''
     while (code.length < 10) {
-      // 248 이상은 버려 31로 나눈 나머지가 고르게 나오게 한다.
       for (const byte of globalThis.crypto.getRandomValues(new Uint8Array(16))) {
         if (byte < 248 && code.length < 10) code += INVITE_ALPHABET[byte % 31]
       }
@@ -54,10 +49,6 @@ export function countByStatus(items: Array<DriverRecord> | null | undefined) {
 
 export type DriverField = 'name' | 'phone' | 'inviteCode' | 'vehicleNumber' | 'startDate' | 'endDate'
 
-/**
- * 저장 전 입력 검사 — 맨 처음 문제 칸과 문구, 문제 없으면 null(기사 창 칸 표시와 upsertDriver가 같이 씀).
- * required(로그인 회원)면 배정 차량·시작일 필수, 아니면 차량을 넣었을 때만 시작일 필수.
- */
 export function checkDriverDraft(draft: DriverDraft, { editingId = null, items = [], cars = [], required = false }: { editingId?: string | null, items?: Array<DriverRecord> | null, cars?: Array<CarRef> | null, required?: boolean } = {}): { field: DriverField, message: string } | null {
   const inviteCode = normalizeInviteCode(draft.inviteCode)
   const vehicleNumber = String(draft.vehicleNumber || '').trim()
@@ -65,7 +56,6 @@ export function checkDriverDraft(draft: DriverDraft, { editingId = null, items =
   const endDate = String(draft.endDate || draft.assignmentEnd || '').trim()
   if (!String(draft.name || '').trim()) return { field: 'name', message: '기사 이름을 입력해 주세요.' }
   if (String(draft.phone || '').replace(/\D/g, '').length < 10) return { field: 'phone', message: '전화번호를 입력해 주세요.' }
-  // 예전 6자리 코드는 바꾸지 않고 다시 저장할 때만 허용(연동된 기사 계약 수정 등).
   const keptCode = Boolean(inviteCode) && Boolean(editingId)
     && (items || []).some((item) => item.id === editingId && item.inviteCode === inviteCode)
   if (!INVITE_CODE_PATTERN.test(inviteCode) && !keptCode) return { field: 'inviteCode', message: '[코드 생성]으로 초대 코드를 만들어 주세요.' }
@@ -93,7 +83,6 @@ export function upsertDriver(items: Array<DriverRecord>, draft: DriverDraft, edi
   const duplicate = list.some((item) => item.inviteCode === inviteCode && item.id !== editingId)
   if (duplicate) return { error: '이미 쓰인 초대 코드입니다.', items }
 
-  // 같은 차량번호는 한 기사에게만(기간 무관). 연결 해제된 기사는 비운 것으로 본다.
   if (vehicleNumber) {
     const taken = list.some((item) => (
       item.id !== editingId
@@ -102,7 +91,6 @@ export function upsertDriver(items: Array<DriverRecord>, draft: DriverDraft, edi
     ))
     if (taken) return { error: '이미 다른 기사에게 배정된 차량입니다.', items }
 
-    // 한 기사는 차량 1대에만 배정(전화번호 숫자 기준). 연결 해제된 기사는 제외.
     const cleanPhone = phone.replace(/\D/g, '')
     const driverBusy = list.some((item) => (
       item.id !== editingId
@@ -141,7 +129,6 @@ export function isDateWithinAssignment(dateKey: string, assignmentStart: string 
   return true
 }
 
-/** 할당 기간 기준 UI 상태. */
 export function getAssignmentState(link: { assignmentStart?: string, assignmentEnd?: string, startDate?: string, endDate?: string } | null | undefined): { key: 'scheduled' | 'ended' | 'active', label: string } {
   const today = new Date()
   today.setHours(0, 0, 0, 0)
@@ -154,14 +141,12 @@ export function getAssignmentState(link: { assignmentStart?: string, assignmentE
   return { key: 'active', label: '배정 중' }
 }
 
-/** 'YYYY-MM-DD' → '10월 1일'(해가 다르면 '2025년 10월 1일') */
 function dayLabel(dateKey: string, baseKey: string): string {
   const [y, m, d] = dateKey.split('-')
   const md = `${Number(m)}월 ${Number(d)}일`
   return y === baseKey.slice(0, 4) ? md : `${y}년 ${md}`
 }
 
-/** 연동 기사 계약기간 밖 날짜 안내(일지 화면·운비서 카드가 같이 씀) — 기간 안이면 null. 서버가 기간 밖 기록을 거절함(DB 0010). */
 export function assignmentPeriodNotice(dateKey: string, start: string | null | undefined, end: string | null | undefined): { title: string, body: string } | null {
   if (start && dateKey < start) return { title: '계약기간 전 날짜입니다.', body: `${dayLabel(start, dateKey)}부터 기록할 수 있습니다.` }
   if (end && dateKey > end) return { title: '계약기간이 끝난 날짜입니다.', body: `${dayLabel(end, dateKey)}까지 기록할 수 있습니다.` }

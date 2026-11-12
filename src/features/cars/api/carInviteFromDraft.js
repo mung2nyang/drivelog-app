@@ -25,7 +25,6 @@ export function todayIsoDate() {
 }
 
 /**
- * After vehicle save: create/update driver invite via existing Fail-Fast path.
  * @param {Object} args
  * @param {boolean} args.cloud
  * @param {string} args.ownerKey
@@ -34,9 +33,8 @@ export function todayIsoDate() {
  * @param {Array<CarLike>} args.cars
  * @param {CarLike|null|undefined} args.saved
  * @param {CarInviteDraft} args.inviteDraft
- * @param {boolean} [args.skipInvite] true면 초대 생성 자체를 건너뛴다(신규 등록 시
- *   "운행 일지"=기사 연동 없음을 선택한 경우 — CarFormModal.jsx의 connectMode).
- * @returns {Promise<string|null>} toast or error message; null if skipped
+ * @param {boolean} [args.skipInvite]
+ * @returns {Promise<string|null>}
  */
 export async function saveInviteAfterVehicle({
   cloud, ownerKey, userId, drivers, cars, saved, inviteDraft, skipInvite = false,
@@ -47,7 +45,6 @@ export async function saveInviteAfterVehicle({
   const vehicleNumber = saved?.number || inviteDraft.number
   if (!vehicleNumber) return null
   const startDate = inviteDraft.inviteStartDate || todayIsoDate()
-  // 차량 창에는 종료일 칸이 없어 기존 기사의 종료일을 그대로 넘긴다.
   const existing = inviteDraft.inviteDriverId ? drivers.find((d) => d.id === inviteDraft.inviteDriverId) : null
   const result = upsertDriver(
     drivers,

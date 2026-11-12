@@ -1,5 +1,4 @@
 // @ts-check
-// 리포트 세부 내역서 — 거래처 옵션·콜상세 집계.
 import { getCallDetails, isOffDay } from '../../../domain/day-record.ts'
 import { getCallDetailCommissionAmount, resolveCallDetailCommission } from '../../../domain/financeCore.ts'
 import { parseCurrencyValue, vatOf } from '../../../domain/money.ts'
@@ -9,7 +8,6 @@ import { parseCurrencyValue, vatOf } from '../../../domain/money.ts'
 /** @typedef {import('../../../domain/callDetail.ts').CallDetailLike} CallDetailLike */
 
 /**
- * 세부 내역서 거래처 선택 옵션 — 등록 거래처 ∪ 해당 월 콜상세 거래처 ∪ 미지정, ALL 선행.
  * @param {Record<string, DayRecordLike>|null|undefined} workData
  * @param {number} year
  * @param {number} monthIndex
@@ -50,7 +48,6 @@ function detailCommissionLabel(detail, settings) {
 }
 
 /**
- * 거래처별 세부 내역서(콜상세만, 고정노선 미포함).
  * @param {Record<string, DayRecordLike>|null|undefined} workData
  * @param {number} year
  * @param {number} monthIndex
@@ -100,7 +97,7 @@ export function buildDetailReport(workData, year, monthIndex, clientFilter, sett
         fare,
       })
       totalFare += fare
-      if (!detail?.vatExempt) vat += vatOf(fare) // 매출과 같이 건마다 버림, 면세면 0
+      if (!detail?.vatExempt) vat += vatOf(fare)
       totalCommission += commission
     })
   }

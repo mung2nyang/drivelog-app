@@ -1,5 +1,4 @@
 // @ts-check
-// 기사 차량 창의 "기사 몫 기준" 드롭다운 — 매출제 % 기사 몫을 운송료 전체 / 거래처 수수료 뗀 뒤 중 어디서 계산할지.
 import AppDropdown from '../../../shared/ui/AppDropdown.tsx'
 
 const OPTIONS = [
@@ -7,9 +6,7 @@ const OPTIONS = [
   { value: 'afterClientCommission', label: '거래처 수수료 뗀 뒤' },
 ]
 
-/**
- * @param {{ value: string|undefined, onChange: (next: 'gross'|'afterClientCommission') => void }} props
- */
+/** @param {{ value: string|undefined, onChange: (next: 'gross'|'afterClientCommission') => void }} props */
 export default function CarShareBaseField({ value, onChange }) {
   const current = value === 'afterClientCommission' ? 'afterClientCommission' : 'gross'
   return (

@@ -1,6 +1,3 @@
-/* 정비/주유/기타 상단 카드(년월·탭·월 합계) — 매출 화면 상단 카드와 같은 배치.
-   MaintFuelPage.jsx가 import. + 추가는 관리 화면 공용 .management-add-fab. */
-
 .maint-top-card {
   margin-bottom: 12px;
   padding: 18px;
@@ -45,7 +42,6 @@
   margin-bottom: 0;
 }
 
-/* 항목 카드 제목 앞 kind별 아이콘 */
 .maint-fuel-page .management-record-title {
   display: flex;
   align-items: center;
@@ -72,7 +68,6 @@
   stroke: #d97706;
 }
 
-/* 일별 묶음·항목 카드(칩·셸) */
 .maint-fuel-page .management-day-card {
   padding: 16px 14px 14px;
   margin-bottom: 12px;

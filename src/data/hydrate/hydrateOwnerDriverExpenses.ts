@@ -1,5 +1,3 @@
-// 차주 hydrate: 서브 차량 fuel/maint/misc(차량번호 태그) → 차주 목록(expenses). 연동 서브도 공용 장부.
-// hydrateEmployedDriver는 이 모듈을 쓰지 않는다.
 import { supabase } from '../cloud/supabaseClient.ts'
 import { mergeExpenseKind } from './hydrateMerge.ts'
 import { expenseFromFuelRecord, replaceFuelExpenses } from '../../domain/fuelRecords.ts'
@@ -30,11 +28,6 @@ async function fetchTaggedExpensesForVehicle(vehicleId: string | number, vehicle
   return (next.map((item) => ({ ...item, vehicleNumber }))) as Array<DriverExpenseItem>
 }
 
-/**
- * 서브 차량 supabaseId로 비용 3종을 모아 vehicleNumber 태그를 붙여 차주 목록(expenses)에 id 중복 제거로 합친다.
- * 연동 서브도 차주·기사 공용 장부라 차주 목록으로(읽기 전용 driverExpenses는 빈 배열).
- * @param _drivers 연동 여부로 나누지 않음(호출부 모양 유지용)
- */
 export async function fetchOwnerDriverExpenses(cars: Array<CarLike>, _drivers: Array<DriverRecord>, ownerExpenses: Array<JsonRecord>, throwIfAnyHydrateError: (labeled: Record<string, SupabaseQueryError>) => void): Promise<{ expenses: Array<JsonRecord>, driverExpenses: Array<DriverExpenseItem> }> {
   const subCars = (Array.isArray(cars) ? cars : []).filter((car) => {
     if (car?.type !== 'sub' || car.supabaseId == null) return false

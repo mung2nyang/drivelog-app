@@ -1,4 +1,3 @@
-// 관리자 문의 목록·답변 저장 — 서버 함수(0025)로만, 로컬 저장 없음(Fail-Fast).
 import type { JsonValue } from '../../../domain/jsonTypes.ts'
 import { supabase } from '../../../data/cloud/supabaseClient.ts'
 import {
@@ -32,7 +31,6 @@ function text(row: { [key: string]: JsonValue }, key: string): string {
   return typeof value === 'string' ? value : ''
 }
 
-/** 서버 한 줄 → 화면용. id가 글자가 아니면 그 줄은 버린다. */
 export function normalizeAdminInquiry(row: JsonValue | undefined): AdminInquiry | null {
   if (!row || typeof row !== 'object' || Array.isArray(row)) return null
   const id = row.id
@@ -49,7 +47,6 @@ export function normalizeAdminInquiry(row: JsonValue | undefined): AdminInquiry 
   }
 }
 
-/** 모든 문의(답변 대기 먼저·최근 먼저, 서버 순서 그대로). 실패하면 던진다. */
 export async function fetchAdminInquiries(): Promise<Array<AdminInquiry>> {
   const captured = captureSession()
   const { data, error } = await supabase.rpc('admin_list_support_inquiries')

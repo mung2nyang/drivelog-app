@@ -1,5 +1,3 @@
-// DayLogPage.jsx callDetail 표시 계약 — App 전체 부트 없이 CallDetailList만 렌더한다.
-// (App.test.js 통합 테스트는 hydrate+commitSettings 조합에서 OOM이 나서 컴포넌트 단위로 검증)
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 
@@ -17,7 +15,6 @@ const { act } = React
 const { createRoot } = await import('react-dom/client')
 const { default: CallDetailList } = await import('./CallDetailList.jsx')
 
-/** DayLogPage.jsx:60 — 섹션 마운트 여부 */
 function showCallDetailList(callDetail, callDetailsLength) {
   return callDetail || callDetailsLength > 0
 }

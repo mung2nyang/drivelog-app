@@ -1,4 +1,3 @@
-// 로드맵 109-B — 일지 제목 아래 하루 운송료 합계(고정 노선 + 파렛트 + 세부 운송료), 0원·휴무면 글 없이 자리만.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

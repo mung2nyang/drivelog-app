@@ -1,4 +1,3 @@
-// 로드맵 84 — 로그인 계정이 쓰는 중 인터넷이 끊기면 맨 위 빨간 띠, 다시 연결되면 사라짐. 비회원은 안 보임.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

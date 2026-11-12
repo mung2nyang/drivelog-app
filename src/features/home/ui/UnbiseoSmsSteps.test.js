@@ -1,4 +1,3 @@
-// 로드맵 24-H-2 — 운비서 미수금 문자 되묻기: 빠진 것만 차례로 묻고, 숫자는 미수금 화면과 같고, 다 고르면 [문자 열기] 주소.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 
@@ -127,7 +126,6 @@ test('직접 고르기: 건마다 체크, 하나 이상 골라야 [다음], 고�
   } finally { await view.cleanup() }
 })
 
-// 로드맵 24-H-3 — 묻는 중에 말·글이 지금 보이는 버튼 하나와 맞으면 그 버튼을 누른 것과 같다(서버를 부르지 않음).
 test('말로 고르기: 거래처 → 달 → 문구 번호, 서버는 처음 한 번만, 글 칸은 비움', async () => {
   const view = await ask({})
   const start = calls.length

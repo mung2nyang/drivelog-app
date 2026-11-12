@@ -1,4 +1,3 @@
-/* 일상점검표 안내 줄 확인 중 — 글자·버튼 자리 막대 위로 빛이 지나감. DailyInspectionNotice.jsx가 import. */
 .daily-inspection-notice .di-skeleton {
   position: relative;
   display: block;

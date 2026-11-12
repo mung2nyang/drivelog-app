@@ -1,4 +1,3 @@
-// 옛 하루 기록 안 주유·정비·기타 목록 항목 검사의 통과/거부를 칸마다 못 박는다 — 검사 코드를 라이브러리로 바꿔도 결과가 같아야 한다.
 import assert from 'node:assert/strict'
 import { describe, test } from 'node:test'
 import {

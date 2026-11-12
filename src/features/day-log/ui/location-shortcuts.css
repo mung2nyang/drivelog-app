@@ -1,4 +1,3 @@
-/* 상차지/하차지 즐겨찾기 칩 전용. call-detail-form.css(§6 초과)에 넣지 않음. */
 .location-shortcuts {
   grid-column: 1 / -1;
   display: flex;
@@ -47,7 +46,6 @@
   color: var(--primary-color) !important;
 }
 
-/* 앱 공용 SVG 아이콘 스타일과 통일(day-log-expenses.css .maint-fuel-icon과 같은 규칙). */
 .location-chip-pin .star-icon {
   width: 14px;
   height: 14px;

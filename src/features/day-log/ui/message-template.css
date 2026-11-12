@@ -1,5 +1,3 @@
-/* 문자 양식 선택창 전용 — MessageTemplateSheet.jsx가 직접 import. */
-
 .message-template-overlay {
   position: fixed;
   inset: 0;

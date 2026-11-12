@@ -1,4 +1,3 @@
-// 앱 공용 확인 창 — 기본 확인 창 대신 앱 확인 창(ConfirmModal)으로 묻고, 누른 버튼대로 답한다.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

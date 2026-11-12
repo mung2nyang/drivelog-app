@@ -1,4 +1,3 @@
-// 기사 초대 코드 창 — 설명 옆 (i)를 누르면 연동하면 바뀌는 것이 펼쳐진다.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

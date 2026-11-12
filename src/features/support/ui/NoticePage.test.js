@@ -1,4 +1,3 @@
-// 공지사항: 공지가 제목(날짜)로 보이고, 누르면 본문이 펼쳐진다.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

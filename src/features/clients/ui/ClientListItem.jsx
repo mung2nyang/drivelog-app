@@ -7,7 +7,7 @@ import { StarIcon } from '../../../shared/ui/icons.tsx'
  * @param {Object} props
  * @param {import('../../../domain/clientTypes.ts').ClientLike} props.client
  * @param {boolean} [props.dragging]
- * @param {() => void} [props.onDragStart] 없으면 끌어서 순서 바꾸기 꺼짐(기사 거래처)
+ * @param {() => void} [props.onDragStart]
  * @param {(event: { preventDefault: () => void }) => void} [props.onDragOver]
  * @param {() => void} [props.onDrop]
  * @param {() => void} [props.onDragEnd]

@@ -33,9 +33,7 @@ const { act } = React
 const { createRoot } = await import('react-dom/client')
 const { default: ReportShareModal } = await import('./ReportShareModal.jsx')
 
-/**
- * @param {Object} [props]
- */
+/** @param {Object} [props] */
 function mountModal(props = {}) {
   const container = document.createElement('div')
   document.body.appendChild(container)

@@ -1,4 +1,3 @@
-// 세금계산서 upsert. 로그인 저장은 invoices 배열을 인자로 받고 Store/LS를 먼저 쓰지 않는다.
 import { supabase } from '../cloud/supabaseClient.ts'
 import {
   applyInsertedTaxInvoiceId,
@@ -50,7 +49,6 @@ export async function syncTaxInvoices(userId: string, ownerKey: string, cars: Ar
       continue
     }
 
-    // 넣기 전에 같은 계산서가 서버에 있는지 본다 — 앞 저장이 중간에 끊겼거나 응답만 잃었으면 다시 넣지 않고 고친다.
     const { data: found, error: findError } = await supabase
       .from('tax_invoices').select('id').eq('user_id', userId).eq('raw->>id', String(item.id)).limit(1)
     if (findError) throw findError

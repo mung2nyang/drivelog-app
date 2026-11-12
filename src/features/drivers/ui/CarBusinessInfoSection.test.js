@@ -1,4 +1,3 @@
-// 이관 감사 11-5·11-6 — 기사 관리 화면 하단 "사업자·정산 계좌 정보" 카드: 입력 → 저장 → 다시 열면 유지.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

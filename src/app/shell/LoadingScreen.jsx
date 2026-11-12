@@ -1,12 +1,11 @@
 // @ts-check
-// 로딩 표시 "운행일지 ● ● ●" — 모양 CSS는 index.html <style>(앱 파일이 오기 전과 같은 모양), 여기선 같은 클래스만 쓴다.
 import { assetPath } from '../../shared/utils/assetPath.ts'
 
 const BANNER = assetPath('/images/banner_image.png')
 
 /**
  * @param {Object} props
- * @param {boolean} [props.inline] 화면 안(하단 메뉴는 그대로)에 놓을 때 — 화면을 처음 열 때(Suspense)
+ * @param {boolean} [props.inline]
  */
 export default function LoadingScreen({ inline = false }) {
   return (

@@ -1,5 +1,3 @@
-/* 운송비 내역서 화면: 위 카드, 정보·내역 표, 요약 줄, 공유 창. */
-
 .report-top-card {
   background-color: var(--card-bg);
   border: 1px solid var(--border-color);
@@ -20,7 +18,7 @@
 .info-table {
   width: 100%;
   margin-bottom: 16px;
-  border-collapse: separate; border-spacing: 0; /* 둥근 바깥선이 모서리까지 이어지게(위 카드와 같은 24px) */
+  border-collapse: separate; border-spacing: 0;
   overflow: hidden;
   border: 1px solid var(--border-color);
   border-radius: 24px;
@@ -79,7 +77,7 @@
 .report-table {
   width: 100%;
   margin-bottom: 16px;
-  border-collapse: separate; border-spacing: 0; /* 둥근 바깥선이 모서리까지 이어지게(위 카드와 같은 24px) */
+  border-collapse: separate; border-spacing: 0;
   overflow: hidden;
   border: 1px solid var(--border-color);
   border-radius: 24px;
@@ -103,7 +101,6 @@
   text-align: center;
 }
 
-/* 요약·세부내역서 표 셀 모두 가운데 정렬 */
 .report-table td {
   text-align: center;
 }

@@ -1,4 +1,3 @@
-// 서브 일지 durable pending을 차량번호 변경/삭제와 같은 원자 단위로 다룬다.
 import { durableKey, readDurable } from './durableStorage.ts'
 import {
   clearUnsafeRegistrationFailure,

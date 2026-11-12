@@ -1,13 +1,8 @@
-// 세금계산서(tax_invoices) 순수 계산 — 금액 파싱, 차량/거래처 id 해소, upsert 행 조립,
-// 서버 행 병합. 실제 Supabase I/O는 data/sync/syncTaxInvoicesTable.ts가, 하이드레이트 병합
-// 호출은 data/hydrate/hydrate.ts가 한다. 타입은 기존 InvoiceLike/CarLike 재사용.
 import type { JsonValue } from './jsonTypes.ts'
 import type { InvoiceLike } from './financeTaxInvoiceEntries.ts'
 import type { CarLike } from './financeTypes.ts'
 
-/** buildTaxInvoiceRow가 읽는 필드만 — 실제로는 InvoiceLike가 넘어온다 */
 export type TaxInvoiceItemInput = {
-  /** raw로 저장돼 mergeTaxInvoiceRecords가 병합 키로 다시 읽는다 */
   id?: string
   flow?: string
   monthKey?: string
@@ -17,7 +12,6 @@ export type TaxInvoiceItemInput = {
   status?: string
 }
 
-/** tax_invoices 테이블 insert/update 행 */
 export type TaxInvoiceRow = {
   user_id: string
   vehicle_id: string | number | null
@@ -69,7 +63,6 @@ export function buildTaxInvoiceRow(item: TaxInvoiceItemInput, { userId, vehicleI
   }
 }
 
-/** @param rows tax_invoices 서버 행 */
 export function mergeTaxInvoiceRecords(localRecords: Array<InvoiceLike>, rows: Array<{ id: string | number, raw?: JsonValue | Record<string, JsonValue | undefined> }>): Array<InvoiceLike> {
   const merged = [...(localRecords || [])]
   ;(rows || []).forEach((row) => {
@@ -91,7 +84,6 @@ function replaceSuffix(value: string | undefined, suffix: string, next: string) 
   return value && value.endsWith(suffix) ? value.slice(0, value.length - suffix.length) + next : undefined
 }
 
-/** 기사 차량 번호가 바뀌면 계산서 안의 옛 번호를 새 번호로(서버 rename_sub_vehicle과 같은 규칙). */
 export function renameTaxInvoicePlate(item: InvoiceLike, oldNumber: string, newNumber: string): InvoiceLike {
   const changes: Partial<InvoiceLike> = {}
   const id = replaceSuffix(item.id, `__${oldNumber}`, `__${newNumber}`)

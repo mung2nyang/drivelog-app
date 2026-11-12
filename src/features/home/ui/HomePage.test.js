@@ -1,4 +1,3 @@
-// 새 홈 1·2단계 — 오늘 카드(기록 없음/횟수/휴무, 운행 줄), 할 일(일상점검·미수), 이번 달 정산 합계 = 달력 합계.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 
@@ -126,7 +125,6 @@ test('오늘을 휴무로 저장했으면 "오늘은 휴무입니다" + [일지 
 
 /** @param {HTMLElement} container @param {string} selector */
 function texts(container, selector) {
-  // 줄 안 칸(span)끼리는 띄어서 읽음
   return Array.from(container.querySelectorAll(selector)).map((el) => {
     const parts = el.children.length ? Array.from(el.children).map((child) => child.textContent || '') : [el.textContent || '']
     return parts.join(' ').replace(/\s+/g, ' ').trim()
@@ -164,7 +162,6 @@ test('2단계 — 운행 줄: 고정 노선 + 콜 최대 3줄 + "외 N건", 제�
   }
 })
 
-// 로드맵 109-A — 오늘 카드 금액에도 파렛트(달력 칸과 같은 숫자).
 test('파렛트 켠 고정 노선 거래처: 오늘 카드 금액에 파렛트 장수 × 단가', async () => {
   const { dateKey } = todayWorkLogSelection()
   const client = { id: 'cl-pl', companyName: '파렛트거래처', fixedRouteLinked: true, fixedUnitPrice: 100000, palletOn: true, palletPrice: 3000 }

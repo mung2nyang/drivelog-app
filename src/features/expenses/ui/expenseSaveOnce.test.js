@@ -1,5 +1,3 @@
-// 로드맵 111 — 로그인 계정 지출 [저장]을 저장 중에 또 눌러도 서버에 한 번만 넣는다(일지 지출 창·차량 유지비 화면).
-// 느린 서버는 지출 줄 넣기를 붙잡아 흉내 낸다 — 고치기 전에는 두 번 눌러 두 줄이 들어갔다.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 
@@ -96,7 +94,6 @@ async function render(ownerKey, path) {
   return {
     container, toasts, button, press, typeName,
     async cleanup() {
-      // 입력 칸 붙잡기 기록을 빼는 뒤로가기가 끝난 뒤 닫는다 — 늦게 끝나면 다음 테스트 주소를 일지로 되돌린다.
       for (let i = 0; i < 100 && panelGuardOnTop(); i += 1) await flush()
       await flush()
       await act(async () => { root.unmount() }); container.remove()

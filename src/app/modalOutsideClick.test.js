@@ -1,4 +1,3 @@
-// 로드맵 8 — 입력 칸이 있는 창 6곳은 바깥(회색 영역)을 눌러도 안 닫히고 취소 버튼으로만 닫힌다. 입력 없는 확인 창은 바깥 클릭으로 닫힌다(대조).
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 
@@ -32,9 +31,7 @@ const CAR_DRAFT = {
   inviteCode: '', inviteStartDate: '', inviteDriverId: null, connectMode: 'log',
 }
 
-/**
- * @typedef {{ name: string, element: (close: () => void) => import('react').ReactElement }} ModalCase
- */
+/** @typedef {{ name: string, element: (close: () => void) => import('react').ReactElement }} ModalCase */
 
 /** @type {Array<ModalCase>} */
 const INPUT_MODALS = [
@@ -80,7 +77,6 @@ for (const modal of INPUT_MODALS) {
   })
 }
 
-// 로드맵 57-B — 입력 창은 공용 껍데기(화면 읽기 "창")를 쓰고, 컴퓨터 Esc 키로도 안 닫힌다.
 for (const modal of INPUT_MODALS) {
   test(`${modal.name} 창: 화면 읽기 "창" 표시, Esc로도 안 닫힌다`, async () => {
     const view = await mount(modal.element)

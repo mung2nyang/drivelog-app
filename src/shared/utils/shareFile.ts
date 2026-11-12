@@ -1,4 +1,3 @@
-// 파일을 다른 앱으로 보내기 — 앱은 안드로이드 공유 창, 웹은 브라우저 공유.
 import { Capacitor } from '@capacitor/core'
 import { blobToBase64 } from './saveFile.ts'
 
@@ -19,9 +18,6 @@ async function shareInBrowser(file: File, { title, text }: ShareText) {
   return true
 }
 
-/**
- * 공유 창을 띄웠으면(사용자가 닫아도) true, 이 기기에서 공유를 못 하면 false. 다른 실패는 그대로 던진다.
- */
 export async function shareFileFromDevice(file: File, { title, text }: ShareText) {
   if (!Capacitor.isNativePlatform()) return shareInBrowser(file, { title, text })
   const [{ Filesystem, Directory }, { Share }] = await Promise.all([import('@capacitor/filesystem'), import('@capacitor/share')])

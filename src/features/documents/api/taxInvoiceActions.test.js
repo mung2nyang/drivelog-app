@@ -1,5 +1,4 @@
 // @ts-check
-// 로드맵 74 — 세금계산서 작성 저장·발급 상태 바꾸기는 저장 결과를 기다린 뒤 안내한다.
 import '../../../testSupport/stubSupabaseClient.ts'
 import '../../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'

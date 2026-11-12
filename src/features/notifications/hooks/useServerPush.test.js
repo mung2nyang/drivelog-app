@@ -1,5 +1,4 @@
 // @ts-check
-// 서버 알림 받을 주소 — 웹·옛 앱·비회원은 안 함, 허용됐으면 주소를 받아 지금 계정으로 맡김, 허용 전이면 안 묻고 기다림, 계정 바뀌면 다시, 로그아웃이면 휴대폰 주소 지움, 누르면 그 화면.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 
@@ -33,7 +32,6 @@ mock.module('@capacitor/app', {
 mock.module('../../../data/cloud/pushDevices.ts', {
   namedExports: { registerPushDevice: async (/** @type {string} */ value) => { saved.push(value) } },
 })
-// 진짜 플러그인처럼 모르는 이름(then 포함)은 휴대폰 기능 부르기로 바뀌어 실패한다.
 const plugin = {
   checkPermissions: async () => ({ receive }),
   requestPermissions: async () => { permissionRequests += 1; return { receive } },

@@ -1,5 +1,4 @@
 // @ts-check
-// 새 홈: 위쪽 줄(작은 로고·알림·메뉴) + 오늘 카드 + 할 일 카드 + 이번 달 정산 합계. 달력은 하단 "달력" 탭(/app/calendar).
 import { resolveLogSettings } from '../../../domain/carSettingsScope.ts'
 import { todayWorkLogSelection } from '../../../domain/calendar.ts'
 import { isOffDay } from '../../../domain/day-record.ts'
@@ -16,7 +15,6 @@ import './home.css'
 import { useSession } from '../../../data/cloud/sessionContext.ts'
 
 /**
- * 미수금 화면처럼 기사 차량이 있으면 차량별(메인 먼저) 한 줄씩, 없으면 한 줄.
  * @param {Array<{ logId: string, logLabel: string, remainingAmount: number }>} items
  * @param {boolean} byCar
  * @returns {Array<import('./HomeTodoCard.jsx').UnpaidRow>}
@@ -48,7 +46,6 @@ export default function HomePage({
 }) {
   const { ownerKey, session } = useSession()
   const cars = useOwnerCars(ownerKey)
-  // 달력과 같은 규칙(MainPageRoute): 연동 기사 본인은 배정 차량 거래처 스코프.
   const clientScopeKey = session?.linkedOwnerId ? (cars[0]?.number || 'main') : 'main'
   const now = new Date()
   const today = todayWorkLogSelection(now)

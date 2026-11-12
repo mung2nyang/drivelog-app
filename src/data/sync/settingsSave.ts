@@ -1,4 +1,3 @@
-// 앱 설정 저장(savePracticeSettings)과 화면 테마 적용(applyTheme) — 계산 규칙은 domain/practiceSettings.ts.
 import { commitSettings } from '../store/commitHelpers.ts'
 import { normalizeSettings } from '../../domain/practiceSettings.ts'
 import { readOwnerProfile, readOwnerSettings } from '../store/ownerDataHooks.ts'
@@ -12,10 +11,8 @@ import {
 import { upsertProfileOnSupabase } from './profileCloudCommit.ts'
 import type { FinanceSettings } from '../../domain/financeTypes.ts'
 
-/** 목록·묶음 설정은 최신 설정을 받아 바꿀 값을 돌려주는 함수로 */
 export type SettingsPatch = FinanceSettings | ((current: FinanceSettings) => FinanceSettings)
 
-// 계정별로 한 번에 하나씩, 앞 저장이 끝난 최신 설정 위에 얹는다 — 연달아 눌러도 앞 변경이 되돌아가지 않게.
 const saveTails: Map<string, Promise<void>> = new Map()
 
 export function savePracticeSettings(ownerKey: string, patch?: SettingsPatch): Promise<FinanceSettings> {
@@ -44,23 +41,19 @@ async function saveSettingsNow(ownerKey: string, patch?: SettingsPatch) {
 export function applyTheme(theme?: 'light' | 'dark') {
   if (theme === 'dark') document.documentElement.setAttribute('data-theme', 'dark')
   else document.documentElement.removeAttribute('data-theme')
-  // 다음에 앱 파일이 오기 전 로딩 화면 색(index.html)용 — 화면 색만 기억, 못 써도 무시.
-  try { localStorage.setItem('lastTheme', theme === 'dark' ? 'dark' : 'light') } catch { /* 무시 */ }
+  try { localStorage.setItem('lastTheme', theme === 'dark' ? 'dark' : 'light') } catch { }
 }
 
-/** 휴대폰 다크 모드 설정. */
 export function phoneTheme(): 'light' | 'dark' {
   if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return 'light'
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
 }
 
-/** 계정 설정으로 칠할 색 — 휴대폰 설정 따르기를 끈 때만 고른 테마. */
 export function settingsTheme(settings: FinanceSettings, phone: 'light' | 'dark'): 'light' | 'dark' {
   if (settings.themeFollowPhone === false) return settings.theme === 'dark' ? 'dark' : 'light'
   return phone
 }
 
-/** 휴대폰 다크 모드가 바뀔 때마다 알린다 — 그만 들을 함수를 돌려준다. */
 export function watchPhoneTheme(onChange: (theme: 'light' | 'dark') => void): () => void {
   if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return () => {}
   const query = window.matchMedia('(prefers-color-scheme: dark)')

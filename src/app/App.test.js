@@ -1,8 +1,3 @@
-// 4차 재작업 — 실제 <BrowserRouter> + <App/>을 jsdom에 렌더링해서
-// "로그인 계정이 라우트를 이동해도 그 경로에 머물고 restoreSessionOnBoot()이
-// 재실행되지 않는지"를 검증한다. 순수 함수 추출 테스트로는 이 회귀(브라우저에서
-// 실측으로만 드러났던 버그)를 못 잡는다고 판단해, 이 파일 하나를 위해 최소한의
-// JSX 렌더 인프라(jsxLoaderHook.mjs, esbuild 트랜스파일)를 도입했다.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 
@@ -22,9 +17,6 @@ mock.module('../data/cloud/supabaseClient.ts', {
   namedExports: {
     supabase: fakeSupabase,
     getSupabaseAuthErrorMessage: (error) => error?.message || '',
-    // AuthPage.jsx가 정적으로 import하지만(모든 라우트가 한 <Routes> 트리에
-    // 선언돼 있어 이 모듈 자체는 항상 로드된다) 이 테스트는 인증 화면을 안
-    // 쓰므로 실제로 호출되지 않는다 — 존재만 하면 된다.
     signInWithGoogle: async () => ({ error: new Error('테스트에서 호출되면 안 됨') }),
     ensureProfileRow: async () => {},
   },
@@ -33,8 +25,6 @@ mock.module('../data/cloud/supabaseClient.ts', {
 resetHandlers()
 Object.assign(handlers, emptyOkHandlers())
 handlers.profiles.select = () => ({ data: { id: 'user-boot-nav', name: '테스트 사용자', settings: {} }, error: null })
-// 재감사 2차(FAIL 지적 5번) — emptyOkHandlers()는 clients/vehicles의 insert에 기본
-// 핸들러가 없어 `{data:null}`이 된다. 저장 경로가 `data.id`를 읽다 죽지 않게 기본값을 준다.
 handlers.clients.insert = () => ({ data: { id: `fake-client-${Math.random().toString(36).slice(2, 8)}` }, error: null })
 handlers.vehicles.insert = () => ({ data: { id: `fake-vehicle-${Math.random().toString(36).slice(2, 8)}` }, error: null })
 handlers.daily_logs = {
@@ -78,9 +68,6 @@ test.afterEach(async () => {
   for (const leftoverRoot of leftover) {
     await act(async () => { leftoverRoot.unmount() })
   }
-  // 슬라이스 C: seedMainCar 등이 덮어쓴 vehicles/clients select를 빈 서버로 원복해
-  // 다음 테스트가 유출된 서버 행을 보지 않게 한다(이 파일은 handlers를 매 테스트
-  // 초기화하지 않는다).
   handlers.vehicles.select = () => ({ data: [], error: null })
   handlers.clients.select = () => ({ data: [], error: null })
 })
@@ -91,11 +78,6 @@ const { normalizeSettings } = await import('../domain/practiceSettings.ts')
 
 /** @typedef {import('../domain/dayRecordTypes.ts').DayRecordLike} DayRecordLike */
 
-// 재감사 6차(FAIL 지적 3번) — readJsonKey('workData', ownerKey, {})와
-// getState().workLogs[ownerKey]?.main?.[dateKey]는 각각 fallback 인자/app-store.js의
-// 기존 workLogs 타입(Record<string, Record<string, object>>, 이번 라운드에서 손대지
-// 않은 기존 결정) 때문에 TS7053이 난다. 이번 라운드에 새로 추가한 테스트만 이
-// 헬퍼로 우회한다.
 /** @param {string} ownerKey @returns {Record<string, DayRecordLike>} */
 function readWorkData(ownerKey) {
   const main = getState().workLogs[ownerKey]?.main
@@ -108,10 +90,6 @@ function committedRecord(ownerKey, dateKey) {
   return main ? (/** @type {Record<string, DayRecordLike>} */ (main))[dateKey] : undefined
 }
 
-// 재감사 7차(FAIL 지적 3번) — 실패 주입 테스트가 유발하는 console.error를 그냥
-// 화면에 흘려 보내지만 말고 정확한 메시지·횟수를 직접 Assert한다. 원래
-// console.error로 항상 그대로 전달한다(call-through) — 절대 숨기지 않는다. 그래야
-// React act 경고 같은 이 함수가 모르는 다른 진단이 여기 묻혀서 사라지지 않는다.
 /** @param {string} expectedFirstArg */
 function spyConsoleError(expectedFirstArg) {
   const original = console.error
@@ -123,28 +101,16 @@ function spyConsoleError(expectedFirstArg) {
   return { count: () => count, restore: () => spy.mock.restore() }
 }
 
-// 재감사 5차(FAIL 지적 3번) — 예전엔 폴링 루프 한 스텝(wait(stepMs))마다 act()를
-// 따로 열고 닫았다. act()가 "지금 렌더 중"이라고 보는 구간은 그 act() 콜백의
-// Promise가 아직 안 끝난 동안뿐이라, 한 스텝이 끝나고 다음 스텝의 act()가 다시
-// 열리기 직전의 짧은 틈(매크로태스크 사이)에 배경 타이머(디바운스 커밋, retry
-// 인터벌 등)의 콜백이 끼어들면 그 상태 갱신은 act() 바깥으로 샜다 — 실측(npm test
-// 출력에 "not wrapped in act" 경고로 확인). 이제는 전체 폴링 루프(모든 스텝의
-// wait 포함) 자체를 act() 콜백 하나로 감싼다 — act()가 "acting" 상태를 폴링이
-// 끝날 때까지 끊김 없이 유지하므로, 그 사이 어느 시점에 배경 코드가 상태를
-// 갱신해도 act() 밖으로 새지 않는다.
 async function waitUntil(predicate, { timeoutMs = 2000, stepMs = 20 } = {}) {
   await act(async () => {
     const deadline = Date.now() + timeoutMs
     while (!predicate() && Date.now() < deadline) {
-      // eslint-disable-next-line no-await-in-loop -- 폴링 대기라 순차 await가 맞다.
+      // eslint-disable-next-line no-await-in-loop
       await wait(stepMs)
     }
   })
 }
 
-// React 컨트롤드 input에 값을 넣고 실제 onChange를 타게 하려면, React가 추적하는
-// value setter를 우회해서 네이티브 setter로 값을 바꾼 뒤 input 이벤트를 직접
-// 디스패치해야 한다(jsdom + React 테스트에서 흔히 쓰는 방식).
 function setNativeInputValue(input, value) {
   const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set
   setter.call(input, value)
@@ -152,8 +118,6 @@ function setNativeInputValue(input, value) {
 }
 
 /**
- * querySelector는 Element|null이라 value를 바로 읽으면 TS2339가 난다.
- * 재감사 14차 — 13차 신규 테스트는 이 헬퍼로 HTMLInputElement로 좁힌 뒤에만 value를 본다.
  * @param {ParentNode} root
  * @param {string} selector
  * @returns {HTMLInputElement}
@@ -164,7 +128,6 @@ function requireHtmlInput(root, selector) {
   return /** @type {HTMLInputElement} */ (el)
 }
 
-/** 일지 서버 저장(save_day_log)의 하루 기록 줄 값을 모은다. shouldFail이 true면 그 호출을 던지게 한다. */
 function captureDayLogSaves(shouldFail = () => false) {
   /** @type {Array<{ work_date?: string, fixed_count?: number }>} */
   const rows = []
@@ -215,8 +178,6 @@ test('로그인 계정이 라우트를 이동해도 그 경로에 머물고 부�
     })
     assert.equal(window.location.pathname, '/app/me', '클릭 직후에는 /app/me로 이동해야 한다')
 
-    // 버그가 있었다면 이 대기 중에 restoreSessionOnBoot()이 다시 돌고 goHome()이
-    // /app으로 강제로 되돌린다 — 넉넉히 기다려도 그런 일이 없어야 한다.
     await act(async () => { await wait(600) })
 
     assert.equal(window.location.pathname, '/app/me', '라우트 이동 후 시간이 지나도 그 경로에 그대로 머물러야 한다(부트 재실행으로 /app에 되돌아가면 안 된다)')
@@ -227,11 +188,6 @@ test('로그인 계정이 라우트를 이동해도 그 경로에 머물고 부�
   }
 })
 
-// Step 5(달력 홈 재작성) 재감사 4번 — App.jsx의 부트 세션 복원 수정: 이미 /app(또는
-// /onboarding) 경로로 진입해 있었으면 goHome()으로 쿼리를 지우지 않는다. 로그인 상태로
-// 새로고침해도 달력 월 쿼리(?y=&m=)가 그대로 남아야 완료 조건 "새로고침 후 같은 달"이
-// 실제로 성립한다(게스트는 restoreSessionOnBoot()이 null이라 이 경로를 안 타서 이
-// 회귀로 드러나지 않았다 — 그래서 로그인 부트를 그대로 재현해야 한다).
 test('재감사 4번 — 로그인 세션 복원 상태로 /app?y=2026&m=6을 렌더하면 pathname과 search가 그대로 보존된다', async () => {
   window.history.pushState({}, '', '/app?y=2026&m=6')
   const container = document.createElement('div')
@@ -243,8 +199,6 @@ test('재감사 4번 — 로그인 세션 복원 상태로 /app?y=2026&m=6을 �
       root.render(React.createElement(BrowserRouter, null, React.createElement(App)))
     })
 
-    // booting이 끝나면(= 로딩 표시 .boot-loading이 사라지면) 부트 복원이 이미
-    // goHome()을 부를지 말지 결정한 뒤다.
     await waitUntil(() => !container.querySelector('.boot-loading'))
     await act(async () => { await wait(50) })
 
@@ -256,11 +210,6 @@ test('재감사 4번 — 로그인 세션 복원 상태로 /app?y=2026&m=6을 �
   }
 })
 
-// 재감사 9차(FAIL 지적 4번) — 모양은 `YYYY-MM-DD`지만 실존하지 않는 달력 날짜
-// (`2026-02-30`)로 `/app/day/:date`에 직접 진입하면, DayLogPage를 렌더하거나
-// 저장하는 대신 안전하게 달력(`/app/calendar`)으로 replace해야 한다. 순수 함수(parseDateKeySelection)
-// 테스트만으로는 실제 라우팅 경로가 안전하다고 주장할 수 없어 실제 `<App/>`으로
-// 확인한다.
 test('재감사 9차 FAIL 지적 4번 — 존재하지 않는 달력 날짜로 /app/day/2026-02-30에 진입하면 DayLogPage가 렌더되지 않고 /app/calendar로 replace된다', async () => {
   const ownerKey = 'user-boot-nav'
   window.history.pushState({}, '', '/app/day/2026-02-30')
@@ -284,12 +233,7 @@ test('재감사 9차 FAIL 지적 4번 — 존재하지 않는 달력 날짜로 /
   }
 })
 
-// Step 5(달력 홈 재작성) 재감사 4번 — MainPageRoute가 이제 useState(() => loadWorkData(...))
-// 로컬 스냅샷 대신 store를 직접 구독한다(useOwnerWorkData). 마운트 후 store에 외부에서
-// 값이 커밋돼도 CalendarPage/WorkLogPage가 그 값을 봐야 하고, saveDay는 그 최신 store
-// workData를 기준으로 커밋해서 함께 있던 다른 날짜를 지우면 안 된다.
 test('재감사 4번 — store 구독: 마운트 후 외부에서 커밋한 workData를 CalendarPage/WorkLogPage가 보고, 한 날짜 편집이 다른 날짜를 지우지 않는다', async () => {
-  // calendarViewDate: URL `m`은 0-based. 8월 일지를 보려면 오늘 달(9월)이 아니라 고정 월로 들어간다.
   window.history.pushState({}, '', '/app/calendar?y=2026&m=7')
   const container = document.createElement('div')
   document.body.appendChild(container)
@@ -303,11 +247,8 @@ test('재감사 4번 — store 구독: 마운트 후 외부에서 커밋한 work
     })
     await waitUntil(() => window.location.pathname === '/app/calendar')
     await waitUntil(() => !container.querySelector('.boot-loading'))
-    await act(async () => { await wait(50) }) // 부트 초기화(initializeOwnerFromPersist)가 끝날 시간을 준다.
+    await act(async () => { await wait(50) })
 
-    // 마운트가 끝난 "뒤"에 store에 B를 외부에서 커밋한다 — 예전 아키텍처
-    // (useState(() => loadWorkData(...)) 로컬 스냅샷)라면 마운트 시점에 딱 한 번만
-    // 읽으므로 이 갱신을 절대 못 본다.
     const B = {
       '2026-08-05': { isOff: false, fixedCount: 2, palletCount: 0, callDetails: [], fixedRouteCounts: {} },
       '2026-08-06': { isOff: false, fixedCount: 5, palletCount: 0, callDetails: [], fixedRouteCounts: {} },
@@ -331,7 +272,6 @@ test('재감사 4번 — store 구독: 마운트 후 외부에서 커밋한 work
     assert.ok(countInput, '일지의 운행 횟수 입력을 찾아야 한다')
     assert.equal(countInput.value, '5', 'WorkLogPage가 store의 최신값(B, 5회)을 받아야 한다 — 로컬 스냅샷의 예전(빈) 값이 아니다')
 
-    // 이 날짜(8/6)만 3회로 고친다 — 8/5는 손대지 않는다.
     await act(async () => { setNativeInputValue(countInput, '3') })
 
     await waitUntil(() => getState().workLogs[ownerKey]?.main?.['2026-08-06']?.fixedCount === 3)
@@ -344,7 +284,6 @@ test('재감사 4번 — store 구독: 마운트 후 외부에서 커밋한 work
     assert.equal(persisted?.['2026-08-06']?.fixedCount, 3, 'localStorage도 store와 같은 값(8/6=3)이어야 한다')
     assert.equal(persisted?.['2026-08-05']?.fixedCount, 2, 'localStorage에서도 8/5가 유실되면 안 된다')
 
-    // 편집이 예약한 클라우드 동기화 디바운스가 다음 테스트로 새지 않게 넉넉히 기다린다.
     await act(async () => { await wait(650) })
   } finally {
     await unmountTracked(root)
@@ -352,9 +291,6 @@ test('재감사 4번 — store 구독: 마운트 후 외부에서 커밋한 work
   }
 })
 
-// Step 6(일지 재작성) 완료 조건 — "입력 → 즉시 화면 반영, 디바운스 후 localStorage,
-// 빈 날 삭제, 언마운트 flush". useDayDraft.js가 실제로 이 계약을 지키는지 DayLogPage를
-// 실제로 렌더해서 확인한다(순수 함수 테스트로는 디바운스/언마운트 타이밍을 못 잡는다).
 test('Step 6 — 일지 디바운스 커밋 + 언마운트 flush + 빈 날 삭제', async () => {
   window.history.pushState({}, '', '/app/day/2026-08-10')
   const container = document.createElement('div')
@@ -374,8 +310,6 @@ test('Step 6 — 일지 디바운스 커밋 + 언마운트 flush + 빈 날 삭�
     const countInput = requireHtmlInput(container, '#modalFixedCountInput')
     await act(async () => { setNativeInputValue(countInput, '4') })
 
-    // 화면(입력값)은 즉시 반영되지만, store/localStorage는 디바운스가 끝나기 전까지
-    // 아직 그대로여야 한다 — "입력 → 즉시 화면 반영, 디바운스 후 localStorage".
     assert.equal(countInput.value, '4', '입력값은 즉시 화면에 반영돼야 한다')
     assert.equal(getState().workLogs[ownerKey]?.main?.[dateKey], undefined, '디바운스가 끝나기 전에는 store에 아직 반영되면 안 된다')
     assert.equal(readWorkData(ownerKey)[dateKey], undefined, '디바운스가 끝나기 전에는 localStorage에도 아직 반영되면 안 된다')
@@ -383,8 +317,6 @@ test('Step 6 — 일지 디바운스 커밋 + 언마운트 flush + 빈 날 삭�
     await waitUntil(() => getState().workLogs[ownerKey]?.main?.[dateKey]?.fixedCount === 4, { timeoutMs: 2000 })
     assert.equal(readWorkData(ownerKey)[dateKey]?.fixedCount, 4, '디바운스가 끝나면 localStorage도 store와 같은 값이어야 한다')
 
-    // 새 값(7)을 입력한 직후, 디바운스가 끝나기 전에 화면을 닫는다 — 언마운트
-    // flush가 이 마지막 편집을 유실 없이 커밋해야 한다.
     await act(async () => { setNativeInputValue(countInput, '7') })
     assert.equal(getState().workLogs[ownerKey]?.main?.[dateKey]?.fixedCount, 4, '아직 디바운스 전이라 store는 이전 값(4)이어야 한다')
 
@@ -398,7 +330,6 @@ test('Step 6 — 일지 디바운스 커밋 + 언마운트 flush + 빈 날 삭�
     assert.equal(getState().workLogs[ownerKey]?.main?.[dateKey]?.fixedCount, 7, '언마운트(뒤로가기) 시점에 밀린 편집(7)이 즉시 flush돼야 한다')
     assert.equal(readWorkData(ownerKey)[dateKey]?.fixedCount, 7, 'localStorage에도 flush된 값이 반영돼야 한다')
 
-    // 같은 날짜를 다시 열어서 flush된 값이 실제로 왕복되는지 확인한다.
     await act(async () => {
       window.history.pushState({}, '', `/app/day/${dateKey}`)
       window.dispatchEvent(new window.PopStateEvent('popstate'))
@@ -406,7 +337,6 @@ test('Step 6 — 일지 디바운스 커밋 + 언마운트 flush + 빈 날 삭�
     await waitUntil(() => !!container.querySelector('#modalFixedCountInput'))
     assert.equal(requireHtmlInput(container, '#modalFixedCountInput').value, '7', '재진입 시 flush된 값(7)을 그대로 보여줘야 한다')
 
-    // 값을 0으로 비우면(빈 날) 디바운스가 끝난 뒤 그 날짜 키 자체가 store/localStorage에서 사라져야 한다.
     await act(async () => { setNativeInputValue(container.querySelector('#modalFixedCountInput'), '0') })
     await waitUntil(() => getState().workLogs[ownerKey]?.main?.[dateKey] === undefined, { timeoutMs: 2000 })
     assert.equal(readWorkData(ownerKey)[dateKey], undefined, '빈 날은 localStorage에서도 키 자체가 지워져야 한다')
@@ -416,13 +346,6 @@ test('Step 6 — 일지 디바운스 커밋 + 언마운트 flush + 빈 날 삭�
   }
 })
 
-// Step 6 재감사 FAIL 지적 1번 — react-router는 같은 Route(day/:date) 안에서 date
-// 파라미터만 바뀌면 MainPageRoute/DayLogPage를 언마운트하지 않고 재사용한다.
-// useDayDraft의 draft는 "마운트 시 한 번만" 초기화되므로, key 없이는 A의 draft가
-// B로 넘어와 그대로 남고, 이미 걸려 있던 디바운스 타이머가 B의 dateKey로 A의
-// 데이터를 커밋해 버리는 데이터 오염이 생겼다 — 일지 화면을 벗어나지 않고 날짜만 바뀌는
-// 이동(예전 하단 "일일운행" 탭, 새 홈 1단계 뒤로는 주소 직접 이동)으로 재현하고,
-// MainPageRoute.jsx의 key={ownerKey:dateKey} 수정으로 고쳤는지 확인한다.
 test('재감사 FAIL 지적 1번 — 과거 일지에서 오늘 날짜 일지로 바로 이동해도 A의 draft가 B를 덮지 않고, A의 밀린 편집은 A에만 flush된다', async () => {
   const ownerKey = 'user-boot-nav'
   const dateA = '2026-08-01'
@@ -463,7 +386,6 @@ test('재감사 FAIL 지적 1번 — 과거 일지에서 오늘 날짜 일지로
     await waitUntil(() => !!container.querySelector('#modalFixedCountInput'))
     assert.equal(requireHtmlInput(container, '#modalFixedCountInput').value, '2', 'A는 자기 원래 값(2)으로 열려야 한다')
 
-    // A를 9로 고치되, 디바운스(600ms)가 끝나기 전에 즉시 같은 일지 화면에서 B 날짜로 이동한다.
     await act(async () => { setNativeInputValue(container.querySelector('#modalFixedCountInput'), '9') })
 
     await act(async () => {
@@ -475,14 +397,10 @@ test('재감사 FAIL 지적 1번 — 과거 일지에서 오늘 날짜 일지로
 
     assert.equal(requireHtmlInput(container, '#modalFixedCountInput').value, '6', 'B는 자기 원래 값(6)으로 떠야 한다 — A의 draft(9)가 새어 들어오면 안 된다')
 
-    // A에 걸려 있던 편집(9)은 언마운트(key 교체) flush로 A에만 정확히 반영돼야 한다.
     await waitUntil(() => getState().workLogs[ownerKey]?.main?.[dateA]?.fixedCount === 9, { timeoutMs: 2000 })
     assert.equal(getState().workLogs[ownerKey]?.main?.[dateA]?.fixedCount, 9, 'A에 걸려 있던 편집은 A에 flush돼야 한다')
     assert.equal(getState().workLogs[ownerKey]?.main?.[dateB]?.fixedCount, 6, 'B는 원래 값 그대로여야 한다 — A의 값(9)으로 덮이면 안 된다')
 
-    // B의 디바운스 창(600ms)이 완전히 지나도 A로 덮이지 않는지 재확인 — B는 아무 것도
-    // 안 건드렸으니애초에 디바운스가 걸릴 일도 없지만, 혹시 남아 있던 타이머가 있다면
-    // 여기서 드러난다.
     await act(async () => { await wait(700) })
     assert.equal(getState().workLogs[ownerKey]?.main?.[dateB]?.fixedCount, 6, '시간이 더 지나도 B가 A(9)로 덮이면 안 된다')
     assert.equal(readWorkData(ownerKey)[dateB]?.fixedCount, 6, 'localStorage에서도 B는 그대로여야 한다')
@@ -493,12 +411,6 @@ test('재감사 FAIL 지적 1번 — 과거 일지에서 오늘 날짜 일지로
   }
 })
 
-// Step 6 재감사 FAIL 지적 8번 — draft/store 참조 분리(structuredClone). 콜상세의
-// payments 배열·commissionSnapshot 객체 같은 중첩 값이 draft로 복제될 때(로드)와
-// store로 커밋될 때(저장) 둘 다 깊이 복제되는지 확인한다. callDetails 자체를
-// 건드리지 않는 편집(fixedCount만 변경)으로 커밋을 유발해서, "손대지 않은 콜상세의
-// 중첩 값까지 커밋마다 새 참조가 되는지"를 본다 — structuredClone을 하나라도
-// 빼면(얕은 복제로 되돌리면) 이 테스트는 실패한다(참조가 같아진다).
 test('재감사 FAIL 지적 8번 — 커밋마다 콜상세의 중첩 payments/commissionSnapshot이 store에서 새 참조로 바뀐다(draft와 참조 공유 안 함)', async () => {
   const ownerKey = 'user-boot-nav'
   const dateKey = '2026-08-16'
@@ -555,9 +467,6 @@ test('재감사 FAIL 지적 8번 — 커밋마다 콜상세의 중첩 payments/c
     await waitUntil(() => !!container.querySelector('#modalFixedCountInput'))
     const before = getState().workLogs[ownerKey].main[dateKey].callDetails[0]
 
-    // callDetails는 전혀 건드리지 않는 편집(fixedCount만) — draft.callDetails 자체는
-    // 재할당되지 않는데도, 커밋 시점의 structuredClone 때문에 store에 새로 반영되는
-    // callDetails[0]과 그 중첩 값은 매번 새 객체여야 한다.
     await act(async () => { setNativeInputValue(container.querySelector('#modalFixedCountInput'), '3') })
     await waitUntil(() => getState().workLogs[ownerKey]?.main?.[dateKey]?.fixedCount === 3, { timeoutMs: 2000 })
 
@@ -573,10 +482,6 @@ test('재감사 FAIL 지적 8번 — 커밋마다 콜상세의 중첩 payments/c
   }
 })
 
-// Step 6 재감사 FAIL 지적 4번 — palletVisible이 settings.clients(항상 비어 있음)가
-// 아니라 실제 clients prop을 보게 고쳤는지 확인한다. 고정노선 연결(fixedRouteLinked)
-// + 파렛트(palletOn) 켜진 거래처가 있으면 파렛트 섹션이 실제로 뜨고, 입력값이
-// 디바운스 저장·재진입 후에도 유지되는지까지 본다.
 test('재감사 FAIL 지적 4번 — 고정노선+파렛트 거래처가 있으면 파렛트 섹션이 뜨고, 저장·재진입 후에도 값이 유지된다', async () => {
   const ownerKey = 'user-boot-nav'
   const dateKey = '2026-08-17'
@@ -614,7 +519,6 @@ test('재감사 FAIL 지적 4번 — 고정노선+파렛트 거래처가 있으�
     await waitUntil(() => !!container.querySelector('#modalPalletCount'))
     assert.equal(requireHtmlInput(container, '#modalPalletCount').value, '5', '재진입 시 저장된 파렛트 값을 그대로 보여줘야 한다')
 
-    // palletCount 커밋의 저장 디바운스가 다음 테스트로 새지 않게 기다린다(재감사 2차 — 테스트 격리).
     await act(async () => { await wait(650) })
   } finally {
     await unmountTracked(root)
@@ -623,11 +527,7 @@ test('재감사 FAIL 지적 4번 — 고정노선+파렛트 거래처가 있으�
 })
 
 
-/**
- * 슬라이스 E: 로그인 세션에서 clients는 LS에 미러되지 않으므로(commitBatch memory-only),
- * seedMainCar처럼 가짜 서버도 이 거래처를 돌려줘야 hydrate가 빈 배열로 지우지 않는다.
- * @param {string} ownerKey
- */
+/** @param {string} ownerKey */
 function seedPalletClient(ownerKey) {
   const clients = [
     /** @type {import('../domain/clientTypes.ts').ClientLike} */ ({
@@ -640,24 +540,16 @@ function seedPalletClient(ownerKey) {
   commitSettings(ownerKey, normalizeSettings({ fixedOn: true }))
 }
 
-/** 일지 서버 저장이 실제로 나가려면 메인 차량 supabaseId가 필요하다. */
 /** @param {string} ownerKey */
 function seedMainCar(ownerKey) {
   const cars = [
     /** @type {import('../domain/financeTypes.ts').CarLike} */ ({ id: 'car-main', type: 'main', number: '12가3456', supabaseId: 501 }),
   ]
   commitCars(ownerKey, cars)
-  // 슬라이스 C: hydrate가 빈 배열을 "삭제됨"으로 보므로, 시드한 supabaseId 차량을
-  // 가짜 서버도 돌려줘야 hydrate가 지우지 않는다. afterEach에서 select를 원복한다.
   handlers.vehicles.select = () => ({ data: vehicleRowsFor(cars), error: null })
 }
 
-// callDetail 표시 3케이스는 CallDetailList.test.js(컴포넌트 단위)로 검증한다.
-// App 통합 경로는 hydrate+commitSettings 조합에서 OOM이 나서 이 파일에서는 제외했다.
 
-// Step 6 재감사 FAIL 지적 6번 — 콜상세 인라인 패널과 정비/주유/기타 인라인 패널이
-// 동시에 DOM에 존재하면 안 된다(InlineSheet는 열려 있을 때만 실제 폼 컴포넌트를
-// 렌더한다 — 닫힌 쪽은 폼 컨텐츠 자체가 DOM에서 사라져야 한다).
 test('재감사 FAIL 지적 6번 — 콜상세 폼을 열면 비용 폼이 닫히고, 비용 폼을 열면 콜상세 폼이 닫힌다(두 폼이 동시에 DOM에 없다)', async () => {
   const ownerKey = 'user-boot-nav'
   const dateKey = '2026-08-19'
@@ -715,11 +607,6 @@ test('재감사 FAIL 지적 6번 — 콜상세 폼을 열면 비용 폼이 닫�
 })
 
 
-// Step 6 재감사 2차(FAIL 지적 2번) — useExpenseForm이 마운트 시 한 번만 expenses를
-// 스냅샷 떠서, 그 사이(다른 탭·hydrate·동시 조작 등으로) store에 반영된 항목을 다음
-// save()가 그 스냅샷 기준으로 통째로 덮어써 지워 버렸다. 재현: e1을 seed하고 화면을
-// 연 뒤, "화면이 모르는 사이" e2를 store에 추가로 커밋하고, 그다음 화면에서 새
-// 항목(e3)을 저장했을 때 e2가 살아남는지 확인한다.
 test('재감사 2차 FAIL 지적 2번 — 비용 저장이 그 사이 store에 추가된 다른 비용을 덮어쓰지 않는다', async () => {
   const ownerKey = 'user-boot-nav'
   const dateKey = '2026-08-21'
@@ -740,7 +627,6 @@ test('재감사 2차 FAIL 지적 2번 — 비용 저장이 그 사이 store에 �
     })
     await waitUntil(() => !!container.querySelector('.maint-section'))
 
-    // 화면이 모르는 사이(외부 경로로) e2가 store에 들어온다 — 다른 탭/hydrate를 흉내낸다.
     const e2 = { id: 'e2', kind: 'misc', date: dateKey, name: '주차비', category: '주차비', payment: '카드', cost: 3000 }
     await act(async () => { commitExpenses(ownerKey, [e1, e2]) })
 
@@ -765,10 +651,6 @@ test('재감사 2차 FAIL 지적 2번 — 비용 저장이 그 사이 store에 �
     assert.ok(stored.some((item) => item.id === 'e2'), '화면이 모르는 사이 추가된 e2가 저장 후에도 살아남아야 한다(덮어쓰기 금지)')
     assert.ok(stored.some((item) => item.name === '타이어 교체'), '새로 입력한 항목도 저장돼야 한다')
 
-    // 이 저장이 예약한 클라우드 동기화 디바운스(600ms)가 다음 테스트로 새지 않게
-    // 넉넉히 기다린다 — 재감사 2차에서 이걸 빼먹어서, 뒤이은 persistent quota
-    // 테스트의 "Supabase 호출 0회" 계측에 이 테스트의 지연된 동기화가 섞여 들어가는
-    // 격리 실패가 실제로 있었다(재현: 13 !== 12).
     await act(async () => { await wait(650) })
   } finally {
     await unmountTracked(root)
@@ -791,7 +673,6 @@ test('슬라이스 D — 로그인 클라우드 일지: 서버 upsert 실패는 
   document.body.appendChild(container)
   const root = createTrackedRoot(container)
 
-  // 서버 실패는 일지 저장 서버 함수(save_day_log)를 던지게 해서 낸다(Fail-Fast).
   let serverShouldFail = false
   const prevDailyLogs = handlers.daily_logs
   const prevRpc = handlers.rpc
@@ -972,8 +853,6 @@ test('슬라이스 D — 로그인 클라우드 일지: 서버 저장은 성공�
   }
 })
 
-// 새 홈 1단계 — 하단 탭 홈·달력·매출·마이페이지: 달력 탭은 달력(/app/calendar),
-// 홈 "오늘" 카드 버튼은 오늘 일지, 그 일지의 뒤로가기는 홈으로 돌아간다.
 test('새 홈 1단계 — 달력 탭은 달력 화면, 홈 [운행 기록하기] → 오늘 일지 → 뒤로가기 → 홈', async () => {
   const { dateKey } = todayWorkLogSelection()
   window.history.pushState({}, '', '/app')
@@ -1028,7 +907,6 @@ test('새 홈 1단계 — 달력 탭은 달력 화면, 홈 [운행 기록하기]
   }
 })
 
-// 알림 화면 — 알림 단추를 누르면 옆 창 대신 화면 전체(/app/notifications), 뒤로가기 = 홈, 홈 탭 강조.
 test('알림 화면 — 알림 단추 → /app/notifications(옆 창 없음) → 뒤로가기 → 홈', async () => {
   window.history.pushState({}, '', '/app')
   const container = document.createElement('div')
@@ -1059,7 +937,6 @@ test('알림 화면 — 알림 단추 → /app/notifications(옆 창 없음) →
   }
 })
 
-// 로그인 계정이 다크를 골라 쓰다 로그아웃하면 로그인 화면은 계정 색이 아니라 휴대폰 색(시험 환경은 라이트).
 test('로그인 계정 설정에서 다크 → 개인정보 [로그아웃] → 로그인 화면은 휴대폰 색(라이트), 마지막 테마 기억도 light', async () => {
   window.history.pushState({}, '', '/app/me/settings')
   handlers.profiles.upsert = () => ({ data: null, error: null })

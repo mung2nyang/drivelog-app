@@ -1,11 +1,9 @@
 // @ts-check
-// 콜상세 패널과 정비/주유/기타 패널은 state가 따로라, 이 열기 진입점으로만 열어 반대쪽을 먼저 닫게 한다(두 칸 동시 열림 방지).
-// 추가 버튼을 한 번 더 누르면 열려 있던 같은 새 입력 칸을 닫는다.
 import { confirmDialog } from '../../../shared/ui/confirmDialog.tsx'
 /**
  * @param {(action: import('../hooks/day-log-reducer.js').DayLogAction) => void} dispatch
  * @param {{ closeAll: () => void, openAdd: (kind: string) => void, openEdit: (item: import('./dayLogTypes.js').ExpenseItem) => void, openKindPick: () => void, modalOpen: boolean, editingId: string|null, draft: { kind?: string } }} expenseForm
- * @param {{ callFormOpen: boolean, editingCallId: string|null }} callPanel 지금 콜상세 칸 상태
+ * @param {{ callFormOpen: boolean, editingCallId: string|null }} callPanel
  */
 export function bindInlinePanelActions(dispatch, expenseForm, callPanel) {
   return {
@@ -36,8 +34,7 @@ export function bindInlinePanelActions(dispatch, expenseForm, callPanel) {
       dispatch({ type: 'closeCallForm' })
       expenseForm.openKindPick()
     },
-    // 입력 칸이 열린 채 나가면 [저장] 전 입력이 사라지므로 먼저 확인한다(앱 확인 창).
-    /** @returns {Promise<boolean>} true면 나가도 된다. */
+    /** @returns {Promise<boolean>} */
     async confirmLeaveOpenPanel() {
       if (!callPanel.callFormOpen && !expenseForm.modalOpen) return true
       return confirmDialog({

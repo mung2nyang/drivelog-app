@@ -1,4 +1,3 @@
-// 로드맵 83 — 실패 알림은 빨간 바탕·느낌표·바로 읽어 줌, 그 밖은 지금처럼. 문장마다 새 줄.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

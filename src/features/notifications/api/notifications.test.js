@@ -31,13 +31,11 @@ describe('notifications — 데이터 백업 권장 알림 및 게스트/로그�
   test('14일 경계값: 13일 전 백업은 알림 없고, 14일 전 백업부터 알림이 뜬다', () => {
     const now = Date.now()
 
-    // 13일 전: 알림 없음
     const thirteenDaysAgo = new Date(now - 13 * 86400000).toISOString()
     markBackupDone(thirteenDaysAgo)
     const notifs13 = collectNotifications('guest')
     assert.equal(notifs13.some((item) => item.id.startsWith('backup:')), false)
 
-    // 14일 전: 알림 발생
     const fourteenDaysAgo = new Date(now - 14 * 86400000).toISOString()
     markBackupDone(fourteenDaysAgo)
     const notifs14 = collectNotifications('guest')
@@ -46,7 +44,6 @@ describe('notifications — 데이터 백업 권장 알림 및 게스트/로그�
     assert.equal(backup14.title, '백업 권장')
     assert.equal(backup14.body, '마지막 백업 후 14일이 지났습니다. 지금 백업해 주세요.')
 
-    // 15일 전: 알림 발생
     const fifteenDaysAgo = new Date(now - 15 * 86400000).toISOString()
     markBackupDone(fifteenDaysAgo)
     const notifs15 = collectNotifications('guest')
@@ -56,11 +53,9 @@ describe('notifications — 데이터 백업 권장 알림 및 게스트/로그�
   })
 
   test('세션 분기: 로그인(클라우드) 세션에서는 백업 알림이 전혀 뜨지 않는다', () => {
-    // 1. ownerKey가 'guest'가 아닌 경우 (로그인 계정 ID)
     const notifsOwner = collectNotifications('owner-user-123')
     assert.equal(notifsOwner.some((item) => item.id.startsWith('backup:')), false)
 
-    // 2. ownerKey는 'guest'여도 cloud session인 경우
     /** @type {import('../../../data/cloud/cloudSession.ts').AppSession} */
     const cloudSession = { userId: 'u1', guestMode: false }
     const notifsCloud = collectNotifications('guest', cloudSession)
@@ -137,7 +132,6 @@ describe('notifications — 오늘 운행일지 알림 (시간 게이트·미입
     assert.equal(collectNotifications(ownerKey).some((item) => item.id.startsWith('today:')), false)
   })
 
-  // 로드맵 50 — 로그인 계정은 일지를 기기 저장소에 안 쓰고 메모리에만 둔다(persist: false로 흉내).
   test('18시 이후: 메모리에만 오늘 기록이 있어도(로그인 계정) 알림이 없다', () => {
     mock.timers.enable({ apis: ['Date'], now: new Date(2026, 8, 5, 20, 0, 0).getTime() })
     const ownerKey = 'today-owner-memory'

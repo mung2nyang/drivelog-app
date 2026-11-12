@@ -1,4 +1,3 @@
-// 로드맵 20-A: 일지 입력 칸이 펼쳐진 뒤·고르는 항목이 바뀔 때만 칸 맨 위로 내려감. 닫힘·같은 항목이면 안 내려감.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

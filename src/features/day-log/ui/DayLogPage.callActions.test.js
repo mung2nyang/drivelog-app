@@ -1,6 +1,3 @@
-// 로드맵 99-A — 운행일지 화면의 콜 상세·수금·고정 노선·고정 장소 처리 흐름(훅으로 옮기기 전 동작을 그대로 적음).
-// 고정 장소 저장만 가짜로 바꿔 끼워 실패를 흉내 낸다. 수정·수금·삭제는 미리 넣은 콜로 시작한다.
-// 입력 칸의 뒤로가기 붙잡기가 브라우저 기록을 보므로 MemoryRouter가 아니라 BrowserRouter로 그린다.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 
@@ -151,7 +148,6 @@ test('고정 장소 저장이 실패하면 "고정 장소 저장에 실패했습
   }
 })
 
-// 로드맵 109-B — 제목 아래 운송료 합계는 저장을 기다리지 않고 입력하는 즉시 바뀐다.
 test('횟수를 바꾸면 제목 아래 운송료 합계가 바로 바뀐다', async () => {
   const clients = [{ id: 'cl', companyName: '고정거래처', fixedRouteLinked: true, fixedUnitPrice: 50000 }]
   const view = await render('daylog-fare-total', [SEED_CALL], clients)

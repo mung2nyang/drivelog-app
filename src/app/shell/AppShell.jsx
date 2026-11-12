@@ -1,5 +1,4 @@
 // @ts-check
-// `/app/*` 레이아웃 — 하단탭·사이드메뉴는 여기서 한 번만 마운트하고 화면은 중첩 라우트가 그린다.
 import { Suspense, useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import BottomNav from './BottomNav.jsx'
@@ -28,7 +27,6 @@ import { assistantNavTarget } from '../routes/assistantCallState.js'
 
 /** @typedef {import('../../data/sync/syncTypes.ts').AppSession} AppSession */
 
-// 옛 appPage 식별자 → 실제 라우트 경로. SideMenu/MyPage/알림패널이 공유한다.
 /** @type {Record<string, string>} */
 const PAGE_PATH = {
   home: '',
@@ -37,7 +35,7 @@ const PAGE_PATH = {
   expenses: 'expenses',
   receivables: 'receivables',
   report: 'report',
-  invoices: 'report', // 세금계산서는 서류 발급 첫 탭
+  invoices: 'report',
   drivers: 'drivers',
   revenue: 'revenue',
   profile: 'me/profile',
@@ -63,8 +61,6 @@ export default function AppShell({ onBackToAuth, onGoAuth, onSessionUpdate }) {
   const { ownerKey, session } = useSession()
   const location = useLocation()
   const rawNavigate = useNavigate()
-  // 화면 이동은 모두 이 navigate를 거치므로 저장 안 된 편집 확인(durableWriteGuard)을 여기서 한 번에 건다.
-  // (to, options)/(delta) 두 모양은 number 여부로 나눈다.
   /**
    * @param {import('react-router-dom').To | number} to
    * @param {import('react-router-dom').NavigateOptions} [options]
@@ -72,7 +68,6 @@ export default function AppShell({ onBackToAuth, onGoAuth, onSessionUpdate }) {
   function navigate(to, options) {
     if (!confirmLeaveIfUnsafe()) return
     if (typeof to === 'number') { rawNavigate(to); return }
-    // 일지 입력 칸 붙잡기 기록은 먼저 빼고 이동한다 — 빈 일지 기록이 남지 않게.
     popPanelGuardThen(() => rawNavigate(to, withFromLogState(location.pathname, to, options)))
   }
   /** 아래 메뉴·← 이동: 홈은 처음 기록으로 되감고, 그 밖엔 홈에서만 쌓고 나머진 교체. @param {string} to */

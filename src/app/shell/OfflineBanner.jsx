@@ -1,5 +1,4 @@
 // @ts-check
-// 로그인 계정이 쓰는 중 인터넷이 끊기면 화면 맨 위 빨간 띠 — 화면 안내만, 저장은 그대로.
 import { useSyncExternalStore } from 'react'
 import { isCloudSession } from '../../data/cloud/cloudSession.ts'
 import '../../shared/styles/offline-banner.css'
@@ -17,7 +16,6 @@ function subscribe(onChange) {
   }
 }
 
-// 휴대폰이 "연결 없음"이라고 알릴 때만 끊김으로 본다(알 수 없으면 연결됨).
 function readOnline() {
   return navigator.onLine !== false
 }

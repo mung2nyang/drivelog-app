@@ -1,12 +1,11 @@
 // @ts-check
-// 차주·연동 기사 매출 화면이 같이 쓰는 위 카드(날짜 이동 + 년/월 단추)와 년 매출 목록.
 import { DateNav } from './RevenueNav.jsx'
 import { won } from './revenueFormat.js'
 
 /**
  * @param {Object} props
  * @param {ReturnType<typeof import('./revenuePeriod.js').useRevenuePeriod>} props.period
- * @param {import('react').ReactNode} [props.children] 년/월 단추 아래(차주 범위 탭·기사 고르기)
+ * @param {import('react').ReactNode} [props.children]
  */
 export function RevenuePeriodBar({ period, children }) {
   const { yearly, viewDate, year, month, setViewDate, setTab, shift } = period

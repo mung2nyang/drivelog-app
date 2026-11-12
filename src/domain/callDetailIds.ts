@@ -1,4 +1,3 @@
-// 콜상세 id 정규화. hydrate(서버 numeric id)와 일지 저장이 같은 규칙을 쓴다.
 import type { JsonValue } from './jsonTypes.ts'
 import type { CallDetailLike } from './callDetail.ts'
 
@@ -24,7 +23,6 @@ export function findCallDetailIndex(details: Array<CallDetailLike> | null | unde
   return details.findIndex((item) => resolveCallDetailId(item) === key)
 }
 
-/** 같은 id는 한 번만 남긴다(먼저 나온 항목). id 없는 레거시는 그대로 둔다. */
 export function dedupeCallDetailsById<T extends object>(list: Array<T> | null | undefined): Array<T> {
   const seen = new Set<string>()
   const next: Array<T> = []

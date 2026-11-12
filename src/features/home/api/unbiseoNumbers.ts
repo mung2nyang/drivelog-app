@@ -1,4 +1,3 @@
-// 운비서 질문의 숫자 — 매출·미수금 화면과 같은 함수를 그 순간 값으로 부른다. 새 계산 없음.
 import { getOwnerMonthlyFinanceDetail, getReceivableItems, getTaxInvoiceSourceGroups } from '../../../domain/finance.ts'
 import { getDriverSelfMonthlyDetail } from '../../../domain/driverSelfRevenue.ts'
 import { dayFareTotal, expensesForVehicleDay } from '../../../domain/calendarBadges.ts'
@@ -10,7 +9,6 @@ import { buildFinanceSettings } from '../../../data/sync/ownerFinance.ts'
 import { readOwnerCars, readOwnerClients, readOwnerDriverExpenses, readOwnerExpenses, readOwnerSettings, readOwnerWorkDataByLogId } from '../../../data/store/ownerDataHooks.ts'
 import type { QuestionNumbers, QuestionPeriod, UnbiseoQuestion } from './unbiseoQuestion.ts'
 
-/** 그 기간의 달 — 연은 12달(매출 화면 연 탭도 달마다 같은 함수), 전체는 없음. */
 export function monthsOf(period: QuestionPeriod): Array<string> {
   if (period.unit === 'month') return [period.value]
   if (period.unit === 'year') return Array.from({ length: 12 }, (_, i) => `${period.value}-${String(i + 1).padStart(2, '0')}`)
@@ -22,13 +20,11 @@ function inPeriod(workDate: string, period: QuestionPeriod): boolean {
   return true
 }
 
-/** 질문을 받은 그 순간 Store 값으로 — 구독·저장 없음. */
 export function questionNumbers(ownerKey: string, question: UnbiseoQuestion, isDriver: boolean): QuestionNumbers {
   const settings = buildFinanceSettings(ownerKey)
   const workDataByLogId = readOwnerWorkDataByLogId(ownerKey)
   const months = monthsOf(question.period)
 
-  // 미수금 화면: getReceivableItems의 남은 금액(거래처·달은 화면 묶음과 같은 기준 — client, workDate 앞 7자).
   if (question.type === 'unpaid') {
     const items = getReceivableItems(settings, workDataByLogId)
       .filter((item) => (!question.client || item.client === question.client) && inPeriod(item.workDate, question.period))
@@ -38,7 +34,6 @@ export function questionNumbers(ownerKey: string, question: UnbiseoQuestion, isD
 
   if (question.period.unit === 'day') return dayNumbers(ownerKey, question, question.period.value, isDriver)
 
-  // 거래처 매출: 서류 발급 [세금계산서] 탭(메인 서류)의 그 거래처 묶음.
   if (question.type === 'revenue' && question.client) {
     let supply = 0
     let amount = 0
@@ -51,7 +46,6 @@ export function questionNumbers(ownerKey: string, question: UnbiseoQuestion, isD
     return { amount, count, supply }
   }
 
-  // 매출 화면: 차주는 기본 "차주" 탭, 연동 기사는 기사 본인 화면.
   const expenses = readOwnerExpenses(ownerKey)
   const driverExpenses = readOwnerDriverExpenses(ownerKey)
   const details = months.map((monthKey) => (isDriver
@@ -67,7 +61,6 @@ export function questionNumbers(ownerKey: string, question: UnbiseoQuestion, isD
   return { amount: sum((detail) => detail.income.total), count: 0, supply: 0 }
 }
 
-// 하루는 일지 "운송료 합계"·달력 칸과 같은 계산(메인 차량, 휴무면 0).
 function dayNumbers(ownerKey: string, question: UnbiseoQuestion, dateKey: string, isDriver: boolean): QuestionNumbers {
   if (question.type === 'expense') {
     const items = expensesForVehicleDay(readOwnerExpenses(ownerKey), dateKey)
@@ -77,7 +70,6 @@ function dayNumbers(ownerKey: string, question: UnbiseoQuestion, dateKey: string
   const record = readOwnerWorkDataByLogId(ownerKey).main?.[dateKey]
   if (!record || record.isOff) return { amount: 0, count: 0, supply: 0 }
   if (question.type === 'trips') return { amount: 0, count: dayTripCount(record), supply: 0 }
-  // 단가·파렛트는 일지 화면과 같은 거래처(연동 기사는 배정 차량 스코프)·같은 조건.
   const scopeKey = isDriver ? (readOwnerCars(ownerKey)[0]?.number || 'main') : 'main'
   const client = getFixedRouteClient({ clients: readOwnerClients(ownerKey) }, scopeKey)
   const palletOn = !!(resolveLogSettings(readOwnerSettings(ownerKey), 'main').fixedOn && client?.palletOn)

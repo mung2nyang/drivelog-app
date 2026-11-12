@@ -1,5 +1,3 @@
-// 거래처 순수 계산부. 저장은 data/sync/clientsSave.ts, 타입은 clientTypes.ts, 결제 주기 계산은 clientPaymentTerms.ts(여기서 재수출).
-// §6 예외(~250 한도 내) — computeFixedRouteFare는 resolveFixedUnitPrice와 같은 고정노선 계산이라 옆에 둔다.
 import { parseCurrencyValue } from './money.ts'
 import type { ClientDraft, ClientLike } from './clientTypes.ts'
 
@@ -8,7 +6,6 @@ import { PAYMENT_TERMS, needsPaymentTermValue } from './clientPaymentTerms.ts'
 
 export type { ClientLike }
 
-// scopeKey를 넘기면 그 스코프(예: 연동기사 배정 차량번호) 전용 고정노선을 먼저 찾고, 없거나 안 넘기면 차주 본인(미스코프) 것을 쓴다.
 export function getFixedRouteClient(settings: { clients?: Array<ClientLike> }, scopeKey?: string) {
   const list = settings.clients || []
   const key = String(scopeKey || '').trim()
@@ -19,15 +16,10 @@ export function getFixedRouteClient(settings: { clients?: Array<ClientLike> }, s
   return list.find((client) => client.fixedRouteLinked && !client.scopedToVehicleNumber) || null
 }
 
-// 별도 "1회 단가" 설정은 없다 — 계정(또는 scopeKey 스코프)에서 고정노선에 연결한 거래처 1곳의
-// fixedUnitPrice만 본다(settings.unitPrice는 쓰지 않는다).
 export function resolveFixedUnitPrice(settings: { clients?: Array<ClientLike>, unitPrice?: number | string }, scopeKey?: string): number {
   return Math.max(0, parseCurrencyValue(getFixedRouteClient(settings, scopeKey)?.fixedUnitPrice))
 }
 
-// 고정노선 운행은 그날 기록에 금액을 안 저장하고(fixedCount만) 매번 단가×횟수로
-// 계산한다(getOwnerMonthlyFinanceDetail과 같은 공식) — 기사 정산 쪽(financeCore.ts
-// getMonthlyDriverTotals)도 이 공식을 재사용해야 금액이 안 빠진다.
 export function computeFixedRouteFare(record: { isOff?: boolean, fixedCount?: number | string, palletCount?: number | string } | null | undefined, opts: { fixedUnitPrice: number, palletUnitPrice?: number, subFixedOn?: boolean, activePalletOn?: boolean }): number {
   if (!record || record.isOff) return 0
   const count = Math.max(0, parseInt(String(record.fixedCount), 10) || 0)
@@ -43,11 +35,9 @@ function paymentTermOf(draft: ClientDraft) {
   return PAYMENT_TERMS.some((item) => item.value === draft.paymentTerm) ? String(draft.paymentTerm) : 'next_month_end'
 }
 
-/** 저장 전 입력 검사 — 맨 처음 문제 칸과 문구, 문제 없으면 null(거래처 창 칸 표시와 upsertClient가 같이 씀). */
 export function checkClientDraft(draft: ClientDraft, clients: Array<ClientLike> = [], editingId: string | null = null): { field: 'companyName' | 'paymentTermValue' | 'commValue' | 'fixedUnitPrice' | 'palletPrice', message: string } | null {
   const name = String(draft.companyName || '').trim()
   if (!name) return { field: 'companyName', message: '거래처명을 입력해 주세요.' }
-  // 같은 범위(차주 일반 또는 같은 기사 차량)에 같은 이름이 있으면 막는다 — 이미 겹친 거래처는 이름을 안 바꾸면 고칠 수 있다.
   const scope = String(draft.scopedToVehicleNumber || '').trim()
   const editing = editingId ? (clients || []).find((client) => client.id === editingId) : null
   const keepsName = !!editing && String(editing.companyName || '').trim() === name
@@ -153,15 +143,10 @@ export function reorderClients(clients: Array<ClientLike>, fromId: string, toId:
   return [...list, ...scoped]
 }
 
-/** 즐겨찾기 거래처. 호출 전 `getClientsForLog` 등으로 이미 scope를 좁혀서 넘길 것. */
 export function pinnedClients(clients: Array<ClientLike>) {
   return (clients || []).filter((client) => client.isPinned && client.companyName)
 }
 
-/**
- * 일지(logId) 스코프에 맞는 거래처만 반환.
- * logId가 없거나 `'main'`이면 일반(미스코프) 거래처만, 아니면 해당 차량 전용만.
- */
 export function getClientsForLog(clients: Array<ClientLike>, logId?: string): Array<ClientLike> {
   const list = clients || []
   const key = String(logId || '').trim()

@@ -1,6 +1,4 @@
 // @ts-check
-// 운행일지 화면 조합 — 임시 편집·저장은 useDayDraft, 콜 상세·수금·고정 노선 처리는 useCallDetailActions,
-// 비용(정비/주유/기타)은 useExpenseForm(일지 기록이 아닌 비용 저장소에 바로 저장).
 import { useMemo, useState } from 'react'
 import { expensesForVehicleDay } from '../../../domain/calendarBadges.ts'
 import { getFixedRouteClient } from '../../../domain/clients.ts'
@@ -51,16 +49,16 @@ const EMPTY_PINS = /** @type {Array<never>} */ ([])
  * @param {string} props.dateKey
  * @param {Array<ClientLike>} props.clients
  * @param {Settings} props.settings
- * @param {() => void} [props.onClose] 없으면 뒤로가기 숨김(하단 메뉴 진입)
+ * @param {() => void} [props.onClose]
  * @param {(() => void)} [props.onOpenMenu]
  * @param {string} [props.logId]
- * @param {string} [props.clientScopeKey] 거래처 스코프(연동 기사는 배정 차량번호). 없으면 logId.
- * @param {boolean} [props.isEmployedDriver] 기사연동 계정 세션이면 콜 상세의 산재보험료 칸을 숨긴다(CallDetailForm 참고).
- * @param {{ loadLoc: string, unloadLoc: string, fare: number|null, client: string, cancelOff: boolean }|null} [props.assistantCall] 운비서가 넘긴 운행(useAssistantPrefill)
- * @param {import('../hooks/useAssistantExpense.js').AssistantExpense|null} [props.assistantExpense] 운비서가 넘긴 지출(useAssistantExpense)
- * @param {import('../hooks/useAssistantFixed.js').AssistantFixed|null} [props.assistantFixed] 운비서가 넘긴 고정 노선(useAssistantFixed)
- * @param {import('../hooks/useAssistantDayOff.js').AssistantDayOff|null} [props.assistantDayOff] 운비서가 넘긴 휴무(useAssistantDayOff)
- * @param {string} [props.assistantCallKey] 이동 키 — 같은 날짜에서 또 넘기면 바뀜
+ * @param {string} [props.clientScopeKey]
+ * @param {boolean} [props.isEmployedDriver]
+ * @param {{ loadLoc: string, unloadLoc: string, fare: number|null, client: string, cancelOff: boolean }|null} [props.assistantCall]
+ * @param {import('../hooks/useAssistantExpense.js').AssistantExpense|null} [props.assistantExpense]
+ * @param {import('../hooks/useAssistantFixed.js').AssistantFixed|null} [props.assistantFixed]
+ * @param {import('../hooks/useAssistantDayOff.js').AssistantDayOff|null} [props.assistantDayOff]
+ * @param {string} [props.assistantCallKey]
  */
 export default function DayLogPage({ month, day, dateKey, clients, settings, onClose, onOpenMenu, logId = 'main', clientScopeKey, isEmployedDriver = false, assistantCall = null, assistantExpense = null, assistantFixed = null, assistantDayOff = null, assistantCallKey }) {
   const { ownerKey } = useSession()
@@ -71,7 +69,7 @@ export default function DayLogPage({ month, day, dateKey, clients, settings, onC
   const mainWorkData = useOwnerWorkData(ownerKey)
   const workDataByLogId = useOwnerWorkDataByLogId(ownerKey)
   const workData = logId === 'main' ? mainWorkData : (workDataByLogId[logId] || EMPTY_WORK)
-  const myLink = useOwnerDrivers(ownerKey).find((driver) => driver.status === 'linked') // 연동 기사 본인 배정 기간
+  const myLink = useOwnerDrivers(ownerKey).find((driver) => driver.status === 'linked')
   const periodNotice = isEmployedDriver ? assignmentPeriodNotice(dateKey, myLink?.startDate, myLink?.endDate) : null
   const pinnedLocations = settings.pinnedLocations || EMPTY_PINS
   const locationShortcuts = useMemo(
@@ -82,7 +80,6 @@ export default function DayLogPage({ month, day, dateKey, clients, settings, onC
   const dayExpenses = expensesForVehicleDay(expenseForm.expenses, dateKey, logId !== 'main' ? logId : undefined)
   const routePresets = settings.fixedRouteOn ? (settings.fixedRoutePresets || []) : []
   const quickCounts = settings.runCountToggle ? (settings.runCountPresets || []) : []
-  // 거래처는 settings가 아닌 clients prop 전체로 — 연동 기사 배정 차량에 고정노선이 없으면 차주 것으로 넘어간다.
   const fixedRouteClient = getFixedRouteClient({ clients }, clientScopeKey || logId)
   const palletVisible = !!(settings.fixedOn && fixedRouteClient?.palletOn)
   const showCallDetailList = settings.callDetail || draft.callDetails.length > 0
@@ -90,12 +87,10 @@ export default function DayLogPage({ month, day, dateKey, clients, settings, onC
   const previousCallItem = draft.callDetails.length > 0 ? draft.callDetails[draft.callDetails.length - 1] : null
   const messageItem = messageCallId ? draft.callDetails.find((item) => item.id === messageCallId) : null
 
-  // 화면 안 뒤로가기는 useBlocker를 못 써서 여기서 저장 실패 상태와 열린 입력 칸을 직접 확인한다.
   async function handleClose() {
     if (confirmLeaveIfUnsafe() && await confirmLeaveOpenPanel()) popPanelGuardThen(() => onClose?.())
   }
 
-  // 콜 상세·비용 입력 칸은 하나만 열리게 inlinePanelActions.js가 묶는다.
   const { openCallForm, openExpenseAdd, openExpenseEdit, openExpenseKindPick, confirmLeaveOpenPanel } = bindInlinePanelActions(dispatch, expenseForm, { callFormOpen, editingCallId })
   const { prefill, formKey } = useAssistantPrefill({ assistantCall, assistantCallKey, callDetailOn: !!settings.callDetail, draft, callFormOpen, editingCallId, dispatch, closeExpense: expenseForm.closeAll, confirmLeaveOpenPanel })
   useAssistantExpense({ assistantExpense, assistantCallKey, draft, dispatch, openAdd: expenseForm.openAdd, confirmLeaveOpenPanel })
@@ -126,7 +121,6 @@ export default function DayLogPage({ month, day, dateKey, clients, settings, onC
         )}
         <DailyInspectionNotice logId={logId} dateKey={dateKey} month={month} day={day} enabled={!!settings.dailyInspectionOn} isOff={draft.isOff} />
 
-        {/* callDetail OFF여도 기존 callDetails 카드는 보여 준다 — 추가 진입만 canAdd로 막는다. */}
         {showCallDetailList && (
           <CallDetailList
             details={draft.callDetails}

@@ -6,7 +6,6 @@ const BANNER = assetPath('/images/banner_image.png')
 const TERMS_URL = assetPath('/terms.html')
 const PRIVACY_URL = assetPath('/privacy.html')
 
-/** 구글 공식 4색 G 로고(변형 금지 — 구글 로그인 버튼 규칙). */
 function GoogleLogo() {
   return (
     <svg className="auth-google-logo" viewBox="0 0 48 48" aria-hidden="true">
@@ -19,7 +18,6 @@ function GoogleLogo() {
 }
 
 /**
- * 첫 화면: 소개 문구, 구글 로그인(처음이면 /welcome 기본 정보 → 첫 설정)과 비회원 시작, 약관 안내(문서 이름은 새 탭 링크).
  * @param {Object} props
  * @param {() => void} [props.onGuest]
  * @param {() => void} [props.onGoogle]

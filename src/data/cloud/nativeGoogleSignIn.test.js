@@ -1,4 +1,3 @@
-// 앱 안 구글 로그인(Capacitor C-2) — 앱이면 계정 선택 창 → Supabase 토큰 로그인, 웹이면 지금처럼 구글 화면으로.
 import assert from 'node:assert/strict'
 import '../../testSupport/setupDom.ts'
 import { createHash } from 'node:crypto'

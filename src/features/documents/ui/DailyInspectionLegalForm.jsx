@@ -1,5 +1,4 @@
 // @ts-check
-// 일상점검표 법정 서식(별지 제14호의5서식) 한 장 — 내보내기 전용(화면 밖에 그림). 흰 바탕·검은 글씨 고정, 날짜는 1~그 달 끝날(21일 포함).
 import { DAILY_INSPECTION_SECTIONS } from '../../../domain/dailyInspectionItems.ts'
 import { actionNoteLines, dateKeyOf, inspectionMark, inspectorCell, legalFormMark, monthDays } from '../../../domain/dailyInspectionMonth.ts'
 import './legal-form.css'
@@ -9,7 +8,7 @@ import './legal-form.css'
 /**
  * @param {Object} props
  * @param {number} props.year
- * @param {number} props.month 0부터
+ * @param {number} props.month
  * @param {{ bizName: string, driverName: string, carNumber: string }} props.head
  * @param {Record<string, MonthInspection>} props.byDate
  * @param {Record<string, { isOff?: boolean }>} props.workData

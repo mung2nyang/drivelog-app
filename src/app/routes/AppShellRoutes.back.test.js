@@ -1,4 +1,3 @@
-// 고객센터·관리자 ← 는 연 곳으로 — 마이페이지에서 열면 마이페이지, 옆 메뉴(홈)에서 열면 홈.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

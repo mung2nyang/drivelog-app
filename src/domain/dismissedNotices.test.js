@@ -1,4 +1,3 @@
-// 닫은 알림 id 목록: 정리(목록 아님·빈칸·겹침·200개), 더하기(맨 뒤·이미 있음·지난 날짜 "오늘 일지 없음" 빼기·여러 개·200개).
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { addDismissedNotices, DISMISSED_NOTICES_MAX, normalizeDismissedNotices } from './dismissedNotices.ts'

@@ -1,5 +1,4 @@
 // @ts-check
-// 로드맵 56-A — 원인을 아는 실패 문구 3가지와, 서버 저장이면 ①·기기 저장이면 ②.
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 

@@ -1,5 +1,4 @@
 // @ts-check
-// 로드맵 7-C-2 — 앱을 열 때 3일 지난 해제 요청을 연동 확인보다 먼저 처리해야, 기사도 해제된 상태(일반 계정)로 시작한다.
 import assert from 'node:assert/strict'
 import { beforeEach, mock, test } from 'node:test'
 import { createFakeSupabase } from '../testSupport/fakeSupabaseClient.ts'
@@ -18,7 +17,6 @@ beforeEach(() => {
   order = []
   settled = false
   handlers.profiles = { select: () => ({ data: { name: '기사', phone: '', account_type: 'owner_driver' }, error: null }) }
-  // 서버 흉내: 기한 처리 전엔 연동 중, 처리 후엔 연동 없음.
   handlers.driver_links = {
     select: () => {
       order.push('driver_links')

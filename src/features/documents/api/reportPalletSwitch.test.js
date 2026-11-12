@@ -2,7 +2,6 @@ import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { buildMonthReport } from './reportSummary.js'
 
-// 내역서 파렛트는 그 일지의 고정 노선 스위치로 — 달력과 같음(로드맵 113-B).
 const PLATE = '서울12가3456'
 const SUB_CARS = /** @type {Array<import('../../../domain/financeTypes.ts').CarLike>} */ ([{ id: 's1', type: 'sub', number: PLATE }])
 const CLIENTS = [{ id: 'c1', companyName: '한진', fixedRouteLinked: true, fixedUnitPrice: '250,000', palletOn: true, palletPrice: '5,000' }]

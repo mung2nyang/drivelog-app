@@ -6,7 +6,6 @@ import { isPersistedFuelList, isPersistedMaintList, isPersistedMiscList } from '
 import type { JsonValue } from '../../domain/jsonTypes.ts'
 import type { DayRecordLike } from '../../domain/dayRecordTypes.ts'
 
-// 하루 기록의 칸 → 모양(Valibot, 공용 조각은 domain/schemaParts.ts). 목록 밖 칸·값이 비어 있는 칸은 거부.
 const count = v.pipe(v.number(), v.integer(), v.minValue(0))
 const amount = by(isValidCurrencyAmount)
 
@@ -22,14 +21,12 @@ const DAY_RECORD_FIELDS = {
 
 const DAY_RECORD_KEYS = Object.keys(DAY_RECORD_FIELDS)
 
-// 빈 하루 {}는 기록으로 치지 않는다.
 const DAY_RECORD = plain(v.strictObject(DAY_RECORD_FIELDS), (value) => Object.keys(value).length > 0)
 
 export function canonicalizeDayRecord(value: JsonValue) {
   return value === 'off' ? { isOff: true } : value
 }
 
-/** persist된 하루 기록. 허용 키만 두고, 카운트는 음이 아닌 정수, 운임은 통화 금액이다. */
 export function isPersistedDayRecord(value: JsonValue): value is DayRecordLike {
   return v.is(DAY_RECORD, value)
 }

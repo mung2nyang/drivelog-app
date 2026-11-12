@@ -1,9 +1,7 @@
-// xAI 목소리를 먼저, 못 받으면 휴대폰 기본 목소리로 읽는다(앱이면 안드로이드 목소리).
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { requestUnbiseoVoice } from '../api/unbiseoVoice.ts'
 import { isApp, speakInApp, stopSpeakingInApp } from './appSpeech.ts'
 
-/** 읽기 한 번 — 소리를 받는 동안·트는 동안 같은 것을 가리킨다. */
 type Reading = { audio: HTMLAudioElement | null, url: string, onDevice: boolean }
 
 function engine(): SpeechSynthesis | null {
@@ -27,7 +25,6 @@ function releaseSound(reading: Reading) {
   reading.url = ''
 }
 
-/** onUsedUp: 하루 목소리 횟수를 다 썼을 때 안내 문구를 띄우는 곳(소리는 내지 않는다). */
 export default function useSpeechOutput(onUsedUp?: (message: string) => void) {
   const [speaking, setSpeaking] = useState(false)
   const currentRef = useRef<Reading | null>(null)
@@ -49,7 +46,6 @@ export default function useSpeechOutput(onUsedUp?: (message: string) => void) {
     if (reading.onDevice) cancelOnDevice()
   }, [])
 
-  // 소리를 못 받았거나 못 틀었으면 휴대폰 목소리로 — 한 번만.
   const speakOnDevice = useCallback((sentence: string, reading: Reading) => {
     if (reading.onDevice) return
     const app = isApp()

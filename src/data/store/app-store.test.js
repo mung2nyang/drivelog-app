@@ -1,7 +1,3 @@
-// app-store.js가 (다른 모듈을 거쳐) supabaseClient.js를 임포트할 수 있다. 정적 import로 이 파일 맨 위에서 app-store.js를
-// 끌어오면 mock.module()이 실행되기 전에 이미 모듈 그래프 전체가 링크돼 버려서 스텁이
-// 안 먹는다(ESM은 최상위 정적 import를 전부 링크한 뒤에야 각 모듈의 본문을 실행한다) —
-// 그래서 여기서도 cloudSync.test.js와 마찬가지로 mock.module 등록 뒤 동적 import를 쓴다.
 import { resetStubSupabaseCallCounts, stubSupabaseCallCounts } from '../../testSupport/stubSupabaseClient.ts'
 import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
@@ -48,8 +44,6 @@ describe('app-store — 커밋은 Supabase를 부르지 않는다', () => {
     setHydration({ status: 'idle', userId: null, ownerKey: null })
     commitCars(owner, [{ id: 'car-1', number: '12가3456' }])
     assert.deepEqual(getState().cars[owner], [{ id: 'car-1', number: '12가3456' }])
-    // 감사 지적 9번: state만 보고 "동기화 안 했겠지"라고 넘기지 않는다 — 스텁 호출
-    // 횟수를 직접 센다. idle이든 ready든 상관없이 0이어야 한다.
     assert.equal(totalStubCalls(), 0, '커밋은 Supabase 호출이 0회여야 한다')
   })
 })
@@ -73,8 +67,6 @@ describe('app-store — commitBatch는 원자적이다(notify 정확히 한 번)
     let sawPartialState = false
     const unsubscribe = subscribe((state) => {
       notifyCount += 1
-      // "완성된" state만 봐야 한다 — cars는 있는데 profile은 아직 없는 중간 상태를
-      // 구독자가 보면 실패시킨다(예전엔 commit()을 슬라이스마다 따로 불러서 이게 가능했다).
       if (state.cars[owner] && !state.profile[owner]) sawPartialState = true
     })
 

@@ -1,4 +1,3 @@
-// 로드맵 7-C-2 — 기사 개인정보 화면의 "소속 연결" 카드: 세 가지 상태, 요청·취소는 연동 유지, 동의로 해제되면 내 계정으로 다시 불러온 뒤 화면 전환.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 

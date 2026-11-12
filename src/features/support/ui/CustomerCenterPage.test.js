@@ -221,7 +221,6 @@ describe('CustomerCenterPage — 나의 문의·건의 확인', () => {
   })
 })
 
-// 로드맵 99-C — 부품을 각자 파일로 옮기기 전 동작(문의 접수·목록 실패)을 적어 둔다.
 describe('CustomerCenterPage — 문의 접수·목록 실패 알림', () => {
   /** @param {string} userId @param {string} tabLabel */
   async function openWithToasts(userId, tabLabel) {

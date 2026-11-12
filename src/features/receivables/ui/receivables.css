@@ -1,5 +1,3 @@
-/* 미수금 목록·상세 공통: 화면 탭, 월별 묶음 카드, 요약, 차량 배지. */
-
 .receivables-page .receivable-tabs {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

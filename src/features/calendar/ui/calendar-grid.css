@@ -1,10 +1,7 @@
-/* 달력 판(요일 줄·날짜 칸·배지·오늘 표시) — calendar.css에서 나눔. */
-
 .main-page .header {
   margin-bottom: 10px;
 }
 
-/* 년·월 선택을 달력 판 위에 붙여 한 카드처럼 */
 .main-page .header:has(+ .calendar-grid) {
   margin-bottom: 0;
   padding: 14px 10px 6px;
@@ -17,17 +14,17 @@
 }
 
 .main-page .header + .calendar-grid {
-  margin-top: -1px; /* 소수점 경계에 생기는 실선 틈 메움 */
+  margin-top: -1px;
   border-top: 0;
   border-radius: 0 0 var(--radius-card) var(--radius-card);
   padding-top: 10px;
-  clip-path: inset(0 -12px -12px -12px); /* 위로 번지는 그림자가 이음새 선처럼 보여 자름 */
+  clip-path: inset(0 -12px -12px -12px);
 }
 
 .calendar-grid {
   width: 100%;
   display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr)); /* 배지 있는 날 줄만 넓어지지 않게 7칸 같은 폭 */
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   row-gap: 8px;
   column-gap: 6px;
   align-items: center;
@@ -52,7 +49,7 @@
 
 .date-cell {
   width: 100%;
-  align-self: stretch; /* 같은 주 칸 위쪽을 맞춤 — 배지 많은 날만 튀어나오지 않게 */
+  align-self: stretch;
   min-height: 76px;
   display: flex;
   flex-direction: column;
@@ -76,9 +73,8 @@
 }
 
 @media (hover: hover) { .date-cell:hover:not(.empty):not(:disabled) { background-color: var(--hover-bg); } }
-.date-cell:not(:disabled):active { background-color: var(--hover-bg); scale: none; } /* 누르는 동안 색으로 표시 */
+.date-cell:not(:disabled):active { background-color: var(--hover-bg); scale: none; }
 
-/* 요일 줄 아래·주 사이 옅은 가로선(칸 사이 틈 가운데) */
 .day-header::after,
 .date-cell::before {
   content: '';
@@ -132,7 +128,6 @@
 .date-cell.sunday, .day-header.sunday { color: var(--sunday-color); }
 .date-cell.saturday, .day-header.saturday { color: var(--saturday-color); }
 
-/* 오늘: 숫자만 파란 동그라미(칸 바탕 없음 — 배지 안 가림). 높이 차이는 음수 여백으로 메워 옆 칸 숫자와 줄 맞춤 */
 .date-cell.today .cell-date-text {
   display: inline-grid;
   place-items: center;
@@ -146,7 +141,6 @@
   font-weight: var(--fw-heavy);
 }
 
-/* 줄이 아니라 숫자 모양을 동그라미 정중앙에 */
 @supports (text-box: trim-both cap alphabetic) {
   .date-cell.today .cell-date-text {
     display: inline-block;
@@ -158,14 +152,10 @@
 
 .cell-date-text { line-height: 1.4; }
 
-/* .unpaid-dot(position:absolute)이 셀 좌상단에 정확히 앉으려면 부모(.date-cell)가
-   위치 기준점이어야 한다 — 위 .date-cell 기본 규칙엔 position이 없다. */
 .date-cell {
   position: relative;
 }
 
-/* 당일에 미수 콜상세가 있으면
-   셀 좌상단에 표시하는 점. */
 .unpaid-dot {
   position: absolute;
   top: 6px;
@@ -176,13 +166,11 @@
   border-radius: 50%;
 }
 
-/* 오늘 파란 동그라미와 겹치지 않게 살짝 바깥으로 */
 .date-cell.today .unpaid-dot {
   top: 4px;
   left: 4px;
 }
 
-/* 좁은 휴대폰: 배지를 줄여 칸(약 33px) 안에 들어가게 */
 @media (max-width: 380px) {
   .work-badge,
   .off-badge,

@@ -22,7 +22,6 @@ import { formatWon } from '../../../domain/money.ts'
 export default function ClientInvoiceGroups({ invoice }) {
   const unassigned = invoice.unassignedTrips
   const unassignedTotal = unassigned.reduce((sum, t) => sum + (Number(t.fare) || 0), 0)
-  // 거래처별 카드는 바깥 묶음 카드 없이 화면에 바로 놓는다(빈 달 안내만 카드 하나).
   return (
     <>
       {!invoice.groups.length ? !unassigned.length && (
@@ -69,7 +68,6 @@ export default function ClientInvoiceGroups({ invoice }) {
   )
 }
 
-/** 운행 줄 목록: 날짜 상차지 → 하차지 · 운송료(고정 노선은 횟수로) */
 function TripList(/** @type {{ trips: Array<InvoiceTrip> }} */ { trips }) {
   return (
     <div className="linked-driver-client-trip-list">

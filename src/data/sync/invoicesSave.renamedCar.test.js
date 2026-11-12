@@ -1,4 +1,3 @@
-// 기사 차량 번호를 바꾸면 그 차량 세금계산서도 새 번호로 옮겨, 그 뒤 계산서 저장이 되고 지난 발급 완료분이 새 번호 목록에 남는다.
 import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { afterEach, describe, mock, test } from 'node:test'
@@ -27,7 +26,6 @@ function seedRenamable(ownerKey) {
   setHydration({ status: 'ready', userId: ownerKey, ownerKey })
   const subCar = { id: 'car-sub', type: 'sub', number: OLD, supabaseId: 801, driverName: '김기사' }
   commitCars(ownerKey, [{ id: 'car-main', type: 'main', number: '12가3456', supabaseId: 700 }, subCar])
-  // 번호 바꾸기 전에 서버에 저장된 그 기사 차량의 발급 완료 계산서와 메인 차량 계산서.
   commitInvoices(ownerKey, [
     {
       id: `sales|2026-09|한진__${OLD}`, supabaseId: 5001, flow: 'sales', monthKey: '2026-09', clientName: '한진', partyKey: `한진__${OLD}`,

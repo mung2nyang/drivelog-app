@@ -1,6 +1,3 @@
-/* 일지 고정노선·파렛트·빠른노선 칩 — DayLogPage.jsx가 day-log.css 직전에 import. */
-
-/* 한 줄 입력(라벨·입력칸, 단위는 칸 안) */
 .fixed-route-input-row {
   display: grid;
   grid-template-columns: 96px minmax(0, 1fr);
@@ -8,7 +5,6 @@
   gap: 7px;
 }
 
-/* 횟수·장 수 × 단가 금액 줄(표시만) */
 .fixed-route-amount {
   display: flex;
   flex-wrap: wrap;

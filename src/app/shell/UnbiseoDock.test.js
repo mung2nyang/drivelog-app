@@ -46,7 +46,7 @@ async function renderShell(ownerKey, path, loggedIn = true, settings = {}) {
   commitSettings(ownerKey, normalizeSettings({ callDetail: true, ...settings }))
   commitWorkData(ownerKey, {})
   window.history.replaceState(null, '', path)
-  const session = loggedIn ? { userId: ownerKey, name: '보리', accountType: 'owner' } : null
+  const session = loggedIn ? { userId: ownerKey, name: '홍길동', accountType: 'owner' } : null
   const container = document.createElement('div')
   document.body.appendChild(container)
   const root = createRoot(container)

@@ -1,4 +1,4 @@
-// 4차 재작업(사용자 지시 5번) — 실제 <BrowserRouter> + <App/>을 jsdom에 렌더링해서
+// 4차 재작업 — 실제 <BrowserRouter> + <App/>을 jsdom에 렌더링해서
 // "로그인 계정이 라우트를 이동해도 그 경로에 머물고 restoreSessionOnBoot()이
 // 재실행되지 않는지"를 검증한다. 순수 함수 추출 테스트로는 이 회귀(브라우저에서
 // 실측으로만 드러났던 버그)를 못 잡는다고 판단해, 이 파일 하나를 위해 최소한의
@@ -190,7 +190,7 @@ function captureDayLogSaves(shouldFail = () => false) {
   }
 }
 
-test('사용자 지시 5번 — 로그인 계정이 라우트를 이동해도 그 경로에 머물고 부트가 재실행되지 않는다', async () => {
+test('로그인 계정이 라우트를 이동해도 그 경로에 머물고 부트가 재실행되지 않는다', async () => {
   window.history.pushState({}, '', '/')
   const container = document.createElement('div')
   document.body.appendChild(container)

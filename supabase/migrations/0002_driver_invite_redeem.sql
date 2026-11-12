@@ -5,7 +5,7 @@
 
 begin;
 
--- 2026-09-03 정정(4차): 보리의 첫 실행 시도(문법 오류로 중단됐던 그 실행)에서
+-- 2026-09-03 정정(4차): 첫 실행 시도(문법 오류로 중단됐던 그 실행)에서
 -- 이 함수까지는 이미 만들어져서 DB에 남아 있었던 것으로 보인다 — Supabase SQL
 -- 에디터가 `begin;`/`commit;`을 문서에 쓴 그대로 하나의 원자적 트랜잭션으로
 -- 처리하지 않을 수 있다는 뜻이다(커넥션 풀러가 트랜잭션 모드일 때 흔한 문제).
@@ -59,7 +59,7 @@ revoke execute on function public.redeem_driver_invite_code(text) from anon;
 grant execute on function public.redeem_driver_invite_code(text) to authenticated;
 
 -- 2026-09-03 정정: Postgres는 `CREATE POLICY`에 `IF NOT EXISTS`를 지원하지
--- 않는다(테이블/인덱스와 다름) — 보리가 실행 중 문법 오류로 발견. 아래부터는
+-- 않는다(테이블/인덱스와 다름) — 실행 중 문법 오류로 발견. 아래부터는
 -- 전부 `drop policy if exists` + `create policy`로 고쳤다(재실행해도 안전).
 -- 2) 기사 본인이 "내가 연동된 차주가 누구인지" 부트 시점에 조회 — 자기 행만.
 drop policy if exists "driver reads own driver_links row" on public.driver_links;
@@ -69,7 +69,7 @@ create policy "driver reads own driver_links row"
 
 -- 3) 연동된 기사가 자신에게 배정된 차량 정보를 읽을 수 있어야 한다(최소 권한).
 -- 2026-09-03 정정(2차): 처음엔 owner_id 기준 블랭킷 정책 → driver_links.vehicle_id
--- 기준으로 좁혔었는데, 보리가 `vehicles.raw`(jsonb)의 키 목록을 직접 확인해 준
+-- 기준으로 좁혔었는데, `vehicles.raw`(jsonb)의 키 목록을 직접 확인한
 -- 결과 `businessInfo`/`personalInfo`처럼 내용을 알 수 없는 중첩 필드가 들어있는
 -- 게 드러났다 — 이게 실제로 누구(차주 자신? 다른 사람?)의 정보인지 코드만 봐선
 -- 확인 불가. `vehicles`는 이미 `driver_bank_name`/`driver_account_number`/

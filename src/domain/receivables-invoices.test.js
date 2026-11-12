@@ -37,7 +37,7 @@ function groupSnapshot(items) {
 // 아래 기대값은 확정 규칙 기준 직접 값이다(2026-09에 원본 앱 대조에서 전환 — 그때 원본과 일치 확인된 값).
 describe('미수금 — 운행 픽스처 확정 금액', () => {
   test('거래처+월 묶음 금액과 미수 행', () => {
-    // 0원 운행은 미수 아님(로드맵 42, 보리 결정 2026-10-13) — 원본 앱과 달라짐.
+    // 0원 운행은 미수 아님(로드맵 42, 2026-10-13 결정) — 원본 앱과 달라짐.
     const ours = getReceivableItems(FIXTURE_SETTINGS, FIXTURE_WORK)
     assert.equal(ours.length, 6)
     same(groupSnapshot(ours), [

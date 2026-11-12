@@ -32,7 +32,7 @@ drop trigger if exists driver_links_guard_invite_code on public.driver_links;
 create trigger driver_links_guard_invite_code before insert or update on public.driver_links
 for each row execute function public.guard_driver_link_invite_code();
 
--- 수락 실패 기록(보리 승인 §7). 정책 없음 = 수락 함수만 읽고 쓴다. 하루 지난 기록은 함수가 지운다.
+-- 수락 실패 기록(승인 §7). 정책 없음 = 수락 함수만 읽고 쓴다. 하루 지난 기록은 함수가 지운다.
 create table if not exists public.driver_invite_redeem_attempts (
   id bigint generated always as identity primary key,
   user_id uuid not null references auth.users(id) on delete cascade,

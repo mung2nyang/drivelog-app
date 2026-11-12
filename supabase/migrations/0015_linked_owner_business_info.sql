@@ -2,7 +2,7 @@
 -- 그 차주와 지금 연동 중인 기사 본인만 차주 이름·사업자 7칸·계좌 3칸을 조회한다(0002 get_linked_owner_profile_settings와 같은 조건).
 -- 기사 앱 설정은 이제 기사 자기 프로필에서 읽으므로 차주 설정은 돌려주지 않는다. 기존 get_linked_owner_profile_settings는
 -- 이미 배포된 화면이 새로고침 전까지 부를 수 있어 그대로 둔다.
--- 2026-10-01 Supabase SQL Editor에서 실행·검증함(AI가 사용자 지시로 실행). 멱등. 데이터 변경 없음.
+-- 2026-10-01 Supabase SQL Editor에서 실행·검증함. 멱등. 데이터 변경 없음.
 
 begin;
 

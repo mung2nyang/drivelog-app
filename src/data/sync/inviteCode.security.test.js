@@ -71,7 +71,7 @@ describe('초대 문자', () => {
   })
 
   test('문자 앱이 인증번호로 오해할 숫자 묶음(번호판 등)을 넣지 않는다', () => {
-    const result = buildDriverInviteSmsHref({ name: '박기사', phone: '010-3333-4444', vehicleNumber: '22가2222', ownerDisplayName: '보리운송', inviteCode: 'A2B3C4D5E6' })
+    const result = buildDriverInviteSmsHref({ name: '박기사', phone: '010-3333-4444', vehicleNumber: '22가2222', ownerDisplayName: '홍길동운송', inviteCode: 'A2B3C4D5E6' })
     assert.ok('href' in result)
     const body = decodeURIComponent(result.href.split('body=')[1])
     assert.equal(body.includes('22가2222'), false, '차량번호 없음')

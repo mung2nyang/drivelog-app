@@ -80,7 +80,7 @@ for (const modal of INPUT_MODALS) {
   })
 }
 
-// 로드맵 57-B — 입력 창은 공용 껍데기(화면 읽기 "창")를 쓰고, 컴퓨터 Esc 키로도 안 닫힌다(보리 결정).
+// 로드맵 57-B — 입력 창은 공용 껍데기(화면 읽기 "창")를 쓰고, 컴퓨터 Esc 키로도 안 닫힌다.
 for (const modal of INPUT_MODALS) {
   test(`${modal.name} 창: 화면 읽기 "창" 표시, Esc로도 안 닫힌다`, async () => {
     const view = await mount(modal.element)

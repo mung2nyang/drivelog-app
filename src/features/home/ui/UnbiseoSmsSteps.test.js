@@ -24,7 +24,7 @@ const { default: HomeAssistantBar } = await import('./HomeAssistantBar.jsx')
 const { UnbiseoProvider } = await import('../hooks/unbiseoContext.ts')
 
 const OWNER = 'u-sms-steps'
-const CLOUD = { userId: OWNER, name: '보리', accountType: 'owner' }
+const CLOUD = { userId: OWNER, name: '홍길동', accountType: 'owner' }
 let reply = async () => ({ data: null, error: null })
 /** @type {Array<string>} */
 const calls = []

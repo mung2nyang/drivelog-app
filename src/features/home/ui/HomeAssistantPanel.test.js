@@ -51,7 +51,7 @@ supabase.functions = { invoke: async (name, options) => { calls.push({ name, bod
 const toasts = []
 beforeEach(() => { calls.length = 0; toasts.length = 0; settingsSave.error = null; reply = async () => ({ data: null, error: null }) })
 
-const CLOUD = { userId: 'u-assistant', name: '보리', accountType: 'owner' }
+const CLOUD = { userId: 'u-assistant', name: '홍길동', accountType: 'owner' }
 
 async function mount(ownerKey, session, { open = true, props = {} } = {}) {
   const container = document.createElement('div')
@@ -329,7 +329,7 @@ test('연동 기사 + 계약 시작 전·끝난 뒤 날짜: 일지와 같은 안
 test('차주는 연동 기사 줄이 있어도 기간 안내 없이 바로 넘긴다', async () => {
   commitDrivers('u-assistant-owner', [{ id: 'link-1', name: '김기사', phone: '', vehicleNumber: '34나5678', startDate: '2026-10-05', endDate: '', status: 'linked' }])
   const opened = []
-  const view = await askAs('u-assistant-owner', { userId: 'u-assistant-owner', name: '보리', accountType: 'owner' }, '2026-10-01', opened)
+  const view = await askAs('u-assistant-owner', { userId: 'u-assistant-owner', name: '홍길동', accountType: 'owner' }, '2026-10-01', opened)
   try {
     assert.equal(view.container.querySelector('.home-assistant-enable'), null)
     assert.equal(opened.length, 1)
@@ -660,7 +660,7 @@ function inspectionSetup() {
   Object.assign(inspect, { record: null, holdFetch: null, holdSave: null, saveError: null, saved: [], fetched: [] })
   commitSettings(INSPECT_OWNER, normalizeSettings({ dailyInspectionOn: true }))
   commitCars(INSPECT_OWNER, [{ id: 'c-main', type: 'main', number: '12가3456', supabaseId: 'veh-main' }])
-  commitProfile(INSPECT_OWNER, { ...EMPTY_PROFILE, name: '보리' })
+  commitProfile(INSPECT_OWNER, { ...EMPTY_PROFILE, name: '홍길동' })
   reply = async () => ({ data: { kind: 'inspection', inspection: { date: todayWorkLogSelection(new Date()).dateKey } }, error: null })
 }
 const held = () => { let release = () => {}; const promise = new Promise((resolve) => { release = resolve }); return { promise, release } }
@@ -691,7 +691,7 @@ test('점검표: 확인하는 동안 문구·입력 잠김 → [저장하기] �
     assert.equal(saveButton(view.container)?.disabled, true, '저장 중 잠금')
     await act(async () => { saveHold.release() })
     await settle()
-    assert.deepEqual(inspect.saved, [{ vehicleId: 'veh-main', workDate: today, items: allGoodItems(), actionNote: '', inspectorName: '보리' }], '한 번만, 일지 창과 같은 몸통')
+    assert.deepEqual(inspect.saved, [{ vehicleId: 'veh-main', workDate: today, items: allGoodItems(), actionNote: '', inspectorName: '홍길동' }], '한 번만, 일지 창과 같은 몸통')
     assert.equal(resultOf(view.container), SAVED)
     assert.equal(saveButton(view.container), null)
     assert.deepEqual(toasts, [])
@@ -716,7 +716,7 @@ test('점검표: 저장 실패면 일지 창과 같은 알림이 뜨고 문장·
 
 test('점검표: 이미 저장된 날·설정 꺼짐은 문장만, 버튼 없음', async () => {
   inspectionSetup()
-  inspect.record = { items: allGoodItems(), actionNote: '', inspectorName: '보리' }
+  inspect.record = { items: allGoodItems(), actionNote: '', inspectorName: '홍길동' }
   const view = await mount(INSPECT_OWNER, INSPECT_SESSION)
   try {
     await view.type('오늘 점검표 모두 양호')

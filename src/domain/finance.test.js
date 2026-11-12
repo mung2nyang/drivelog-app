@@ -326,7 +326,7 @@ describe('getOwnerMonthlyFinanceDetail — 월급제 기사 급여', () => {
 })
 
 describe('입금예정일', () => {
-  // 2026-09-01 보리 지시로 기사 할당 "기간 겹침" 계산을 제거했다 — assignmentRangesOverlap
+  // 2026-09-01 결정으로 기사 할당 "기간 겹침" 계산을 제거했다 — assignmentRangesOverlap
   // / findOverlappingDriverLink 원본 대조 테스트도 그 기능과 함께 삭제한다.
   test('calculatePaymentDueDate', () => {
     // [결제일, 주기, 값, 기대 입금예정일] — 말일이 없는 달은 그 달 말일로 맞춘다

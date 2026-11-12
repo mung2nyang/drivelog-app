@@ -397,7 +397,7 @@ test('AI 비서 — 오늘 카드와 할 일 사이에 운비서 줄(그림·이
 test('설정에서 운비서를 끄면 홈 운비서 카드가 사라지고 나머지 카드 순서는 그대로, 켜면 접힌 채 다시 보인다', async () => {
   const ownerKey = 'test-home-assistant-off'
   commitSettings(ownerKey, normalizeSettings({}))
-  const view = await renderHome(ownerKey, () => {}, { session: { userId: ownerKey, name: '보리', accountType: 'owner' } })
+  const view = await renderHome(ownerKey, () => {}, { session: { userId: ownerKey, name: '홍길동', accountType: 'owner' } })
   /** @returns {string[]} */
   const kinds = () => Array.from(view.container.querySelectorAll('.home-card')).map((el) => (
     el.classList.contains('home-today-card') ? 'today'

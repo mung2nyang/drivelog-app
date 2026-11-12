@@ -32,7 +32,7 @@ test('확인 창은 화면 내용(점검표 창이 그려지는 곳)보다 문�
   const root = createRoot(container)
   const routes = React.createElement(Routes, null, React.createElement(Route, { path: '/app/*', element: React.createElement(AppShell) }))
   await act(async () => {
-    root.render(withToast(React.createElement(BrowserRouter, null, withSession(routes, { ownerKey, session: { userId: ownerKey, name: '보리', accountType: 'owner' } })), () => {}))
+    root.render(withToast(React.createElement(BrowserRouter, null, withSession(routes, { ownerKey, session: { userId: ownerKey, name: '홍길동', accountType: 'owner' } })), () => {}))
   })
 
   /** @type {Promise<boolean>} */

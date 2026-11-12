@@ -20,7 +20,7 @@ const { createRoot } = await import('react-dom/client')
 const { act } = React
 const { default: MyPage } = await import('./MyPage.jsx')
 
-const CLOUD = { userId: 'u-1', name: '보리', phone: '', accountType: 'owner' }
+const CLOUD = { userId: 'u-1', name: '홍길동', phone: '', accountType: 'owner' }
 
 beforeEach(() => { resetHandlers() })
 

@@ -4,7 +4,7 @@ import { upsertDriver } from './drivers.ts'
 import { buildClientRow, buildVehicleRow } from '../data/cloud/cloudStorage.ts'
 import { deleteClientFromSupabase, deleteVehicleFromSupabase } from '../data/sync/directMutations.ts'
 
-// 2026-09-01 보리 지시: 기사 할당 "기간 겹침" 계산 차단(findOverlappingDriverLink 등)은
+// 2026-09-01 결정: 기사 할당 "기간 겹침" 계산 차단(findOverlappingDriverLink 등)은
 // 요구한 적 없는 코드라 제거했다. 남긴 규칙은 "같은 차량번호는 한 기사에게만"(기간 무관).
 describe('기사 할당 — 같은 차량번호는 한 기사에게만', () => {
   const base = { name: '박기사', phone: '010-3333-4444', inviteCode: 'B2C3D4E5F6', vehicleNumber: '서울12가3456', startDate: '2026-05-20', endDate: '' }

@@ -78,7 +78,7 @@ async function render(ownerKey, path) {
   const routes = React.createElement(Routes, null,
     React.createElement(Route, { path: '/app/expenses', element: React.createElement(MaintFuelPage, {}) }),
     React.createElement(Route, { path: '/app/day/:date', element: React.createElement(MainPageRoute) }))
-  const session = { userId: ownerKey, name: '보리', accountType: 'owner' }
+  const session = { userId: ownerKey, name: '홍길동', accountType: 'owner' }
   await act(async () => {
     root.render(withToast(React.createElement(BrowserRouter, null, withSession(routes, { ownerKey, session })), (/** @type {string} */ m) => { toasts.push(m) }))
   })

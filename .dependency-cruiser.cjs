@@ -1,7 +1,7 @@
 // 의존 방향 검사(npm run depcheck) — 아래층이 위층을 부르면 실패. 층 규칙과 허용 예외는 docs/architecture-target.md와 같은 목록.
 // 층: domain(계산) < shared(공용 부품) < data(저장) < features(기능 화면) < app(앱 틀). 운영 파일의 실제 import만 본다(테스트·JSDoc 타입 표기 제외).
 
-// 다른 기능 부품을 화면 안에 끼워 넣는 곳 — 이 8곳만 기능 사이 부르기 허용(보리 결정 2026-10-21).
+// 다른 기능 부품을 화면 안에 끼워 넣는 곳 — 이 8곳만 기능 사이 부르기 허용(2026-10-21 결정).
 const ALLOWED_CROSS_FEATURE = [
   ['src/features/day-log/ui/CallClientQuickAdd.jsx', 'src/features/clients/ui/ClientFormModal.jsx'],
   ['src/features/day-log/ui/DayLogExpenses.jsx', 'src/features/expenses/ui/ExpenseFormModal.jsx'],

@@ -169,7 +169,7 @@ describe('실패 주입 — hydrate 도중 로그아웃', () => {
   })
 })
 
-describe('사용자 지시 6번 — 로그아웃 후 같은 owner로 즉시 재로그인', () => {
+describe('로그아웃 후 같은 owner로 즉시 재로그인', () => {
   test('로그아웃 시점에 아직 진행 중이던 이전 hydrate에 재로그인이 합류하지 않고 새로 실행된다', async () => {
     resetHandlers()
     Object.assign(handlers, emptyOkHandlers(), settleOk())

@@ -5,7 +5,7 @@ import { test } from 'node:test'
 
 const { SERVER_SAVE_FAIL, DEVICE_SAVE_FAIL, SESSION_CHANGED_FAIL, saveFailMessage } = await import('./failureMessages.js')
 
-test('문구 3가지(보리 확정 문구 표)', () => {
+test('문구 3가지(확정 문구 표)', () => {
   assert.equal(SERVER_SAVE_FAIL, '저장에 실패했습니다. 네트워크 상태를 확인해 주세요.')
   assert.equal(DEVICE_SAVE_FAIL, '저장에 실패했습니다. 휴대폰 저장 공간을 확인해 주세요.')
   assert.equal(SESSION_CHANGED_FAIL, '로그인 정보가 바뀌어 저장하지 못했습니다. 화면을 새로고침한 뒤 다시 시도해 주세요.')

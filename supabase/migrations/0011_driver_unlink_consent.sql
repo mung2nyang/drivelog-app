@@ -2,7 +2,7 @@
 -- 거절 없음(요청자는 취소 가능). 3일 경과 처리는 앱을 열 때 settle_expired_driver_unlinks()가 한다.
 -- 종료일은 한국 날짜(서버 시계는 UTC). 내부 허용 표시(app.driver_link_internal)는 쓰고 나면 바로 끈다(같은 묶음의 다음 문장이 우회하지 못하게).
 -- 일반 사용자가 연동 행을 직접 해제 상태로 바꾸거나 요청 칸을 고치거나 linked 행을 지우는 우회는 막는다(트리거 + 삭제 규칙).
--- 2026-09-30 Supabase SQL Editor에서 실행·검증함(AI가 사용자 지시로 실행). 멱등. 데이터 변경 없음.
+-- 2026-09-30 Supabase SQL Editor에서 실행·검증함. 멱등. 데이터 변경 없음.
 -- 7-D: disconnect_driver_link_internal에 기사 쪽 기록 복사를 붙인다.
 
 begin;

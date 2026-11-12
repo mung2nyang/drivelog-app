@@ -1,5 +1,5 @@
-// Step 0-4 감사 보완 4차: 사용자 지시 6번("API 함수만 테스트하고 컴포넌트 코드상 로컬
-// 유지가 보장된다고 주장하지 마라") — 이 파일은 컴포넌트가 실제로 호출하는 서비스
+// Step 0-4 감사 보완 4차: API 함수만 시험하고 화면 쪽 로컬 유지까지 보장된다고
+// 주장하지 않기 위해 — 이 파일은 컴포넌트가 실제로 호출하는 서비스
 // 함수(requestVehicleDeletion 등)를 직접 부른다. 이게 UI가 타는 실제 코드 경로이므로,
 // 여기서 검증한 것이 곧 UI 안전성 검증이다(렌더 테스트 없이도).
 import '../../testSupport/setupDom.js'
@@ -80,7 +80,7 @@ async function withFailingSetItem(shouldFail, fn) {
 /** 리터럴을 DriverRecord[]로 좁혀 strict-inventory 진단(status 리터럴 widening 등)을 안 늘린다. @param {Array<import('../../domain/driverTypes.ts').DriverRecord>} items */
 const asDrivers = (items) => items
 
-describe('requestVehicleDeletion — 사용자 지시 10번 필수 시나리오', () => {
+describe('requestVehicleDeletion — 필수 시나리오', () => {
   test('failed 상태: Store 유지, localStorage 유지, 서버 호출 0회, 성공 토스트 없음', async () => {
     const ownerKey = 'dma-vehicle-failed'
     beginFailed('user-1', ownerKey)
@@ -329,7 +329,7 @@ describe('requestVehicleDeletion — 37-B: vehicles 한 줄만 지우고, 서버
   })
 })
 
-describe('requestClientDeletion — 사용자 지시 10번 필수 시나리오', () => {
+describe('requestClientDeletion — 필수 시나리오', () => {
   test('failed 상태: Store 유지, localStorage 유지, 서버 호출 0회, 성공 토스트 없음', async () => {
     const ownerKey = 'dma-client-failed'
     beginFailed('user-1', ownerKey)

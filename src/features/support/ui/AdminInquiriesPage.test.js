@@ -25,7 +25,7 @@ const { beginSessionEpoch } = await import('../../../data/cloud/cloudSession.ts'
 const { setHydration } = await import('../../../data/store/app-store.ts')
 const { default: AdminInquiriesPage } = await import('./AdminInquiriesPage.tsx')
 
-const SESSION = { userId: 'admin-1', name: '보리', accountType: 'owner' }
+const SESSION = { userId: 'admin-1', name: '홍길동', accountType: 'owner' }
 
 /** @type {import('../../../domain/jsonTypes.ts').JsonRecord} */
 const FIRST = { id: 'q-1', type: '문의', title: '첫 문의', content: '줄1\n줄2', answer: null, answered_at: null, created_at: '2026-10-22T01:00:00Z', user_name: '홍길동' }

@@ -1,4 +1,4 @@
-// 4차 재작업(사용자 지시 5번) — "실제 BrowserRouter 통합 테스트"를 쓰려면 App.jsx 등
+// 4차 재작업 — "실제 BrowserRouter 통합 테스트"를 쓰려면 App.jsx 등
 // JSX 파일을 plain `node --test` 프로세스에서 그대로 import할 수 있어야 하는데,
 // Node는 JSX 구문을 모른다(Vite가 dev/build에서만 변환해 준다). 이 파일은 Node
 // 모듈 커스터마이징 훅(module.register)으로 등록하는 로더로, `.jsx` 확장자 파일을

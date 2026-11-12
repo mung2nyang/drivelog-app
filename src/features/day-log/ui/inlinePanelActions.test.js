@@ -1,4 +1,4 @@
-// 추가 버튼을 한 번 더 누르면 같은 새 입력 칸이 닫힘(보리 지시 2026-10-08), 다른 경우는 지금처럼 열림.
+// 추가 버튼을 한 번 더 누르면 같은 새 입력 칸이 닫힘(2026-10-08 결정), 다른 경우는 지금처럼 열림.
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 import assert from 'node:assert/strict'

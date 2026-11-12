@@ -1,7 +1,7 @@
 -- 37-B: 기사가 연동 중(driver_links.status = 'linked')인 차량은 삭제를 거절한다.
 -- driver_links.vehicle_id가 ON DELETE CASCADE라 차량을 지우면 연동 기록이 말없이 사라지던 것을 막는다.
 -- 앱(vehicleDeletion.js)에서도 먼저 막지만, 기사 목록이 늦은 기기·대기열 재시도·대시보드에서도 서버가 같은 문구로 거절한다.
--- 2026-10-13 Supabase SQL Editor에서 실행·검증함(AI가 사용자 지시로 실행). 이 파일은 그 기록이다.
+-- 2026-10-13 Supabase SQL Editor에서 실행·검증함. 이 파일은 그 기록이다.
 -- create or replace / drop trigger if exists라 다시 실행해도 안전하다(데이터 변경 없음).
 
 begin;

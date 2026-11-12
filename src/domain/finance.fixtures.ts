@@ -16,7 +16,7 @@ export const FIXTURE_SETTINGS: FixtureSettings = {
   subPaymentOn: true,
   fixedOn: true,
   subFixedOn: true,
-  bizName: '보리운수',
+  bizName: '홍길동운수',
   bizNumber: '123-45-67890',
   userName: '차주',
   clients: [

@@ -2,7 +2,7 @@
 // 게스트 전용 데이터 관리(백업/복구).
 import { useRef, useState } from 'react'
 import { applyGuestBackupData, buildGuestBackupData, getLastBackupAt, markBackupDone } from '../../../data/sync/guestBackup.ts'
-import { useToast } from '../../../shared/hooks/useToast.js'
+import { useToast } from '../../../shared/hooks/useToast.ts'
 import { saveFileToDevice } from '../../../shared/utils/saveFile.ts'
 
 const BACKUP_UPLOAD_ICON = (

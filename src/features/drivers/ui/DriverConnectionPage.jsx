@@ -15,9 +15,9 @@ import { requestDriverUnlinkAction } from '../../../data/sync/driverUnlink.ts'
 import { useOwnerCars, useOwnerDrivers, useOwnerProfile } from '../../../data/store/ownerDataHooks.ts'
 import DriverUnlinkControls from './DriverUnlinkControls.jsx'
 import DriverFormModal from './DriverFormModal.jsx'
-import PageHeader from '../../../shared/ui/PageHeader.jsx'
+import PageHeader from '../../../shared/ui/PageHeader.tsx'
 import './driver-connection.css'
-import { useToast } from '../../../shared/hooks/useToast.js'
+import { useToast } from '../../../shared/hooks/useToast.ts'
 import { useSession } from '../../../data/cloud/sessionContext.ts'
 
 const emptyDraft = { name: '', phone: '', inviteCode: '', vehicleNumber: '', startDate: '', endDate: '' }

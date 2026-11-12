@@ -1,6 +1,6 @@
 // 운비서 상황 고르기 — 쉴 때, 소리 내 말하는 동안 답하는 중, 글로만 답하면 답하는 중 두 바퀴,
 // 듣는 동안 듣는 중, 입력하는 동안 입력 중(1초 쉬면 끝). 겹치면 말하기 > 듣기 > 글 답 > 입력.
-import '../../../testSupport/setupDom.js'
+import '../../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 

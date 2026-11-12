@@ -5,11 +5,11 @@ import { formatPhoneNumber, tonnageDigits, tonnageValue } from '../../../domain/
 import { formatCurrencyInput, formatPercentInput } from '../../../domain/money.ts'
 import CarDriverConnectPanel from './CarDriverConnectPanel.jsx'
 import CarDriverIncomeFields from './CarDriverIncomeFields.jsx'
-import CarFuelKindField from '../../../shared/ui/CarFuelKindField.jsx'
-import ClearableInput from '../../../shared/ui/ClearableInput.jsx'
-import CurrencyInput from '../../../shared/ui/CurrencyInput.jsx'
-import FieldError, { focusField, invalidProps } from '../../../shared/ui/FieldError.jsx'
-import ModalShell from '../../../shared/ui/ModalShell.jsx'
+import CarFuelKindField from '../../../shared/ui/CarFuelKindField.tsx'
+import ClearableInput from '../../../shared/ui/ClearableInput.tsx'
+import CurrencyInput from '../../../shared/ui/CurrencyInput.tsx'
+import FieldError, { focusField, invalidProps } from '../../../shared/ui/FieldError.tsx'
+import ModalShell from '../../../shared/ui/ModalShell.tsx'
 import CarShareBaseField from './CarShareBaseField.jsx'
 
 /**

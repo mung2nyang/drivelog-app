@@ -10,8 +10,8 @@
 // 재감사 11차 hang: pendingWorkDataWrites → app-store가 실제 supabaseClient의
 // realtime/auth 타이머를 붙잡는다. stub을 다른 import보다 먼저 올려야
 // `--test-force-exit` 없이 프로세스가 스스로 끝난다.
-import '../../testSupport/stubSupabaseClient.js'
-import '../../testSupport/setupDom.js'
+import '../../testSupport/stubSupabaseClient.ts'
+import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 

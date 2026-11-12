@@ -2,8 +2,8 @@
 // 입력 칸이 열린 동안 붙잡기 기록을 1장 쌓아, 휴대폰 뒤로가기도 ← 처럼 먼저 묻는다.
 import { useEffect, useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { panelGuardOnTop, popPanelGuardThen, takeGuardSkip } from '../../../shared/utils/historyMoves.js'
-import { cancelConfirmDialog, confirmDialogOpen } from '../../../shared/ui/confirmDialog.jsx'
+import { panelGuardOnTop, popPanelGuardThen, takeGuardSkip } from '../../../shared/utils/historyMoves.ts'
+import { cancelConfirmDialog, confirmDialogOpen } from '../../../shared/ui/confirmDialog.tsx'
 
 /**
  * @param {boolean} open 입력 칸(콜 상세·정비/주유/기타)이 열려 있나

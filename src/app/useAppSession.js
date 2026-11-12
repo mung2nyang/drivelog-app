@@ -6,7 +6,7 @@ import { applyTheme, phoneTheme, settingsTheme, watchPhoneTheme } from '../data/
 import { endCloudSession } from '../data/cloud/cloudSession.ts'
 import { confirmReloadIfUnsaved } from '../data/sync/durableWriteGuard.ts'
 import { buzz } from './haptic.js'
-import { isFailureMessage } from '../shared/utils/failureMessages.js'
+import { isFailureMessage } from '../shared/utils/failureMessages.ts'
 import { supabase } from '../data/cloud/supabaseClient.ts'
 import { restoreSessionOnBoot } from './boot.js'
 import { ownerKeyFromSession } from '../data/cloud/appSession.ts'

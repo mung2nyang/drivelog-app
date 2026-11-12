@@ -1,7 +1,7 @@
 // @ts-check
 // 로드맵 24-D-2 — 운비서 질문 숫자는 매출·미수금·세금계산서 화면이 쓰는 함수를 같은 자료로 직접 부른 값과 같다(새 계산 없음 증명).
-import '../../../testSupport/stubSupabaseClient.js'
-import '../../../testSupport/setupDom.js'
+import '../../../testSupport/stubSupabaseClient.ts'
+import '../../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { before, test } from 'node:test'
 

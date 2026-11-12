@@ -1,7 +1,7 @@
 // 앱(안드로이드) 안 구글 로그인 — 계정 선택 창에서 받은 토큰으로 Supabase에 로그인한다.
 import { Capacitor } from '@capacitor/core'
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { routerBasename } from '../../shared/utils/routerBasename.js'
+import { routerBasename } from '../../shared/utils/routerBasename.ts'
 
 /** Supabase 구글 로그인에 등록된 웹 클라이언트 ID(공개 값). */
 export const GOOGLE_WEB_CLIENT_ID = '204535279698-t1ingsmv9iocrb6mf8qvrmsjmcp6i9b6.apps.googleusercontent.com'

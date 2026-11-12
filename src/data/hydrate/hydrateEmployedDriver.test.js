@@ -1,7 +1,7 @@
 // @ts-check
 import assert from 'node:assert/strict'
 import { describe, mock, test } from 'node:test'
-import { createFakeSupabase } from '../../testSupport/fakeSupabaseClient.js'
+import { createFakeSupabase } from '../../testSupport/fakeSupabaseClient.ts'
 
 const { fakeSupabase, handlers, resetHandlers, emptyOkHandlers, countOf } = createFakeSupabase()
 mock.module('../cloud/supabaseClient.ts', { namedExports: { supabase: fakeSupabase } })
@@ -61,11 +61,11 @@ describe('buildEmployedDriverSnapshot — 소속기사 hydrate 비용 및 스냅
   test('정상 조회: 배정차량 1대, 비용 3종 각 1건씩 → snapshot.expenses 3건 확인', async () => {
     resetHandlers()
     Object.assign(handlers, emptyOkHandlers())
-    /** @type {Array<import('../../testSupport/fakeSupabaseClient.js').EqFilters | import('../../domain/jsonTypes.ts').JsonRecord>} */
+    /** @type {Array<import('../../testSupport/fakeSupabaseClient.ts').EqFilters | import('../../domain/jsonTypes.ts').JsonRecord>} */
     const fuelFilters = []
-    /** @type {Array<import('../../testSupport/fakeSupabaseClient.js').EqFilters | import('../../domain/jsonTypes.ts').JsonRecord>} */
+    /** @type {Array<import('../../testSupport/fakeSupabaseClient.ts').EqFilters | import('../../domain/jsonTypes.ts').JsonRecord>} */
     const maintFilters = []
-    /** @type {Array<import('../../testSupport/fakeSupabaseClient.js').EqFilters | import('../../domain/jsonTypes.ts').JsonRecord>} */
+    /** @type {Array<import('../../testSupport/fakeSupabaseClient.ts').EqFilters | import('../../domain/jsonTypes.ts').JsonRecord>} */
     const miscFilters = []
 
     handlers.rpc = {

@@ -1,5 +1,5 @@
 // @ts-check
-import PageHeader from '../../../shared/ui/PageHeader.jsx'
+import PageHeader from '../../../shared/ui/PageHeader.tsx'
 import ScopedClientsList from './ScopedClientsList.jsx'
 import { useOwnerCars } from '../../../data/store/ownerDataHooks.ts'
 import { useSession } from '../../../data/cloud/sessionContext.ts'

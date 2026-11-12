@@ -1,8 +1,8 @@
 // @ts-check
-import '../../testSupport/setupDom.js'
+import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { beforeEach, describe, mock, test } from 'node:test'
-import { createFakeSupabase } from '../../testSupport/fakeSupabaseClient.js'
+import { createFakeSupabase } from '../../testSupport/fakeSupabaseClient.ts'
 
 const { fakeSupabase, handlers, resetHandlers, countOf } = createFakeSupabase()
 mock.module('../cloud/supabaseClient.ts', { namedExports: { supabase: fakeSupabase } })

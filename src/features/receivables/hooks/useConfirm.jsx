@@ -1,7 +1,7 @@
 // @ts-check
-// ConfirmModal.jsx 패턴의 로컬 확인 창 훅(Context/Provider 없음).
+// ConfirmModal.tsx 패턴의 로컬 확인 창 훅(Context/Provider 없음).
 import { useCallback, useRef, useState } from 'react'
-import ConfirmModal from '../../../shared/ui/ConfirmModal.jsx'
+import ConfirmModal from '../../../shared/ui/ConfirmModal.tsx'
 
 /** @typedef {{ confirmLabel?: string, danger?: boolean, message?: string }} ConfirmOptions */
 /** @typedef {{ message: string, options: ConfirmOptions, resolve: (value: boolean) => void }} PendingConfirm */

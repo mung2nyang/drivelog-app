@@ -1,5 +1,5 @@
 // 파일 보내기(Capacitor C-3-B) — 앱이면 캐시 폴더에 쓰고 안드로이드 공유 창, 웹이면 지금처럼 브라우저 공유.
-import '../../testSupport/setupDom.js'
+import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { mock, test } from 'node:test'
 

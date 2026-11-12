@@ -4,7 +4,7 @@ import { pathToFileURL } from 'node:url'
 
 register(pathToFileURL('./src/testSupport/jsxLoaderHook.mjs').href, import.meta.url)
 
-import '../../../testSupport/setupDom.js'
+import '../../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 
@@ -15,8 +15,8 @@ const { createRoot } = await import('react-dom/client')
 const { act, useState } = React
 const { BrowserRouter, useNavigate } = await import('react-router-dom')
 const { default: usePanelBackGuard } = await import('./usePanelBackGuard.js')
-const { panelGuardOnTop, popPanelGuardThen } = await import('../../../shared/utils/historyMoves.js')
-const { ConfirmDialogHost, confirmDialog } = await import('../../../shared/ui/confirmDialog.jsx')
+const { panelGuardOnTop, popPanelGuardThen } = await import('../../../shared/utils/historyMoves.ts')
+const { ConfirmDialogHost, confirmDialog } = await import('../../../shared/ui/confirmDialog.tsx')
 
 /** @param {number} ms */
 const wait = (ms) => new Promise((resolve) => { setTimeout(resolve, ms) })

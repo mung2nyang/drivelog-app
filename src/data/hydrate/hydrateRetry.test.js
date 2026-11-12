@@ -1,8 +1,8 @@
 // [다시 시도](retryHydrate): 연동 확인 실패를 "연동 없음"으로 보지 않는다.
-import '../../testSupport/setupDom.js'
+import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { afterEach, describe, mock, test } from 'node:test'
-import { createFakeSupabase } from '../../testSupport/fakeSupabaseClient.js'
+import { createFakeSupabase } from '../../testSupport/fakeSupabaseClient.ts'
 
 const { fakeSupabase, handlers, resetHandlers, countOf, emptyOkHandlers } = createFakeSupabase()
 mock.module('../cloud/supabaseClient.ts', { namedExports: { supabase: fakeSupabase } })
@@ -17,7 +17,7 @@ const SEED_CARS = [{ id: 'car-sub', type: 'sub', number: '22나2222', supabaseId
 /**
  * 연동 기사 세션(사용자 id ≠ 칸)이 불러오기 실패 상태. 기사 본인의 연동 확인(driver_id 조회)만 linkCheck로 답한다.
  * @param {string} userId @param {string} ownerKey
- * @param {import('../../testSupport/fakeSupabaseClient.js').FakeQueryResult} linkCheck
+ * @param {import('../../testSupport/fakeSupabaseClient.ts').FakeQueryResult} linkCheck
  */
 function seedFailedDriverSession(userId, ownerKey, linkCheck) {
   resetHandlers()

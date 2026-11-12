@@ -5,10 +5,10 @@ import { pathToFileURL } from 'node:url'
 
 register(pathToFileURL('./src/testSupport/jsxLoaderHook.mjs').href, import.meta.url)
 
-import '../../../testSupport/setupDom.js'
+import '../../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { mock, test } from 'node:test'
-import { createFakeSupabase } from '../../../testSupport/fakeSupabaseClient.js'
+import { createFakeSupabase } from '../../../testSupport/fakeSupabaseClient.ts'
 
 const { fakeSupabase, handlers, resetHandlers, emptyOkHandlers, countOf } = createFakeSupabase()
 mock.module('../../../data/cloud/supabaseClient.ts', { namedExports: { supabase: fakeSupabase } })
@@ -19,14 +19,14 @@ const React = await import('react')
 const { act } = React
 const { createRoot } = await import('react-dom/client')
 const { BrowserRouter, Route, Routes } = await import('react-router-dom')
-const { withSession } = await import('../../../testSupport/withSession.js')
-const { withToast } = await import('../../../testSupport/withToast.js')
+const { withSession } = await import('../../../testSupport/withSession.ts')
+const { withToast } = await import('../../../testSupport/withToast.ts')
 const { beginSessionEpoch, endCloudSession } = await import('../../../data/cloud/cloudSession.ts')
 const { setHydration } = await import('../../../data/store/app-store.ts')
 const { commitCars, commitExpenses, commitSettings, commitWorkData } = await import('../../../data/store/commitHelpers.ts')
 const { readOwnerExpenses } = await import('../../../data/store/ownerDataHooks.ts')
 const { normalizeSettings } = await import('../../../domain/practiceSettings.ts')
-const { panelGuardOnTop } = await import('../../../shared/utils/historyMoves.js')
+const { panelGuardOnTop } = await import('../../../shared/utils/historyMoves.ts')
 const { default: MaintFuelPage } = await import('./MaintFuelPage.jsx')
 const { default: MainPageRoute } = await import('../../../app/routes/MainPageRoute.jsx')
 

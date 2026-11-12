@@ -3,7 +3,7 @@ import type { AppSession, SessionCapture } from '../sync/syncTypes.ts'
 import { getState, setHydration } from '../store/app-store.ts'
 import { evict } from './singleFlight.ts'
 import { StaleSessionError } from '../sync/saveErrors.ts'
-import { SESSION_CHANGED_FAIL } from '../../shared/utils/failureMessages.js'
+import { SESSION_CHANGED_FAIL } from '../../shared/utils/failureMessages.ts'
 
 export type { AppSession, SessionCapture }
 

@@ -1,9 +1,9 @@
 // @ts-check
 // 로드맵 9-B-2 — 일상점검표 서버 읽기·저장: 차량+날짜 1장, 덮어쓰기, 작성자·점검자 이름, 서버 값 형식 검사.
-import '../../testSupport/setupDom.js'
+import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { beforeEach, mock, test } from 'node:test'
-import { createFakeSupabase } from '../../testSupport/fakeSupabaseClient.js'
+import { createFakeSupabase } from '../../testSupport/fakeSupabaseClient.ts'
 
 const { fakeSupabase, handlers, resetHandlers, callsOf } = createFakeSupabase()
 mock.module('../cloud/supabaseClient.ts', { namedExports: { supabase: fakeSupabase } })
@@ -15,9 +15,9 @@ const { setHydration } = await import('../store/app-store.ts')
 beforeEach(() => { resetHandlers(); endCloudSession() })
 
 test('읽기: 차량·날짜로 1장, 형식 검사 후 돌려줌 / 없으면 null', async () => {
-  /** @type {Array<import('../../testSupport/fakeSupabaseClient.js').EqFilters>} */
+  /** @type {Array<import('../../testSupport/fakeSupabaseClient.ts').EqFilters>} */
   const filters = []
-  handlers.daily_inspections = { select: (f) => { filters.push(/** @type {import('../../testSupport/fakeSupabaseClient.js').EqFilters} */ (f)); return { data: { items: { tires: 'bad', bogus: 'good' }, action_note: '타이어 교체 예정', inspector_name: '김기사' }, error: null } } }
+  handlers.daily_inspections = { select: (f) => { filters.push(/** @type {import('../../testSupport/fakeSupabaseClient.ts').EqFilters} */ (f)); return { data: { items: { tires: 'bad', bogus: 'good' }, action_note: '타이어 교체 예정', inspector_name: '김기사' }, error: null } } }
   const got = await fetchDailyInspection('veh-1', '2026-10-01')
   assert.deepEqual(got, { items: { tires: 'bad' }, actionNote: '타이어 교체 예정', inspectorName: '김기사' })
   assert.deepEqual(filters[0], { vehicle_id: 'veh-1', work_date: '2026-10-01' })
@@ -33,7 +33,7 @@ test('읽기 실패는 던짐', async () => {
 test('저장: 작성자 = 로그인 사용자, 점검자 이름, 조치 기록 빈칸이면 null, 차량+날짜 덮어쓰기', async () => {
   beginSessionEpoch('driver-1', 'owner-1')
   setHydration({ status: 'ready', userId: 'driver-1', ownerKey: 'owner-1' })
-  /** @type {Array<{ row: Parameters<import('../../testSupport/fakeSupabaseClient.js').FakeHandler>[0], options: Parameters<import('../../testSupport/fakeSupabaseClient.js').FakeHandler>[1] }>} */
+  /** @type {Array<{ row: Parameters<import('../../testSupport/fakeSupabaseClient.ts').FakeHandler>[0], options: Parameters<import('../../testSupport/fakeSupabaseClient.ts').FakeHandler>[1] }>} */
   const upserts = []
   handlers.daily_inspections = { upsert: (row, options) => { upserts.push({ row, options }); return { data: null, error: null } } }
   await saveDailyInspection({ vehicleId: 'veh-1', workDate: '2026-10-01', items: { tires: 'good' }, actionNote: '   ', inspectorName: '김기사' })
@@ -49,11 +49,11 @@ test('로그인 안 했으면 저장하지 않고 던짐', async () => {
 })
 
 test('9-C-1 한 달 읽기: 그 달 첫날~끝날 범위, 날짜별 항목(형식 검사)·점검자·조치 기록(9-D)', async () => {
-  /** @type {Array<import('../../testSupport/fakeSupabaseClient.js').EqFilters>} */
+  /** @type {Array<import('../../testSupport/fakeSupabaseClient.ts').EqFilters>} */
   const filters = []
   /** @type {import('../store/atomicPersist.ts').JsonValue} */
   const rows = [{ work_date: '2026-02-03', items: { tires: 'bad', x: 'good' }, action_note: '타이어 교체', inspector_name: '김기사' }, { work_date: '2026-02-04', items: { lamps: 'good' }, action_note: null, inspector_name: null }]
-  handlers.daily_inspections = { select: (f) => { filters.push(/** @type {import('../../testSupport/fakeSupabaseClient.js').EqFilters} */ (f)); return { data: rows, error: null } } }
+  handlers.daily_inspections = { select: (f) => { filters.push(/** @type {import('../../testSupport/fakeSupabaseClient.ts').EqFilters} */ (f)); return { data: rows, error: null } } }
   const { fetchMonthDailyInspections } = await import('./dailyInspections.ts')
   const byDate = await fetchMonthDailyInspections('veh-1', 2026, 1)
   assert.deepEqual(byDate, {
@@ -76,9 +76,9 @@ test('지우기: 차량·날짜로 지우고 지운 줄을 받는다', async () 
   beginSessionEpoch('driver-1', 'owner-1')
   setHydration({ status: 'ready', userId: 'driver-1', ownerKey: 'owner-1' })
   const { deleteDailyInspection } = await import('./dailyInspections.ts')
-  /** @type {Array<import('../../testSupport/fakeSupabaseClient.js').EqFilters>} */
+  /** @type {Array<import('../../testSupport/fakeSupabaseClient.ts').EqFilters>} */
   const filters = []
-  handlers.daily_inspections = { delete: (f) => { filters.push(/** @type {import('../../testSupport/fakeSupabaseClient.js').EqFilters} */ (f)); return { data: [{ id: 'a' }], error: null } } }
+  handlers.daily_inspections = { delete: (f) => { filters.push(/** @type {import('../../testSupport/fakeSupabaseClient.ts').EqFilters} */ (f)); return { data: [{ id: 'a' }], error: null } } }
   await deleteDailyInspection({ vehicleId: 'veh-1', workDate: '2026-10-25' })
   assert.deepEqual(filters, [{ vehicle_id: 'veh-1', work_date: '2026-10-25' }])
   assert.deepEqual(callsOf('daily_inspections', 'delete')[0].ops.at(-1), ['select', 'id'], '지운 줄을 받아야 0줄 실패를 가린다')

@@ -2,7 +2,7 @@
 // 마이페이지 개인정보 카드 옆 "연동중" 칩 — 연동 기사 계정만. 누르면 운송사·배정 차량·계약기간 창, 해제는 개인정보에서.
 import { useId, useState } from 'react'
 import { useOwnerDrivers, useOwnerProfile } from '../../../data/store/ownerDataHooks.ts'
-import ModalShell from '../../../shared/ui/ModalShell.jsx'
+import ModalShell from '../../../shared/ui/ModalShell.tsx'
 import { useSession } from '../../../data/cloud/sessionContext.ts'
 
 /**

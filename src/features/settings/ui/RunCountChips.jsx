@@ -1,9 +1,9 @@
 // @ts-check
 // 앱 설정의 운행 횟수 버튼 편집.
 import { useEffect, useRef, useState } from 'react'
-import ConfirmModal from '../../../shared/ui/ConfirmModal.jsx'
+import ConfirmModal from '../../../shared/ui/ConfirmModal.tsx'
 import { addRunCountPreset, removeRunCountPreset, replaceRunCountPreset, RUN_COUNT_PRESET_MAX } from '../../../domain/practiceSettings.ts'
-import { useToast } from '../../../shared/hooks/useToast.js'
+import { useToast } from '../../../shared/hooks/useToast.ts'
 
 /** @typedef {import('../../../domain/financeTypes.ts').FinanceSettings} FinanceSettings */
 

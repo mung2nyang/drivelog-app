@@ -2,10 +2,10 @@
 // 메인·서브 스코프를 한 화면에서 처리. 날짜별 목록은 MaintFuelDayList, 달 이동은 공용 MonthNavigator.
 import { useMemo, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import MonthNavigator from '../../../shared/ui/MonthNavigator.jsx'
+import MonthNavigator from '../../../shared/ui/MonthNavigator.tsx'
 import ExpenseFormModal from './ExpenseFormModal.jsx'
 import MaintFuelDayList from './MaintFuelDayList.jsx'
-import PageHeader from '../../../shared/ui/PageHeader.jsx'
+import PageHeader from '../../../shared/ui/PageHeader.tsx'
 import { resolveDriverOrPlateLabel } from '../../../domain/driverManagementContext.ts'
 import { defaultFuelTypeForLog } from '../../../domain/cars.ts'
 import { getExpensesForLog } from '../../../domain/expenseScope.ts'
@@ -15,7 +15,7 @@ import { emptyExpenseDraft, expenseToDraft } from '../../../domain/expenseDraft.
 import { formatWon } from '../../../domain/money.ts'
 import { useOwnerCars, useOwnerDrivers, useOwnerExpenses } from '../../../data/store/ownerDataHooks.ts'
 import './maint-fuel.css'
-import { useToast } from '../../../shared/hooks/useToast.js'
+import { useToast } from '../../../shared/hooks/useToast.ts'
 import { useSession } from '../../../data/cloud/sessionContext.ts'
 
 /** @typedef {import('../../../domain/expenseTypes.ts').ExpenseItem} ExpenseItem */

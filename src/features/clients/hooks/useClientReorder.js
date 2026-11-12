@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import { requestClientReorder } from '../../../data/sync/clientMutations.ts'
 import { getCloudUserId } from '../../../data/cloud/cloudSession.ts'
-import { useToast } from '../../../shared/hooks/useToast.js'
+import { useToast } from '../../../shared/hooks/useToast.ts'
 
 /**
  * @param {string} ownerKey

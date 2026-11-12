@@ -1,7 +1,7 @@
 // @ts-check
 import { useState } from 'react'
 import { formatWon } from '../../../domain/money.ts'
-import ConfirmModal from '../../../shared/ui/ConfirmModal.jsx'
+import ConfirmModal from '../../../shared/ui/ConfirmModal.tsx'
 import './tax-invoice.css'
 
 /** @typedef {import('../../../domain/financeTaxInvoiceEntries.ts').InvoiceLike} InvoiceLike */

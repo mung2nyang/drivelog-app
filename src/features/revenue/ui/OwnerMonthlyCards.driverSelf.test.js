@@ -3,7 +3,7 @@ import { pathToFileURL } from 'node:url'
 
 register(pathToFileURL('./src/testSupport/jsxLoaderHook.mjs').href, import.meta.url)
 
-import '../../../testSupport/setupDom.js'
+import '../../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { describe, test } from 'node:test'
 import { driverSelfNetProfitLabel } from './revenueFormat.js'

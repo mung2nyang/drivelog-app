@@ -1,9 +1,9 @@
 // @ts-check
 import { parseCurrencyValue } from '../../../domain/money.ts'
 import { commissionInfo, durationSuffix, formatCallTime } from './callDetailFormHelpers.js'
-import { EditIcon, DeleteIcon, PhoneIcon, MessageIcon } from '../../../shared/ui/icons.jsx'
+import { EditIcon, DeleteIcon, PhoneIcon, MessageIcon } from '../../../shared/ui/icons.tsx'
 import './call-detail-card.css'
-import { useToast } from '../../../shared/hooks/useToast.js'
+import { useToast } from '../../../shared/hooks/useToast.ts'
 
 /** @typedef {import('./dayLogTypes.js').CallDetailLike} CallDetailLike */
 /** @typedef {import('./dayLogTypes.js').ClientLike} ClientLike */

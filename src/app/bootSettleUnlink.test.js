@@ -2,7 +2,7 @@
 // 로드맵 7-C-2 — 앱을 열 때 3일 지난 해제 요청을 연동 확인보다 먼저 처리해야, 기사도 해제된 상태(일반 계정)로 시작한다.
 import assert from 'node:assert/strict'
 import { beforeEach, mock, test } from 'node:test'
-import { createFakeSupabase } from '../testSupport/fakeSupabaseClient.js'
+import { createFakeSupabase } from '../testSupport/fakeSupabaseClient.ts'
 
 const { fakeSupabase, handlers, resetHandlers } = createFakeSupabase()
 mock.module('../data/cloud/supabaseClient.ts', { namedExports: { supabase: fakeSupabase } })

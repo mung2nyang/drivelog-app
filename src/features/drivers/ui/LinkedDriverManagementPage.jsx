@@ -24,7 +24,7 @@ import CarBusinessInfoSection from './CarBusinessInfoSection.jsx'
 import ClientInvoiceGroups from './ClientInvoiceGroups.jsx'
 import SettlementSummaryCard from './SettlementSummaryCard.jsx'
 import { toLinkedDriverLink } from './linkedDriverLink.js'
-import PageHeader from '../../../shared/ui/PageHeader.jsx'
+import PageHeader from '../../../shared/ui/PageHeader.tsx'
 import './linked-driver.css'
 import { useSession } from '../../../data/cloud/sessionContext.ts'
 

@@ -2,7 +2,7 @@
 // 고객센터 탭 화면(FAQ는 여기, 문의 작성은 InquiryForm, 내 문의는 MyInquiriesList).
 import { useState } from 'react'
 import { isCloudSession } from '../../../data/cloud/cloudSession.ts'
-import PageHeader from '../../../shared/ui/PageHeader.jsx'
+import PageHeader from '../../../shared/ui/PageHeader.tsx'
 import InquiryForm from './InquiryForm.jsx'
 import MyInquiriesList from './MyInquiriesList.jsx'
 import './customer-center.css'

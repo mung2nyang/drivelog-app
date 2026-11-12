@@ -4,10 +4,10 @@ import { pathToFileURL } from 'node:url'
 
 register(pathToFileURL('./src/testSupport/jsxLoaderHook.mjs').href, import.meta.url)
 
-import '../testSupport/setupDom.js'
+import '../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { mock, test } from 'node:test'
-import { createFakeSupabase, wait } from '../testSupport/fakeSupabaseClient.js'
+import { createFakeSupabase, wait } from '../testSupport/fakeSupabaseClient.ts'
 
 const { fakeSupabase, handlers, emptyOkHandlers } = createFakeSupabase()
 fakeSupabase.auth.getSession = async () => ({ data: { session: null }, error: null })

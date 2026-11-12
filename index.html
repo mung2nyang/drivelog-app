@@ -3,26 +3,22 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <!-- 로드맵 11번 1단계: 홈 화면 앱(주소창 없이 열기). 상태바 색은 아래 테마 스크립트가 다크일 때 바꿈. -->
     <link rel="manifest" href="/manifest.webmanifest" />
     <meta name="theme-color" content="#eef1f5" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script>
-      // 로드맵 18-B: 아이폰은 글씨 16px 미만 입력칸을 누르면 저절로 확대 — 아이폰·아이패드만 막음(두 손가락 확대는 iOS가 계속 허용).
       (function () {
         var ios = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
         if (ios) document.querySelector('meta[name="viewport"]').setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1')
       })()
     </script>
     <title>운행일지</title>
-    <!-- 로딩 표시 "운행일지"도 홈 배너와 같은 Jua 글꼴 — 기다리지 않게 불러옴(print → all) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&display=swap" media="print" onload="this.media='all'" />
     <script>
-      // 10-L: 앱 파일이 오기 전부터 마지막 테마(없으면 휴대폰 다크 설정)로 — 다크 사용자 눈부심 방지.
       (function () {
         var theme = null
         try { theme = localStorage.getItem('lastTheme') } catch (e) { theme = null }
@@ -34,7 +30,6 @@
       })()
     </script>
     <style>
-      /* 10-L 로딩 표시 "🚚 운행일지 ● ● ●" — 모양 정의는 여기 한 곳(LoadingScreen.jsx도 같은 클래스). 색은 variables.css 값과 같게. */
       html { background: #eef1f5; }
       html[data-theme="dark"] { background: #121212; }
       .boot-loading {

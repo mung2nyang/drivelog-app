@@ -1,9 +1,9 @@
 // 슬라이스 D — 로그인 메인 일지의 클라우드 Fail-Fast 저장(commitMainDayLogToCloud)을
 // UI가 타는 실제 코드 경로(useDayDraft.commitNow가 부르는 함수)로 직접 검증한다.
-import '../../testSupport/setupDom.js'
+import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { describe, test } from 'node:test'
-import { createFakeSupabase } from '../../testSupport/fakeSupabaseClient.js'
+import { createFakeSupabase } from '../../testSupport/fakeSupabaseClient.ts'
 
 const { fakeSupabase, handlers, resetHandlers, countOf, emptyOkHandlers } = createFakeSupabase()
 const { mock } = await import('node:test')

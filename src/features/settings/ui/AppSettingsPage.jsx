@@ -7,12 +7,12 @@ import { resolveDriverOrPlateLabel } from '../../../domain/driverManagementConte
 import { useHydrationLock } from '../../../data/store/useHydrationLock.ts'
 import SwitchRow from '../../../shared/ui/SwitchRow.tsx'
 import FixedRouteBlock from './FixedRouteBlock.jsx'
-import PageHeader from '../../../shared/ui/PageHeader.jsx'
+import PageHeader from '../../../shared/ui/PageHeader.tsx'
 import AppSettingsBackupSection from './AppSettingsBackupSection.jsx'
 import './app-settings.css'
 import './app-settings-groups.css'
-import { SERVER_SAVE_FAIL } from '../../../shared/utils/failureMessages.js'
-import { useToast } from '../../../shared/hooks/useToast.js'
+import { SERVER_SAVE_FAIL } from '../../../shared/utils/failureMessages.ts'
+import { useToast } from '../../../shared/hooks/useToast.ts'
 import { useSession } from '../../../data/cloud/sessionContext.ts'
 
 /** @typedef {import('../../../domain/financeTypes.ts').FinanceSettings} FinanceSettings */

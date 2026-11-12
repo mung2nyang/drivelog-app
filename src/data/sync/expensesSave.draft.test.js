@@ -1,6 +1,6 @@
 // 로드맵 101-B — 두 화면이 같이 쓰는 saveExpenseDraft·deleteExpense: 최신 목록을 다시 읽어 고치고, 알림 문구를 돌려준다.
-import '../../testSupport/stubSupabaseClient.js'
-import '../../testSupport/setupDom.js'
+import '../../testSupport/stubSupabaseClient.ts'
+import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { mock, test } from 'node:test'
 
@@ -8,7 +8,7 @@ const { saveExpenseDraft, deleteExpense } = await import('./expensesSave.ts')
 const { commitExpenses } = await import('../store/commitHelpers.ts')
 const { getState } = await import('../store/app-store.ts')
 const { readJsonKey, storageKeyFor } = await import('../store/persist.ts')
-const { DEVICE_SAVE_FAIL } = await import('../../shared/utils/failureMessages.js')
+const { DEVICE_SAVE_FAIL } = await import('../../shared/utils/failureMessages.ts')
 
 const e1 = { id: 'e1', kind: /** @type {'maint'} */ ('maint'), date: '2026-08-01', name: '오일', category: '엔진/미션', payment: '카드', cost: 10000 }
 

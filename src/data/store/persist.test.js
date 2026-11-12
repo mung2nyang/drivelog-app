@@ -1,4 +1,4 @@
-import '../../testSupport/setupDom.js'
+import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { describe, mock, test } from 'node:test'
 import { PERSIST_KEYS, readJsonKey, readLogWorkData, storageKeyFor, storageKeyForLog, writeJsonKey } from './persist.ts'

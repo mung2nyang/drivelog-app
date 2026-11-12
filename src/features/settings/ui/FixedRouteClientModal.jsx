@@ -2,16 +2,16 @@
 // 고정 노선 거래처 연결 팝업 — 거래처 고르기·1회 단가·파렛트 단가·저장/연결 해제. 저장은 거래처 창과 같은 requestClientSave.
 import { useState } from 'react'
 import { createPortal } from 'react-dom'
-import AppDropdown from '../../../shared/ui/AppDropdown.jsx'
-import ConfirmModal from '../../../shared/ui/ConfirmModal.jsx'
+import AppDropdown from '../../../shared/ui/AppDropdown.tsx'
+import ConfirmModal from '../../../shared/ui/ConfirmModal.tsx'
 import { clientToDraft } from '../../../domain/clientDraft.ts'
 import { formatCurrencyInput } from '../../../domain/money.ts'
-import CurrencyInput from '../../../shared/ui/CurrencyInput.jsx'
+import CurrencyInput from '../../../shared/ui/CurrencyInput.tsx'
 import { requestClientSave } from '../../../data/sync/clientMutations.ts'
 import { getCloudUserId } from '../../../data/cloud/cloudSession.ts'
-import ModalShell from '../../../shared/ui/ModalShell.jsx'
-import FieldError, { focusField } from '../../../shared/ui/FieldError.jsx'
-import { useToast } from '../../../shared/hooks/useToast.js'
+import ModalShell from '../../../shared/ui/ModalShell.tsx'
+import FieldError, { focusField } from '../../../shared/ui/FieldError.tsx'
+import { useToast } from '../../../shared/hooks/useToast.ts'
 import { useSession } from '../../../data/cloud/sessionContext.ts'
 
 /** @typedef {import('../../../domain/clientTypes.ts').ClientLike} ClientLike */

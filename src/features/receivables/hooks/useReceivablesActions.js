@@ -12,8 +12,8 @@ import { getReceivableItems } from '../../../domain/finance.ts'
 import { groupItems } from '../../../domain/receivables.ts'
 import { formatWon } from '../../../domain/money.ts'
 import { checkPartialAmount } from '../../../domain/payments.ts'
-import { focusField } from '../../../shared/ui/FieldError.jsx'
-import { useToast } from '../../../shared/hooks/useToast.js'
+import { focusField } from '../../../shared/ui/FieldError.tsx'
+import { useToast } from '../../../shared/hooks/useToast.ts'
 
 /** @typedef {import('../../../domain/financeReceivables.ts').ReceivableItemLike} ReceivableItemLike */
 /** @typedef {import('../../../domain/financeTypes.ts').WorkDataByLogId} WorkDataByLogId */

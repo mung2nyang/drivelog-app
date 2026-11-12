@@ -13,7 +13,7 @@ import {
   updateDriverLinkFields,
   upsertDriverLinkViaRpc,
 } from './driverLinkRpc.ts'
-import { SERVER_SAVE_FAIL, SESSION_CHANGED_FAIL } from '../../shared/utils/failureMessages.js'
+import { SERVER_SAVE_FAIL, SESSION_CHANGED_FAIL } from '../../shared/utils/failureMessages.ts'
 
 const SAVE_FAIL_TOAST = SERVER_SAVE_FAIL
 const SESSION_CHANGED_MESSAGE = SESSION_CHANGED_FAIL

@@ -1,8 +1,8 @@
 // 기사 차량 번호를 바꾸면 그 차량 세금계산서도 새 번호로 옮겨, 그 뒤 계산서 저장이 되고 지난 발급 완료분이 새 번호 목록에 남는다.
-import '../../testSupport/setupDom.js'
+import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { afterEach, describe, mock, test } from 'node:test'
-import { createFakeSupabase } from '../../testSupport/fakeSupabaseClient.js'
+import { createFakeSupabase } from '../../testSupport/fakeSupabaseClient.ts'
 
 const { fakeSupabase, handlers, resetHandlers, countOf, emptyOkHandlers } = createFakeSupabase()
 mock.module('../cloud/supabaseClient.ts', { namedExports: { supabase: fakeSupabase } })

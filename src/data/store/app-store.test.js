@@ -2,8 +2,8 @@
 // 끌어오면 mock.module()이 실행되기 전에 이미 모듈 그래프 전체가 링크돼 버려서 스텁이
 // 안 먹는다(ESM은 최상위 정적 import를 전부 링크한 뒤에야 각 모듈의 본문을 실행한다) —
 // 그래서 여기서도 cloudSync.test.js와 마찬가지로 mock.module 등록 뒤 동적 import를 쓴다.
-import { resetStubSupabaseCallCounts, stubSupabaseCallCounts } from '../../testSupport/stubSupabaseClient.js'
-import '../../testSupport/setupDom.js'
+import { resetStubSupabaseCallCounts, stubSupabaseCallCounts } from '../../testSupport/stubSupabaseClient.ts'
+import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { describe, test } from 'node:test'
 

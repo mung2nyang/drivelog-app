@@ -1,8 +1,8 @@
 // 로드맵 65 — 로그인 일지 서버 저장은 한 번에 하나, 도는 중에 고치면 끝난 뒤 최신 draft로 한 번 더.
-import '../../../testSupport/setupDom.js'
+import '../../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { mock, test } from 'node:test'
-import { createFakeSupabase } from '../../../testSupport/fakeSupabaseClient.js'
+import { createFakeSupabase } from '../../../testSupport/fakeSupabaseClient.ts'
 
 const { fakeSupabase, handlers, resetHandlers, emptyOkHandlers } = createFakeSupabase()
 mock.module('../../../data/cloud/supabaseClient.ts', { namedExports: { supabase: fakeSupabase } })
@@ -10,7 +10,7 @@ mock.module('../../../data/cloud/supabaseClient.ts', { namedExports: { supabase:
 Reflect.set(globalThis, 'IS_REACT_ACT_ENVIRONMENT', true)
 
 const React = await import('react')
-const { withToast } = await import('../../../testSupport/withToast.js')
+const { withToast } = await import('../../../testSupport/withToast.ts')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
 const { useDayDraft } = await import('./useDayDraft.js')

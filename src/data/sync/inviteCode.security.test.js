@@ -2,7 +2,7 @@
 // 10-S-2: 초대코드 10자리 형식·예전 코드 유지·문자 내용·수락 실패 문구.
 import assert from 'node:assert/strict'
 import { describe, mock, test } from 'node:test'
-import { createFakeSupabase } from '../../testSupport/fakeSupabaseClient.js'
+import { createFakeSupabase } from '../../testSupport/fakeSupabaseClient.ts'
 
 const { fakeSupabase, handlers, resetHandlers } = createFakeSupabase()
 Object.assign(fakeSupabase.auth, {

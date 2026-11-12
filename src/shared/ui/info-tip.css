@@ -1,4 +1,4 @@
-/* (i) 설명 버튼·(i) 아래 뜨는 설명 카드. InfoTip.jsx가 import(정산 카드·차량 폼 등 공용). */
+/* (i) 설명 버튼·(i) 아래 뜨는 설명 카드. InfoTip.tsx가 import(정산 카드·차량 폼 등 공용). */
 .summary-info-label {
   display: inline-flex;
   align-items: center;

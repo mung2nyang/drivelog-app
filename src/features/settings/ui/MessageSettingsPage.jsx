@@ -9,11 +9,11 @@ import {
 import { useSession } from '../../../data/cloud/sessionContext.ts'
 import { useOwnerSettings } from '../../../data/store/ownerDataHooks.ts'
 import { savePracticeSettings } from '../../../data/sync/settingsSave.ts'
-import PageHeader from '../../../shared/ui/PageHeader.jsx'
-import FieldError, { focusField, invalidProps } from '../../../shared/ui/FieldError.jsx'
+import PageHeader from '../../../shared/ui/PageHeader.tsx'
+import FieldError, { focusField, invalidProps } from '../../../shared/ui/FieldError.tsx'
 import './message-settings.css'
-import { useToast } from '../../../shared/hooks/useToast.js'
-import { SERVER_SAVE_FAIL } from '../../../shared/utils/failureMessages.js'
+import { useToast } from '../../../shared/hooks/useToast.ts'
+import { SERVER_SAVE_FAIL } from '../../../shared/utils/failureMessages.ts'
 
 /**
  * @param {Object} props

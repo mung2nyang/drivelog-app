@@ -3,12 +3,12 @@
 import { useState } from 'react'
 import { carToBusinessForm } from '../../../domain/carBusinessInfo.ts'
 import { BIZ_NUMBER_PLACEHOLDER, formatBizNumber } from '../../../domain/formatPhone.ts'
-import BizNumberHint from '../../../shared/ui/BizNumberHint.jsx'
-import ClearableInput from '../../../shared/ui/ClearableInput.jsx'
+import BizNumberHint from '../../../shared/ui/BizNumberHint.tsx'
+import ClearableInput from '../../../shared/ui/ClearableInput.tsx'
 import { requestCarBusinessInfoSave } from '../../../data/sync/vehicleMutations.ts'
 import { getCloudUserId } from '../../../data/cloud/cloudSession.ts'
 import './car-business-info.css'
-import { useToast } from '../../../shared/hooks/useToast.js'
+import { useToast } from '../../../shared/hooks/useToast.ts'
 import { useSession } from '../../../data/cloud/sessionContext.ts'
 
 /** @typedef {import('../../../domain/carBusinessInfo.ts').CarBusinessForm} CarBusinessForm */

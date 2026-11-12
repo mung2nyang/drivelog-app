@@ -16,7 +16,7 @@ import {
 } from './directMutations.ts'
 import { StaleSessionError } from './saveErrors.ts'
 import { commitClients, commitDrivers } from '../store/commitHelpers.ts'
-import { SERVER_SAVE_FAIL, SESSION_CHANGED_FAIL } from '../../shared/utils/failureMessages.js'
+import { SERVER_SAVE_FAIL, SESSION_CHANGED_FAIL } from '../../shared/utils/failureMessages.ts'
 import type { ClientLike } from '../../domain/clientTypes.ts'
 import type { DriverRecord } from '../../domain/driverTypes.ts'
 

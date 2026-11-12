@@ -5,7 +5,7 @@ import { pathToFileURL } from 'node:url'
 
 register(pathToFileURL('./src/testSupport/jsxLoaderHook.mjs').href, import.meta.url)
 
-import '../../testSupport/setupDom.js'
+import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 
@@ -14,7 +14,7 @@ Reflect.set(globalThis, 'IS_REACT_ACT_ENVIRONMENT', true)
 const React = await import('react')
 const { createRoot } = await import('react-dom/client')
 const { act, useState } = React
-const { default: ClearableInput } = await import('./ClearableInput.jsx')
+const { default: ClearableInput } = await import('./ClearableInput.tsx')
 const { formatPhoneNumber } = await import('../../domain/formatPhone.ts')
 
 /** @param {{ initial: string, format?: (value: string) => string, seen: Array<string> }} props */

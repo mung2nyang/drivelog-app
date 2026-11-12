@@ -3,12 +3,12 @@ import { useState } from 'react'
 import { FUEL_TYPES, MAINT_CATEGORIES, MISC_CATEGORIES, fuelAmountUnit } from '../../../domain/expenses.ts'
 import { checkExpenseDraft } from '../../../domain/expenseDraft.ts'
 import { formatCurrencyInput, parseCurrencyValue } from '../../../domain/money.ts'
-import TemporalInput from '../../../shared/ui/TemporalInput.jsx'
-import ClearableInput from '../../../shared/ui/ClearableInput.jsx'
-import CurrencyInput from '../../../shared/ui/CurrencyInput.jsx'
-import FieldError, { focusField, invalidProps } from '../../../shared/ui/FieldError.jsx'
+import TemporalInput from '../../../shared/ui/TemporalInput.tsx'
+import ClearableInput from '../../../shared/ui/ClearableInput.tsx'
+import CurrencyInput from '../../../shared/ui/CurrencyInput.tsx'
+import FieldError, { focusField, invalidProps } from '../../../shared/ui/FieldError.tsx'
 import './expense-form.css'
-import ModalShell from '../../../shared/ui/ModalShell.jsx'
+import ModalShell from '../../../shared/ui/ModalShell.tsx'
 
 /** @typedef {import('../../../domain/expenseTypes.ts').ExpenseDraft} ExpenseDraft */
 /** @typedef {NonNullable<ReturnType<typeof checkExpenseDraft>>} ExpenseProblem */

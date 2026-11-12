@@ -2,10 +2,10 @@
 // 리포트 "세부" 화면 + 거래처 선택 모달.
 import { formatWon } from '../../../domain/money.ts'
 import { dash } from '../api/report.js'
-import AppDropdown from '../../../shared/ui/AppDropdown.jsx'
+import AppDropdown from '../../../shared/ui/AppDropdown.tsx'
 import './report.css'
 import './report-pdf-export.css'
-import ModalShell from '../../../shared/ui/ModalShell.jsx'
+import ModalShell from '../../../shared/ui/ModalShell.tsx'
 
 /**
  * @typedef {Object} DetailReportItem

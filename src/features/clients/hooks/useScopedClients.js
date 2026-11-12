@@ -5,7 +5,7 @@ import { requestClientSave } from '../../../data/sync/clientMutations.ts'
 import { requestClientDeletion } from '../../../data/sync/directMutationActions.ts'
 import { getCloudUserId } from '../../../data/cloud/cloudSession.ts'
 import { useOwnerClients } from '../../../data/store/ownerDataHooks.ts'
-import { useToast } from '../../../shared/hooks/useToast.js'
+import { useToast } from '../../../shared/hooks/useToast.ts'
 import useAssistantClient from './useAssistantClient.js'
 
 /** @typedef {import('../../../domain/clientTypes.ts').ClientDraft} ClientDraft */

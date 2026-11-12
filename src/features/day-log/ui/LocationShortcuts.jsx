@@ -1,5 +1,5 @@
 // @ts-check
-import { StarIcon } from '../../../shared/ui/icons.jsx'
+import { StarIcon } from '../../../shared/ui/icons.tsx'
 import './location-shortcuts.css'
 
 /**

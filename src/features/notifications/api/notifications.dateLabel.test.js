@@ -1,7 +1,7 @@
 // @ts-check
 // 알림 화면 — 알림마다 날짜 줄(dateLabel)과 끈 종류(notifOff) 빼기.
-import '../../../testSupport/stubSupabaseClient.js'
-import '../../../testSupport/setupDom.js'
+import '../../../testSupport/stubSupabaseClient.ts'
+import '../../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { afterEach, beforeEach, describe, mock, test } from 'node:test'
 import { normalizeSettings } from '../../../domain/practiceSettings.ts'

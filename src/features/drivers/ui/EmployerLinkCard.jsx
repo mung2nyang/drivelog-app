@@ -6,9 +6,9 @@ import { requestDriverUnlinkAction } from '../../../data/sync/driverUnlink.ts'
 import { hydrateFromSupabase } from '../../../data/hydrate/hydrate.ts'
 import { useOwnerDrivers, useOwnerProfile } from '../../../data/store/ownerDataHooks.ts'
 import DriverUnlinkControls from './DriverUnlinkControls.jsx'
-import { SkeletonLines } from '../../../shared/ui/Skeleton.jsx'
+import { SkeletonLines } from '../../../shared/ui/Skeleton.tsx'
 import './driver-connection.css'
-import { useToast } from '../../../shared/hooks/useToast.js'
+import { useToast } from '../../../shared/hooks/useToast.ts'
 import { useSession } from '../../../data/cloud/sessionContext.ts'
 
 /** @typedef {import('../../../data/sync/syncTypes.ts').AppSession} AppSession */

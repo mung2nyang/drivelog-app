@@ -1,7 +1,7 @@
 // owner-state.js → app-store.js → cloudSync.js → supabaseClient.js로 이어지는 정적 import
 // 체인이 있어서, app-store.test.js와 같은 이유로 mock.module 등록 뒤 동적 import를 쓴다.
-import { resetStubSupabaseCallCounts, stubSupabaseCallCounts } from '../../testSupport/stubSupabaseClient.js'
-import '../../testSupport/setupDom.js'
+import { resetStubSupabaseCallCounts, stubSupabaseCallCounts } from '../../testSupport/stubSupabaseClient.ts'
+import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { describe, test } from 'node:test'
 

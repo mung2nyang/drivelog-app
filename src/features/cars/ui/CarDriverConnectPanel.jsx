@@ -2,7 +2,7 @@
 /** @typedef {import('../../../domain/driverTypes.ts').DriverRecord} DriverRecord */
 import { formatInviteCode, generateInviteCode } from '../../../domain/drivers.ts'
 import { DRIVER_CAR_LIMIT_MESSAGE } from '../../../domain/cars.ts'
-import InfoTip from '../../../shared/ui/InfoTip.jsx'
+import InfoTip from '../../../shared/ui/InfoTip.tsx'
 import '../../drivers/ui/driver-connection.css'
 
 const LINK_INFO = `기사님이 자기 휴대폰에서 로그인해 이 차량 운행일지를 직접 씁니다.

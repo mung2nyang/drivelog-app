@@ -3,8 +3,8 @@
 // "삭제 대기 중이던 날짜에 재입력 -> tombstone 해제"를 정확히 workData 커밋과 같은
 // 원자적 트랜잭션(commitBatch)으로 묶는지, 그리고 평범한 편집(삭제도 재입력도
 // 아닌)에서는 tombstone 도메인을 건드리지 않는지를 실측한다.
-import '../../testSupport/stubSupabaseClient.js'
-import '../../testSupport/setupDom.js'
+import '../../testSupport/stubSupabaseClient.ts'
+import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { mock, test } from 'node:test'
 

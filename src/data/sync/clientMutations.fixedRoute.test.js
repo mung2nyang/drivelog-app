@@ -1,9 +1,9 @@
 // @ts-check
 // 로드맵 6 — 고정노선 1곳 규칙으로 자동 해제된 거래처도 로그인 저장 때 서버에 함께 올라가는지.
-import '../../testSupport/setupDom.js'
+import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { beforeEach, describe, mock, test } from 'node:test'
-import { createFakeSupabase } from '../../testSupport/fakeSupabaseClient.js'
+import { createFakeSupabase } from '../../testSupport/fakeSupabaseClient.ts'
 
 const { fakeSupabase, handlers, resetHandlers, emptyOkHandlers } = createFakeSupabase()
 mock.module('../cloud/supabaseClient.ts', { namedExports: { supabase: fakeSupabase } })
@@ -14,7 +14,7 @@ const { setHydration } = await import('../store/app-store.ts')
 
 /** @typedef {import('../../domain/clientTypes.ts').ClientLike} ClientLike */
 
-/** @param {Parameters<import('../../testSupport/fakeSupabaseClient.js').FakeHandler>[0]} value @param {string} key */
+/** @param {Parameters<import('../../testSupport/fakeSupabaseClient.ts').FakeHandler>[0]} value @param {string} key */
 function field(value, key) {
   return value && typeof value === 'object' && !Array.isArray(value) ? value[key] : undefined
 }

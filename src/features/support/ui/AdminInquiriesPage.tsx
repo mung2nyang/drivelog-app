@@ -1,9 +1,9 @@
 // 관리자 화면 — 문의 목록·답변. 관리자가 아니면 홈으로.
 import { useEffect, useState } from 'react'
 import { Navigate } from 'react-router-dom'
-import PageHeader from '../../../shared/ui/PageHeader.jsx'
-import { SkeletonLines } from '../../../shared/ui/Skeleton.jsx'
-import { useToast } from '../../../shared/hooks/useToast.js'
+import PageHeader from '../../../shared/ui/PageHeader.tsx'
+import { SkeletonLines } from '../../../shared/ui/Skeleton.tsx'
+import { useToast } from '../../../shared/hooks/useToast.ts'
 import { useIsAdmin } from '../../../data/cloud/adminRole.ts'
 import { fetchAdminInquiries } from '../api/adminInquiries.ts'
 import type { AdminInquiry } from '../api/adminInquiries.ts'

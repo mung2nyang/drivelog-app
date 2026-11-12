@@ -1,6 +1,6 @@
 // 로드맵 110-B — 일지 저장 실패 날짜(110-A 목록)마다 알림: 맨 앞·날짜 오래된 순, 그 날짜 일지로, 닫기·끄기 없음.
-import '../../../testSupport/stubSupabaseClient.js'
-import '../../../testSupport/setupDom.js'
+import '../../../testSupport/stubSupabaseClient.ts'
+import '../../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 

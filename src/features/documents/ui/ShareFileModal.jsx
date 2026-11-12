@@ -2,9 +2,9 @@
 // 파일 보내기 공용 창 — 카카오톡(파일+문구 공유)·문자(파일 저장 뒤 문자 앱) × PDF·이미지. 운송비 내역서·일상점검표가 같이 쓴다.
 import './report.css'
 import './report-pdf-export.css'
-import ModalShell from '../../../shared/ui/ModalShell.jsx'
+import ModalShell from '../../../shared/ui/ModalShell.tsx'
 import { buildSmsHref } from '../../../domain/smsHref.ts'
-import { useToast } from '../../../shared/hooks/useToast.js'
+import { useToast } from '../../../shared/hooks/useToast.ts'
 import { saveFileToDevice } from '../../../shared/utils/saveFile.ts'
 import { shareFileFromDevice } from '../../../shared/utils/shareFile.ts'
 

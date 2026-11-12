@@ -1,5 +1,5 @@
 // @ts-check
-import '../testSupport/stubSupabaseClient.js'
+import '../testSupport/stubSupabaseClient.ts'
 import assert from 'node:assert/strict'
 import { describe, test } from 'node:test'
 import { ownerKeyFromSession } from '../data/cloud/appSession.ts'

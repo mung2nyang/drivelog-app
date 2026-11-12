@@ -1,6 +1,6 @@
 // @ts-check
 // 9-D: PDF·이미지 방향 고르기 — 안 넘기면 세로(운송비 내역서 그대로), 가로를 넘기면 가로(일상점검표 법정 서식).
-import '../../../testSupport/setupDom.js'
+import '../../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { mock, test } from 'node:test'
 

@@ -1,6 +1,6 @@
 // @ts-check
-import '../../../testSupport/stubSupabaseClient.js'
-import '../../../testSupport/setupDom.js'
+import '../../../testSupport/stubSupabaseClient.ts'
+import '../../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { afterEach, beforeEach, describe, mock, test } from 'node:test'
 import { todayKey } from '../../../domain/expenses.ts'

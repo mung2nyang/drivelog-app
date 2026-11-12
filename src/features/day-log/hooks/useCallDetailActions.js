@@ -7,7 +7,7 @@ import { togglePinnedLocation as togglePinnedLocationIn } from '../../../domain/
 import { addPlatformPreset, removePlatformPreset } from '../../../domain/platformPresets.ts'
 import { toggleCallPaymentStatus } from '../../../domain/payments.ts'
 import { savePracticeSettings } from '../../../data/sync/settingsSave.ts'
-import { useToast } from '../../../shared/hooks/useToast.js'
+import { useToast } from '../../../shared/hooks/useToast.ts'
 import { useSession } from '../../../data/cloud/sessionContext.ts'
 
 /** @typedef {import('../ui/dayLogTypes.js').ClientLike} ClientLike */

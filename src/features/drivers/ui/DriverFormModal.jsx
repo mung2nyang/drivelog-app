@@ -5,12 +5,12 @@ import { checkDriverDraft } from '../../../domain/drivers.ts'
 import { buildDriverInviteSmsHref } from '../api/driverInviteSms.js'
 import { formatInviteCode, generateInviteCode } from '../../../domain/drivers.ts'
 import { formatPhoneNumber } from '../../../domain/formatPhone.ts'
-import ClearableInput from '../../../shared/ui/ClearableInput.jsx'
-import TemporalInput from '../../../shared/ui/TemporalInput.jsx'
-import FieldError, { focusField, invalidProps } from '../../../shared/ui/FieldError.jsx'
+import ClearableInput from '../../../shared/ui/ClearableInput.tsx'
+import TemporalInput from '../../../shared/ui/TemporalInput.tsx'
+import FieldError, { focusField, invalidProps } from '../../../shared/ui/FieldError.tsx'
 import './driver-connection.css'
-import ModalShell from '../../../shared/ui/ModalShell.jsx'
-import { useToast } from '../../../shared/hooks/useToast.js'
+import ModalShell from '../../../shared/ui/ModalShell.tsx'
+import { useToast } from '../../../shared/hooks/useToast.ts'
 
 /** @typedef {import('../../../domain/drivers.ts').DriverDraft} DriverDraft */
 /** @typedef {import('../../../domain/driverTypes.ts').DriverRecord} DriverRecord */

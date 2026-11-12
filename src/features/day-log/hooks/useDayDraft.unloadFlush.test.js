@@ -1,6 +1,6 @@
 // 로드맵 72 — 고친 직후(0.6초 대기 중) 앱을 닫거나 숨기면 기다리지 않고 바로 저장한다.
-import '../../../testSupport/stubSupabaseClient.js'
-import '../../../testSupport/setupDom.js'
+import '../../../testSupport/stubSupabaseClient.ts'
+import '../../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { mock, test } from 'node:test'
 

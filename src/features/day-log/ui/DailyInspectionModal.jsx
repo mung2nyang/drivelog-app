@@ -3,8 +3,8 @@
 // 연필로 들어온 수정 중 [취소]는 보기로 돌아가고, 처음 입력 중 [취소]는 창을 닫는다.
 import { useEffect, useRef, useState } from 'react'
 import { DAILY_INSPECTION_SECTIONS, INSPECTION_RESULT_LABEL, allGoodItems, isInspectionComplete, isInspectionEmpty } from '../../../domain/dailyInspectionItems.ts'
-import ModalShell from '../../../shared/ui/ModalShell.jsx'
-import { useToast } from '../../../shared/hooks/useToast.js'
+import ModalShell from '../../../shared/ui/ModalShell.tsx'
+import { useToast } from '../../../shared/hooks/useToast.ts'
 
 /** @typedef {import('../../../domain/dailyInspectionItems.ts').InspectionItems} InspectionItems */
 /** @typedef {import('../../../data/sync/dailyInspections.ts').DailyInspection} DailyInspection */

@@ -13,7 +13,7 @@ import {
 } from '../cloud/cloudSession.ts'
 import { deleteExpenseRows, syncExpenseItemsForVehicle, upsertExpenseItemsForVehicle } from './syncExpenseItems.ts'
 import type { ExpenseRowRef } from './syncExpenseItems.ts'
-import { NO_VEHICLE_SAVE_FAIL, saveFailMessage } from '../../shared/utils/failureMessages.js'
+import { NO_VEHICLE_SAVE_FAIL, saveFailMessage } from '../../shared/utils/failureMessages.ts'
 import { hasNoCloudVehicle } from './mainDayLogRouting.ts'
 import type { ExpenseDraft, ExpenseItem } from '../../domain/expenseTypes.ts'
 

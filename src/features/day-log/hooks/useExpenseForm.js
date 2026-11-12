@@ -7,7 +7,7 @@ import { emptyExpenseDraft, expenseToDraft } from '../../../domain/expenseDraft.
 import { useOwnerCars, useOwnerExpenses } from '../../../data/store/ownerDataHooks.ts'
 import { useSession } from '../../../data/cloud/sessionContext.ts'
 import { defaultFuelTypeForLog } from '../../../domain/cars.ts'
-import { useToast } from '../../../shared/hooks/useToast.js'
+import { useToast } from '../../../shared/hooks/useToast.ts'
 
 /** @typedef {import('../ui/dayLogTypes.js').ExpenseItem} ExpenseItem */
 

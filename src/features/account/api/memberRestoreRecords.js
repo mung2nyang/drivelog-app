@@ -9,7 +9,7 @@ import { saveClientsToCloud } from '../../../data/sync/clientCloudSave.ts'
 import { getCloudUserId } from '../../../data/cloud/cloudSession.ts'
 import { saveExpenses } from '../../../data/sync/expensesSave.ts'
 import { saveInvoices } from '../../../data/sync/invoicesSave.ts'
-import { SERVER_SAVE_FAIL } from '../../../shared/utils/failureMessages.js'
+import { SERVER_SAVE_FAIL } from '../../../shared/utils/failureMessages.ts'
 
 /** @typedef {import('../../../domain/jsonTypes.ts').JsonValue} JsonValue */
 /** @typedef {import('../../../domain/clientTypes.ts').ClientLike} ClientLike */

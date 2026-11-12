@@ -4,8 +4,8 @@ import { pathToFileURL } from 'node:url'
 
 register(pathToFileURL('./src/testSupport/jsxLoaderHook.mjs').href, import.meta.url)
 
-import '../../../testSupport/stubSupabaseClient.js'
-import '../../../testSupport/setupDom.js'
+import '../../../testSupport/stubSupabaseClient.ts'
+import '../../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { before, test } from 'node:test'
 
@@ -14,7 +14,7 @@ globalThis.IS_REACT_ACT_ENVIRONMENT = true
 const React = await import('react')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
-const { withSession } = await import('../../../testSupport/withSession.js')
+const { withSession } = await import('../../../testSupport/withSession.ts')
 const { supabase } = await import('../../../data/cloud/supabaseClient.ts')
 const { commitCars, commitClients, commitLogWorkData, commitSettings } = await import('../../../data/store/commitHelpers.ts')
 const { normalizeSettings } = await import('../../../domain/practiceSettings.ts')

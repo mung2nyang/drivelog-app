@@ -1,6 +1,6 @@
 // 로드맵 24-E·24-E2 — 읽어 주기: xAI 소리를 먼저 틀고, 못 받거나 못 틀면 휴대폰 목소리(한국어)로 한 번.
 // 새로 읽으면 앞 것 멈춤, [멈추기]·화면이 사라지면 멈춤, 둘 다 없으면 조용히.
-import '../../../testSupport/setupDom.js'
+import '../../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { mock, test } from 'node:test'
 

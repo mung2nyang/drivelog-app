@@ -7,7 +7,7 @@ import {
   captureSession,
 } from '../../../data/cloud/cloudSession.ts'
 import { StaleSessionError } from '../../../data/sync/saveErrors.ts'
-import { SERVER_SAVE_FAIL, SESSION_CHANGED_FAIL } from '../../../shared/utils/failureMessages.js'
+import { SERVER_SAVE_FAIL, SESSION_CHANGED_FAIL } from '../../../shared/utils/failureMessages.ts'
 
 export type AdminInquiry = {
   id: string

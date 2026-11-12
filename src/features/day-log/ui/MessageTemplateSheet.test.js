@@ -4,8 +4,8 @@ import { pathToFileURL } from 'node:url'
 
 register(pathToFileURL('./src/testSupport/jsxLoaderHook.mjs').href, import.meta.url)
 
-import '../../../testSupport/stubSupabaseClient.js'
-import '../../../testSupport/setupDom.js'
+import '../../../testSupport/stubSupabaseClient.ts'
+import '../../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { beforeEach, describe, test } from 'node:test'
 import {
@@ -19,7 +19,7 @@ const reactActEnv = /** @type {{ IS_REACT_ACT_ENVIRONMENT?: boolean }} */ (globa
 reactActEnv.IS_REACT_ACT_ENVIRONMENT = true
 
 const React = await import('react')
-const { withToast } = await import('../../../testSupport/withToast.js')
+const { withToast } = await import('../../../testSupport/withToast.ts')
 const { act } = React
 const { createRoot } = await import('react-dom/client')
 const {

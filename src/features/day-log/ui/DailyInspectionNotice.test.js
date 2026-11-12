@@ -4,8 +4,8 @@ import { pathToFileURL } from 'node:url'
 
 register(pathToFileURL('./src/testSupport/jsxLoaderHook.mjs').href, import.meta.url)
 
-import '../../../testSupport/stubSupabaseClient.js'
-import '../../../testSupport/setupDom.js'
+import '../../../testSupport/stubSupabaseClient.ts'
+import '../../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { beforeEach, mock, test } from 'node:test'
 
@@ -33,15 +33,15 @@ mock.module('../../../data/sync/dailyInspections.ts', {
 Reflect.set(globalThis, 'IS_REACT_ACT_ENVIRONMENT', true)
 
 const React = await import('react')
-const { withSession } = await import('../../../testSupport/withSession.js')
-const { withToast } = await import('../../../testSupport/withToast.js')
+const { withSession } = await import('../../../testSupport/withSession.ts')
+const { withToast } = await import('../../../testSupport/withToast.ts')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
 const { default: DailyInspectionNotice } = await import('./DailyInspectionNotice.jsx')
 const { commitCars, commitProfile } = await import('../../../data/store/commitHelpers.ts')
 const { EMPTY_PROFILE } = await import('../../../data/sync/profileSave.ts')
 const { allGoodItems } = await import('../../../domain/dailyInspectionItems.ts')
-const { SERVER_SAVE_FAIL } = await import('../../../shared/utils/failureMessages.js')
+const { SERVER_SAVE_FAIL } = await import('../../../shared/utils/failureMessages.ts')
 
 const OWNER = 'di-notice-owner'
 
@@ -340,7 +340,7 @@ test('처음 입력·일부만 고른 수정은 지금처럼 "모든 항목을 �
 })
 
 // 휴대폰 뒤로가기: 점검표 창이 열린 동안 기록 1장을 쌓아 뒤로가기는 창만 닫는다(실제 window.history로).
-const { ConfirmDialogHost } = await import('../../../shared/ui/confirmDialog.jsx')
+const { ConfirmDialogHost } = await import('../../../shared/ui/confirmDialog.tsx')
 const DAY_PATH = '/app/day/2026-10-01'
 const guardOnTop = () => Boolean(Reflect.get(window.history.state || {}, 'modalGuard'))
 const pause = (/** @type {number} */ ms) => new Promise((resolve) => { setTimeout(resolve, ms) })

@@ -1,8 +1,8 @@
 // 서버에 차량이 하나도 없는 로그인 계정: 일지가 어디에도 저장되지 않으면 "저장됨" 대신 실패로 알린다.
-import '../../../testSupport/setupDom.js'
+import '../../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { mock, test } from 'node:test'
-import { createFakeSupabase } from '../../../testSupport/fakeSupabaseClient.js'
+import { createFakeSupabase } from '../../../testSupport/fakeSupabaseClient.ts'
 
 const { fakeSupabase, handlers, resetHandlers, emptyOkHandlers, countOf } = createFakeSupabase()
 mock.module('../../../data/cloud/supabaseClient.ts', { namedExports: { supabase: fakeSupabase } })
@@ -12,7 +12,7 @@ const { beginSessionEpoch, endCloudSession } = await import('../../../data/cloud
 const { setHydration } = await import('../../../data/store/app-store.ts')
 const { commitCars, commitWorkData } = await import('../../../data/store/commitHelpers.ts')
 const { readJsonKey } = await import('../../../data/store/persist.ts')
-const { NO_VEHICLE_SAVE_FAIL } = await import('../../../shared/utils/failureMessages.js')
+const { NO_VEHICLE_SAVE_FAIL } = await import('../../../shared/utils/failureMessages.ts')
 
 test('차량 없는 로그인 계정 일지는 서버·휴대폰에 안 남고 "저장 실패"와 알림 ④', async () => {
   const ownerKey = 'a2-owner'

@@ -1,7 +1,7 @@
-import '../../testSupport/setupDom.js'
+import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { describe, mock, test } from 'node:test'
-import { createFakeSupabase } from '../../testSupport/fakeSupabaseClient.js'
+import { createFakeSupabase } from '../../testSupport/fakeSupabaseClient.ts'
 
 const { fakeSupabase, handlers, resetHandlers, countOf, callsOf, emptyOkHandlers } = createFakeSupabase()
 mock.module('../cloud/supabaseClient.ts', { namedExports: { supabase: fakeSupabase } })
@@ -221,7 +221,7 @@ describe('슬라이스 E — 로그인 프로필·설정·비용·계산서는 �
     endCloudSession()
   })
 
-  /** @param {Parameters<import('../../testSupport/fakeSupabaseClient.js').FakeHandler>[0]} filters @param {string} column */
+  /** @param {Parameters<import('../../testSupport/fakeSupabaseClient.ts').FakeHandler>[0]} filters @param {string} column */
   function filterValue(filters, column) {
     return filters && typeof filters === 'object' && !Array.isArray(filters) ? String(filters[column]) : ''
   }

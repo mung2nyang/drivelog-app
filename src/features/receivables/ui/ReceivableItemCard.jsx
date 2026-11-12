@@ -1,8 +1,8 @@
 // @ts-check
 import { formatWon, formatCurrencyInput, parseCurrencyValue } from '../../../domain/money.ts'
 import { formatWorkMonth, getDdayLabel, receivableItemKey } from '../../../domain/receivables.ts'
-import CurrencyInput from '../../../shared/ui/CurrencyInput.jsx'
-import FieldError, { invalidProps } from '../../../shared/ui/FieldError.jsx'
+import CurrencyInput from '../../../shared/ui/CurrencyInput.tsx'
+import FieldError, { invalidProps } from '../../../shared/ui/FieldError.tsx'
 import { partialInputId } from '../hooks/useReceivablesActions.js'
 import './receivable-item-card.css'
 import './receivable-item-payment.css'
@@ -18,7 +18,7 @@ import './receivable-item-payment.css'
  * @param {boolean} [props.saving]
  * @param {string} [props.partialKey]
  * @param {string} [props.partialAmount]
- * @param {import('../../../shared/ui/FieldError.jsx').FieldProblem|null} [props.partialProblem]
+ * @param {import('../../../shared/ui/FieldError.tsx').FieldProblem|null} [props.partialProblem]
  * @param {string} [props.historyKey]
  * @param {(key: string) => void} [props.onTogglePartial]
  * @param {(value: string) => void} [props.onPartialAmountChange]

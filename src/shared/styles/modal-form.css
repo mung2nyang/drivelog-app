@@ -130,7 +130,7 @@
   text-align: center;
 }
 
-/* 입력이 잘못된 칸(FieldError.jsx) — 화면 읽기용 "잘못됨" 표시를 빨간 테두리로, 커서가 있어도 빨강 */
+/* 입력이 잘못된 칸(FieldError.tsx) — 화면 읽기용 "잘못됨" 표시를 빨간 테두리로, 커서가 있어도 빨강 */
 .input-box[aria-invalid='true'],
 .app-temporal-trigger[aria-invalid='true'],
 .car-commission-input:has([aria-invalid='true']) {

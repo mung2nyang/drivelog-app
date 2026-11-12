@@ -3,10 +3,10 @@ import { pathToFileURL } from 'node:url'
 
 register(pathToFileURL('./src/testSupport/jsxLoaderHook.mjs').href, import.meta.url)
 
-import '../testSupport/setupDom.js'
+import '../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { mock, test } from 'node:test'
-import { clientRowsFor, createFakeSupabase, vehicleRowsFor, wait } from '../testSupport/fakeSupabaseClient.js'
+import { clientRowsFor, createFakeSupabase, vehicleRowsFor, wait } from '../testSupport/fakeSupabaseClient.ts'
 
 const { fakeSupabase, handlers, resetHandlers, emptyOkHandlers, callCounts } = createFakeSupabase()
 fakeSupabase.auth.getSession = async () => ({
@@ -41,7 +41,7 @@ const reactActEnv = /** @type {{ IS_REACT_ACT_ENVIRONMENT?: boolean }} */ (globa
 reactActEnv.IS_REACT_ACT_ENVIRONMENT = true
 
 const React = await import('react')
-const { withSession } = await import('../testSupport/withSession.js')
+const { withSession } = await import('../testSupport/withSession.ts')
 const { act } = React
 const { createRoot } = await import('react-dom/client')
 /** @type {Set<import('react-dom/client').Root>} */

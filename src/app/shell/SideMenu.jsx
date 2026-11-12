@@ -1,6 +1,6 @@
 // @ts-check
 // 사이드메뉴 구성·동작. 아이콘 그림은 side-menu/SideMenuIcons.jsx.
-import { assetPath } from '../../shared/utils/assetPath.js'
+import { assetPath } from '../../shared/utils/assetPath.ts'
 import { CarIcon, PeopleIcon, PersonIcon, GearIcon, FuelIcon, ChartIcon, DocIcon, TruckIcon, SupportIcon, AdminIcon } from './side-menu/SideMenuIcons.jsx'
 import useSideMenuBackGuard from './useSideMenuBackGuard.js'
 

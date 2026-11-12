@@ -3,7 +3,7 @@ import type { PersistDomain } from '../store/persist.ts'
 import type { DomainValue, WorkLogsReplace } from '../store/app-store.ts'
 import type { KeyedWrite } from '../store/atomicPersist.ts'
 import { commitBatch } from '../store/app-store.ts'
-import { DEVICE_SAVE_FAIL } from '../../shared/utils/failureMessages.js'
+import { DEVICE_SAVE_FAIL } from '../../shared/utils/failureMessages.ts'
 
 export const STORAGE_FAIL_TOAST = DEVICE_SAVE_FAIL
 

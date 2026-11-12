@@ -2,9 +2,9 @@
 import { parseCurrencyValue } from '../../../domain/money.ts'
 import { fillMessageTemplatePattern, getMessageTemplatePatterns, MESSAGE_TEMPLATE_TITLES } from '../../../data/sync/messageTemplates.ts'
 import './message-template.css'
-import ModalShell from '../../../shared/ui/ModalShell.jsx'
+import ModalShell from '../../../shared/ui/ModalShell.tsx'
 import { buildSmsHref } from '../../../domain/smsHref.ts'
-import { useToast } from '../../../shared/hooks/useToast.js'
+import { useToast } from '../../../shared/hooks/useToast.ts'
 import { useSession } from '../../../data/cloud/sessionContext.ts'
 import { useOwnerSettings } from '../../../data/store/ownerDataHooks.ts'
 

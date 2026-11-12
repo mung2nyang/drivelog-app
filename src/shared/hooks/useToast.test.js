@@ -1,5 +1,5 @@
 // 로드맵 59-I1 — 알림 함수는 공급자에서 꺼내 쓴다. 공급자 밖에선 오류 없이 아무 일 안 함.
-import '../../testSupport/setupDom.js'
+import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 
@@ -8,7 +8,7 @@ Reflect.set(globalThis, 'IS_REACT_ACT_ENVIRONMENT', true)
 const React = await import('react')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
-const { ToastProvider, useToast } = await import('./useToast.js')
+const { ToastProvider, useToast } = await import('./useToast.ts')
 
 /** @param {import('react').ReactNode} element */
 async function render(element) {

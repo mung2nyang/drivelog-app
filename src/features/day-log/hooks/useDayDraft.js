@@ -9,7 +9,7 @@ import { shouldCommitDayLogToCloud } from '../../../data/sync/mainDayLogRouting.
 import { readOwnerLogWorkData } from '../../../data/store/ownerDataHooks.ts'
 import { createDayDraftSaver } from './dayDraftLifecycle.js'
 import { dayLogReducer, initDayLogState } from './day-log-reducer.js'
-import { useToast } from '../../../shared/hooks/useToast.js'
+import { useToast } from '../../../shared/hooks/useToast.ts'
 
 /**
  * @param {string} ownerKey

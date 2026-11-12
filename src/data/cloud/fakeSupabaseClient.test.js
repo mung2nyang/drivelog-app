@@ -1,7 +1,7 @@
 // 가짜 서버가 받은 호출을 순서대로·조건까지 적어 두는지, 등록 안 한 호출은 오류인지, 기존 filters·countOf는 그대로인지.
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { createFakeSupabase } from '../../testSupport/fakeSupabaseClient.js'
+import { createFakeSupabase } from '../../testSupport/fakeSupabaseClient.ts'
 
 const ok = () => ({ data: null, error: null })
 
@@ -60,10 +60,10 @@ test('엄격 기본값: 등록 안 한 표·동작·서버 함수는 기다리�
 
 test('기존 동작 그대로: 응답 함수가 eq·gte·lte·range 조건을 받고 update는 넘긴 줄도 받는다', async () => {
   const { fakeSupabase, handlers, countOf } = createFakeSupabase()
-  /** @type {Array<import('../../testSupport/fakeSupabaseClient.js').EqFilters>} */
+  /** @type {Array<import('../../testSupport/fakeSupabaseClient.ts').EqFilters>} */
   const seen = []
   handlers.daily_logs = {
-    select: (filters) => { seen.push(/** @type {import('../../testSupport/fakeSupabaseClient.js').EqFilters} */ (filters)); return { data: [], error: null } },
+    select: (filters) => { seen.push(/** @type {import('../../testSupport/fakeSupabaseClient.ts').EqFilters} */ (filters)); return { data: [], error: null } },
     update: (row, filters) => ({ data: [row, filters ?? null], error: null }),
   }
   await fakeSupabase.from('daily_logs').select('id').eq('owner_id', 'u1').gte('work_date', '2026-10-01').lte('work_date', '2026-10-31').range(0, 999)

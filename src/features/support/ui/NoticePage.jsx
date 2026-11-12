@@ -1,6 +1,6 @@
 // @ts-check
 import { useState } from 'react'
-import PageHeader from '../../../shared/ui/PageHeader.jsx'
+import PageHeader from '../../../shared/ui/PageHeader.tsx'
 import './customer-center.css'
 
 // 새 공지는 맨 앞에 추가.

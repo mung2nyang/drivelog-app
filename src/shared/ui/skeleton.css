@@ -1,4 +1,4 @@
-/* 뼈대(Skeleton.jsx) — 일상점검 안내 줄 뼈대(daily-inspection-loading.css)와 같은 색·빛. */
+/* 뼈대(Skeleton.tsx) — 일상점검 안내 줄 뼈대(daily-inspection-loading.css)와 같은 색·빛. */
 /* 마이페이지·매출 뼈대 크기는 mypage.css·revenue.css 값을 따랐다 — 그쪽 카드 크기를 바꾸면 여기도 같이. */
 .skeleton-lines { display: grid; gap: 10px; padding: 12px 0; }
 .page-skeleton { display: grid; gap: 14px; padding-top: 8px; }

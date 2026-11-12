@@ -6,7 +6,7 @@ import { requestClientTaxInfo } from '../../../data/sync/clientMutations.ts'
 import { getCloudUserId } from '../../../data/cloud/cloudSession.ts'
 import { getTaxInvoiceFlowMeta } from '../../../domain/finance.ts'
 import { invoiceCanIssue, persistInvoiceRecord } from '../../../domain/invoices.ts'
-import { SERVER_SAVE_FAIL } from '../../../shared/utils/failureMessages.js'
+import { SERVER_SAVE_FAIL } from '../../../shared/utils/failureMessages.ts'
 
 const SAVE_FAIL_TOAST = SERVER_SAVE_FAIL
 

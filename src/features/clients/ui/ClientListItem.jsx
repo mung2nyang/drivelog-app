@@ -1,7 +1,7 @@
 // @ts-check
 import { getPaymentTermLabel } from '../../../domain/clients.ts'
-import CardActionButtons from '../../../shared/ui/CardActionButtons.jsx'
-import { StarIcon } from '../../../shared/ui/icons.jsx'
+import CardActionButtons from '../../../shared/ui/CardActionButtons.tsx'
+import { StarIcon } from '../../../shared/ui/icons.tsx'
 
 /**
  * @param {Object} props

@@ -13,7 +13,7 @@ import { readLogWorkData, storageKeyForLog } from '../store/persist.ts'
 import { planPendingLogDiscard } from './logPendingLifecycle.ts'
 import { deleteVehicleFromSupabase } from './directMutations.ts'
 import { StaleSessionError } from './saveErrors.ts'
-import { SERVER_SAVE_FAIL, SESSION_CHANGED_FAIL } from '../../shared/utils/failureMessages.js'
+import { SERVER_SAVE_FAIL, SESSION_CHANGED_FAIL } from '../../shared/utils/failureMessages.ts'
 import type { CarLike } from '../../domain/financeTypes.ts'
 import type { KeyedWrite } from '../store/atomicPersist.ts'
 

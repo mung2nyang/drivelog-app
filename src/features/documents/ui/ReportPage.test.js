@@ -4,8 +4,8 @@ import { pathToFileURL } from 'node:url'
 
 register(pathToFileURL('./src/testSupport/jsxLoaderHook.mjs').href, import.meta.url)
 
-import '../../../testSupport/stubSupabaseClient.js'
-import '../../../testSupport/setupDom.js'
+import '../../../testSupport/stubSupabaseClient.ts'
+import '../../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { mock, test } from 'node:test'
 
@@ -41,8 +41,8 @@ Object.defineProperty(window.HTMLCanvasElement.prototype, 'toBlob', {
 })
 
 const React = await import('react')
-const { withSession } = await import('../../../testSupport/withSession.js')
-const { withToast } = await import('../../../testSupport/withToast.js')
+const { withSession } = await import('../../../testSupport/withSession.ts')
+const { withToast } = await import('../../../testSupport/withToast.ts')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
 const { MemoryRouter } = await import('react-router-dom')

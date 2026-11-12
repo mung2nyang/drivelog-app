@@ -1,5 +1,5 @@
 // 로드맵 110-A — 로그인 일지 저장 실패 날짜 목록(휴대폰, 계정별, 날짜만).
-import '../../testSupport/setupDom.js'
+import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { beforeEach, mock, test } from 'node:test'
 import { addFailedDayLogDate, listFailedDayLogDates, removeFailedDayLogDate, subscribeFailedDayLogDates } from './failedDayLogDates.ts'

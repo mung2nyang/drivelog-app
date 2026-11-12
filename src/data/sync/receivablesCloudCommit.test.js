@@ -1,9 +1,9 @@
 // 8-B — 미수 쓰기 창구 통일: persistReceivableWorkDataChange + commitMainDayLogMapToCloud
 // 일지↔미수 교차 반영 및 일괄 부분 실패 시나리오(G-2/G-3/G-4) 검증.
-import '../../testSupport/setupDom.js'
+import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { describe, test } from 'node:test'
-import { createFakeSupabase } from '../../testSupport/fakeSupabaseClient.js'
+import { createFakeSupabase } from '../../testSupport/fakeSupabaseClient.ts'
 
 const { fakeSupabase, handlers, resetHandlers, countOf, emptyOkHandlers } = createFakeSupabase()
 const { mock } = await import('node:test')

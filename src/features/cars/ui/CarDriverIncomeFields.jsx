@@ -3,7 +3,7 @@
 // 계산 규칙은 domain/driverIncomeDeductions.ts, 값은 draft에만 두고 저장은 차량 저장 경로가 한다.
 import { formatPercentInput } from '../../../domain/money.ts'
 import { DEFAULT_EXPENSE_RATE, DEFAULT_INSURANCE_RATE, insuranceSplitOf } from '../../../domain/driverIncomeDeductions.ts'
-import InfoTip from '../../../shared/ui/InfoTip.jsx'
+import InfoTip from '../../../shared/ui/InfoTip.tsx'
 
 const INSURANCE_RATE_INFO = `화물차주 산재보험료율(${DEFAULT_INSURANCE_RATE}%, 출퇴근 재해 포함)입니다. 매년 1월 1일 바뀌며 직접 수정할 수 있고, '0' 입력 시 계산에서 제외됩니다.`
 /** @type {Array<{ value: 'owner'|'half'|'driver', label: string }>} */

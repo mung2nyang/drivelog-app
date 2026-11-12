@@ -1,5 +1,5 @@
-import { resetStubSupabaseCallCounts, stubSupabaseCallCounts, stubSupabaseMethodImpls } from '../../testSupport/stubSupabaseClient.js'
-import '../../testSupport/setupDom.js'
+import { resetStubSupabaseCallCounts, stubSupabaseCallCounts, stubSupabaseMethodImpls } from '../../testSupport/stubSupabaseClient.ts'
+import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { describe, mock, test } from 'node:test'
 

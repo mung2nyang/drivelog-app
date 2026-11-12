@@ -1,6 +1,6 @@
 // @ts-check
 // 차량 유지비 날짜별 내역 목록 — 그리기만 하고 저장은 화면(MaintFuelPage)이 한다.
-import CardActionButtons from '../../../shared/ui/CardActionButtons.jsx'
+import CardActionButtons from '../../../shared/ui/CardActionButtons.tsx'
 import { expenseTitle } from '../../../domain/expenses.ts'
 import { formatWon } from '../../../domain/money.ts'
 

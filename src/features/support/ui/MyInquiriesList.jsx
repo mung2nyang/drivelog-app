@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react'
 import { fetchMyInquiries } from '../api/supportInquiryMutations.js'
 import { markShownAnswersSeen } from '../../../data/cloud/inquiryNotices.ts'
-import { SkeletonLines } from '../../../shared/ui/Skeleton.jsx'
-import { useToast } from '../../../shared/hooks/useToast.js'
+import { SkeletonLines } from '../../../shared/ui/Skeleton.tsx'
+import { useToast } from '../../../shared/hooks/useToast.ts'
 
 /** @typedef {import('../api/supportInquiryMutations.js').SupportInquiryRow} SupportInquiryRow */
 

@@ -8,7 +8,7 @@ import { requestDriverDeletion, requestVehicleDeletion } from '../../../data/syn
 import { requestDriverUnlinkAction } from '../../../data/sync/driverUnlink.ts'
 import { getCloudUserId } from '../../../data/cloud/cloudSession.ts'
 import { saveInviteAfterVehicle } from '../api/carInviteFromDraft.js'
-import { useToast } from '../../../shared/hooks/useToast.js'
+import { useToast } from '../../../shared/hooks/useToast.ts'
 
 /** @typedef {import('../ui/CarFormModal.jsx').CarFormDraft} CarFormDraft */
 /** @typedef {import('../../../domain/financeTypes.ts').CarLike} CarLike */

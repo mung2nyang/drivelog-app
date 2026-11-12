@@ -3,7 +3,7 @@ import { supabase } from '../cloud/supabaseClient.ts'
 import { assertSessionStillCurrent, blockedReasonForCloudWrite, captureSession } from '../cloud/cloudSession.ts'
 import { StaleSessionError } from './saveErrors.ts'
 import { commitDrivers } from '../store/commitHelpers.ts'
-import { SERVER_SAVE_FAIL, SESSION_CHANGED_FAIL } from '../../shared/utils/failureMessages.js'
+import { SERVER_SAVE_FAIL, SESSION_CHANGED_FAIL } from '../../shared/utils/failureMessages.ts'
 import type { DriverRecord } from '../../domain/driverTypes.ts'
 
 export type UnlinkAction = 'request' | 'consent' | 'cancel'

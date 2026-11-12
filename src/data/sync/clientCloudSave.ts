@@ -4,7 +4,7 @@ import { commitBatch } from '../store/app-store.ts'
 import { StaleSessionError } from './saveErrors.ts'
 import { runOwnerSaveSerialized } from './ownerSaveQueue.ts'
 import { upsertClientFromList } from './syncVehiclesClients.ts'
-import { SERVER_SAVE_FAIL, SESSION_CHANGED_FAIL } from '../../shared/utils/failureMessages.js'
+import { SERVER_SAVE_FAIL, SESSION_CHANGED_FAIL } from '../../shared/utils/failureMessages.ts'
 import type { ClientLike } from '../../domain/clientTypes.ts'
 
 export const CLIENT_SAVE_FAIL_TOAST = SERVER_SAVE_FAIL

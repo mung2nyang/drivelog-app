@@ -1,6 +1,6 @@
 // 새로 만들거나 고친 콜 상세가 든 하루 기록도 저장 대기에 등록된다(값 없는 linkedLoadIndex 칸을 만들지 않음).
-import '../../testSupport/stubSupabaseClient.js'
-import '../../testSupport/setupDom.js'
+import '../../testSupport/stubSupabaseClient.ts'
+import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 

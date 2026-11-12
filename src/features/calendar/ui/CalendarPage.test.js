@@ -9,15 +9,15 @@ register(pathToFileURL('./src/testSupport/jsxLoaderHook.mjs').href, import.meta.
 
 // app-store.js가 (다른 모듈을 거쳐) 실제 supabaseClient.js를 불러 Node
 // 테스트 프로세스가 매달리는 문제를 막는다 — app-store.test.js와 같은 이유.
-import '../../../testSupport/stubSupabaseClient.js'
-import '../../../testSupport/setupDom.js'
+import '../../../testSupport/stubSupabaseClient.ts'
+import '../../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 
 globalThis.IS_REACT_ACT_ENVIRONMENT = true
 
 const React = await import('react')
-const { withSession } = await import('../../../testSupport/withSession.js')
+const { withSession } = await import('../../../testSupport/withSession.ts')
 const { createRoot } = await import('react-dom/client')
 const { MemoryRouter } = await import('react-router-dom')
 const { act } = React

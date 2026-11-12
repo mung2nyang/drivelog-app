@@ -2,10 +2,10 @@
 import { register } from 'node:module'
 import { pathToFileURL } from 'node:url'
 
-import '../testSupport/setupDom.js'
+import '../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { mock, test } from 'node:test'
-import { createFakeSupabase } from '../testSupport/fakeSupabaseClient.js'
+import { createFakeSupabase } from '../testSupport/fakeSupabaseClient.ts'
 
 const { fakeSupabase, handlers, resetHandlers, emptyOkHandlers } = createFakeSupabase()
 fakeSupabase.auth.getSession = async () => ({ data: { session: null }, error: null })
@@ -18,7 +18,7 @@ mock.module('../data/cloud/supabaseClient.ts', {
   },
 })
 // 로그인 화면이 그릴 때 쓰는 배너 그림 주소가 글자로 바뀌는 순간 오류를 내게 바꿔치기한다(그리는 중 오류).
-mock.module('../shared/utils/assetPath.js', {
+mock.module('../shared/utils/assetPath.ts', {
   namedExports: {
     assetPath: () => ({ [Symbol.toPrimitive]() { throw new Error('로그인 화면 오류(시험)') } }),
   },

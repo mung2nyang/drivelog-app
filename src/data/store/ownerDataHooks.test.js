@@ -1,7 +1,7 @@
 // @ts-check
 // Step 9 slice C: readOwnerWorkDataByLogId returns full workLogs (main + sub).
-import '../../testSupport/stubSupabaseClient.js'
-import '../../testSupport/setupDom.js'
+import '../../testSupport/stubSupabaseClient.ts'
+import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { describe, test } from 'node:test'
 import { FIXTURE_SETTINGS, FIXTURE_WORK, MONTH_KEY } from '../../domain/finance.fixtures.ts'

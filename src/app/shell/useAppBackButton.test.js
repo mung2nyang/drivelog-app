@@ -4,8 +4,8 @@ import { pathToFileURL } from 'node:url'
 
 register(pathToFileURL('./src/testSupport/jsxLoaderHook.mjs').href, import.meta.url)
 
-import '../../testSupport/stubSupabaseClient.js'
-import '../../testSupport/setupDom.js'
+import '../../testSupport/stubSupabaseClient.ts'
+import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { mock, test } from 'node:test'
 
@@ -35,7 +35,7 @@ const React = await import('react')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
 const { BrowserRouter } = await import('react-router-dom')
-const { withToast } = await import('../../testSupport/withToast.js')
+const { withToast } = await import('../../testSupport/withToast.ts')
 const { default: useAppBackButton } = await import('./useAppBackButton.js')
 const { default: useBackToExit, EXIT_HINT } = await import('./useBackToExit.js')
 const { default: usePullToRefresh } = await import('./usePullToRefresh.js')

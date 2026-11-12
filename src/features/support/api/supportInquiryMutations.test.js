@@ -1,7 +1,7 @@
 // @ts-check
 import assert from 'node:assert/strict'
 import { describe, mock, test } from 'node:test'
-import { createFakeSupabase } from '../../../testSupport/fakeSupabaseClient.js'
+import { createFakeSupabase } from '../../../testSupport/fakeSupabaseClient.ts'
 
 const { fakeSupabase, handlers, resetHandlers, countOf, emptyOkHandlers } = createFakeSupabase()
 mock.module('../../../data/cloud/supabaseClient.ts', { namedExports: { supabase: fakeSupabase } })
@@ -35,7 +35,7 @@ describe('requestSupportInquirySave — Step 10 5-2', () => {
 
   test('성공 시 support_inquiries insert 1회 + 성공 토스트', async () => {
     beginReady('user-inq-1', 'user-inq-1')
-    /** @type {Array<import('../../../testSupport/fakeSupabaseClient.js').EqFilters | import('../../../domain/jsonTypes.ts').JsonRecord>} */
+    /** @type {Array<import('../../../testSupport/fakeSupabaseClient.ts').EqFilters | import('../../../domain/jsonTypes.ts').JsonRecord>} */
     const inserted = []
     handlers.support_inquiries = {
       insert: (payload) => {
@@ -91,7 +91,7 @@ describe('requestSupportInquirySave — Step 10 5-2', () => {
 describe('fetchMyInquiries — Step 10 5-3', () => {
   test('성공 시 user_id 필터·최신순 배열을 반환한다', async () => {
     beginReady('user-list-1', 'user-list-1')
-    /** @type {Array<import('../../../testSupport/fakeSupabaseClient.js').EqFilters | import('../../../domain/jsonTypes.ts').JsonRecord>} */
+    /** @type {Array<import('../../../testSupport/fakeSupabaseClient.ts').EqFilters | import('../../../domain/jsonTypes.ts').JsonRecord>} */
     const filtersSeen = []
     handlers.support_inquiries = {
       select: (filters) => {

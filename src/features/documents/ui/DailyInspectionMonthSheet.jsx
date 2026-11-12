@@ -10,8 +10,8 @@ import { vehicleSupabaseIdForLog } from '../../../data/sync/mainDayLogRouting.ts
 import { useOwnerCars, useOwnerWorkDataByLogId } from '../../../data/store/ownerDataHooks.ts'
 import { useOwnerProfile } from '../../../data/store/ownerProfileDriversHooks.ts'
 import DailyInspectionExportBar from './DailyInspectionExportBar.jsx'
-import MonthNavigator from '../../../shared/ui/MonthNavigator.jsx'
-import { SkeletonLines } from '../../../shared/ui/Skeleton.jsx'
+import MonthNavigator from '../../../shared/ui/MonthNavigator.tsx'
+import { SkeletonLines } from '../../../shared/ui/Skeleton.tsx'
 import { useSession } from '../../../data/cloud/sessionContext.ts'
 
 /** @typedef {import('../../../domain/dailyInspectionMonth.ts').MonthInspection} MonthInspection */

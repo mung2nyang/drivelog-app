@@ -1,8 +1,8 @@
 // 차주 지출 저장: 모든 칸 넣기·고치기가 끝난 뒤에 지운다 — 중간에 끊겨도 유실 대신 중복.
-import '../../testSupport/setupDom.js'
+import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { afterEach, describe, mock, test } from 'node:test'
-import { createFakeSupabase } from '../../testSupport/fakeSupabaseClient.js'
+import { createFakeSupabase } from '../../testSupport/fakeSupabaseClient.ts'
 
 const { fakeSupabase, handlers, resetHandlers, countOf, emptyOkHandlers } = createFakeSupabase()
 mock.module('../cloud/supabaseClient.ts', { namedExports: { supabase: fakeSupabase } })
@@ -12,7 +12,7 @@ const { setHydration, getState } = await import('../store/app-store.ts')
 const { commitCars, commitExpenses } = await import('../store/commitHelpers.ts')
 const { saveExpenses } = await import('./expensesSave.ts')
 
-/** @param {Parameters<import('../../testSupport/fakeSupabaseClient.js').FakeHandler>[0]} filters @param {string} column */
+/** @param {Parameters<import('../../testSupport/fakeSupabaseClient.ts').FakeHandler>[0]} filters @param {string} column */
 function filterValue(filters, column) {
   return filters && typeof filters === 'object' && !Array.isArray(filters) ? String(filters[column]) : ''
 }

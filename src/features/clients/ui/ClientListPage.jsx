@@ -1,7 +1,7 @@
 // @ts-check
 import { useState } from 'react'
-import ConfirmModal from '../../../shared/ui/ConfirmModal.jsx'
-import PageHeader from '../../../shared/ui/PageHeader.jsx'
+import ConfirmModal from '../../../shared/ui/ConfirmModal.tsx'
+import PageHeader from '../../../shared/ui/PageHeader.tsx'
 import ClientFormModal from './ClientFormModal.jsx'
 import ClientListItem from './ClientListItem.jsx'
 import { useClientReorder } from '../hooks/useClientReorder.js'
@@ -11,7 +11,7 @@ import { requestClientDeletion } from '../../../data/sync/directMutationActions.
 import { getCloudUserId } from '../../../data/cloud/cloudSession.ts'
 import { useOwnerClients } from '../../../data/store/ownerDataHooks.ts'
 import './client-management.css'
-import { useToast } from '../../../shared/hooks/useToast.js'
+import { useToast } from '../../../shared/hooks/useToast.ts'
 import { useSession } from '../../../data/cloud/sessionContext.ts'
 
 /** @typedef {import('../../../domain/clientTypes.ts').ClientDraft} ClientDraft */

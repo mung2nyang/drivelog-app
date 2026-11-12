@@ -1,6 +1,6 @@
 // 재감사 8차(FAIL 지적 4번) — 재시도가 건너뛸 때 기존 일지·원격 호출이 그대로인지 직접 센다.
-import { resetStubSupabaseCallCounts, stubSupabaseCallCounts } from '../../testSupport/stubSupabaseClient.js'
-import '../../testSupport/setupDom.js'
+import { resetStubSupabaseCallCounts, stubSupabaseCallCounts } from '../../testSupport/stubSupabaseClient.ts'
+import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 

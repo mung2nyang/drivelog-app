@@ -1,6 +1,6 @@
 // @ts-check
 // 연동 기사가 계약기간 밖 날짜 일지를 열면 입력칸 대신 안내 — 문장은 domain/drivers.ts assignmentPeriodNotice.
-import PageHeader from '../../../shared/ui/PageHeader.jsx'
+import PageHeader from '../../../shared/ui/PageHeader.tsx'
 
 /**
  * @param {{ title: string, notice: { title: string, body: string }, onBack?: () => void, onOpenMenu?: () => void }} props

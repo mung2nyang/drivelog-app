@@ -20,7 +20,7 @@ import {
   commitMainDayLogToCloud,
 } from './dayLogCloudCommit.ts'
 import { shouldCommitDayLogToCloud } from './mainDayLogRouting.ts'
-import { SESSION_CHANGED_FAIL } from '../../shared/utils/failureMessages.js'
+import { SESSION_CHANGED_FAIL } from '../../shared/utils/failureMessages.ts'
 import type { DayRecordLike } from '../../domain/day-record.ts'
 // WorkDataByLogId의 정본은 domain/financeTypes.ts다 — alias만 한다(중복 선언 금지).
 import type { FinanceSettings, WorkDataByLogId } from '../../domain/financeTypes.ts'

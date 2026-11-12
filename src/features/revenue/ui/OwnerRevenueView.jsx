@@ -10,7 +10,7 @@ import { buildYearlyRows, useRevenueFinanceSettings, useRevenuePeriod } from './
 import { monthKeyOf } from './revenueFormat.js'
 import { scopeSettingsToVehicle, scopeWorkDataToVehicle } from './driverRevenueScope.js'
 import { filterDriverExpensesByVehicle } from '../../../domain/financeOwnerExpenseSweep.ts'
-import AppDropdown from '../../../shared/ui/AppDropdown.jsx'
+import AppDropdown from '../../../shared/ui/AppDropdown.tsx'
 import { useSession } from '../../../data/cloud/sessionContext.ts'
 const SCOPES = [
   { value: 'all', label: '전체 손익' },

@@ -6,7 +6,7 @@ import { resolveLogSettings } from '../../../domain/carSettingsScope.ts'
 import { allGoodItems } from '../../../domain/dailyInspectionItems.ts'
 import { isOffDay } from '../../../domain/day-record.ts'
 import { assignmentPeriodNotice } from '../../../domain/drivers.ts'
-import { SERVER_SAVE_FAIL } from '../../../shared/utils/failureMessages.js'
+import { SERVER_SAVE_FAIL } from '../../../shared/utils/failureMessages.ts'
 import { TRY_LATER } from './unbiseoParse.ts'
 import { dateLabelOf } from './unbiseoSentence.ts'
 

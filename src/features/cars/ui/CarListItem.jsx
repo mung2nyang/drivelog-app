@@ -1,6 +1,6 @@
 // @ts-check
 import { formatCurrencyInput } from '../../../domain/money.ts'
-import CardActionButtons from '../../../shared/ui/CardActionButtons.jsx'
+import CardActionButtons from '../../../shared/ui/CardActionButtons.tsx'
 
 /**
  * @param {Object} props

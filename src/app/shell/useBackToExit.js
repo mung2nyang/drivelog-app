@@ -4,8 +4,8 @@
 // 같은 홈 주소로 "붙잡기용 기록"을 하나 더 쌓아 두고, 그게 빠지면(뒤로가기) 안내를 띄운 뒤 4초 동안은 다시 안 쌓는다.
 import { useEffect, useRef } from 'react'
 import { useLocation, useNavigate, useNavigationType } from 'react-router-dom'
-import { historyIdx, noteLocation, takeRewind } from '../../shared/utils/historyMoves.js'
-import { useToast } from '../../shared/hooks/useToast.js'
+import { historyIdx, noteLocation, takeRewind } from '../../shared/utils/historyMoves.ts'
+import { useToast } from '../../shared/hooks/useToast.ts'
 
 export const EXIT_HINT = '뒤로가기를 한 번 더 누르면 종료됩니다.'
 export const EXIT_WINDOW_MS = 4000 // 안내 문구 표시 시간(useAppSession.js 4초)과 같게

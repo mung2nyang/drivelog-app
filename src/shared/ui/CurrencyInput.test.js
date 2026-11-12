@@ -5,7 +5,7 @@ import { pathToFileURL } from 'node:url'
 
 register(pathToFileURL('./src/testSupport/jsxLoaderHook.mjs').href, import.meta.url)
 
-import '../../testSupport/setupDom.js'
+import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 
@@ -14,7 +14,7 @@ Reflect.set(globalThis, 'IS_REACT_ACT_ENVIRONMENT', true)
 const React = await import('react')
 const { createRoot } = await import('react-dom/client')
 const { act, useState } = React
-const { default: CurrencyInput } = await import('./CurrencyInput.jsx')
+const { default: CurrencyInput } = await import('./CurrencyInput.tsx')
 
 /** @param {{ initial: string, seen: Array<string> }} props */
 function Harness({ initial, seen }) {

@@ -1,8 +1,8 @@
 // 일지 저장이 겹쳐도 먼저 끝난 다른 날짜 저장이 화면(Store)에서 되돌아가지 않는다.
-import '../../testSupport/setupDom.js'
+import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { mock, test } from 'node:test'
-import { createFakeSupabase, wait } from '../../testSupport/fakeSupabaseClient.js'
+import { createFakeSupabase, wait } from '../../testSupport/fakeSupabaseClient.ts'
 
 const { fakeSupabase, handlers, resetHandlers, emptyOkHandlers } = createFakeSupabase()
 mock.module('../cloud/supabaseClient.ts', { namedExports: { supabase: fakeSupabase } })

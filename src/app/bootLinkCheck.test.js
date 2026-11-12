@@ -4,10 +4,10 @@ import { pathToFileURL } from 'node:url'
 
 register(pathToFileURL('./src/testSupport/jsxLoaderHook.mjs').href, import.meta.url)
 
-import '../testSupport/setupDom.js'
+import '../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { beforeEach, mock, test } from 'node:test'
-import { createFakeSupabase } from '../testSupport/fakeSupabaseClient.js'
+import { createFakeSupabase } from '../testSupport/fakeSupabaseClient.ts'
 
 const { fakeSupabase, handlers, resetHandlers } = createFakeSupabase()
 fakeSupabase.auth.getSession = async () => ({ data: { session: { user: { id: 'driver-1', user_metadata: { name: '기사' }, phone: null } } }, error: null })

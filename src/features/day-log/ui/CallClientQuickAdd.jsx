@@ -5,7 +5,7 @@ import ClientFormModal from '../../clients/ui/ClientFormModal.jsx'
 import { getCloudUserId } from '../../../data/cloud/cloudSession.ts'
 import { requestClientSave } from '../../../data/sync/clientMutations.ts'
 import './call-client-quick-add.css'
-import { useToast } from '../../../shared/hooks/useToast.js'
+import { useToast } from '../../../shared/hooks/useToast.ts'
 import { useSession } from '../../../data/cloud/sessionContext.ts'
 
 /** @typedef {import('../../../domain/clientTypes.ts').ClientDraft} ClientDraft */

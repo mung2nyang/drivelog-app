@@ -3,7 +3,7 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 
-const { SERVER_SAVE_FAIL, DEVICE_SAVE_FAIL, SESSION_CHANGED_FAIL, saveFailMessage } = await import('./failureMessages.js')
+const { SERVER_SAVE_FAIL, DEVICE_SAVE_FAIL, SESSION_CHANGED_FAIL, saveFailMessage } = await import('./failureMessages.ts')
 
 test('문구 3가지(확정 문구 표)', () => {
   assert.equal(SERVER_SAVE_FAIL, '저장에 실패했습니다. 네트워크 상태를 확인해 주세요.')
@@ -46,7 +46,7 @@ test('공용 파일 밖에서 ①·③ 문구를 글자로 적은 곳이 없다(
 })
 
 test('알림 문구로 실패를 가린다(로드맵 83) — 앱의 실패 문구는 참, 성공·진행·입력 확인은 거짓', async () => {
-  const { isFailureMessage } = await import('./failureMessages.js')
+  const { isFailureMessage } = await import('./failureMessages.ts')
   const failures = [
     SERVER_SAVE_FAIL,
     DEVICE_SAVE_FAIL,

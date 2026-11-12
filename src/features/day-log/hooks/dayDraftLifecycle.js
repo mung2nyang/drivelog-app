@@ -10,7 +10,7 @@ import { hasNoCloudVehicle, shouldCommitDayLogToCloud } from '../../../data/sync
 import { readOwnerLogWorkData } from '../../../data/store/ownerDataHooks.ts'
 import { pruneDayDraft, registerDayDraft, releaseDayDraft } from '../../../data/sync/dayDraftActivity.ts'
 import { addFailedDayLogDate, removeFailedDayLogDate } from '../../../data/sync/failedDayLogDates.ts'
-import { DEVICE_SAVE_FAIL, NO_VEHICLE_SAVE_FAIL, SERVER_SAVE_FAIL } from '../../../shared/utils/failureMessages.js'
+import { DEVICE_SAVE_FAIL, NO_VEHICLE_SAVE_FAIL, SERVER_SAVE_FAIL } from '../../../shared/utils/failureMessages.ts'
 
 /** @typedef {import('../../../data/sync/pendingWorkDataWritesTypes.ts').EffectivePatch} EffectivePatch */
 /** @typedef {Record<string, import('../../../domain/dayRecordTypes.ts').DayRecordLike>} WorkMap */

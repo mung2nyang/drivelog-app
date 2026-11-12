@@ -2,7 +2,7 @@
 // 로드맵 23-B — 관리자 문의 목록 좁히기·답변 저장(서버 함수 0025, 오류 코드별 문구).
 import assert from 'node:assert/strict'
 import { beforeEach, describe, mock, test } from 'node:test'
-import { createFakeSupabase } from '../../../testSupport/fakeSupabaseClient.js'
+import { createFakeSupabase } from '../../../testSupport/fakeSupabaseClient.ts'
 
 const { fakeSupabase, handlers, resetHandlers, countOf } = createFakeSupabase()
 mock.module('../../../data/cloud/supabaseClient.ts', { namedExports: { supabase: fakeSupabase } })
@@ -10,7 +10,7 @@ mock.module('../../../data/cloud/supabaseClient.ts', { namedExports: { supabase:
 const { fetchAdminInquiries, requestAdminAnswerSave } = await import('./adminInquiries.ts')
 const { beginSessionEpoch, endCloudSession } = await import('../../../data/cloud/cloudSession.ts')
 const { setHydration } = await import('../../../data/store/app-store.ts')
-const { SERVER_SAVE_FAIL, SESSION_CHANGED_FAIL } = await import('../../../shared/utils/failureMessages.js')
+const { SERVER_SAVE_FAIL, SESSION_CHANGED_FAIL } = await import('../../../shared/utils/failureMessages.ts')
 
 beforeEach(() => {
   resetHandlers()

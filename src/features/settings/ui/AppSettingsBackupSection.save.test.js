@@ -4,7 +4,7 @@ import { pathToFileURL } from 'node:url'
 
 register(pathToFileURL('./src/testSupport/jsxLoaderHook.mjs').href, import.meta.url)
 
-import '../../../testSupport/setupDom.js'
+import '../../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { mock, test } from 'node:test'
 
@@ -25,7 +25,7 @@ mock.module('../../../shared/utils/saveFile.ts', {
 })
 
 const React = await import('react')
-const { withToast } = await import('../../../testSupport/withToast.js')
+const { withToast } = await import('../../../testSupport/withToast.ts')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
 const { default: AppSettingsBackupSection } = await import('./AppSettingsBackupSection.jsx')

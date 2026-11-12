@@ -1,8 +1,8 @@
 // 세금계산서 저장이 중간에 끊긴 뒤 다시 저장해도 서버에 같은 계산서가 한 장만 있다.
-import '../../testSupport/setupDom.js'
+import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { afterEach, describe, mock, test } from 'node:test'
-import { createFakeSupabase } from '../../testSupport/fakeSupabaseClient.js'
+import { createFakeSupabase } from '../../testSupport/fakeSupabaseClient.ts'
 
 const { fakeSupabase, handlers, resetHandlers, countOf, emptyOkHandlers } = createFakeSupabase()
 mock.module('../cloud/supabaseClient.ts', { namedExports: { supabase: fakeSupabase } })
@@ -12,7 +12,7 @@ const { beginSessionEpoch, endCloudSession } = await import('../cloud/cloudSessi
 const { setHydration, getState } = await import('../store/app-store.ts')
 const { commitCars } = await import('../store/commitHelpers.ts')
 
-/** @param {Parameters<import('../../testSupport/fakeSupabaseClient.js').FakeHandler>[0]} value @param {string} key */
+/** @param {Parameters<import('../../testSupport/fakeSupabaseClient.ts').FakeHandler>[0]} value @param {string} key */
 function field(value, key) {
   return value && typeof value === 'object' && !Array.isArray(value) ? value[key] : undefined
 }

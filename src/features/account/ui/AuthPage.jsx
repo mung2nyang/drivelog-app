@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import { getSupabaseAuthErrorMessage, signInWithGoogle } from '../../../data/cloud/supabaseClient.ts'
 import AuthIntroView from './AuthIntroView.jsx'
-import { useToast } from '../../../shared/hooks/useToast.js'
+import { useToast } from '../../../shared/hooks/useToast.ts'
 
 /**
  * @param {Object} props

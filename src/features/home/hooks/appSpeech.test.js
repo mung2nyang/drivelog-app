@@ -1,5 +1,5 @@
 // 앱(Capacitor C-4) 운비서 음성 — 받아쓰기는 안드로이드 받아쓰기, 읽기는 xAI 못 받으면 안드로이드 목소리.
-import '../../../testSupport/setupDom.js'
+import '../../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { mock, test } from 'node:test'
 

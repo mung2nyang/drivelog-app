@@ -2,10 +2,10 @@
 // 주장하지 않기 위해 — 이 파일은 컴포넌트가 실제로 호출하는 서비스
 // 함수(requestVehicleDeletion 등)를 직접 부른다. 이게 UI가 타는 실제 코드 경로이므로,
 // 여기서 검증한 것이 곧 UI 안전성 검증이다(렌더 테스트 없이도).
-import '../../testSupport/setupDom.js'
+import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { describe, mock, test } from 'node:test'
-import { createFakeSupabase, wait } from '../../testSupport/fakeSupabaseClient.js'
+import { createFakeSupabase, wait } from '../../testSupport/fakeSupabaseClient.ts'
 
 const { fakeSupabase, handlers, resetHandlers, countOf, callsOf, emptyOkHandlers } = createFakeSupabase()
 mock.module('../cloud/supabaseClient.ts', { namedExports: { supabase: fakeSupabase } })

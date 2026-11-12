@@ -1,5 +1,5 @@
 // @ts-check
-import '../../testSupport/setupDom.js'
+import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { beforeEach, describe, test } from 'node:test'
 import {

@@ -1,8 +1,8 @@
 // @ts-check
-import '../../testSupport/setupDom.js'
+import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { describe, mock, test } from 'node:test'
-import { createFakeSupabase } from '../../testSupport/fakeSupabaseClient.js'
+import { createFakeSupabase } from '../../testSupport/fakeSupabaseClient.ts'
 
 const { fakeSupabase, handlers, resetHandlers, emptyOkHandlers } = createFakeSupabase()
 mock.module('../cloud/supabaseClient.ts', { namedExports: { supabase: fakeSupabase } })
@@ -30,9 +30,9 @@ describe('Step 9 ① 슬라이스 C (개정): 기사↔차주 거래처 상호 �
     resetHandlers()
     Object.assign(handlers, emptyOkHandlers())
 
-    /** @type {Array<import('../../testSupport/fakeSupabaseClient.js').EqFilters | import('../../domain/jsonTypes.ts').JsonRecord>} */
+    /** @type {Array<import('../../testSupport/fakeSupabaseClient.ts').EqFilters | import('../../domain/jsonTypes.ts').JsonRecord>} */
     const insertedRows = []
-    /** @type {Array<import('../../testSupport/fakeSupabaseClient.js').EqFilters | import('../../domain/jsonTypes.ts').JsonRecord>} */
+    /** @type {Array<import('../../testSupport/fakeSupabaseClient.ts').EqFilters | import('../../domain/jsonTypes.ts').JsonRecord>} */
     const lookupFilters = []
 
     handlers.clients = {
@@ -88,7 +88,7 @@ describe('Step 9 ① 슬라이스 C (개정): 기사↔차주 거래처 상호 �
     resetHandlers()
     Object.assign(handlers, emptyOkHandlers())
 
-    /** @type {Array<import('../../testSupport/fakeSupabaseClient.js').EqFilters | import('../../domain/jsonTypes.ts').JsonRecord>} */
+    /** @type {Array<import('../../testSupport/fakeSupabaseClient.ts').EqFilters | import('../../domain/jsonTypes.ts').JsonRecord>} */
     const insertedRows = []
     handlers.clients = {
       select: () => ({ data: [], error: null }),
@@ -164,7 +164,7 @@ describe('Step 9 ① 슬라이스 C (개정): 기사↔차주 거래처 상호 �
     resetHandlers()
     Object.assign(handlers, emptyOkHandlers())
 
-    /** @type {Array<import('../../testSupport/fakeSupabaseClient.js').EqFilters | import('../../domain/jsonTypes.ts').JsonRecord>} */
+    /** @type {Array<import('../../testSupport/fakeSupabaseClient.ts').EqFilters | import('../../domain/jsonTypes.ts').JsonRecord>} */
     const clientSelectFilters = []
     handlers.clients = {
       select: (filters) => {

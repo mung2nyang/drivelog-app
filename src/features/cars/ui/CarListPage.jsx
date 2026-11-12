@@ -1,13 +1,13 @@
 // @ts-check
 // 차량 목록·등록/수정 창 — 그리기와 창 열기만, 저장·연동 해제·삭제 흐름은 useCarListActions.
 import { useState } from 'react'
-import ConfirmModal from '../../../shared/ui/ConfirmModal.jsx'
-import PageHeader from '../../../shared/ui/PageHeader.jsx'
+import ConfirmModal from '../../../shared/ui/ConfirmModal.tsx'
+import PageHeader from '../../../shared/ui/PageHeader.tsx'
 import CarFormModal from './CarFormModal.jsx'
 import CarListItem from './CarListItem.jsx'
 import useCarListActions from '../hooks/useCarListActions.js'
 import { DRIVER_CAR_LIMIT_MESSAGE, canAddDriverCar, hasMainCar } from '../../../domain/cars.ts'
-import { useToast } from '../../../shared/hooks/useToast.js'
+import { useToast } from '../../../shared/hooks/useToast.ts'
 import { NEW_DRIVER_INCOME_DRAFT, driverIncomeDraftFromCar } from '../../../domain/driverIncomeDeductions.ts'
 import { resolveDriverShareBase } from '../../../domain/driverShareBase.ts'
 import { getCloudUserId, isCloudSession } from '../../../data/cloud/cloudSession.ts'

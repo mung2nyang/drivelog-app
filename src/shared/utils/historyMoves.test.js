@@ -4,19 +4,19 @@ import { pathToFileURL } from 'node:url'
 
 register(pathToFileURL('./src/testSupport/jsxLoaderHook.mjs').href, import.meta.url)
 
-import '../../testSupport/setupDom.js'
+import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 
 globalThis.IS_REACT_ACT_ENVIRONMENT = true
 
 const React = await import('react')
-const { withToast } = await import('../../testSupport/withToast.js')
+const { withToast } = await import('../../testSupport/withToast.ts')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
 const { BrowserRouter, useNavigate } = await import('react-router-dom')
 const { default: useBackToExit, EXIT_HINT } = await import('../../app/shell/useBackToExit.js')
-const { chooseMove, markRewind, noteLocation, takeRewind } = await import('./historyMoves.js')
+const { chooseMove, markRewind, noteLocation, takeRewind } = await import('./historyMoves.ts')
 
 test('홈에서 다른 메뉴로는 쌓고, 메뉴·화면끼리는 교체', () => {
   assert.deepEqual(chooseMove({ from: '/app', to: '/app/calendar', idx: 1, startedAtHome: true }), { kind: 'push' })

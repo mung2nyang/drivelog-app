@@ -1,7 +1,7 @@
 // @ts-check
 // 운비서가 넘긴 휴무를 그 날짜 일지에 한 번 적용 — 휴무 단추와 같은 확인·같은 저장.
 import { useEffect, useRef, useState } from 'react'
-import { useToast } from '../../../shared/hooks/useToast.js'
+import { useToast } from '../../../shared/hooks/useToast.ts'
 import { confirmOffWithCalls } from '../ui/OffToggle.jsx'
 import { dayOffPatch } from './day-log-reducer.js'
 

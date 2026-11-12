@@ -4,8 +4,8 @@ import { pathToFileURL } from 'node:url'
 
 register(pathToFileURL('./src/testSupport/jsxLoaderHook.mjs').href, import.meta.url)
 
-import '../../../testSupport/stubSupabaseClient.js'
-import '../../../testSupport/setupDom.js'
+import '../../../testSupport/stubSupabaseClient.ts'
+import '../../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 
@@ -14,7 +14,7 @@ globalThis.IS_REACT_ACT_ENVIRONMENT = true
 const React = await import('react')
 const { act } = React
 const { createRoot } = await import('react-dom/client')
-const { withSession } = await import('../../../testSupport/withSession.js')
+const { withSession } = await import('../../../testSupport/withSession.ts')
 const { default: InviteRedeemModal } = await import('./InviteRedeemModal.jsx')
 
 test('설명 옆 (i)를 누르면 배정 차량, 사업자 정보, 설정, 해제 안내가 펼쳐진다', async () => {

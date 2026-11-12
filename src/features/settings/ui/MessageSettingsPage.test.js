@@ -4,10 +4,10 @@ import { pathToFileURL } from 'node:url'
 
 register(pathToFileURL('./src/testSupport/jsxLoaderHook.mjs').href, import.meta.url)
 
-import '../../../testSupport/setupDom.js'
+import '../../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { mock, test } from 'node:test'
-import { createFakeSupabase } from '../../../testSupport/fakeSupabaseClient.js'
+import { createFakeSupabase } from '../../../testSupport/fakeSupabaseClient.ts'
 
 const { fakeSupabase, handlers, resetHandlers, emptyOkHandlers } = createFakeSupabase()
 mock.module('../../../data/cloud/supabaseClient.ts', { namedExports: { supabase: fakeSupabase } })
@@ -15,10 +15,10 @@ mock.module('../../../data/cloud/supabaseClient.ts', { namedExports: { supabase:
 Reflect.set(globalThis, 'IS_REACT_ACT_ENVIRONMENT', true)
 
 const React = await import('react')
-const { withToast } = await import('../../../testSupport/withToast.js')
+const { withToast } = await import('../../../testSupport/withToast.ts')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
-const { withSession } = await import('../../../testSupport/withSession.js')
+const { withSession } = await import('../../../testSupport/withSession.ts')
 const { default: MessageSettingsPage } = await import('./MessageSettingsPage.jsx')
 const { beginSessionEpoch } = await import('../../../data/cloud/cloudSession.ts')
 const { setHydration } = await import('../../../data/store/app-store.ts')
@@ -26,7 +26,7 @@ const { commitSettings } = await import('../../../data/store/commitHelpers.ts')
 const { readOwnerSettings } = await import('../../../data/store/ownerDataHooks.ts')
 const { normalizeSettings } = await import('../../../domain/practiceSettings.ts')
 const { getDefaultMessageTemplatePatterns, getDefaultReportShareMessagePattern } = await import('../../../data/sync/messageTemplates.ts')
-const { SERVER_SAVE_FAIL } = await import('../../../shared/utils/failureMessages.js')
+const { SERVER_SAVE_FAIL } = await import('../../../shared/utils/failureMessages.ts')
 
 /** @typedef {import('../../../domain/jsonTypes.ts').JsonValue} JsonValue */
 

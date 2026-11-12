@@ -4,10 +4,10 @@ import { pathToFileURL } from 'node:url'
 
 register(pathToFileURL('./src/testSupport/jsxLoaderHook.mjs').href, import.meta.url)
 
-import '../testSupport/setupDom.js'
+import '../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { mock, test } from 'node:test'
-import { createFakeSupabase, wait } from '../testSupport/fakeSupabaseClient.js'
+import { createFakeSupabase, wait } from '../testSupport/fakeSupabaseClient.ts'
 
 const { fakeSupabase, handlers, emptyOkHandlers, callCounts } = createFakeSupabase()
 
@@ -55,7 +55,7 @@ const { clearGuestModePersisted } = await import('./guestSessionPersist.js')
 const { getState, subscribe } = await import('../data/store/app-store.ts')
 const { readJsonKey, storageKeyFor } = await import('../data/store/persist.ts')
 const { normalizeSettings } = await import('../domain/practiceSettings.ts')
-const { DEVICE_SAVE_FAIL } = await import('../shared/utils/failureMessages.js')
+const { DEVICE_SAVE_FAIL } = await import('../shared/utils/failureMessages.ts')
 
 /** @typedef {import('../domain/dayRecordTypes.ts').DayRecordLike} DayRecordLike */
 

@@ -1,9 +1,9 @@
 // @ts-check
 import { useRef, useState } from 'react'
-import { assetPath } from '../../../shared/utils/assetPath.js'
+import { assetPath } from '../../../shared/utils/assetPath.ts'
 import { tonnageDigits, tonnageValue } from '../../../domain/formatPhone.ts'
-import ClearableInput from '../../../shared/ui/ClearableInput.jsx'
-import CarFuelKindField from '../../../shared/ui/CarFuelKindField.jsx'
+import ClearableInput from '../../../shared/ui/ClearableInput.tsx'
+import CarFuelKindField from '../../../shared/ui/CarFuelKindField.tsx'
 
 /** @typedef {import('../../../data/sync/onboardingFinish.ts').OnboardingWizard} OnboardingWizard */
 

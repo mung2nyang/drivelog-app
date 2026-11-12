@@ -11,10 +11,10 @@ import useModalBackGuard from '../hooks/useModalBackGuard.ts'
 import './daily-inspection.css'
 import './daily-inspection-items.css'
 import './daily-inspection-loading.css'
-import { SERVER_SAVE_FAIL } from '../../../shared/utils/failureMessages.js'
-import { useToast } from '../../../shared/hooks/useToast.js'
+import { SERVER_SAVE_FAIL } from '../../../shared/utils/failureMessages.ts'
+import { useToast } from '../../../shared/hooks/useToast.ts'
 import { useSession } from '../../../data/cloud/sessionContext.ts'
-import { confirmDialog } from '../../../shared/ui/confirmDialog.jsx'
+import { confirmDialog } from '../../../shared/ui/confirmDialog.tsx'
 
 /** @typedef {import('../../../data/sync/dailyInspections.ts').DailyInspection} DailyInspection */
 

@@ -4,7 +4,7 @@
 // 나머지는 그대로인 "부분 반영" 상태가 될 수 있었다 — writeAllOrNothing이 이걸 막는다.
 // 3차 보완에서 (domain, ownerKey, value) 대신 (key, value) 쌍을 직접 받도록
 // 바뀌었다(도메인 계약 밖의 임의 키도 같은 배열에 섞어 넣을 수 있어야 해서).
-import '../../testSupport/setupDom.js'
+import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { describe, mock, test } from 'node:test'
 import { writeAllOrNothing } from './atomicPersist.ts'

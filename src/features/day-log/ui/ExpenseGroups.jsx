@@ -3,7 +3,7 @@
 // 종류별 합계는 카드 목록 아래 요약 상자 하나에 모은다(운행 일지 세부 내역 합계와 같은 모양).
 import { KINDS, expenseTitle, fuelAmountUnit } from '../../../domain/expenses.ts'
 import { formatWon, parseCurrencyValue } from '../../../domain/money.ts'
-import { ExpenseIcon, EditIcon, DeleteIcon } from '../../../shared/ui/icons.jsx'
+import { ExpenseIcon, EditIcon, DeleteIcon } from '../../../shared/ui/icons.tsx'
 
 /** @type {Record<string, string>} */
 const KIND_TITLE_CLASS = { maint: 'maint-title-color', fuel: 'fuel-title-color', misc: 'misc-title-color' }

@@ -1,5 +1,5 @@
 // @ts-check
-import { confirmDialog } from '../../../shared/ui/confirmDialog.jsx'
+import { confirmDialog } from '../../../shared/ui/confirmDialog.tsx'
 
 // 콜이 있는 날을 휴무로 바꾸면 그 콜이 합계·미수에서 빠지므로 먼저 묻는다.
 /**

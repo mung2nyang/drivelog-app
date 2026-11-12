@@ -2,7 +2,7 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import { requestAdminAnswerSave } from '../api/adminInquiries.ts'
 import type { AdminInquiry } from '../api/adminInquiries.ts'
-import { useToast } from '../../../shared/hooks/useToast.js'
+import { useToast } from '../../../shared/hooks/useToast.ts'
 import AnswerTemplateButtons from './AnswerTemplateButtons.tsx'
 
 const ANSWER_MAX = 2000

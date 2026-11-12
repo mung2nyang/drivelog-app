@@ -1,6 +1,6 @@
 // 창이 열린 동안 붙잡기 기록을 1장 쌓아, 휴대폰 뒤로가기는 창만 닫는다(옆 메뉴와 같은 방식).
 import { useEffect, useRef, useState } from 'react'
-import { cancelConfirmDialog, confirmDialogOpen } from '../../../shared/ui/confirmDialog.jsx'
+import { cancelConfirmDialog, confirmDialogOpen } from '../../../shared/ui/confirmDialog.tsx'
 
 const MODAL_GUARD = 'modalGuard'
 

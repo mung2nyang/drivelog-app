@@ -7,14 +7,14 @@ register(pathToFileURL('./src/testSupport/jsxLoaderHook.mjs').href, import.meta.
 import { mock, test } from 'node:test'
 import assert from 'node:assert/strict'
 
-import '../testSupport/stubSupabaseClient.js'
-import '../testSupport/setupDom.js'
-import { wait } from '../testSupport/fakeSupabaseClient.js'
+import '../testSupport/stubSupabaseClient.ts'
+import '../testSupport/setupDom.ts'
+import { wait } from '../testSupport/fakeSupabaseClient.ts'
 
 Reflect.set(globalThis, 'IS_REACT_ACT_ENVIRONMENT', true)
 
 const React = await import('react')
-const { withSession } = await import('../testSupport/withSession.js')
+const { withSession } = await import('../testSupport/withSession.ts')
 const { act } = React
 const { createRoot } = await import('react-dom/client')
 const { default: DayLogPage } = await import('../features/day-log/ui/DayLogPage.jsx')

@@ -5,8 +5,8 @@ import { pathToFileURL } from 'node:url'
 
 register(pathToFileURL('./src/testSupport/jsxLoaderHook.mjs').href, import.meta.url)
 
-import '../../../testSupport/stubSupabaseClient.js'
-import '../../../testSupport/setupDom.js'
+import '../../../testSupport/stubSupabaseClient.ts'
+import '../../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 
@@ -16,8 +16,8 @@ const React = await import('react')
 const { act } = React
 const { createRoot } = await import('react-dom/client')
 const { BrowserRouter, Route, Routes } = await import('react-router-dom')
-const { withSession } = await import('../../../testSupport/withSession.js')
-const { withToast } = await import('../../../testSupport/withToast.js')
+const { withSession } = await import('../../../testSupport/withSession.ts')
+const { withToast } = await import('../../../testSupport/withToast.ts')
 const { commitClients } = await import('../../../data/store/commitHelpers.ts')
 const { readOwnerClients } = await import('../../../data/store/ownerDataHooks.ts')
 const { default: ClientListPage } = await import('./ClientListPage.jsx')

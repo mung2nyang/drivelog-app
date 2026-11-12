@@ -1,7 +1,7 @@
 // @ts-check
 // 로드맵 72 — 열린 일지 목록과 새로고침·앱 닫기 확인.
-import '../../testSupport/stubSupabaseClient.js'
-import '../../testSupport/setupDom.js'
+import '../../testSupport/stubSupabaseClient.ts'
+import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { mock, test } from 'node:test'
 

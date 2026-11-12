@@ -4,7 +4,7 @@ import { useOwnerDrivers, useOwnerProfile } from '../../../data/store/ownerDataH
 import { isCloudSession } from '../../../data/cloud/cloudSession.ts'
 import InviteRedeemModal from './InviteRedeemModal.jsx'
 import DataDownloadModal from './DataDownloadModal.jsx'
-import PageHeader from '../../../shared/ui/PageHeader.jsx'
+import PageHeader from '../../../shared/ui/PageHeader.tsx'
 import LinkStatusChip from './LinkStatusChip.jsx'
 import AdminEntryLink from './AdminEntryLink.tsx'
 import './mypage.css'

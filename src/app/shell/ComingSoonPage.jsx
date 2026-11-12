@@ -1,5 +1,5 @@
 // @ts-check
-import PageHeader from '../../shared/ui/PageHeader.jsx'
+import PageHeader from '../../shared/ui/PageHeader.tsx'
 
 /**
  * @param {Object} props

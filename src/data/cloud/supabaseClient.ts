@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
-import { routerBasename } from '../../shared/utils/routerBasename.js'
+import { routerBasename } from '../../shared/utils/routerBasename.ts'
 import { isNativeApp, signInWithGoogleNative } from './nativeGoogleSignIn.ts'
 
 // 원래 앱 supabase-config.js와 같은 공개 주소/키입니다.

@@ -5,8 +5,8 @@ import { pathToFileURL } from 'node:url'
 
 register(pathToFileURL('./src/testSupport/jsxLoaderHook.mjs').href, import.meta.url)
 
-import '../../../testSupport/stubSupabaseClient.js'
-import '../../../testSupport/setupDom.js'
+import '../../../testSupport/stubSupabaseClient.ts'
+import '../../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { mock, test } from 'node:test'
 
@@ -25,15 +25,15 @@ mock.method(storageProto, 'setItem', /** @this {Storage} @param {string} key @pa
 })
 
 const React = await import('react')
-const { withSession } = await import('../../../testSupport/withSession.js')
-const { withToast } = await import('../../../testSupport/withToast.js')
+const { withSession } = await import('../../../testSupport/withSession.ts')
+const { withToast } = await import('../../../testSupport/withToast.ts')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
 const { MemoryRouter } = await import('react-router-dom')
 const { default: MaintFuelPage } = await import('./MaintFuelPage.jsx')
 const { getState } = await import('../../../data/store/app-store.ts')
 const { commitCars } = await import('../../../data/store/commitHelpers.ts')
-const { saveFailMessage } = await import('../../../shared/utils/failureMessages.js')
+const { saveFailMessage } = await import('../../../shared/utils/failureMessages.ts')
 
 /** 오늘 기준 offset 달의 day일 — 'YYYY-MM-DD' @param {number} offset @param {number} day */
 function dateIn(offset, day) {

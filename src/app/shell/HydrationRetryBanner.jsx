@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { getState, subscribe } from '../../data/store/app-store.ts'
 import { retryHydrate } from '../../data/hydrate/hydrate.ts'
-import { useToast } from '../../shared/hooks/useToast.js'
+import { useToast } from '../../shared/hooks/useToast.ts'
 
 const bannerStyle = {
   display: 'flex',

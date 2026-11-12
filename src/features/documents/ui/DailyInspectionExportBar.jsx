@@ -6,7 +6,7 @@ import { inspectionFileBaseName } from '../../../domain/dailyInspectionMonth.ts'
 import { createReportImageFile, createReportPdfFile } from '../api/reportExport.js'
 import DailyInspectionLegalForm from './DailyInspectionLegalForm.jsx'
 import DailyInspectionShareModal from './DailyInspectionShareModal.jsx'
-import ConfirmModal from '../../../shared/ui/ConfirmModal.jsx'
+import ConfirmModal from '../../../shared/ui/ConfirmModal.tsx'
 import useFileDownload from '../hooks/useFileDownload.js'
 
 /**

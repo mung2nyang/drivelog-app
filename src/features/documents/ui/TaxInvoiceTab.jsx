@@ -19,12 +19,12 @@ import {
   useOwnerSettings,
   useOwnerWorkDataByLogId,
 } from '../../../data/store/ownerDataHooks.ts'
-import SummaryInfoToggle from '../../../shared/ui/SummaryInfoToggle.jsx'
+import SummaryInfoToggle from '../../../shared/ui/SummaryInfoToggle.tsx'
 import TaxInvoiceDraftModal from './TaxInvoiceDraftModal.jsx'
 import TaxInvoiceEntryList from './TaxInvoiceEntryList.jsx'
-import MonthNavigator from '../../../shared/ui/MonthNavigator.jsx'
+import MonthNavigator from '../../../shared/ui/MonthNavigator.tsx'
 import './tax-invoice.css'
-import { useToast } from '../../../shared/hooks/useToast.js'
+import { useToast } from '../../../shared/hooks/useToast.ts'
 import { useSession } from '../../../data/cloud/sessionContext.ts'
 
 /** @typedef {import('../../../domain/financeTaxInvoiceEntries.ts').InvoiceLike} InvoiceLike */

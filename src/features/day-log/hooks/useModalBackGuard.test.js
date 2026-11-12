@@ -4,7 +4,7 @@ import { pathToFileURL } from 'node:url'
 
 register(pathToFileURL('./src/testSupport/jsxLoaderHook.mjs').href, import.meta.url)
 
-import '../../../testSupport/setupDom.js'
+import '../../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 
@@ -16,7 +16,7 @@ const { act, useState } = React
 const { BrowserRouter, useNavigate } = await import('react-router-dom')
 const { default: usePanelBackGuard } = await import('./usePanelBackGuard.js')
 const { default: useModalBackGuard } = await import('./useModalBackGuard.ts')
-const { panelGuardOnTop } = await import('../../../shared/utils/historyMoves.js')
+const { panelGuardOnTop } = await import('../../../shared/utils/historyMoves.ts')
 
 const wait = (/** @type {number} */ ms) => new Promise((resolve) => { setTimeout(resolve, ms) })
 const modalGuardOnTop = () => Boolean(Reflect.get(window.history.state || {}, 'modalGuard'))

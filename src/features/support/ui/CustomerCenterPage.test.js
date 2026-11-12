@@ -4,18 +4,18 @@ import { pathToFileURL } from 'node:url'
 
 register(pathToFileURL('./src/testSupport/jsxLoaderHook.mjs').href, import.meta.url)
 
-import '../../../testSupport/stubSupabaseClient.js'
-import '../../../testSupport/setupDom.js'
+import '../../../testSupport/stubSupabaseClient.ts'
+import '../../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { describe, test } from 'node:test'
-import { stubSupabaseCallCounts, stubSupabaseMethodImpls } from '../../../testSupport/stubSupabaseClient.js'
+import { stubSupabaseCallCounts, stubSupabaseMethodImpls } from '../../../testSupport/stubSupabaseClient.ts'
 
 const reactActEnv = /** @type {{ IS_REACT_ACT_ENVIRONMENT?: boolean }} */ (globalThis)
 reactActEnv.IS_REACT_ACT_ENVIRONMENT = true
 
 const React = await import('react')
-const { withSession } = await import('../../../testSupport/withSession.js')
-const { withToast } = await import('../../../testSupport/withToast.js')
+const { withSession } = await import('../../../testSupport/withSession.ts')
+const { withToast } = await import('../../../testSupport/withToast.ts')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
 const { default: CustomerCenterPage } = await import('./CustomerCenterPage.jsx')

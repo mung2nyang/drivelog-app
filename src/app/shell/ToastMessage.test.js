@@ -4,7 +4,7 @@ import { pathToFileURL } from 'node:url'
 
 register(pathToFileURL('./src/testSupport/jsxLoaderHook.mjs').href, import.meta.url)
 
-import '../../testSupport/setupDom.js'
+import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 
@@ -14,7 +14,7 @@ const React = await import('react')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
 const { default: ToastMessage } = await import('./ToastMessage.jsx')
-const { SERVER_SAVE_FAIL } = await import('../../shared/utils/failureMessages.js')
+const { SERVER_SAVE_FAIL } = await import('../../shared/utils/failureMessages.ts')
 
 /** @param {string} message @param {(container: HTMLElement) => void} check */
 async function withToast(message, check) {

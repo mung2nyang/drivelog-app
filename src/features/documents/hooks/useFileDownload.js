@@ -2,7 +2,7 @@
 // 서류 내려받기(운송비 내역서·일상점검표) — 파일을 만들어 링크로 내려받고 알림. 저장 중 상태가 하나라 그동안 두 버튼이 함께 막힌다.
 import { useState } from 'react'
 import { downloadFile } from '../api/reportExport.js'
-import { useToast } from '../../../shared/hooks/useToast.js'
+import { useToast } from '../../../shared/hooks/useToast.ts'
 
 /**
  * @param {(type: 'pdf'|'image') => Promise<File>} buildFile

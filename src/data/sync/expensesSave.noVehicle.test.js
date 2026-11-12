@@ -1,8 +1,8 @@
 // 서버에 차량이 없는 로그인 계정: 지출 [저장]은 화면만 바꾸지 않고 알림 ④를 돌려준다.
-import '../../testSupport/setupDom.js'
+import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { afterEach, describe, mock, test } from 'node:test'
-import { createFakeSupabase } from '../../testSupport/fakeSupabaseClient.js'
+import { createFakeSupabase } from '../../testSupport/fakeSupabaseClient.ts'
 
 const { fakeSupabase, handlers, resetHandlers, countOf, emptyOkHandlers } = createFakeSupabase()
 mock.module('../cloud/supabaseClient.ts', { namedExports: { supabase: fakeSupabase } })
@@ -11,7 +11,7 @@ const { beginSessionEpoch, endCloudSession } = await import('../cloud/cloudSessi
 const { setHydration, getState } = await import('../store/app-store.ts')
 const { commitCars, commitExpenses } = await import('../store/commitHelpers.ts')
 const { saveExpenseDraft } = await import('./expensesSave.ts')
-const { NO_VEHICLE_SAVE_FAIL } = await import('../../shared/utils/failureMessages.js')
+const { NO_VEHICLE_SAVE_FAIL } = await import('../../shared/utils/failureMessages.ts')
 
 /** @param {string} userId @param {string} ownerKey @param {Array<import('../../domain/financeTypes.ts').CarLike>} cars */
 function seed(userId, ownerKey, cars) {

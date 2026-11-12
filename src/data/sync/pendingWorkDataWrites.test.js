@@ -4,8 +4,8 @@
 // 다시 로드되는 것과 똑같이, 이 모듈은 항상 localStorage를 그때그때 다시 읽는다)에도
 // 복구되는지, owner가 서로 섞이지 않는지, durable 기록 자체가 실패하면
 // durableWriteGuard가 정확히 반응하는지를 확인한다.
-import { resetStubSupabaseCallCounts, stubSupabaseCallCounts } from '../../testSupport/stubSupabaseClient.js'
-import '../../testSupport/setupDom.js'
+import { resetStubSupabaseCallCounts, stubSupabaseCallCounts } from '../../testSupport/stubSupabaseClient.ts'
+import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { mock, test } from 'node:test'
 

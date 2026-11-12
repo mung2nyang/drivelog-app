@@ -1,6 +1,6 @@
 // 운비서 그림 — 상황마다 그림 줄을 넘긴다. 움직임 줄이기를 켠 기기에서는 쉴 때 첫 칸만.
 import { useEffect, useState, type CSSProperties } from 'react'
-import { assetPath } from '../../../shared/utils/assetPath.js'
+import { assetPath } from '../../../shared/utils/assetPath.ts'
 import useFramePlayer, { type FrameStrip } from '../hooks/useFramePlayer.ts'
 import useUnbiseoMotion, { type Situation } from '../hooks/useUnbiseoMotion.ts'
 import type { UnbiseoAnswer } from '../hooks/useUnbiseoAssistant.ts'

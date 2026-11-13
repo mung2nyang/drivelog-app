@@ -19,7 +19,7 @@ const { withToast } = await import('../../testSupport/withToast.ts')
 const { normalizeSettings } = await import('../../domain/practiceSettings.ts')
 const { commitSettings, commitWorkData } = await import('../../data/store/commitHelpers.ts')
 const { confirmDialog } = await import('../../shared/ui/confirmDialog.tsx')
-const { default: AppShell } = await import('./AppShell.jsx')
+const { default: AppShell } = await import('./AppShell.tsx')
 
 test('확인 창은 화면 내용(점검표 창이 그려지는 곳)보다 문서 순서상 뒤에 그려진다', async () => {
   const ownerKey = 'confirm-layer-owner'

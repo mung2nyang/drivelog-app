@@ -19,7 +19,7 @@ const { withToast } = await import('../../../testSupport/withToast.ts')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
 const { default: CustomerCenterPage } = await import('./CustomerCenterPage.jsx')
-const { default: SideMenu } = await import('../../../app/shell/SideMenu.jsx')
+const { default: SideMenu } = await import('../../../app/shell/SideMenu.tsx')
 const { beginSessionEpoch, endCloudSession } = await import('../../../data/cloud/cloudSession.ts')
 const { setHydration } = await import('../../../data/store/app-store.ts')
 

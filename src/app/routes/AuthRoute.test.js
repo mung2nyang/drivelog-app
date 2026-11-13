@@ -21,7 +21,7 @@ const { withSession } = await import('../../testSupport/withSession.ts')
 const { createRoot } = await import('react-dom/client')
 const { MemoryRouter, Routes, Route } = await import('react-router-dom')
 const { act } = React
-const { default: AuthRoute, AUTH_WITH_SESSION_REDIRECT_MS } = await import('./AuthRoute.jsx')
+const { default: AuthRoute, AUTH_WITH_SESSION_REDIRECT_MS } = await import('./AuthRoute.tsx')
 
 /** @param {import('../../data/sync/syncTypes.ts').AppSession|null} session @param {boolean} booting */
 async function render(session, booting) {

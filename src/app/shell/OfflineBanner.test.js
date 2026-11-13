@@ -13,7 +13,7 @@ const React = await import('react')
 const { withSession } = await import('../../testSupport/withSession.ts')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
-const { default: OfflineBanner } = await import('./OfflineBanner.jsx')
+const { default: OfflineBanner } = await import('./OfflineBanner.tsx')
 
 const LOGGED_IN = { userId: 'user-1', name: '차주' }
 const GUEST = { name: '비회원', accountType: 'owner_driver', guestMode: true }

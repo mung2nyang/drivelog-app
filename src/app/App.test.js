@@ -58,7 +58,7 @@ async function unmountTracked(root) {
   await act(async () => { root.unmount() })
 }
 const { BrowserRouter } = await import('react-router-dom')
-const { default: App } = await import('./App.jsx')
+const { default: App } = await import('./App.tsx')
 const { commitCars, commitClients, commitExpenses, commitSettings, commitWorkData } = await import('../data/store/commitHelpers.ts')
 const { pendingDayWriteCount, getPendingDayWrite } = await import('../data/sync/pendingWorkDataWrites.ts')
 const { isDurableWriteBroken, hasUnsafeRegistration } = await import('../data/sync/durableWriteGuard.ts')

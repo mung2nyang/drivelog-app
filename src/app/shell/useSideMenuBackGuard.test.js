@@ -12,7 +12,7 @@ Reflect.set(globalThis, 'IS_REACT_ACT_ENVIRONMENT', true)
 const React = await import('react')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
-const { default: SideMenu } = await import('./SideMenu.jsx')
+const { default: SideMenu } = await import('./SideMenu.tsx')
 
 const flush = () => new Promise((resolve) => { setTimeout(resolve, 0) })
 

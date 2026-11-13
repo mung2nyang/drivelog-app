@@ -13,7 +13,7 @@ const React = await import('react')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
 const { BrowserRouter, useNavigate } = await import('react-router-dom')
-const { default: usePageTransition, decidePageTransition, isTabSpot } = await import('./usePageTransition.js')
+const { default: usePageTransition, decidePageTransition, isTabSpot } = await import('./usePageTransition.ts')
 
 /** @param {string} pathname @param {boolean} tab */
 const spot = (pathname, tab) => ({ pathname, tab })

@@ -12,7 +12,7 @@ globalThis.IS_REACT_ACT_ENVIRONMENT = true
 const React = await import('react')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
-const { default: SideMenu, preloadSideMenuBanner } = await import('./SideMenu.jsx')
+const { default: SideMenu, preloadSideMenuBanner } = await import('./SideMenu.tsx')
 
 /** @param {'dark'|'light'} theme */
 async function bannerSources(theme) {

@@ -3,7 +3,7 @@ import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 
-const { canStartPull, pullDistance, releasePull, insideBlockedArea, PULL_MAX, PULL_TRIGGER } = await import('./usePullToRefresh.js')
+const { canStartPull, pullDistance, releasePull, insideBlockedArea, PULL_MAX, PULL_TRIGGER } = await import('./usePullToRefresh.ts')
 
 test('시작: 설치 앱 + 맨 위 + 손가락 하나 + 보통 화면일 때만', () => {
   const ok = { standalone: true, scrollTop: 0, touches: 1, blocked: false }

@@ -31,7 +31,7 @@ const React = await import('react')
 const { act } = React
 const { createRoot } = await import('react-dom/client')
 const { BrowserRouter } = await import('react-router-dom')
-const { default: App } = await import('./App.jsx')
+const { default: App } = await import('./App.tsx')
 
 test('로그인 화면이 그리다 오류를 내면 빈 화면 대신 안내와 [다시 시도]가 보인다', async () => {
   window.history.pushState({}, '', '/auth')

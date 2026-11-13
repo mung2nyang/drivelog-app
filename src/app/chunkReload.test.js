@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { CHUNK_RELOAD_WINDOW_MS, installChunkReload } from './chunkReload.js'
+import { CHUNK_RELOAD_WINDOW_MS, installChunkReload } from './chunkReload.ts'
 
 function setup(startAt = 1_000_000) {
   /** @type {Array<(event: Event) => void>} */

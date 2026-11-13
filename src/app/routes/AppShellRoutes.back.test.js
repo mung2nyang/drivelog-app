@@ -21,13 +21,13 @@ const PAGE_NAMES = [
   'LinkedDriverManagementPage', 'MaintFuelPage', 'MyPage', 'OwnerScopedClientsView', 'PersonalInfoPage', 'ReceivablesPage',
   'DocumentIssuePage', 'RevenuePage', 'ComingSoonPage', 'CustomerCenterPage', 'AdminInquiriesPage', 'NoticePage', 'MessageSettingsPage', 'NotificationsPage',
 ]
-mock.module('./lazyPages.js', { namedExports: Object.fromEntries(PAGE_NAMES.map((name) => [name, FakePage])) })
+mock.module('./lazyPages.ts', { namedExports: Object.fromEntries(PAGE_NAMES.map((name) => [name, FakePage])) })
 
 const { withSession } = await import('../../testSupport/withSession.ts')
 const { createRoot } = await import('react-dom/client')
 const { MemoryRouter, Route, Routes } = await import('react-router-dom')
 const { act } = React
-const { default: AppShellRoutes } = await import('./AppShellRoutes.jsx')
+const { default: AppShellRoutes } = await import('./AppShellRoutes.tsx')
 
 /** @param {string} url @returns {Promise<string[]>} ← 를 눌렀을 때 goBack에 넘어간 곳 */
 async function pressBack(url) {

@@ -15,7 +15,7 @@ const { withSession } = await import('../testSupport/withSession.ts')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
 const { default: MyPage } = await import('../features/account/ui/MyPage.jsx')
-const { default: SideMenu } = await import('./shell/SideMenu.jsx')
+const { default: SideMenu } = await import('./shell/SideMenu.tsx')
 
 /** @param {import('react').ReactElement} element */
 async function renderText(element) {

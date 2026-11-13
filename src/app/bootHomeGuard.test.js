@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { describe, test } from 'node:test'
-import { isAlreadyInAppOnBoot } from './bootHomeGuard.js'
+import { isAlreadyInAppOnBoot } from './bootHomeGuard.ts'
 
 describe('isAlreadyInAppOnBoot — 부트 복원 시 goHome() 생략 판단', () => {
   test('/app 및 그 하위 경로는 true', () => {

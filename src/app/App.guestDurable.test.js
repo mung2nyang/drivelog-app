@@ -41,7 +41,7 @@ async function unmountTracked(root) {
   await act(async () => { root.unmount() })
 }
 const { BrowserRouter } = await import('react-router-dom')
-const { default: App } = await import('./App.jsx')
+const { default: App } = await import('./App.tsx')
 const { commitCars, commitClients, commitExpenses, commitSettings, commitWorkData } = await import('../data/store/commitHelpers.ts')
 const {
   hasPendingDayWrites, pendingDayWriteCount, retryPendingDayWrites,
@@ -50,7 +50,7 @@ const {
 const { isDurableWriteBroken, hasUnsafeRegistration, getUnsafeRegistrationPatch, clearUnsafeRegistrationFailure } = await import('../data/sync/durableWriteGuard.ts')
 const { endCloudSession } = await import('../data/cloud/cloudSession.ts')
 const { durableKey } = await import('../data/sync/durableStorage.ts')
-const { clearGuestModePersisted } = await import('./guestSessionPersist.js')
+const { clearGuestModePersisted } = await import('./guestSessionPersist.ts')
 const { getState, subscribe } = await import('../data/store/app-store.ts')
 const { readJsonKey, storageKeyFor } = await import('../data/store/persist.ts')
 const { normalizeSettings } = await import('../domain/practiceSettings.ts')

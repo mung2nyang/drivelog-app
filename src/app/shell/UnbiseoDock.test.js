@@ -19,7 +19,7 @@ const { withToast } = await import('../../testSupport/withToast.ts')
 const { supabase } = await import('../../data/cloud/supabaseClient.ts')
 const { normalizeSettings } = await import('../../domain/practiceSettings.ts')
 const { commitSettings, commitWorkData } = await import('../../data/store/commitHelpers.ts')
-const { default: AppShell } = await import('./AppShell.jsx')
+const { default: AppShell } = await import('./AppShell.tsx')
 
 const DATE = '2026-10-21'
 /** @type {Array<{ data: object }>} */

@@ -25,8 +25,8 @@ const React = await import('react')
 const { act } = React
 const { createRoot } = await import('react-dom/client')
 const { BrowserRouter } = await import('react-router-dom')
-const { default: App } = await import('./App.jsx')
-const { setGuestModePersisted, clearGuestModePersisted } = await import('./guestSessionPersist.js')
+const { default: App } = await import('./App.tsx')
+const { setGuestModePersisted, clearGuestModePersisted } = await import('./guestSessionPersist.ts')
 
 /** @param {() => boolean} predicate */
 async function waitUntil(predicate, timeoutMs = 3000) {

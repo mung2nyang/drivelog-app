@@ -20,8 +20,8 @@ const { normalizeSettings } = await import('../../domain/practiceSettings.ts')
 const { commitClients, commitSettings, commitWorkData } = await import('../../data/store/commitHelpers.ts')
 const { readOwnerLogWorkData } = await import('../../data/store/ownerDataHooks.ts')
 const { readOwnerExpenses } = await import('../../data/store/ownerDataHooks.ts')
-const { readAssistantCall, readAssistantExpense, readAssistantFixed } = await import('./assistantCallState.js')
-const { default: MainPageRoute } = await import('./MainPageRoute.jsx')
+const { readAssistantCall, readAssistantExpense, readAssistantFixed } = await import('./assistantCallState.ts')
+const { default: MainPageRoute } = await import('./MainPageRoute.tsx')
 
 let confirms = 0
 window.confirm = () => { confirms += 1; return true }
@@ -407,7 +407,7 @@ test('고정 노선 이상한 값: 횟수가 1~20 정수가 아니면 통째로 
 })
 
 test('갈 곳: 거래처는 /app/clients(assistantClient), 운행·고정 노선은 그 날짜 일지', async () => {
-  const { assistantNavTarget } = await import('./assistantCallState.js')
+  const { assistantNavTarget } = await import('./assistantCallState.ts')
   const heard = { name: '한진', manager: '', phone: '', paymentTerm: '', paymentTermValue: null, commType: '', commValue: null }
   assert.deepEqual(assistantNavTarget(heard, { cancelOff: false }), ['/app/clients', { state: { from: 'home', assistantClient: heard } }])
   assert.deepEqual(assistantNavTarget({ date: DATE, ...CALL }, { cancelOff: true }), [`/app/day/${DATE}`, { state: { from: 'home', assistantCall: { ...CALL, cancelOff: true } } }])

@@ -24,7 +24,7 @@ mock.module('../data/hydrate/hydrate.ts', {
 
 globalThis.IS_REACT_ACT_ENVIRONMENT = true
 
-const { restoreSessionOnBoot } = await import('./boot.js')
+const { restoreSessionOnBoot } = await import('./boot.ts')
 
 /** @type {Array<'fail' | 'linked' | 'none'>} */
 let answers = []
@@ -76,7 +76,7 @@ test('확인 성공 + 연동 없음 → 지금처럼 본인 칸, 재확인 안 �
 test('화면: 안내 화면 문구·다시 시도', async () => {
   const React = await import('react')
   const { createRoot } = await import('react-dom/client')
-  const { default: BootRetryScreen } = await import('./shell/BootRetryScreen.jsx')
+  const { default: BootRetryScreen } = await import('./shell/BootRetryScreen.tsx')
   const container = document.createElement('div')
   document.body.appendChild(container)
   const root = createRoot(container)

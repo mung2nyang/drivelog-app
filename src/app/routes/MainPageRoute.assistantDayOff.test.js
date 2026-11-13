@@ -19,8 +19,8 @@ const { withToast } = await import('../../testSupport/withToast.ts')
 const { normalizeSettings } = await import('../../domain/practiceSettings.ts')
 const { commitSettings, commitWorkData } = await import('../../data/store/commitHelpers.ts')
 const { readOwnerLogWorkData } = await import('../../data/store/ownerDataHooks.ts')
-const { assistantNavTarget, readAssistantDayOff } = await import('./assistantCallState.js')
-const { default: MainPageRoute } = await import('./MainPageRoute.jsx')
+const { assistantNavTarget, readAssistantDayOff } = await import('./assistantCallState.ts')
+const { default: MainPageRoute } = await import('./MainPageRoute.tsx')
 
 const DATE = '2026-10-21'
 /** @type {Array<string>} */

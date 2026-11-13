@@ -35,9 +35,9 @@ const { createRoot } = await import('react-dom/client')
 const { act } = React
 const { BrowserRouter } = await import('react-router-dom')
 const { withToast } = await import('../../testSupport/withToast.ts')
-const { default: useAppBackButton } = await import('./useAppBackButton.js')
-const { default: useBackToExit, EXIT_HINT } = await import('./useBackToExit.js')
-const { default: usePullToRefresh } = await import('./usePullToRefresh.js')
+const { default: useAppBackButton } = await import('./useAppBackButton.ts')
+const { default: useBackToExit, EXIT_HINT } = await import('./useBackToExit.ts')
+const { default: usePullToRefresh } = await import('./usePullToRefresh.ts')
 
 const flush = () => new Promise((resolve) => { setTimeout(resolve, 0) })
 

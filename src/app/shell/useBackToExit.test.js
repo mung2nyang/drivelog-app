@@ -14,7 +14,7 @@ const { withToast } = await import('../../testSupport/withToast.ts')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
 const { BrowserRouter } = await import('react-router-dom')
-const { default: useBackToExit, isExitEdge, EXIT_HINT } = await import('./useBackToExit.js')
+const { default: useBackToExit, isExitEdge, EXIT_HINT } = await import('./useBackToExit.ts')
 
 /** @param {boolean} standalone */
 function setStandalone(standalone) {

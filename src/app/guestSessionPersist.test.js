@@ -6,7 +6,7 @@ import {
   GUEST_APP_SESSION,
   isGuestModePersisted,
   setGuestModePersisted,
-} from './guestSessionPersist.js'
+} from './guestSessionPersist.ts'
 
 describe('guestSessionPersist — localStorage 게스트 플래그', () => {
   test('setGuestModePersisted(true) 후 isGuestModePersisted === true', () => {

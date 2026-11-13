@@ -26,7 +26,7 @@ const { readOwnerExpenses } = await import('../../../data/store/ownerDataHooks.t
 const { normalizeSettings } = await import('../../../domain/practiceSettings.ts')
 const { panelGuardOnTop } = await import('../../../shared/utils/historyMoves.ts')
 const { default: MaintFuelPage } = await import('./MaintFuelPage.jsx')
-const { default: MainPageRoute } = await import('../../../app/routes/MainPageRoute.jsx')
+const { default: MainPageRoute } = await import('../../../app/routes/MainPageRoute.tsx')
 
 const DATE = '2026-10-23'
 const flush = () => act(async () => { await new Promise((resolve) => { setTimeout(resolve, 0) }) })

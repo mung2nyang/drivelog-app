@@ -12,7 +12,7 @@ globalThis.IS_REACT_ACT_ENVIRONMENT = true
 const React = await import('react')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
-const { default: ToastMessage } = await import('./ToastMessage.jsx')
+const { default: ToastMessage } = await import('./ToastMessage.tsx')
 const { SERVER_SAVE_FAIL } = await import('../../shared/utils/failureMessages.ts')
 
 /** @param {string} message @param {(container: HTMLElement) => void} check */

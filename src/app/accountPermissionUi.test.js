@@ -19,7 +19,7 @@ const { MemoryRouter } = await import('react-router-dom')
 const { act } = React
 
 const { default: MyPage } = await import('../features/account/ui/MyPage.jsx')
-const { default: SideMenu } = await import('./shell/SideMenu.jsx')
+const { default: SideMenu } = await import('./shell/SideMenu.tsx')
 const { default: CarListPage } = await import('../features/cars/ui/CarListPage.jsx')
 const { commitBatch } = await import('../data/store/app-store.ts')
 

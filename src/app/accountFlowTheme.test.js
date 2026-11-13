@@ -26,11 +26,11 @@ const React = await import('react')
 const { act } = React
 const { createRoot } = await import('react-dom/client')
 const { BrowserRouter } = await import('react-router-dom')
-const { default: App } = await import('./App.jsx')
+const { default: App } = await import('./App.tsx')
 const { commitSettings } = await import('../data/store/commitHelpers.ts')
 const { normalizeSettings } = await import('../domain/practiceSettings.ts')
 const { endCloudSession } = await import('../data/cloud/cloudSession.ts')
-const { clearGuestModePersisted } = await import('./guestSessionPersist.js')
+const { clearGuestModePersisted } = await import('./guestSessionPersist.ts')
 
 async function waitUntil(predicate, { timeoutMs = 5000, stepMs = 20 } = {}) {
   let ok = false

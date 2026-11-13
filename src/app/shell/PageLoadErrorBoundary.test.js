@@ -3,7 +3,7 @@ import { pathToFileURL } from 'node:url'
 
 /** @type {Array<{ kind: string, message?: string }>} */
 const reported = []
-mock.module('../errorReport.js', {
+mock.module('../errorReport.ts', {
   namedExports: { reportClientError: (/** @type {{ kind: string, message?: string }} */ report) => { reported.push(report); return true } },
 })
 register(pathToFileURL('./src/testSupport/jsxLoaderHook.mjs').href, import.meta.url)
@@ -17,7 +17,7 @@ globalThis.IS_REACT_ACT_ENVIRONMENT = true
 const React = await import('react')
 const { act } = React
 const { createRoot } = await import('react-dom/client')
-const { default: PageLoadErrorBoundary } = await import('./PageLoadErrorBoundary.jsx')
+const { default: PageLoadErrorBoundary } = await import('./PageLoadErrorBoundary.tsx')
 
 /** @param {{ broken: boolean }} props */
 function Page({ broken }) {

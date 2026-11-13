@@ -26,8 +26,8 @@ const React = await import('react')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
 const { MemoryRouter } = await import('react-router-dom')
-const { buzz, BUZZ_MS } = await import('./haptic.js')
-const { useAppSession } = await import('./useAppSession.js')
+const { buzz, BUZZ_MS } = await import('./haptic.ts')
+const { useAppSession } = await import('./useAppSession.ts')
 
 test('진동 기능이 있으면 0.01초 1번, 없거나 막히면 오류 없이 넘어감', () => {
   /** @type {Array<number>} */

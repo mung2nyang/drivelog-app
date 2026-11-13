@@ -1,7 +1,7 @@
 // @ts-check
 import assert from 'node:assert/strict'
 import { describe, test } from 'node:test'
-import { buildSubLogMenuItems } from './subLogMenuItems.js'
+import { buildSubLogMenuItems } from './subLogMenuItems.ts'
 
 describe('buildSubLogMenuItems — §1-A 연동 없는 sub만', () => {
   test('연동·초대대기 기사가 있는 sub는 빼고, 없는 sub만 남긴다', () => {

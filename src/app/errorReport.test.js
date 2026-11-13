@@ -6,7 +6,7 @@ import { createFakeSupabase, wait } from '../testSupport/fakeSupabaseClient.ts'
 const { fakeSupabase, handlers, resetHandlers, countOf } = createFakeSupabase()
 mock.module('../data/cloud/supabaseClient.ts', { namedExports: { supabase: fakeSupabase } })
 
-const { MAX_REPORTS_PER_LOAD, describeError, installErrorReporting, reportClientError, resetErrorReportsForTests } = await import('./errorReport.js')
+const { MAX_REPORTS_PER_LOAD, describeError, installErrorReporting, reportClientError, resetErrorReportsForTests } = await import('./errorReport.ts')
 const { beginSessionEpoch, endCloudSession } = await import('../data/cloud/cloudSession.ts')
 
 /** @type {Array<Record<string, string>>} */
@@ -71,7 +71,7 @@ test('describeError: Error·글자·빈 값', () => {
 
 test('installErrorReporting: window error·unhandledrejection을 받아 보낸다', async () => {
   beginSessionEpoch('user-err', 'user-err')
-  /** @typedef {import('./errorReport.js').ErrorLikeEvent} ErrorLikeEvent */
+  /** @typedef {import('./errorReport.ts').ErrorLikeEvent} ErrorLikeEvent */
   /** @type {Record<string, (event: ErrorLikeEvent) => void>} */
   const listeners = {}
   installErrorReporting({ addEventListener: (type, fn) => { listeners[type] = fn } })

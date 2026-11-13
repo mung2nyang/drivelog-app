@@ -27,7 +27,7 @@ mock.module('../data/sync/durableWriteGuard.ts', {
   },
 })
 
-const { attachPendingWriteRetryListeners } = await import('./pendingWriteRetryListeners.js')
+const { attachPendingWriteRetryListeners } = await import('./pendingWriteRetryListeners.ts')
 
 function fakeWindowTarget() {
   /** @type {Record<string, Array<WindowListener>>} */

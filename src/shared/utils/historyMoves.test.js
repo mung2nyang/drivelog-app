@@ -14,7 +14,7 @@ const { withToast } = await import('../../testSupport/withToast.ts')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
 const { BrowserRouter, useNavigate } = await import('react-router-dom')
-const { default: useBackToExit, EXIT_HINT } = await import('../../app/shell/useBackToExit.js')
+const { default: useBackToExit, EXIT_HINT } = await import('../../app/shell/useBackToExit.ts')
 const { chooseMove, markRewind, noteLocation, takeRewind } = await import('./historyMoves.ts')
 
 test('홈에서 다른 메뉴로는 쌓고, 메뉴·화면끼리는 교체', () => {

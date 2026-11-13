@@ -1,0 +1,59 @@
+import { useEffect, useState } from 'react'
+import { getState, subscribe } from '../../data/store/app-store.ts'
+import { retryHydrate } from '../../data/hydrate/hydrate.ts'
+import { useToast } from '../../shared/hooks/useToast.ts'
+
+const bannerStyle = {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  gap: '8px',
+  padding: '10px 16px',
+  background: '#fff3cd',
+  color: '#664d03',
+  fontSize: 'var(--fs-2)',
+  borderBottom: '1px solid #ffe69c',
+}
+
+const buttonStyle = {
+  flexShrink: 0,
+  padding: '6px 12px',
+  borderRadius: '6px',
+  border: '1px solid #664d03',
+  background: 'transparent',
+  color: '#664d03',
+  fontSize: 'var(--fs-2)',
+  cursor: 'pointer',
+}
+
+export default function HydrationRetryBanner() {
+  const showToast = useToast()
+  const [status, setStatus] = useState(() => getState().hydration.status)
+  const [retrying, setRetrying] = useState(false)
+
+  useEffect(() => subscribe((state) => setStatus(state.hydration.status)), [])
+
+  if (status !== 'failed') return null
+
+  async function handleRetry() {
+    setRetrying(true)
+    try {
+      await retryHydrate()
+      showToast?.('기록을 다시 불러왔습니다.')
+    } catch (error) {
+      console.error('[HydrationRetryBanner] 재시도 실패', error)
+      showToast?.('다시 시도했지만 아직 불러오지 못했습니다.')
+    } finally {
+      setRetrying(false)
+    }
+  }
+
+  return (
+    <div style={bannerStyle} role="alert">
+      <span>서버에서 기록을 불러오지 못했습니다. 지금 보이는 기록은 빠져 있을 수 있으니 [다시 시도]를 눌러 주세요.</span>
+      <button type="button" style={buttonStyle} onClick={handleRetry} disabled={retrying}>
+        {retrying ? '다시 시도하는 중…' : '다시 시도'}
+      </button>
+    </div>
+  )
+}

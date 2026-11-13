@@ -14,7 +14,7 @@ globalThis.IS_REACT_ACT_ENVIRONMENT = true
 const React = await import('react')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
-const { default: LoadingScreen } = await import('./LoadingScreen.jsx')
+const { default: LoadingScreen } = await import('./LoadingScreen.tsx')
 const { applyTheme } = await import('../../data/sync/settingsSave.ts')
 
 /** @param {boolean} inline */

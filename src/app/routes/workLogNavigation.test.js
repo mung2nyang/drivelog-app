@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { describe, test } from 'node:test'
-import { resolveWorkLogCloseTarget } from './workLogNavigation.js'
+import { resolveWorkLogCloseTarget } from './workLogNavigation.ts'
 
 describe('resolveWorkLogCloseTarget — 일지 닫기 후 Back 비재진입', () => {
   test('달력 셀 클릭으로 들어왔으면(state.from === "calendar") 뒤로가기(-1)', () => {

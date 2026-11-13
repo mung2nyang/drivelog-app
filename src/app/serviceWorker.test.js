@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { test } from 'node:test'
 import vm from 'node:vm'
-import { registerServiceWorker } from './registerServiceWorker.js'
+import { registerServiceWorker } from './registerServiceWorker.ts'
 
 const SCOPE = 'https://getdrivelog.com/'
 const OFFLINE = `${SCOPE}offline.html`

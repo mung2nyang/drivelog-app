@@ -58,11 +58,11 @@ async function unmountTracked(root) {
   await act(async () => { root.unmount() })
 }
 const { BrowserRouter, MemoryRouter } = await import('react-router-dom')
-const { default: App } = await import('./App.jsx')
+const { default: App } = await import('./App.tsx')
 const { commitCars, commitClients, commitLogWorkData } = await import('../data/store/commitHelpers.ts')
 const { getState, setHydration, subscribe } = await import('../data/store/app-store.ts')
 const { readJsonKey, storageKeyFor } = await import('../data/store/persist.ts')
-const { parseAppLogPath, withFromLogState } = await import('./shell/fromLogNavigation.js')
+const { parseAppLogPath, withFromLogState } = await import('./shell/fromLogNavigation.ts')
 const { pendingOwnerForLog } = await import('../data/sync/pendingLogOwner.ts')
 const { registerPendingDayWrite, getPendingDayWrite } = await import('../data/sync/pendingWorkDataWrites.ts')
 const { initializeOwnerFromPersist } = await import('../data/store/owner-state.ts')

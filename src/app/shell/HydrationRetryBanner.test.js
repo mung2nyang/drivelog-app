@@ -14,7 +14,7 @@ const React = await import('react')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
 const { setHydration } = await import('../../data/store/app-store.ts')
-const { default: HydrationRetryBanner } = await import('./HydrationRetryBanner.jsx')
+const { default: HydrationRetryBanner } = await import('./HydrationRetryBanner.tsx')
 
 /** @returns {Promise<string|null>} */
 async function bannerText() {

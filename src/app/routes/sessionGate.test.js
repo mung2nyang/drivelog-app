@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { describe, test } from 'node:test'
-import { resolveSessionGate } from './sessionGate.js'
+import { resolveSessionGate } from './sessionGate.ts'
 
 describe('resolveSessionGate — 비로그인 딥링크 차단', () => {
   test('부트 중이면 세션 유무와 무관하게 loading', () => {

@@ -27,7 +27,7 @@ const React = await import('react')
 const { act } = React
 const { createRoot } = await import('react-dom/client')
 const { BrowserRouter } = await import('react-router-dom')
-const { default: App } = await import('./App.jsx')
+const { default: App } = await import('./App.tsx')
 const { storageKeyFor } = await import('../data/store/persist.ts')
 const { initializeOwnerFromPersist } = await import('../data/store/owner-state.ts')
 

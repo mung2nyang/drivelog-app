@@ -12,7 +12,7 @@ globalThis.IS_REACT_ACT_ENVIRONMENT = true
 const React = await import('react')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
-const { default: BottomNav } = await import('./BottomNav.jsx')
+const { default: BottomNav } = await import('./BottomNav.tsx')
 
 test('버튼 4개 이름·그림 숨김·지금 탭만 aria-current="page"', async () => {
   const container = document.createElement('div')

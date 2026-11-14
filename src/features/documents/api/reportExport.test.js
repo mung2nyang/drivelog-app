@@ -36,7 +36,7 @@ Object.defineProperty(window.HTMLCanvasElement.prototype, 'toBlob', {
   value(done) { pngSizes.push({ width: this.width, height: this.height }); done(new Blob(['png'], { type: 'image/png' })) },
 })
 
-const { buildReportExportFile, createReportImageFile, createReportPdfFile, downloadFile, imageMarginPx } = await import('./reportExport.js')
+const { buildReportExportFile, createReportImageFile, createReportPdfFile, downloadFile, imageMarginPx } = await import('./reportExport.ts')
 
 test('방향을 안 넘기면 세로, 가로를 넘기면 가로', async () => {
   const element = document.createElement('div')

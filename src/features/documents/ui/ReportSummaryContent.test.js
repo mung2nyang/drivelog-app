@@ -7,14 +7,14 @@ import '../../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { formatWon } from '../../../domain/money.ts'
-import { dash } from '../api/report.js'
+import { dash } from '../api/report.ts'
 
 globalThis.IS_REACT_ACT_ENVIRONMENT = true
 
 const React = await import('react')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
-const { ReportSummaryContent } = await import('./ReportSummaryContent.jsx')
+const { ReportSummaryContent } = await import('./ReportSummaryContent.tsx')
 
 const baseReport = {
   monthIndex: 8,

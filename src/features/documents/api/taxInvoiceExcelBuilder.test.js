@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict'
 import { describe, test } from 'node:test'
 import ExcelJS from 'exceljs'
-import { buildTaxInvoiceExcelFileName } from './taxInvoiceExcel.js'
+import { buildTaxInvoiceExcelFileName } from './taxInvoiceExcel.ts'
 import { buildTaxInvoiceWorkbook } from './taxInvoiceExcelBuilder.js'
 
 /** @type {import('../../../domain/financeTypes.ts').FinanceSettings} */

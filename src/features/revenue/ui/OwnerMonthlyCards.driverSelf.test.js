@@ -6,14 +6,14 @@ register(pathToFileURL('./src/testSupport/jsxLoaderHook.mjs').href, import.meta.
 import '../../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { describe, test } from 'node:test'
-import { driverSelfNetProfitLabel } from './revenueFormat.js'
+import { driverSelfNetProfitLabel } from './revenueFormat.ts'
 
 globalThis.IS_REACT_ACT_ENVIRONMENT = true
 
 const React = await import('react')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
-const { default: OwnerMonthlyCards } = await import('./OwnerMonthlyCards.jsx')
+const { default: OwnerMonthlyCards } = await import('./OwnerMonthlyCards.tsx')
 
 describe('driverSelfNetProfitLabel', () => {
   test('매출제(%) → 이번 달 정산액 N%', () => {

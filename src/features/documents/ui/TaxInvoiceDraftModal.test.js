@@ -13,7 +13,7 @@ globalThis.IS_REACT_ACT_ENVIRONMENT = true
 const React = await import('react')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
-const { default: TaxInvoiceDraftModal } = await import('./TaxInvoiceDraftModal.jsx')
+const { default: TaxInvoiceDraftModal } = await import('./TaxInvoiceDraftModal.tsx')
 
 const baseItem = {
   id: 'inv-1',

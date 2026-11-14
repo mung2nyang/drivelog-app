@@ -13,7 +13,7 @@ const React = await import('react')
 const { withToast } = await import('../../../testSupport/withToast.ts')
 const { act } = React
 const { createRoot } = await import('react-dom/client')
-const { default: DailyInspectionShareModal } = await import('./DailyInspectionShareModal.jsx')
+const { default: DailyInspectionShareModal } = await import('./DailyInspectionShareModal.tsx')
 
 const fakeFile = new File(['fake'], '일상점검표.pdf', { type: 'application/pdf' })
 

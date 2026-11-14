@@ -19,7 +19,7 @@ reactActEnv.IS_REACT_ACT_ENVIRONMENT = true
 
 const fakeFile = new File(['fake'], 'report.pdf', { type: 'application/pdf' })
 
-mock.module('../api/reportExport.js', {
+mock.module('../api/reportExport.ts', {
   namedExports: {
     createReportImageFile: async () => fakeFile,
     createReportPdfFile: async () => fakeFile,
@@ -31,7 +31,7 @@ const React = await import('react')
 const { withToast } = await import('../../../testSupport/withToast.ts')
 const { act } = React
 const { createRoot } = await import('react-dom/client')
-const { default: ReportShareModal } = await import('./ReportShareModal.jsx')
+const { default: ReportShareModal } = await import('./ReportShareModal.tsx')
 
 /** @param {Object} [props] */
 function mountModal(props = {}) {

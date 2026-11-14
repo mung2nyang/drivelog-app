@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { buildMonthReport } from './reportSummary.js'
+import { buildMonthReport } from './reportSummary.ts'
 
 const PLATE = '서울12가3456'
 const SUB_CARS = /** @type {Array<import('../../../domain/financeTypes.ts').CarLike>} */ ([{ id: 's1', type: 'sub', number: PLATE }])

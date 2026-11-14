@@ -42,7 +42,7 @@ const { withToast } = await import('../../../testSupport/withToast.ts')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
 const { MemoryRouter } = await import('react-router-dom')
-const { default: ReportPage } = await import('./ReportPage.jsx')
+const { default: ReportPage } = await import('./ReportPage.tsx')
 const { commitCars, commitClients, commitLogWorkData, commitSettings, commitWorkData } = await import('../../../data/store/commitHelpers.ts')
 const { normalizeSettings } = await import('../../../domain/practiceSettings.ts')
 

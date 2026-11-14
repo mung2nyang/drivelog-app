@@ -4,7 +4,7 @@ import '../../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { mock, test } from 'node:test'
 
-const { changeTaxInvoiceStatus, checkTaxInvoiceDraft, saveTaxInvoiceDraft } = await import('./taxInvoiceActions.js')
+const { changeTaxInvoiceStatus, checkTaxInvoiceDraft, saveTaxInvoiceDraft } = await import('./taxInvoiceActions.ts')
 
 const SAVE_FAIL = '저장에 실패했습니다. 네트워크 상태를 확인해 주세요.'
 

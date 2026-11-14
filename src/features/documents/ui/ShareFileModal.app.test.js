@@ -30,7 +30,7 @@ const React = await import('react')
 const { withToast } = await import('../../../testSupport/withToast.ts')
 const { act } = React
 const { createRoot } = await import('react-dom/client')
-const { default: DailyInspectionShareModal } = await import('./DailyInspectionShareModal.jsx')
+const { default: DailyInspectionShareModal } = await import('./DailyInspectionShareModal.tsx')
 
 test('앱: 문자 [PDF로 보내기]는 문서/운행일지에 파일을 저장하고 위치를 알린 뒤 문자 앱으로 간다(링크 내려받기 없음)', async () => {
   /** @type {Array<string>} */

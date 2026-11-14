@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { receivablesDetailPath, receivablesListPath } from './receivablesPaths.js'
+import { receivablesDetailPath, receivablesListPath } from './receivablesPaths.ts'
 
 test('상세 주소: ?back= 표시를 뒤에 그대로 붙인다', () => {
   assert.equal(receivablesDetailPath('미지정 거래처', '2026-10', '?back=mypage'), `/app/receivables/${encodeURIComponent('미지정 거래처')}/2026-10?back=mypage`)

@@ -13,7 +13,7 @@ globalThis.IS_REACT_ACT_ENVIRONMENT = true
 const React = await import('react')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
-const { ReportMonthSummaryCard } = await import('./ReportMonthSummaryCard.jsx')
+const { ReportMonthSummaryCard } = await import('./ReportMonthSummaryCard.tsx')
 
 const baseReport = {
   distanceKm: 0,

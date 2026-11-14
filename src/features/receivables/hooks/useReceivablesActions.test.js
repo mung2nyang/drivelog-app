@@ -19,7 +19,7 @@ Reflect.set(globalThis, 'IS_REACT_ACT_ENVIRONMENT', true)
 const React = await import('react')
 const { act } = React
 const { createRoot } = await import('react-dom/client')
-const { useReceivablesActions } = await import('./useReceivablesActions.js')
+const { useReceivablesActions } = await import('./useReceivablesActions.ts')
 
 const SETTINGS = { paymentOn: true, cars: [], clients: [] }
 const WORK = {

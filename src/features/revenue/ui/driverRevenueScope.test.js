@@ -6,7 +6,7 @@ import { getMonthlyFareRevenue } from '../../../domain/financeCore.ts'
 import {
   scopeSettingsToVehicle,
   scopeWorkDataToVehicle,
-} from './driverRevenueScope.js'
+} from './driverRevenueScope.ts'
 
 describe('Step 9 slice C-2 driverRevenueScope', () => {
   const mine = '서울12가3456'

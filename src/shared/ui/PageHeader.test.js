@@ -16,7 +16,7 @@ const { createRoot } = await import('react-dom/client')
 const { act } = React
 const { default: PageHeader } = await import('./PageHeader.tsx')
 const { default: MyPage } = await import('../../features/account/ui/MyPage.jsx')
-const { default: RevenuePage } = await import('../../features/revenue/ui/RevenuePage.jsx')
+const { default: RevenuePage } = await import('../../features/revenue/ui/RevenuePage.tsx')
 
 /** @param {import('react').ReactElement} element */
 async function render(element) {

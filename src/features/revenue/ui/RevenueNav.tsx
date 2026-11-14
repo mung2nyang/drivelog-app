@@ -1,0 +1,42 @@
+import CalendarDateSelect from '../../../shared/ui/CalendarDateSelect.tsx'
+import { getYearOptions, setYearMonth } from '../../../domain/calendar.ts'
+
+const YEAR_OPTIONS = getYearOptions()
+
+type DateNavProps = {
+  yearly: boolean
+  viewDate: Date
+  year: number
+  month: number
+  onViewDate: (date: Date) => void
+  onShift: (delta: number) => void
+}
+
+export function DateNav({ yearly, viewDate, year, month, onViewDate, onShift }: DateNavProps) {
+  return (
+    <div className="date-navigator">
+      <button type="button" className="arrow-btn" title={yearly ? '이전 해' : '이전 달'} onClick={() => onShift(-1)}>
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+      </button>
+      <div className="date-select-group">
+        <CalendarDateSelect
+          label="년도 선택"
+          value={year}
+          options={YEAR_OPTIONS.map((y) => ({ value: String(y), label: `${y}년` }))}
+          onChange={(next) => onViewDate(setYearMonth(viewDate, Number(next), month))}
+        />
+        {!yearly && (
+          <CalendarDateSelect
+            label="월 선택"
+            value={month}
+            options={Array.from({ length: 12 }, (_, m) => ({ value: String(m), label: `${m + 1}월` }))}
+            onChange={(next) => onViewDate(setYearMonth(viewDate, year, Number(next)))}
+          />
+        )}
+      </div>
+      <button type="button" className="arrow-btn" title={yearly ? '다음 해' : '다음 달'} onClick={() => onShift(1)}>
+        <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </button>
+    </div>
+  )
+}

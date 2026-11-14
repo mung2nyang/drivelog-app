@@ -4,7 +4,7 @@ import {
   parseClientParam,
   parseMonthParam,
   receivablesDetailPath,
-} from './receivablesPaths.js'
+} from './receivablesPaths.ts'
 
 describe('receivablesPaths — 8-C 라우트 헬퍼', () => {
   test('receivablesDetailPath는 client를 encodeURIComponent 한다', () => {

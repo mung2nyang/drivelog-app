@@ -14,8 +14,8 @@ const React = await import('react')
 const { withSession } = await import('../../../testSupport/withSession.ts')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
-const { default: ReportPage } = await import('./ReportPage.jsx')
-const { default: TaxInvoiceTab } = await import('./TaxInvoiceTab.jsx')
+const { default: ReportPage } = await import('./ReportPage.tsx')
+const { default: TaxInvoiceTab } = await import('./TaxInvoiceTab.tsx')
 const { commitClients, commitInvoices, commitWorkData } = await import('../../../data/store/commitHelpers.ts')
 
 test('일지를 커밋하면 운송비 내역서가 리마운트 없이 합계를 갱신한다', async () => {

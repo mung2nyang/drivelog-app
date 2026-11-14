@@ -1,0 +1,99 @@
+import { useMemo } from 'react'
+import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom'
+import { formatWon } from '../../../domain/money.ts'
+import { formatWorkMonth, groupItems, receivableItemKey } from '../../../domain/receivables.ts'
+import { parseClientParam, parseMonthParam, receivablesListPath } from './receivablesPaths.ts'
+import { useReceivablesData } from '../hooks/useReceivablesData.ts'
+import { useReceivablesActions } from '../hooks/useReceivablesActions.ts'
+import { useConfirm } from '../hooks/useConfirm.tsx'
+import ReceivableItemCard from './ReceivableItemCard.tsx'
+import PageHeader from '../../../shared/ui/PageHeader.tsx'
+import './receivables.css'
+import './receivables-detail.css'
+import { useSession } from '../../../data/cloud/sessionContext.ts'
+import type { ReceivableItemLike } from '../../../domain/financeReceivables.ts'
+
+export default function ReceivablesDetailPage({ isEmployedDriver = false }: { isEmployedDriver?: boolean }) {
+  const { ownerKey } = useSession()
+  const navigate = useNavigate()
+  const { search } = useLocation()
+  const { client: clientParam, month: monthParam } = useParams()
+  const monthKey = parseMonthParam(monthParam)
+  const clientName = parseClientParam(clientParam)
+  const { confirm, confirmDialog } = useConfirm()
+  const { workDataByLogId, settings, items, hasSubCars } = useReceivablesData(ownerKey, isEmployedDriver)
+  const actions = useReceivablesActions({
+    ownerKey, workDataByLogId, settings, confirm,
+  })
+
+  const detailItems = useMemo(() => (
+    monthKey && clientName ? groupItems(items, clientName, monthKey) : []
+  ), [items, clientName, monthKey])
+  const detailTotal = detailItems.reduce((sum: number, item: ReceivableItemLike) => sum + item.remainingAmount, 0)
+  const dueDates = detailItems.map((item: ReceivableItemLike) => item.paymentDueDate).filter(Boolean).sort()
+
+  if (!monthKey || !clientName) {
+    return <Navigate to={receivablesListPath(search)} replace />
+  }
+
+  function togglePartial(key: string) {
+    actions.setPartialKey(actions.partialKey === key ? '' : key)
+    actions.setPartialAmount('')
+  }
+
+  return (
+    <div className="page receivables-page">
+      {confirmDialog}
+      <PageHeader title="미수금 상세" onBack={() => navigate(receivablesListPath(search))} />
+
+      <section className="receivable-detail-summary">
+        <div className="receivable-detail-eyebrow">{formatWorkMonth(monthKey)}</div>
+        <h2>{clientName}</h2>
+        <div className="receivable-detail-total">
+          <span>총 미수금</span>
+          <strong>{formatWon(detailTotal)}</strong>
+        </div>
+        <div className="receivable-detail-meta">
+          {detailItems.length}건, {dueDates.length ? `입금 예정일 ${dueDates[0].replace(/-/g, '.')}` : '입금 예정일이 등록되지 않았습니다'}
+        </div>
+      </section>
+
+      {detailItems.length === 0 && <div className="empty-state">남은 미수금이 없습니다.</div>}
+      {detailItems.map((item: ReceivableItemLike) => (
+        <ReceivableItemCard
+          key={receivableItemKey(item)}
+          item={item}
+          compact={false}
+          hasSubCars={hasSubCars}
+          saving={actions.saving}
+          partialKey={actions.partialKey}
+          partialAmount={actions.partialAmount}
+          partialProblem={actions.partialProblem}
+          historyKey={actions.historyKey}
+          onTogglePartial={togglePartial}
+          onPartialAmountChange={actions.setPartialAmount}
+          onConfirmPartial={() => actions.confirmPartial(item)}
+          onToggleHistory={(key) => actions.setHistoryKey(actions.historyKey === key ? '' : key)}
+          onPayItem={() => actions.payItem(item)}
+          onUndoPayment={() => actions.undoPayment(item)}
+        />
+      ))}
+
+      {detailItems.length > 0 && (
+        <div className="receivable-detail-footer">
+          <button
+            type="button"
+            className="receivable-detail-all-paid"
+            onClick={async () => {
+              const leave = await actions.payGroup(clientName, monthKey, true)
+              if (leave) navigate(receivablesListPath(search))
+            }}
+            disabled={actions.saving}
+          >
+            전체 입금 완료 처리
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}

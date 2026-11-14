@@ -14,7 +14,7 @@ const React = await import('react')
 const { withSession } = await import('../../../testSupport/withSession.ts')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
-const { default: OwnerRevenueView } = await import('./OwnerRevenueView.jsx')
+const { default: OwnerRevenueView } = await import('./OwnerRevenueView.tsx')
 const { commitCars, commitExpenses } = await import('../../../data/store/commitHelpers.ts')
 
 /** @param {HTMLElement} container @param {string} text */

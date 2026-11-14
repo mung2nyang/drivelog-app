@@ -1,7 +1,7 @@
 const ALLOWED_CROSS_FEATURE = [
   ['src/features/day-log/ui/CallClientQuickAdd.tsx', 'src/features/clients/ui/ClientFormModal.jsx'],
   ['src/features/day-log/ui/DayLogExpenses.tsx', 'src/features/expenses/ui/ExpenseFormModal.tsx'],
-  ['src/features/home/ui/HomePage.jsx', 'src/features/receivables/hooks/useReceivablesData.js'],
+  ['src/features/home/ui/HomePage.jsx', 'src/features/receivables/hooks/useReceivablesData.ts'],
   ['src/features/drivers/ui/LinkedDriverClientsPage.jsx', 'src/features/clients/ui/ScopedClientsList.jsx'],
   ['src/features/account/ui/PersonalInfoPage.jsx', 'src/features/drivers/ui/EmployerLinkCard.jsx'],
   ['src/features/cars/ui/CarDriverConnectPanel.jsx', 'src/features/drivers/ui/driver-connection.css'],

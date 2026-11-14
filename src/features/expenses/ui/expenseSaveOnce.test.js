@@ -25,7 +25,7 @@ const { commitCars, commitExpenses, commitSettings, commitWorkData } = await imp
 const { readOwnerExpenses } = await import('../../../data/store/ownerDataHooks.ts')
 const { normalizeSettings } = await import('../../../domain/practiceSettings.ts')
 const { panelGuardOnTop } = await import('../../../shared/utils/historyMoves.ts')
-const { default: MaintFuelPage } = await import('./MaintFuelPage.jsx')
+const { default: MaintFuelPage } = await import('./MaintFuelPage.tsx')
 const { default: MainPageRoute } = await import('../../../app/routes/MainPageRoute.tsx')
 
 const DATE = '2026-10-23'

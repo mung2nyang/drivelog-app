@@ -8,7 +8,7 @@ Reflect.set(globalThis, 'IS_REACT_ACT_ENVIRONMENT', true)
 const React = await import('react')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
-const { useDayDraft } = await import('./useDayDraft.js')
+const { useDayDraft } = await import('./useDayDraft.ts')
 const { commitWorkData } = await import('../../../data/store/commitHelpers.ts')
 const { readOwnerLogWorkData } = await import('../../../data/store/ownerDataHooks.ts')
 

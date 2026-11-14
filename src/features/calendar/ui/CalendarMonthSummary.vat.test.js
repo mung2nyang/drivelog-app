@@ -12,7 +12,7 @@ globalThis.IS_REACT_ACT_ENVIRONMENT = true
 const React = await import('react')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
-const { default: CalendarMonthSummary } = await import('./CalendarMonthSummary.jsx')
+const { default: CalendarMonthSummary } = await import('./CalendarMonthSummary.tsx')
 
 const SUMMARY = {
   trips: 2, callTrips: 0, fixedBaseFare: 0, defaultBaseFare: 200000, fareByClient: {}, commissionByClient: {},

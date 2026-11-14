@@ -18,7 +18,7 @@ Reflect.set(globalThis, 'IS_REACT_ACT_ENVIRONMENT', true)
 const React = await import('react')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
-const { default: CallDetailForm } = await import('./CallDetailForm.jsx')
+const { default: CallDetailForm } = await import('./CallDetailForm.tsx')
 
 const noop = () => {}
 const PAYMENT_ON_SETTINGS = normalizeSettings({ paymentOn: true })

@@ -6,7 +6,7 @@ import { createFakeSupabase } from '../../../testSupport/fakeSupabaseClient.ts'
 const { fakeSupabase, handlers, resetHandlers, emptyOkHandlers, countOf } = createFakeSupabase()
 mock.module('../../../data/cloud/supabaseClient.ts', { namedExports: { supabase: fakeSupabase } })
 
-const { createDayDraftSaver } = await import('./dayDraftLifecycle.js')
+const { createDayDraftSaver } = await import('./dayDraftLifecycle.ts')
 const { beginSessionEpoch, endCloudSession } = await import('../../../data/cloud/cloudSession.ts')
 const { setHydration } = await import('../../../data/store/app-store.ts')
 const { commitCars, commitWorkData } = await import('../../../data/store/commitHelpers.ts')

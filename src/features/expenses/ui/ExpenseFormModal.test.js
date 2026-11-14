@@ -12,7 +12,7 @@ globalThis.IS_REACT_ACT_ENVIRONMENT = true
 const React = await import('react')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
-const { default: ExpenseFormModal } = await import('./ExpenseFormModal.jsx')
+const { default: ExpenseFormModal } = await import('./ExpenseFormModal.tsx')
 
 function mountTarget() {
   const container = document.createElement('div')

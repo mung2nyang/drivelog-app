@@ -12,8 +12,8 @@ globalThis.IS_REACT_ACT_ENVIRONMENT = true
 const React = await import('react')
 const { act } = React
 const { createRoot } = await import('react-dom/client')
-const { default: FixedCountSection } = await import('./FixedCountSection.jsx')
-const { default: PalletSection } = await import('./PalletSection.jsx')
+const { default: FixedCountSection } = await import('./FixedCountSection.tsx')
+const { default: PalletSection } = await import('./PalletSection.tsx')
 
 const noop = () => {}
 const client = { companyName: '고정거래처', fixedRouteLinked: true, fixedUnitPrice: '50,000', palletOn: true, palletPrice: 5000 }

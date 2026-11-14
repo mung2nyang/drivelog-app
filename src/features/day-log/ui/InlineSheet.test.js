@@ -12,7 +12,7 @@ globalThis.IS_REACT_ACT_ENVIRONMENT = true
 const React = await import('react')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
-const { default: InlineSheet } = await import('./InlineSheet.jsx')
+const { default: InlineSheet } = await import('./InlineSheet.tsx')
 
 /** @param {{ reduce?: boolean }} [options] */
 async function mount({ reduce = false } = {}) {

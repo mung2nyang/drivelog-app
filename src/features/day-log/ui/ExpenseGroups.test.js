@@ -12,7 +12,7 @@ globalThis.IS_REACT_ACT_ENVIRONMENT = true
 const React = await import('react')
 const { act } = React
 const { createRoot } = await import('react-dom/client')
-const { default: ExpenseGroups } = await import('./ExpenseGroups.jsx')
+const { default: ExpenseGroups } = await import('./ExpenseGroups.tsx')
 
 const noop = () => {}
 

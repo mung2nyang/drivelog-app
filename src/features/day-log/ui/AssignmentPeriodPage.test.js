@@ -17,7 +17,7 @@ const { createRoot } = await import('react-dom/client')
 const { MemoryRouter } = await import('react-router-dom')
 const { normalizeSettings } = await import('../../../domain/practiceSettings.ts')
 const { commitDrivers } = await import('../../../data/store/commitHelpers.ts')
-const { default: DayLogPage } = await import('./DayLogPage.jsx')
+const { default: DayLogPage } = await import('./DayLogPage.tsx')
 const { default: EmployerLinkCard } = await import('../../drivers/ui/EmployerLinkCard.jsx')
 
 const OWNER = 'owner-period'

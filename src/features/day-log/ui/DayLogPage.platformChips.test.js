@@ -35,7 +35,7 @@ const { act } = React
 const { createRoot } = await import('react-dom/client')
 const { BrowserRouter } = await import('react-router-dom')
 const { commitWorkData } = await import('../../../data/store/commitHelpers.ts')
-const { default: DayLogPage } = await import('./DayLogPage.jsx')
+const { default: DayLogPage } = await import('./DayLogPage.tsx')
 
 const DATE = '2026-10-17'
 const DEFAULTS = ['24시콜', '화물맨', '더운반', '원콜', '전국화물콜', '카카오T트럭커']

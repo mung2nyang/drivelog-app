@@ -5,7 +5,7 @@ export const ClientManagementPage = lazy(() => import('../../features/clients/ui
 export const OwnerScopedClientsView = lazy(() => import('../../features/clients/ui/OwnerScopedClientsView.jsx'))
 export const PersonalInfoPage = lazy(() => import('../../features/account/ui/PersonalInfoPage.jsx'))
 export const AppSettingsPage = lazy(() => import('../../features/settings/ui/AppSettingsPage.jsx'))
-export const MaintFuelPage = lazy(() => import('../../features/expenses/ui/MaintFuelPage.jsx'))
+export const MaintFuelPage = lazy(() => import('../../features/expenses/ui/MaintFuelPage.tsx'))
 export const ReceivablesPage = lazy(() => import('../../features/receivables/ui/ReceivablesPage.jsx'))
 export const DocumentIssuePage = lazy(() => import('../../features/documents/ui/DocumentIssuePage.jsx'))
 export const DriverConnectionPage = lazy(() => import('../../features/drivers/ui/DriverConnectionPage.jsx'))

@@ -13,7 +13,7 @@ const React = await import('react')
 const { createRoot } = await import('react-dom/client')
 const { act, useState } = React
 const { BrowserRouter, useNavigate } = await import('react-router-dom')
-const { default: usePanelBackGuard } = await import('./usePanelBackGuard.js')
+const { default: usePanelBackGuard } = await import('./usePanelBackGuard.ts')
 const { default: useModalBackGuard } = await import('./useModalBackGuard.ts')
 const { panelGuardOnTop } = await import('../../../shared/utils/historyMoves.ts')
 

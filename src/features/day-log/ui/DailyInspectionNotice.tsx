@@ -1,0 +1,128 @@
+import { useEffect, useRef, useState } from 'react'
+import { deleteDailyInspection, fetchDailyInspection, saveDailyInspection } from '../../../data/sync/dailyInspections.ts'
+import { vehicleSupabaseIdForLog } from '../../../data/sync/mainDayLogRouting.ts'
+import { useOwnerCars } from '../../../data/store/ownerDataHooks.ts'
+import { useOwnerProfile } from '../../../data/store/ownerProfileDriversHooks.ts'
+import DailyInspectionModal from './DailyInspectionModal.tsx'
+import useModalBackGuard from '../hooks/useModalBackGuard.ts'
+import './daily-inspection.css'
+import './daily-inspection-items.css'
+import './daily-inspection-loading.css'
+import { SERVER_SAVE_FAIL } from '../../../shared/utils/failureMessages.ts'
+import { useToast } from '../../../shared/hooks/useToast.ts'
+import { useSession } from '../../../data/cloud/sessionContext.ts'
+import { confirmDialog } from '../../../shared/ui/confirmDialog.tsx'
+import type { DailyInspection } from '../../../data/sync/dailyInspections.ts'
+import type { InspectionItems } from '../../../domain/dailyInspectionItems.ts'
+
+const SAVE_FAIL_TOAST = SERVER_SAVE_FAIL
+const DELETED_TOAST = '일상점검표를 지웠습니다.'
+const LOADING: { status: 'loading', record: DailyInspection|null } = { status: 'loading', record: null }
+
+type DailyInspectionNoticeProps = {
+  logId: string
+  dateKey: string
+  month: number|string
+  day: number|string
+  enabled: boolean
+  isOff: boolean
+}
+
+export default function DailyInspectionNotice({ logId, dateKey, month, day, enabled, isOff }: DailyInspectionNoticeProps) {
+  const { ownerKey } = useSession()
+  const showToast = useToast()
+  const cars = useOwnerCars(ownerKey)
+  const profile = useOwnerProfile(ownerKey)
+  const vehicleId = vehicleSupabaseIdForLog(ownerKey, logId)
+  const active = enabled && !isOff && ownerKey !== 'guest' && vehicleId != null
+  const [reloadTick, setReloadTick] = useState(0)
+  const loadKey = `${ownerKey}|${vehicleId}|${dateKey}|${reloadTick}`
+  const [result, setResult] = useState<{ key: string, status: 'ready'|'error', record: DailyInspection|null }|null>(null)
+  const load = result && result.key === loadKey ? result : LOADING
+  const [modalOpen, setModalOpen] = useState(false)
+  const backRef = useRef<(() => void)|null>(null)
+  useModalBackGuard(modalOpen, () => { if (backRef.current) backRef.current(); else setModalOpen(false) })
+
+  useEffect(() => {
+    if (!active || vehicleId == null) return undefined
+    let alive = true
+    fetchDailyInspection(vehicleId, dateKey)
+      .then((record) => { if (alive) setResult({ key: loadKey, status: 'ready', record }) })
+      .catch((error) => {
+        console.error('[DailyInspectionNotice] 불러오기 실패:', error)
+        if (alive) setResult({ key: loadKey, status: 'error', record: null })
+      })
+    return () => { alive = false }
+  }, [active, vehicleId, dateKey, loadKey])
+
+  if (!active || vehicleId == null) return null
+  if (load.status === 'loading') {
+    return (
+      <div className="daily-inspection-notice is-loading" role="status" aria-busy="true">
+        <span className="di-skeleton di-skeleton-text" aria-hidden="true" />
+        <span className="di-skeleton di-skeleton-btn" aria-hidden="true" />
+        <span className="sr-only">일상점검표 불러오는 중</span>
+      </div>
+    )
+  }
+
+
+  const car = (logId === 'main' ? cars.find((item) => item.type === 'main') : cars.find((item) => item.number === logId)) || null
+  const inspectorName = String(car?.driverName || profile.name || '').trim()
+  const title = `${month}월 ${day}일 일상점검표`
+
+  async function save(next: { items: InspectionItems, actionNote: string }) {
+    if (vehicleId == null) return false
+    try {
+      await saveDailyInspection({ vehicleId, workDate: dateKey, items: next.items, actionNote: next.actionNote, inspectorName })
+      setResult({ key: loadKey, status: 'ready', record: { items: next.items, actionNote: next.actionNote.trim(), inspectorName } })
+      return true
+    } catch (error) {
+      console.error('[DailyInspectionNotice] 저장 실패:', error)
+      showToast?.(error instanceof Error && error.message ? error.message : SAVE_FAIL_TOAST)
+      return false
+    }
+  }
+
+  async function remove() {
+    if (vehicleId == null) return false
+    const ok = await confirmDialog({ title: '점검표를 지울까요?', message: `모든 항목을 비우면 ${month}월 ${day}일 점검표가 삭제됩니다. 삭제한 점검표는 복구할 수 없습니다.`, confirmLabel: '지우기', cancelLabel: '취소', danger: true })
+    if (!ok) return false
+    try {
+      await deleteDailyInspection({ vehicleId, workDate: dateKey })
+      setResult({ key: loadKey, status: 'ready', record: null })
+      showToast?.(DELETED_TOAST)
+      return true
+    } catch (error) {
+      console.error('[DailyInspectionNotice] 지우기 실패:', error)
+      showToast?.(error instanceof Error && error.message ? error.message : SAVE_FAIL_TOAST)
+      return false
+    }
+  }
+
+  return (
+    <>
+      <div className="daily-inspection-notice">
+        {load.status === 'error' ? (
+          <>
+            <span>일상점검표를 불러오지 못했습니다.</span>
+            <button type="button" className="di-notice-btn retry" onClick={() => setReloadTick((n) => n + 1)}>다시 시도</button>
+          </>
+        ) : load.record ? (
+          <>
+            <span>{month}월 {day}일 일상점검표 작성이 완료되었습니다.</span>
+            <button type="button" className="di-notice-btn view" onClick={() => setModalOpen(true)}>보기</button>
+          </>
+        ) : (
+          <>
+            <span>일상점검표를 작성해 주세요.</span>
+            <button type="button" className="di-notice-btn" onClick={() => setModalOpen(true)}>+ 입력</button>
+          </>
+        )}
+      </div>
+      {modalOpen && (
+        <DailyInspectionModal title={title} record={load.record} inspectorName={inspectorName} onClose={() => setModalOpen(false)} onSave={save} onDelete={remove} backRef={backRef} />
+      )}
+    </>
+  )
+}

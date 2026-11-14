@@ -12,7 +12,7 @@ globalThis.IS_REACT_ACT_ENVIRONMENT = true
 const React = await import('react')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
-const { default: CalendarCell } = await import('./CalendarCell.jsx')
+const { default: CalendarCell } = await import('./CalendarCell.tsx')
 
 const CELL = { key: '2026-08-06', day: 6, empty: false, sunday: false, saturday: false, today: false }
 

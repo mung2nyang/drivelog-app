@@ -12,7 +12,7 @@ globalThis.IS_REACT_ACT_ENVIRONMENT = true
 const React = await import('react')
 const { act } = React
 const { createRoot } = await import('react-dom/client')
-const { default: DayFareTotal } = await import('./DayFareTotal.jsx')
+const { default: DayFareTotal } = await import('./DayFareTotal.tsx')
 
 const CLIENT = { id: 'cl', companyName: '고정거래처', fixedRouteLinked: true, fixedUnitPrice: 50000, palletOn: true, palletPrice: 5000 }
 const DAY = { isOff: false, fixedCount: 5, palletCount: 5, callDetails: [{ id: 'c1', fare: '120,000' }, { id: 'c2', fare: 80000 }] }

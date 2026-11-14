@@ -4,7 +4,7 @@ import assert from 'node:assert/strict'
 import { test } from 'node:test'
 
 register(pathToFileURL('./src/testSupport/jsxLoaderHook.mjs').href, import.meta.url)
-const { bindInlinePanelActions } = await import('./inlinePanelActions.js')
+const { bindInlinePanelActions } = await import('./inlinePanelActions.ts')
 
 /** @param {{ modalOpen?: boolean, editingId?: string|null, kind?: string, callFormOpen?: boolean, editingCallId?: string|null }} state */
 function setup(state) {

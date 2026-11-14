@@ -26,7 +26,7 @@ const { createRoot } = await import('react-dom/client')
 const { BrowserRouter } = await import('react-router-dom')
 const { normalizeSettings } = await import('../../../domain/practiceSettings.ts')
 const { commitWorkData } = await import('../../../data/store/commitHelpers.ts')
-const { default: DayLogPage } = await import('./DayLogPage.jsx')
+const { default: DayLogPage } = await import('./DayLogPage.tsx')
 
 const DATE = '2026-10-17'
 const SETTINGS = normalizeSettings({

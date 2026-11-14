@@ -12,7 +12,7 @@ globalThis.IS_REACT_ACT_ENVIRONMENT = true
 const React = await import('react')
 const { act } = React
 const { createRoot } = await import('react-dom/client')
-const { default: AutoSaveStatus } = await import('./AutoSaveStatus.jsx')
+const { default: AutoSaveStatus } = await import('./AutoSaveStatus.tsx')
 
 /** @param {'idle'|'pending'|'saved'|'failed'} status */
 async function renderStatus(status) {

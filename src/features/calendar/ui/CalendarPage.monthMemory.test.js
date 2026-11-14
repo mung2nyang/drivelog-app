@@ -15,7 +15,7 @@ const { withSession } = await import('../../../testSupport/withSession.ts')
 const { createRoot } = await import('react-dom/client')
 const { MemoryRouter } = await import('react-router-dom')
 const { act } = React
-const { default: CalendarPage } = await import('./CalendarPage.jsx')
+const { default: CalendarPage } = await import('./CalendarPage.tsx')
 const { forgetViewMonths } = await import('../../../data/store/viewMonthMemory.ts')
 
 const now = new Date()

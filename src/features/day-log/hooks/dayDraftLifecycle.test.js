@@ -1,7 +1,7 @@
 // @ts-check
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { settlePendingDayWrite } from './dayDraftLifecycle.js'
+import { settlePendingDayWrite } from './dayDraftLifecycle.ts'
 
 test('재감사 13차 — 성공한 stale revision은 pending/UI를 유지한다', () => {
   const progress = { hasPending: true, draftRev: 2, mounted: true }

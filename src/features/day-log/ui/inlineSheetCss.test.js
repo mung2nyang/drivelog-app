@@ -26,7 +26,7 @@ test('일지 인라인 시트의 취소/저장 액션 바는 sticky/fixed가 아
 })
 
 test('InlineSheet: 자동 스크롤은 펼쳐짐이 끝난 뒤에만, useLayoutEffect는 쓰지 않는다', () => {
-  const source = readFileSync(join(here, 'InlineSheet.jsx'), 'utf8')
+  const source = readFileSync(join(here, 'InlineSheet.tsx'), 'utf8')
   assert.equal(source.includes('useLayoutEffect'), false)
   assert.match(source, /scrollIntoView\(\{ block: 'start'/)
 })

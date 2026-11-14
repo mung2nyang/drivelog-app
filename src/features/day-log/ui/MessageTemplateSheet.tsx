@@ -1,0 +1,59 @@
+import { parseCurrencyValue } from '../../../domain/money.ts'
+import { fillMessageTemplatePattern, getMessageTemplatePatterns, MESSAGE_TEMPLATE_TITLES } from '../../../data/sync/messageTemplates.ts'
+import './message-template.css'
+import ModalShell from '../../../shared/ui/ModalShell.tsx'
+import { buildSmsHref } from '../../../domain/smsHref.ts'
+import { useToast } from '../../../shared/hooks/useToast.ts'
+import { useSession } from '../../../data/cloud/sessionContext.ts'
+import { useOwnerSettings } from '../../../data/store/ownerDataHooks.ts'
+import type { CallDetailLike, ClientLike } from './dayLogTypes.ts'
+
+type MessageTemplateSheetProps = {
+  item: CallDetailLike
+  client: ClientLike|undefined
+  onClose: () => void
+}
+
+export default function MessageTemplateSheet({ item, client, onClose }: MessageTemplateSheetProps) {
+  const showToast = useToast()
+  const { ownerKey } = useSession()
+  const settings = useOwnerSettings(ownerKey)
+  const fare = parseCurrencyValue(item.fare).toLocaleString('ko-KR')
+  const route = `${item.loadLoc || '상차지'} → ${item.unloadLoc || '하차지'}`
+  const company = item.client || '거래처'
+  const templates = getMessageTemplatePatterns(settings).map((pattern, index) => ({
+    title: MESSAGE_TEMPLATE_TITLES[index],
+    body: fillMessageTemplatePattern(pattern, { company, route, fare }),
+  }))
+
+  function send(body: string) {
+    const phone = client?.phone || ''
+    if (!phone) {
+      showToast?.('거래처에 등록된 연락처가 없습니다.')
+      return
+    }
+    window.location.assign(buildSmsHref(phone, body, navigator.userAgent))
+    onClose()
+  }
+
+  return (
+    <ModalShell onClose={onClose} overlayClassName="message-template-overlay" contentClassName="message-template-sheet" label="문자 양식 선택">
+        <div className="message-template-head">
+          <div>
+            <strong>문자 보내기</strong>
+            <span>{company}{client?.phone ? `, ${client.phone}` : ''}</span>
+          </div>
+          <button type="button" onClick={onClose} aria-label="닫기">×</button>
+        </div>
+        <p className="message-template-help">문구를 선택하면 문자 앱에서 내용을 확인하고 수정할 수 있습니다.</p>
+        <div className="message-template-list">
+          {templates.map((template) => (
+            <button type="button" key={template.title} onClick={() => send(template.body)}>
+              <strong>{template.title}</strong>
+              <span>{template.body}</span>
+            </button>
+          ))}
+        </div>
+    </ModalShell>
+  )
+}

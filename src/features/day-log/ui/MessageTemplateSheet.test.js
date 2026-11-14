@@ -24,7 +24,7 @@ const { act } = React
 const { createRoot } = await import('react-dom/client')
 const {
   default: MessageTemplateSheet,
-} = await import('./MessageTemplateSheet.jsx')
+} = await import('./MessageTemplateSheet.tsx')
 
 const sampleItem = {
   id: 'trp-1',

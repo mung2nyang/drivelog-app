@@ -13,7 +13,7 @@ globalThis.IS_REACT_ACT_ENVIRONMENT = true
 const React = await import('react')
 const { act } = React
 const { createRoot } = await import('react-dom/client')
-const { default: CallDetailList } = await import('./CallDetailList.jsx')
+const { default: CallDetailList } = await import('./CallDetailList.tsx')
 
 function showCallDetailList(callDetail, callDetailsLength) {
   return callDetail || callDetailsLength > 0

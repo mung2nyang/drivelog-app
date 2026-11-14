@@ -12,7 +12,7 @@ globalThis.IS_REACT_ACT_ENVIRONMENT = true
 const React = await import('react')
 const { act } = React
 const { createRoot } = await import('react-dom/client')
-const { default: OffToggle } = await import('./OffToggle.jsx')
+const { default: OffToggle } = await import('./OffToggle.tsx')
 
 /** @param {{ isOff: boolean, callCount: number }} props @param {boolean} answer */
 async function clickOff(props, answer) {

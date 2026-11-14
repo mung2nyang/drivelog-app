@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { describe, test } from 'node:test'
-import { dayLogReducer, dayOffPatch, initDayLogState } from './day-log-reducer.js'
+import { dayLogReducer, dayOffPatch, initDayLogState } from './day-log-reducer.ts'
 
 describe('initDayLogState — store record을 로컬 draft로 복제', () => {
   test('record가 없으면(신규 날짜) 빈 draft', () => {

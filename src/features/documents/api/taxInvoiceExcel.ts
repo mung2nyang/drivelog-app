@@ -1,5 +1,5 @@
 import { getTaxInvoiceFlowMeta } from '../../../domain/financeTaxInvoiceEntries.ts'
-import { buildTaxInvoiceWorkbook } from './taxInvoiceExcelBuilder.js'
+import { buildTaxInvoiceWorkbook } from './taxInvoiceExcelBuilder.ts'
 import { saveFileToDevice } from '../../../shared/utils/saveFile.ts'
 import type { InvoiceLike } from '../../../domain/financeTaxInvoiceEntries.ts'
 import type { FinanceSettings } from '../../../domain/financeTypes.ts'

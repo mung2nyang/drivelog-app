@@ -645,6 +645,7 @@ describe('requestDriverInviteSave — 슬라이스 A: outbox 없이 RPC 직접 1
 
     assert.equal(result.blocked, null)
     assert.match(result.toast, /기사 초대를 저장했습니다/)
+    assert.equal(result.saved, true)
     assert.equal(countOf('driver_links', 'insert'), 0)
     assert.equal(countOf('rpc', RPC_FN), 1)
     const saved = result.items.find((item) => item.id === 'drv-new')
@@ -671,6 +672,7 @@ describe('requestDriverInviteSave — 슬라이스 A: outbox 없이 RPC 직접 1
 
     assert.equal(result.toast, FAIL_FAST_TOAST, 'RPC error 시 토스트가 정확히 지정 문구여야 한다')
     assert.equal(result.blocked, FAIL_FAST_TOAST)
+    assert.equal(result.saved, false)
     assert.equal(countOf('rpc', RPC_FN), 1)
     assert.equal(countOf('driver_links', 'insert'), 0)
     assert.equal(getState().drivers[ownerKey], undefined, 'Store에 이 owner의 drivers가 새로 생기면 안 된다')

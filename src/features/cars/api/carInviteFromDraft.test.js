@@ -27,7 +27,7 @@ test('inviteCode가 비어 있으면 skipInvite 없이도 스킵된다', async (
     saved: { id: 'car-1', number: '12가3456' },
     inviteDraft: { ...baseDraft, inviteCode: '' },
   })
-  assert.equal(result, null)
+  assert.deepEqual(result, { toast: null, saved: false })
 })
 
 test('skipInvite:true면 신규 등록(운행 일지 모드)에서 초대를 아예 안 만든다', async () => {
@@ -41,7 +41,7 @@ test('skipInvite:true면 신규 등록(운행 일지 모드)에서 초대를 아
     inviteDraft: baseDraft,
     skipInvite: true,
   })
-  assert.equal(result, null)
+  assert.deepEqual(result, { toast: null, saved: false })
 })
 
 test('skipInvite 생략(기본 false)이면 기존과 동일하게 초대 생성 경로를 탄다', async () => {
@@ -54,7 +54,7 @@ test('skipInvite 생략(기본 false)이면 기존과 동일하게 초대 생성
     saved: { id: 'car-1', number: '12가3456' },
     inviteDraft: baseDraft,
   })
-  assert.equal(result, '기사 이름을 입력해 주세요.')
+  assert.deepEqual(result, { toast: '기사 이름을 입력해 주세요.', saved: false })
 })
 
 test('skipInvite:false를 명시해도 기존 동작과 같다(회귀 방지)', async () => {
@@ -68,7 +68,7 @@ test('skipInvite:false를 명시해도 기존 동작과 같다(회귀 방지)', 
     inviteDraft: baseDraft,
     skipInvite: false,
   })
-  assert.equal(result, '기사 이름을 입력해 주세요.')
+  assert.deepEqual(result, { toast: '기사 이름을 입력해 주세요.', saved: false })
 })
 
 test('skipInvite:true라도 cloud가 아니면(기존 규칙) 어차피 null', async () => {
@@ -82,7 +82,7 @@ test('skipInvite:true라도 cloud가 아니면(기존 규칙) 어차피 null', a
     inviteDraft: baseDraft,
     skipInvite: true,
   })
-  assert.equal(result, null)
+  assert.deepEqual(result, { toast: null, saved: false })
 })
 
 test('10-S-2: 예전 6자리 새 코드는 조용히 건너뛰지 않고 [코드 생성] 안내를 돌려준다', async () => {
@@ -95,5 +95,5 @@ test('10-S-2: 예전 6자리 새 코드는 조용히 건너뛰지 않고 [코드
     saved: { id: 'car-1', number: '12가3456' },
     inviteDraft: { ...baseDraft, driverName: '박기사', driverPhone: '010-3333-4444', inviteCode: '123456' },
   })
-  assert.equal(result, '[코드 생성]으로 초대 코드를 만들어 주세요.')
+  assert.deepEqual(result, { toast: '[코드 생성]으로 초대 코드를 만들어 주세요.', saved: false })
 })

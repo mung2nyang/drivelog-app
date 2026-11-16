@@ -34,16 +34,16 @@ export function todayIsoDate() {
  * @param {CarLike|null|undefined} args.saved
  * @param {CarInviteDraft} args.inviteDraft
  * @param {boolean} [args.skipInvite]
- * @returns {Promise<string|null>}
+ * @returns {Promise<{ toast: string|null, saved: boolean }>}
  */
 export async function saveInviteAfterVehicle({
   cloud, ownerKey, userId, drivers, cars, saved, inviteDraft, skipInvite = false,
 }) {
-  if (!cloud || inviteDraft.type !== 'sub' || skipInvite) return null
+  if (!cloud || inviteDraft.type !== 'sub' || skipInvite) return { toast: null, saved: false }
   const code = normalizeInviteCode(inviteDraft.inviteCode)
-  if (!code) return null
+  if (!code) return { toast: null, saved: false }
   const vehicleNumber = saved?.number || inviteDraft.number
-  if (!vehicleNumber) return null
+  if (!vehicleNumber) return { toast: null, saved: false }
   const startDate = inviteDraft.inviteStartDate || todayIsoDate()
   const existing = inviteDraft.inviteDriverId ? drivers.find((d) => d.id === inviteDraft.inviteDriverId) : null
   const result = upsertDriver(
@@ -59,7 +59,7 @@ export async function saveInviteAfterVehicle({
     /** @type {null|undefined} */ (inviteDraft.inviteDriverId || null),
     cars,
   )
-  if (result.error) return result.error
+  if (result.error) return { toast: result.error, saved: false }
   /** @type {Array<CarLike>} */
   let carsForInvite = cars
   if (saved?.id) {
@@ -79,6 +79,6 @@ export async function saveInviteAfterVehicle({
     cars: /** @type {Array<CarRecord>} */ (carsForInvite),
     previousItems: drivers,
   })
-  if (saveResult.blocked) return saveResult.blocked
-  return saveResult.toast || null
+  if (saveResult.blocked) return { toast: saveResult.blocked, saved: false }
+  return { toast: saveResult.toast || null, saved: saveResult.saved }
 }

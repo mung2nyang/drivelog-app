@@ -14,6 +14,8 @@ Reflect.set(globalThis, 'IS_REACT_ACT_ENVIRONMENT', true)
 const calls = []
 /** @type {{ renamedFrom: string|null, savedNumber: string }} */
 const vehicleSaveResult = { renamedFrom: null, savedNumber: '' }
+/** @type {{ value: { toast: string|null, saved: boolean } }} */
+const inviteResult = { value: { toast: null, saved: false } }
 
 mock.module('../../../data/sync/vehicleMutations.ts', {
   namedExports: {
@@ -26,7 +28,7 @@ mock.module('../../../data/sync/vehicleMutations.ts', {
 mock.module('../api/carInviteFromDraft.js', {
   namedExports: {
     todayIsoDate: () => '2026-10-19',
-    saveInviteAfterVehicle: async () => { calls.push('inviteAfterVehicle'); return null },
+    saveInviteAfterVehicle: async () => { calls.push('inviteAfterVehicle'); return inviteResult.value },
   },
 })
 mock.module('../../../data/sync/driverUnlink.ts', {
@@ -59,10 +61,12 @@ const { default: CarListPage } = await import('./CarListPage.jsx')
 const { commitDrivers } = await import('../../../data/store/commitHelpers.ts')
 const { beginSessionEpoch, endCloudSession } = await import('../../../data/cloud/cloudSession.ts')
 
-/** @type {{ pathname: string }} */
-const seen = { pathname: '' }
+/** @type {{ pathname: string, search: string }} */
+const seen = { pathname: '', search: '' }
 function LocationProbe() {
-  seen.pathname = useLocation().pathname
+  const location = useLocation()
+  seen.pathname = location.pathname
+  seen.search = location.search
   return null
 }
 
@@ -275,6 +279,70 @@ test('기사 등록 창을 연 사이 기사 차량이 3대가 되면 [저장]�
     assert.deepEqual(calls, [], '차량 저장 요청 없음')
     assert.deepEqual(view.toasts, [LIMIT_TOAST])
   } finally {
+    await view.cleanup()
+  }
+})
+
+/** @param {Awaited<ReturnType<typeof render>>} view @param {string} id @param {string} value */
+async function typeInto(view, id, value) {
+  const input = /** @type {HTMLInputElement} */ (view.container.querySelector(`#${id}`))
+  const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set
+  await act(async () => { setter?.call(input, value); input.dispatchEvent(new window.Event('input', { bubbles: true })) })
+}
+
+/** @param {Awaited<ReturnType<typeof render>>} view */
+async function addLinkedSubCar(view) {
+  await view.click(view.button('+ 추가'))
+  await typeInto(view, 'newCarNumber', '99라9999')
+  await typeInto(view, 'newDriverName', '새기사')
+  await typeInto(view, 'newUserPhone', '010-3333-4444')
+  await view.click(view.button('기사 연동'))
+  await view.click(view.button('저장'))
+}
+
+test('새 기사 차량을 기사 연동으로 저장해 초대가 저장되면 기사 연동 관리로 넘어간다', async () => {
+  seedSubCars('flow-link-move', 0)
+  inviteResult.value = { toast: '기사 초대를 저장했습니다.', saved: true }
+  const view = await render('flow-link-move')
+  try {
+    await addLinkedSubCar(view)
+    assert.deepEqual(calls, ['vehicleSave', 'inviteAfterVehicle'])
+    assert.equal(seen.pathname, '/app/drivers')
+    assert.equal(seen.search, '?back=cars')
+    assert.ok(view.toasts.includes('기사 초대를 저장했습니다.'))
+  } finally {
+    inviteResult.value = { toast: null, saved: false }
+    await view.cleanup()
+  }
+})
+
+test('기사 연동으로 저장했지만 초대 저장이 실패하면 차량 관리에 남는다', async () => {
+  seedSubCars('flow-link-fail', 0)
+  inviteResult.value = { toast: '저장하지 못했습니다.', saved: false }
+  const view = await render('flow-link-fail')
+  try {
+    await addLinkedSubCar(view)
+    assert.deepEqual(calls, ['vehicleSave', 'inviteAfterVehicle'])
+    assert.equal(seen.pathname, '/app/cars')
+    assert.ok(view.toasts.includes('저장하지 못했습니다.'))
+  } finally {
+    inviteResult.value = { toast: null, saved: false }
+    await view.cleanup()
+  }
+})
+
+test('이미 연동된 기사 차량을 고쳐 저장하면 차량 관리에 남는다', async () => {
+  const ownerKey = 'flow-link-edit'
+  seedLinkedSubCar(ownerKey, 'linked')
+  inviteResult.value = { toast: '기사 배정 정보를 수정했습니다.', saved: true }
+  const view = await render(ownerKey)
+  try {
+    await view.click(view.card('22나2222')?.querySelector('[title="수정"]'))
+    await view.click(view.button('저장'))
+    assert.deepEqual(calls, ['vehicleSave', 'inviteAfterVehicle'])
+    assert.equal(seen.pathname, '/app/cars')
+  } finally {
+    inviteResult.value = { toast: null, saved: false }
     await view.cleanup()
   }
 })

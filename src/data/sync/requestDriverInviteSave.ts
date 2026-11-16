@@ -48,23 +48,23 @@ function saveCarDriverInfo(ownerKey: string, carId: string, driver: DriverRecord
 }
 
 export async function requestDriverInviteSave({ ownerKey, items, editingId, cars }: { ownerKey: string, userId?: string, items: Array<DriverRecord>, editingId: string | null,
-  cars?: Array<CarRecord>, previousItems?: Array<DriverRecord> }): Promise<{ items: Array<DriverRecord>, blocked: string | null, toast: string | null }> {
+  cars?: Array<CarRecord>, previousItems?: Array<DriverRecord> }): Promise<{ items: Array<DriverRecord>, blocked: string | null, toast: string | null, saved: boolean }> {
   const foundIdx = items.findIndex((item) => item.id === editingId)
   const idx = foundIdx >= 0 ? foundIdx : items.length - 1
   const driver = items[idx]
 
   if (!driver?.vehicleNumber || !driver.startDate) {
     const missing = driver?.vehicleNumber ? MISSING_START_MESSAGE : MISSING_CAR_MESSAGE
-    return { items, blocked: missing, toast: missing }
+    return { items, blocked: missing, toast: missing, saved: false }
   }
 
   let blocked: string | null = null
   try { assertCloudWriteReady() } catch (error) { blocked = error instanceof Error ? error.message : String(error) }
-  if (blocked) return { items, blocked, toast: blocked }
+  if (blocked) return { items, blocked, toast: blocked, saved: false }
 
   const car = (cars || []).find((item) => item.number === driver.vehicleNumber)
-  if (!car) return { items, blocked: UNKNOWN_CAR_MESSAGE, toast: UNKNOWN_CAR_MESSAGE }
-  if (!car.supabaseId) return { items, blocked: UNSYNCED_CAR_MESSAGE, toast: UNSYNCED_CAR_MESSAGE }
+  if (!car) return { items, blocked: UNKNOWN_CAR_MESSAGE, toast: UNKNOWN_CAR_MESSAGE, saved: false }
+  if (!car.supabaseId) return { items, blocked: UNSYNCED_CAR_MESSAGE, toast: UNSYNCED_CAR_MESSAGE, saved: false }
 
   const vehicleId = String(car.supabaseId)
   const inviteCode = driver.inviteCode || ''
@@ -99,12 +99,13 @@ export async function requestDriverInviteSave({ ownerKey, items, editingId, cars
       items: nextItems,
       blocked: null,
       toast: !carSaved ? CAR_DRIVER_FAIL_MESSAGE : editingId ? '기사 배정 정보를 수정했습니다.' : '기사 초대를 저장했습니다.',
+      saved: true,
     }
   } catch (error) {
     if (error instanceof StaleSessionError) {
-      return { items, blocked: null, toast: SESSION_CHANGED_MESSAGE }
+      return { items, blocked: null, toast: SESSION_CHANGED_MESSAGE, saved: false }
     }
     console.error('[requestDriverInviteSave] 저장 실패:', error)
-    return { items, blocked: SAVE_FAIL_TOAST, toast: SAVE_FAIL_TOAST }
+    return { items, blocked: SAVE_FAIL_TOAST, toast: SAVE_FAIL_TOAST, saved: false }
   }
 }

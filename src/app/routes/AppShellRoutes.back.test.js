@@ -29,15 +29,15 @@ const { MemoryRouter, Route, Routes } = await import('react-router-dom')
 const { act } = React
 const { default: AppShellRoutes } = await import('./AppShellRoutes.tsx')
 
-/** @param {string} url @returns {Promise<string[]>} ← 를 눌렀을 때 goBack에 넘어간 곳 */
+/** @param {string} url @returns {Promise<Array<import('react-router-dom').To|number>>} ← 를 눌렀을 때 goBack·navigate에 넘어간 곳 */
 async function pressBack(url) {
-  /** @type {string[]} */
+  /** @type {Array<import('react-router-dom').To|number>} */
   const targets = []
   const container = document.createElement('div')
   document.body.appendChild(container)
   const root = createRoot(container)
   const routes = React.createElement(AppShellRoutes, {
-    notifCount: 0, onOpenMenu: () => {}, onOpenNotifs: () => {}, navigate: () => {},
+    notifCount: 0, onOpenMenu: () => {}, onOpenNotifs: () => {}, navigate: (/** @type {import('react-router-dom').To|number} */ to) => { targets.push(to) },
     goBack: (/** @type {string} */ target) => { targets.push(target) }, goToPage: () => {},
   })
   await act(async () => {
@@ -63,4 +63,9 @@ test('고객센터: 마이페이지에서 열면 ← 마이페이지, 옆 메뉴
 test('관리자: 마이페이지에서 열면 ← 마이페이지, 옆 메뉴에서 열면 ← 홈', async () => {
   assert.deepEqual(await pressBack('/app/admin/inquiries?back=mypage'), ['/app/me'])
   assert.deepEqual(await pressBack('/app/admin/inquiries?back=home'), ['/app'])
+})
+
+test('기사 연동 관리: 차량 저장에서 넘어오면 ← 한 칸 뒤로, 그 밖에는 ← 마이페이지', async () => {
+  assert.deepEqual(await pressBack('/app/drivers?back=cars'), [-1])
+  assert.deepEqual(await pressBack('/app/drivers'), ['/app/me'])
 })

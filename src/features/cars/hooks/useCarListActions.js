@@ -96,7 +96,7 @@ export default function useCarListActions({ ownerKey, cars, drivers, cloud, draf
       return
     }
     const skipInvite = inviteSnapshot.connectMode === 'log'
-    const inviteToast = await saveInviteAfterVehicle({
+    const invite = await saveInviteAfterVehicle({
       cloud,
       ownerKey,
       userId: getCloudUserId() ?? '',
@@ -106,7 +106,7 @@ export default function useCarListActions({ ownerKey, cars, drivers, cloud, draf
       inviteDraft: inviteSnapshot,
       skipInvite,
     })
-    if (inviteToast && inviteToast !== result.toast) showToast?.(inviteToast)
+    if (invite.toast && invite.toast !== result.toast) showToast?.(invite.toast)
     else if (result.toast) showToast?.(result.toast)
     closeModal()
     if (result.renamedFrom && result.saved?.number) {
@@ -116,8 +116,10 @@ export default function useCarListActions({ ownerKey, cars, drivers, cloud, draf
       const fromLog = locState?.fromLog
       if (fromLog && fromLog.logId === result.renamedFrom && fromLog.dateKey) {
         navigate(`/app/logs/${encodeURIComponent(result.saved.number)}/day/${fromLog.dateKey}`, { replace: true })
+        return
       }
     }
+    if (invite.saved && !inviteSnapshot.inviteDriverId) navigate('/app/drivers?back=cars')
   }
 
   async function confirmRemove() {

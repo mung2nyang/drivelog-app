@@ -86,7 +86,7 @@ export default function AppShellRoutes({
       <Route path="tax" element={<Navigate to="/app/report" replace />} />
       <Route path="drivers/:linkId/clients" element={<LinkedDriverClientsPage onBack={() => navigate(-1)} onOpenMenu={onOpenMenu} />} />
       <Route path="drivers/:linkId" element={<LinkedDriverManagementPage onBack={() => navigate(-1)} onOpenMenu={onOpenMenu} />} />
-      <Route path="drivers" element={<DriverConnectionPage navigate={navigate} onBack={() => goBack('/app/me')} />} />
+      <Route path="drivers" element={<DriverConnectionPage navigate={navigate} onBack={() => (params.get('back') === 'cars' ? navigate(-1) : goBack('/app/me'))} />} />
       <Route path="revenue" element={<RevenuePage onOpenMenu={onOpenMenu} />} />
       <Route path="support" element={<CustomerCenterPage onGoAuth={onGoAuth} onBack={() => goBack(backTarget)} onOpenMenu={onOpenMenu} initialTab={params.get('tab') === 'my' ? 'myInquiries' : 'faq'} />} />
       <Route path="admin/inquiries" element={<AdminInquiriesPage onBack={() => goBack(backTarget)} onOpenMenu={onOpenMenu} />} />

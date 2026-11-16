@@ -34,7 +34,7 @@ mock.module('../../../data/sync/vehicleMutations.ts', {
 mock.module('../api/carInviteFromDraft.js', {
   namedExports: {
     todayIsoDate: () => '2026-10-28',
-    saveInviteAfterVehicle: async () => null,
+    saveInviteAfterVehicle: async () => ({ toast: null, saved: false }),
   },
 })
 mock.module('../../../data/sync/driverUnlink.ts', {

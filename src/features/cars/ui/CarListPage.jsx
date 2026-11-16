@@ -26,6 +26,7 @@ const emptyDraft = {
   inviteCode: '', inviteStartDate: '', inviteDriverId: null, connectMode: 'log',
 }
 const DELETE_CAR_CONFIRM = '이 차량의 운행 기록도 함께 지워지며 되돌릴 수 없습니다.'
+const DELETE_CAR_INVITE_CONFIRM = `${DELETE_CAR_CONFIRM} 기사에게 보낸 초대 코드도 더는 쓸 수 없습니다.`
 const DISCONNECT_CONFIRM = '연동 중인 기사에게 연동 해제 요청이 전달됩니다. 기사가 동의하거나 3일이 지나면 연동이 해제됩니다.'
 
 /**
@@ -44,6 +45,7 @@ export default function CarListPage({ onBack, onOpenMenu }) {
   const [editingId, setEditingId] = useState(/** @type {string|null} */ (null))
   const [draft, setDraft] = useState(emptyDraft)
   const actions = useCarListActions({ ownerKey, cars, drivers, cloud, draft, editingId, closeModal: () => setModalOpen(false) })
+  const deleteHasInvite = !!actions.pendingDelete && drivers.some((d) => d.status !== 'linked' && d.vehicleNumber === actions.pendingDelete?.number)
 
   function openAdd() {
     const type = hasMainCar(cars) ? 'sub' : 'main'
@@ -118,7 +120,7 @@ export default function CarListPage({ onBack, onOpenMenu }) {
         />
       )}
       {actions.pendingDelete && (
-        <ConfirmModal title="이 차량을 삭제하시겠습니까?" message={DELETE_CAR_CONFIRM} confirmLabel="삭제" danger onCancel={actions.cancelDelete} onConfirm={actions.confirmRemove} />
+        <ConfirmModal title="이 차량을 삭제하시겠습니까?" message={deleteHasInvite ? DELETE_CAR_INVITE_CONFIRM : DELETE_CAR_CONFIRM} confirmLabel="삭제" danger onCancel={actions.cancelDelete} onConfirm={actions.confirmRemove} />
       )}
       {actions.pendingDisconnect && (
         <ConfirmModal

@@ -154,10 +154,23 @@ test('차량 삭제: 확인 창 → 삭제 요청 1번, 목록에서 빠짐', as
   try {
     await view.click(view.card('44라4444')?.querySelector('[title="삭제"]'))
     assert.ok(view.container.textContent?.includes('이 차량을 삭제하시겠습니까?'))
+    assert.equal(view.container.textContent?.includes('초대 코드도 더는 쓸 수 없습니다.'), false, '대기 초대 없는 차량은 지금 문구 그대로')
     await view.click(view.button('삭제'))
     assert.deepEqual(calls, ['vehicleDeletion'])
     assert.equal(view.card('44라4444'), undefined, '목록에서 빠짐')
     assert.equal(view.container.textContent?.includes('이 차량을 삭제하시겠습니까?'), false, '확인 창 닫힘')
+  } finally {
+    await view.cleanup()
+  }
+})
+
+test('초대 대기 기사 차량 삭제 확인 창에는 초대 코드도 못 쓴다는 줄이 더 붙는다', async () => {
+  const ownerKey = 'flow-delete-pending'
+  seedLinkedSubCar(ownerKey, 'pending')
+  const view = await render(ownerKey)
+  try {
+    await view.click(view.card('22나2222')?.querySelector('[title="삭제"]'))
+    assert.ok(view.container.textContent?.includes('이 차량의 운행 기록도 함께 지워지며 되돌릴 수 없습니다. 기사에게 보낸 초대 코드도 더는 쓸 수 없습니다.'))
   } finally {
     await view.cleanup()
   }

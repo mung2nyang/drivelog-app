@@ -7,6 +7,7 @@ import {
 } from '../cloud/cloudSession.ts'
 import { commitLocalOnly } from './localCommit.ts'
 import { commitBatch, getState } from '../store/app-store.ts'
+import type { BatchEntry } from '../store/app-store.ts'
 import { readLogWorkData, storageKeyForLog } from '../store/persist.ts'
 import { planPendingLogDiscard } from './logPendingLifecycle.ts'
 import { deleteVehicleFromSupabase } from './directMutations.ts'
@@ -62,7 +63,11 @@ export async function requestVehicleDeletion({ ownerKey, userId, cars, vehicleId
   try {
     await deleteVehicleFromSupabase(car.supabaseId, captured)
     assertSessionStillCurrent(captured)
-    commitBatch([{ domain: 'cars', ownerKey, value: nextCars }], { extraWrites, replaceWorkLogs })
+    const latestDrivers = getState().drivers[ownerKey] || []
+    const nextDrivers = latestDrivers.filter((driver) => driver.status === 'linked' || driver.vehicleNumber !== car.number)
+    const entries: Array<BatchEntry> = [{ domain: 'cars', ownerKey, value: nextCars }]
+    if (nextDrivers.length !== latestDrivers.length) entries.push({ domain: 'drivers', ownerKey, value: nextDrivers })
+    commitBatch(entries, { extraWrites, replaceWorkLogs })
     afterPersist()
     return { cars: nextCars, blocked: null, toast: '차량을 삭제했습니다.', failed: false, closeModal: true }
   } catch (error) {

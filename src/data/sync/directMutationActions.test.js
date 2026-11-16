@@ -17,7 +17,7 @@ const { beginSessionEpoch, endCloudSession } = await import('../cloud/cloudSessi
 const { setHydration, getState, subscribe } = await import('../store/app-store.ts')
 const { readJsonKey, storageKeyFor, writeJsonKey } = await import('../store/persist.ts')
 const { STORAGE_FAIL_TOAST } = await import('./localCommit.ts')
-const { commitCars } = await import('../store/commitHelpers.ts')
+const { commitCars, commitDrivers } = await import('../store/commitHelpers.ts')
 
 /**
  * @template T
@@ -111,6 +111,45 @@ describe('requestVehicleDeletion — 필수 시나리오', () => {
     assert.deepEqual(callsOf('vehicles', 'delete')[0].ops, [['eq', 'id', 901], ['select', 'id']], '그 차량 한 줄만 지우고 지운 줄을 받아야 한다')
     assert.equal(result.failed, false)
     assert.equal(result.toast, '차량을 삭제했습니다.')
+    endCloudSession()
+  })
+
+  test('ready 성공: 지운 차량의 대기 초대는 기사 목록에서 빠지고 다른 차량 초대는 남는다', async () => {
+    const ownerKey = 'dma-vehicle-pending-invite'
+    beginReady('user-1', ownerKey)
+    const cars = [{ id: 'car-1', number: '11가1111', supabaseId: 920 }, { id: 'car-2', number: '22나2222', supabaseId: 921 }]
+    commitCars(ownerKey, cars)
+    const drivers = asDrivers([
+      { id: 'drv-1', name: '지울기사', supabaseId: 930, status: 'pending', vehicleNumber: '11가1111' },
+      { id: 'drv-2', name: '남는기사', supabaseId: 931, status: 'pending', vehicleNumber: '22나2222' },
+    ])
+    commitDrivers(ownerKey, drivers)
+    handlers.vehicles = { delete: () => ({ data: [{ id: 920 }], error: null }) }
+
+    const result = await requestVehicleDeletion({ ownerKey, userId: 'user-1', cars, vehicleId: 'car-1' })
+
+    assert.equal(result.failed, false)
+    assert.equal(result.toast, '차량을 삭제했습니다.')
+    assert.deepEqual(getState().cars[ownerKey], [cars[1]])
+    assert.deepEqual(getState().drivers[ownerKey], [drivers[1]], '지운 차량의 대기 초대만 빠져야 한다')
+    endCloudSession()
+  })
+
+  test('ready + 원격 삭제 실패: 대기 초대가 있는 차량이어도 기사 목록은 그대로', async () => {
+    const ownerKey = 'dma-vehicle-pending-invite-fail'
+    beginReady('user-1', ownerKey)
+    const cars = [{ id: 'car-1', number: '11가1111', supabaseId: 922 }]
+    commitCars(ownerKey, cars)
+    commitDrivers(ownerKey, asDrivers([{ id: 'drv-1', name: '기사', supabaseId: 932, status: 'pending', vehicleNumber: '11가1111' }]))
+    const driversBefore = getState().drivers[ownerKey]
+    handlers.vehicles = { delete: () => { throw new Error('network down') } }
+
+    const result = await requestVehicleDeletion({ ownerKey, userId: 'user-1', cars, vehicleId: 'car-1' })
+
+    assert.equal(result.failed, true)
+    assert.equal(result.toast, FAIL_FAST_TOAST)
+    assert.equal(getState().drivers[ownerKey], driversBefore)
+    assert.equal(getState().cars[ownerKey].length, 1)
     endCloudSession()
   })
 

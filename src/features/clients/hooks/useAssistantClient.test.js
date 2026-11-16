@@ -1,7 +1,7 @@
 // @ts-check
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { readAssistantClient } from './useAssistantClient.js'
+import { readAssistantClient } from './useAssistantClient.ts'
 
 /** @param {object} fields */
 const read = (fields) => readAssistantClient({ from: 'home', assistantClient: { name: '한진', manager: '', phone: '', paymentTerm: '', paymentTermValue: null, commType: '', commValue: null, ...fields } })

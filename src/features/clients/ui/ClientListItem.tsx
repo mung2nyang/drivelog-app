@@ -1,0 +1,59 @@
+import { getPaymentTermLabel } from '../../../domain/clients.ts'
+import CardActionButtons from '../../../shared/ui/CardActionButtons.tsx'
+import { StarIcon } from '../../../shared/ui/icons.tsx'
+import type { ClientLike } from '../../../domain/clientTypes.ts'
+
+type ClientListItemProps = {
+  client: ClientLike
+  dragging?: boolean
+  onDragStart?: () => void
+  onDragOver?: (event: { preventDefault: () => void }) => void
+  onDrop?: () => void
+  onDragEnd?: () => void
+  onEdit: () => void
+  onDelete: () => void
+}
+
+export default function ClientListItem({
+  client, dragging = false, onDragStart, onDragOver, onDrop, onDragEnd, onEdit, onDelete,
+}: ClientListItemProps) {
+  return (
+    <div
+      className={`management-list-card client-list-card${dragging ? ' client-dragging' : ''}`}
+      draggable={!!onDragStart}
+      onDragStart={onDragStart}
+      onDragOver={onDragOver}
+      onDrop={onDrop}
+      onDragEnd={onDragEnd}
+    >
+      <div className="management-card-copy">
+        <div className="client-card-title">
+          <strong>{client.companyName}</strong>
+          {client.isPinned && <span className="client-pinned-star" role="img" aria-label="즐겨찾기"><StarIcon filled /></span>}
+        </div>
+        {(client.fixedRouteLinked || client.commEnabled || client.palletOn) && (
+          <div className="client-card-badges">
+            {client.fixedRouteLinked && <span className="management-badge tax-invoice">고정 노선 연동</span>}
+            {client.commEnabled && (
+              <span className="management-badge commission">
+                수수료 {client.commType === 'direct' ? `${client.commValue || ''}원` : `${client.commValue || ''}%`}
+              </span>
+            )}
+            {client.palletOn && (
+              <span className="management-badge tax-invoice">파렛트 {client.palletPrice || ''}원</span>
+            )}          </div>
+        )}
+        <div className="car-sub-text">
+          <span>사업자 {client.bizNumber || '-'}</span>
+          <span className="client-phone">연락처 {client.phone || '-'}</span>
+        </div>
+        <div className="car-sub-text">
+          결제주기: {getPaymentTermLabel(client.paymentTerm, client.paymentTermValue)}
+        </div>
+      </div>
+      <div className="car-action-btns">
+        <CardActionButtons onEdit={onEdit} onDelete={onDelete} />
+      </div>
+    </div>
+  )
+}

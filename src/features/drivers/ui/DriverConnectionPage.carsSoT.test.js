@@ -14,7 +14,7 @@ const React = await import('react')
 const { withSession } = await import('../../../testSupport/withSession.ts')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
-const { default: DriverConnectionPage } = await import('./DriverConnectionPage.jsx')
+const { default: DriverConnectionPage } = await import('./DriverConnectionPage.tsx')
 const { commitCars } = await import('../../../data/store/commitHelpers.ts')
 
 test('차량을 커밋하면 기사 초대 모달이 리마운트 없이 할당 목록을 갱신한다', async () => {

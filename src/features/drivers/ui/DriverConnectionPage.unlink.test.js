@@ -14,7 +14,7 @@ const React = await import('react')
 const { withSession } = await import('../../../testSupport/withSession.ts')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
-const { default: DriverConnectionPage } = await import('./DriverConnectionPage.jsx')
+const { default: DriverConnectionPage } = await import('./DriverConnectionPage.tsx')
 const { commitDrivers } = await import('../../../data/store/commitHelpers.ts')
 const { beginSessionEpoch, endCloudSession } = await import('../../../data/cloud/cloudSession.ts')
 

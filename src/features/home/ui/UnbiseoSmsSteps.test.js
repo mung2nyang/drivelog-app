@@ -19,7 +19,7 @@ const { commitCars, commitClients, commitLogWorkData, commitSettings } = await i
 const { normalizeSettings } = await import('../../../domain/practiceSettings.ts')
 const { buildSmsHref } = await import('../../../domain/smsHref.ts')
 const { FIXTURE_SETTINGS, FIXTURE_WORK } = await import('../../../domain/finance.fixtures.ts')
-const { default: HomeAssistantBar } = await import('./HomeAssistantBar.jsx')
+const { default: HomeAssistantBar } = await import('./HomeAssistantBar.tsx')
 const { UnbiseoProvider } = await import('../hooks/unbiseoContext.ts')
 
 const OWNER = 'u-sms-steps'

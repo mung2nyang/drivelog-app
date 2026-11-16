@@ -12,7 +12,7 @@ globalThis.IS_REACT_ACT_ENVIRONMENT = true
 const React = await import('react')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
-const { default: CarDriverConnectPanel } = await import('./CarDriverConnectPanel.jsx')
+const { default: CarDriverConnectPanel } = await import('./CarDriverConnectPanel.tsx')
 
 test('운행 일지 탭은 안내 문구만 렌더한다', async () => {
   const container = document.createElement('div')

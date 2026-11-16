@@ -1,0 +1,104 @@
+import { formatPercentInput } from '../../../domain/money.ts'
+import { DEFAULT_EXPENSE_RATE, DEFAULT_INSURANCE_RATE, insuranceSplitOf } from '../../../domain/driverIncomeDeductions.ts'
+import InfoTip from '../../../shared/ui/InfoTip.tsx'
+import type { CarFormDraft } from './CarFormModal.tsx'
+import type { Dispatch, SetStateAction } from 'react'
+
+const INSURANCE_RATE_INFO = `화물차주 산재보험료율(${DEFAULT_INSURANCE_RATE}%, 출퇴근 재해 포함)입니다. 매년 1월 1일 바뀌며 직접 수정할 수 있고, '0' 입력 시 계산에서 제외됩니다.`
+const INSURANCE_SPLITS: Array<{ value: 'owner'|'half'|'driver', label: string }> = [
+  { value: 'owner', label: '차주 전액' },
+  { value: 'half', label: '반반' },
+  { value: 'driver', label: '기사 전액' },
+]
+const EXPENSE_RATE_INFO = `산재보험료를 계산할 때 운송료에서 빼는 고시 공제율입니다(기본 ${DEFAULT_EXPENSE_RATE}%). 매년 7월 1일 바뀌며 직접 수정할 수 있습니다.`
+
+type CarDriverIncomeFieldsProps = {
+  draft: CarFormDraft
+  setDraft: Dispatch<SetStateAction<CarFormDraft>>
+}
+
+export default function CarDriverIncomeFields({ draft, setDraft }: CarDriverIncomeFieldsProps) {
+  const isEmployee = draft.driverIncomeType === 'employee'
+  const insuranceSplit = insuranceSplitOf(draft)
+
+  function setType(type: 'employee'|'business') {
+    setDraft((prev) => ({ ...prev, driverIncomeType: type, withholdingOn: type === 'business', insuranceSplit: type === 'employee' ? 'owner' : 'half' }))
+  }
+
+  function setInsuranceOn(on: boolean) {
+    setDraft((prev) => ({
+      ...prev,
+      insuranceOn: on,
+      insuranceRate: on ? DEFAULT_INSURANCE_RATE : '0',
+      expenseRate: on ? DEFAULT_EXPENSE_RATE : '0',
+    }))
+  }
+
+  return (
+    <>
+      <div className="form-group">
+        <label>기사 유형</label>
+        <p className="car-settlement-mode-guide">
+          {isEmployee
+            ? '4대 보험 근로자는 기사 정산액에서 사업소득세 3.3%를 공제하지 않습니다.'
+            : '사업소득자(3.3%)는 기사 정산액에서 사업소득세 3.3%를 공제합니다.'}
+        </p>
+        <div className="car-commission-type" role="group" aria-label="기사 유형">
+          <button type="button" className={isEmployee ? 'active' : ''} aria-pressed={isEmployee} onClick={() => setType('employee')}>4대보험 근로자</button>
+          <button type="button" className={!isEmployee ? 'active' : ''} aria-pressed={!isEmployee} onClick={() => setType('business')}>3.3% 사업소득자</button>
+        </div>
+      </div>
+      <div className="setting-item">
+        <div className="car-option-copy">
+          <label htmlFor="newCarInsuranceOn">산재보험 적용</label>
+          <p>켜면 산재보험료를 계산합니다.</p>
+        </div>
+        <label className="switch">
+          <input id="newCarInsuranceOn" type="checkbox" checked={!!draft.insuranceOn} onChange={(e) => setInsuranceOn(e.target.checked)} />
+          <span className="slider"></span>
+        </label>
+      </div>
+      {draft.insuranceOn && <div className="form-group">
+        <label>산재 부담</label>
+        <p className="car-settlement-mode-guide">산재보험료를 누가 낼지 고릅니다.</p>
+        <div className="car-commission-type three" role="group" aria-label="산재 부담">
+          {INSURANCE_SPLITS.map(({ value, label }) => (
+            <button key={value} type="button" className={insuranceSplit === value ? 'active' : ''} aria-pressed={insuranceSplit === value} onClick={() => setDraft((prev) => ({ ...prev, insuranceSplit: value }))}>{label}</button>
+          ))}
+        </div>
+      </div>}
+      {draft.insuranceOn && <div className="car-income-rate-row">
+        <div className="form-group">
+          <div className="car-income-rate-label">
+            <label htmlFor="newCarInsuranceRate">산재보험료율</label>
+            <InfoTip name="산재보험료율" info={INSURANCE_RATE_INFO} />
+          </div>
+          <div className="car-commission-input">
+            <input id="newCarInsuranceRate" inputMode="decimal" placeholder={DEFAULT_INSURANCE_RATE} value={String(draft.insuranceRate ?? '')} onChange={(e) => setDraft((prev) => ({ ...prev, insuranceRate: formatPercentInput(e.target.value) }))} />
+            <b>%</b>
+          </div>
+        </div>
+        <div className="form-group">
+          <div className="car-income-rate-label">
+            <label htmlFor="newCarExpenseRate">필요경비율</label>
+            <InfoTip name="필요경비율" info={EXPENSE_RATE_INFO} />
+          </div>
+          <div className="car-commission-input">
+            <input id="newCarExpenseRate" inputMode="decimal" placeholder={DEFAULT_EXPENSE_RATE} value={String(draft.expenseRate ?? '')} onChange={(e) => setDraft((prev) => ({ ...prev, expenseRate: formatPercentInput(e.target.value) }))} />
+            <b>%</b>
+          </div>
+        </div>
+      </div>}
+      <div className="setting-item">
+        <div className="car-option-copy">
+          <label htmlFor="newCarWithholdingOn">원천징수 (3.3%)</label>
+          <p>켜면 정산 금액에서 사업소득세 3.3%를 공제한 실수령액으로 계산됩니다.</p>
+        </div>
+        <label className="switch">
+          <input id="newCarWithholdingOn" type="checkbox" checked={!!draft.withholdingOn} onChange={(e) => setDraft((prev) => ({ ...prev, withholdingOn: e.target.checked }))} />
+          <span className="slider"></span>
+        </label>
+      </div>
+    </>
+  )
+}

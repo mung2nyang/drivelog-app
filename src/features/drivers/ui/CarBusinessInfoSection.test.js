@@ -15,7 +15,7 @@ const { withSession } = await import('../../../testSupport/withSession.ts')
 const { withToast } = await import('../../../testSupport/withToast.ts')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
-const { default: CarBusinessInfoSection } = await import('./CarBusinessInfoSection.jsx')
+const { default: CarBusinessInfoSection } = await import('./CarBusinessInfoSection.tsx')
 const { commitCars } = await import('../../../data/store/commitHelpers.ts')
 const { getState } = await import('../../../data/store/app-store.ts')
 

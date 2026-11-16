@@ -25,7 +25,7 @@ mock.module('../../../data/sync/vehicleMutations.ts', {
     },
   },
 })
-mock.module('../api/carInviteFromDraft.js', {
+mock.module('../api/carInviteFromDraft.ts', {
   namedExports: {
     todayIsoDate: () => '2026-10-19',
     saveInviteAfterVehicle: async () => { calls.push('inviteAfterVehicle'); return inviteResult.value },
@@ -57,7 +57,7 @@ const { withToast } = await import('../../../testSupport/withToast.ts')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
 const { MemoryRouter, useLocation } = await import('react-router-dom')
-const { default: CarListPage } = await import('./CarListPage.jsx')
+const { default: CarListPage } = await import('./CarListPage.tsx')
 const { commitDrivers } = await import('../../../data/store/commitHelpers.ts')
 const { beginSessionEpoch, endCloudSession } = await import('../../../data/cloud/cloudSession.ts')
 

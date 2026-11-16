@@ -1,0 +1,54 @@
+import { dayFareTotal, dayWorkBadgeLabel } from '../../../domain/calendarBadges.ts'
+import { getCallDetails, getFixedCount, isOffDay } from '../../../domain/day-record.ts'
+import { formatWon, parseCurrencyValue } from '../../../domain/money.ts'
+import type { DayRecordLike } from '../../../domain/dayRecordTypes.ts'
+
+const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토']
+const MAX_CALL_ROWS = 3
+
+type HomeTodayCardProps = {
+  record: DayRecordLike|undefined
+  today: { dateKey: string, month: number, day: number }
+  weekday: number
+  inputMode: 'count'|'fare'
+  unitPrice: number|string
+  palletPrice: number
+  onOpenToday: (dateKey: string) => void
+}
+
+export default function HomeTodayCard({ record, today, weekday, inputMode, unitPrice, palletPrice, onOpenToday }: HomeTodayCardProps) {
+  const off = isOffDay(record)
+  const label = dayWorkBadgeLabel(record, { inputMode, unitPrice, palletPrice })
+  const fare = dayFareTotal(record, unitPrice, palletPrice)
+  const showFare = inputMode === 'count' && fare > 0
+  const title = inputMode === 'fare' ? formatWon(fare) : `${label}${showFare ? `, ${formatWon(fare)}` : ''}`
+  const status = off ? '오늘은 휴무입니다' : label ? `오늘 ${title}` : '아직 기록이 없습니다'
+  const fixedCount = off ? 0 : getFixedCount(record)
+  const calls = off ? [] : getCallDetails(record)
+
+  return (
+    <section className="home-card home-today-card" aria-label="오늘 운행">
+      <p className="home-today-date">{today.month}월 {today.day}일 ({WEEKDAYS[weekday]})</p>
+      <p className="home-today-status">{status}</p>
+      {(fixedCount > 0 || calls.length > 0) && (
+        <ul className="home-trip-list">
+          {fixedCount > 0 && (
+            <li className="home-trip-row"><span className="home-trip-route">고정 노선</span><span>{fixedCount}회</span></li>
+          )}
+          {calls.slice(0, MAX_CALL_ROWS).map((call, index) => (
+            <li key={call.id || index} className="home-trip-row">
+              <span className="home-trip-route">{call.loadLoc || '상차지 없음'} → {call.unloadLoc || '하차지 없음'}</span>
+              <span>{formatWon(parseCurrencyValue(call.fare))}</span>
+            </li>
+          ))}
+          {calls.length > MAX_CALL_ROWS && (
+            <li className="home-trip-more">외 {calls.length - MAX_CALL_ROWS}건</li>
+          )}
+        </ul>
+      )}
+      <button type="button" className="home-today-btn" onClick={() => onOpenToday(today.dateKey)}>
+        {off ? '일지 열기' : label ? '운행 기록 추가' : '운행 기록하기'}
+      </button>
+    </section>
+  )
+}

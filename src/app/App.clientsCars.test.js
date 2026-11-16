@@ -66,8 +66,8 @@ const { parseAppLogPath, withFromLogState } = await import('./shell/fromLogNavig
 const { pendingOwnerForLog } = await import('../data/sync/pendingLogOwner.ts')
 const { registerPendingDayWrite, getPendingDayWrite } = await import('../data/sync/pendingWorkDataWrites.ts')
 const { initializeOwnerFromPersist } = await import('../data/store/owner-state.ts')
-const { default: ClientListPage } = await import('../features/clients/ui/ClientListPage.jsx')
-const { default: CarListPage } = await import('../features/cars/ui/CarListPage.jsx')
+const { default: ClientListPage } = await import('../features/clients/ui/ClientListPage.tsx')
+const { default: CarListPage } = await import('../features/cars/ui/CarListPage.tsx')
 const { beginSessionEpoch, getCloudUserId, endCloudSession } = await import('../data/cloud/cloudSession.ts')
 const { resetOwnerSaveQueueForTests } = await import('../data/sync/ownerSaveQueue.ts')
 

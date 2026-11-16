@@ -18,7 +18,7 @@ const { MemoryRouter } = await import('react-router-dom')
 const { normalizeSettings } = await import('../../../domain/practiceSettings.ts')
 const { commitDrivers } = await import('../../../data/store/commitHelpers.ts')
 const { default: DayLogPage } = await import('./DayLogPage.tsx')
-const { default: EmployerLinkCard } = await import('../../drivers/ui/EmployerLinkCard.jsx')
+const { default: EmployerLinkCard } = await import('../../drivers/ui/EmployerLinkCard.tsx')
 
 const OWNER = 'owner-period'
 commitDrivers(OWNER, [{ id: 'link-1', name: '김기사', phone: '', vehicleNumber: '34나5678', startDate: '2026-10-05', endDate: '2026-12-31', status: 'linked' }])

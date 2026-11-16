@@ -12,7 +12,7 @@ globalThis.IS_REACT_ACT_ENVIRONMENT = true
 const React = await import('react')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
-const { default: CarFormModal } = await import('./CarFormModal.jsx')
+const { default: CarFormModal } = await import('./CarFormModal.tsx')
 
 const EMPTY = {
   number: '', tonnage: '', type: 'main', driverName: '', driverPhone: '', driverPayMode: 'revenue', driverSalaryAmount: '',

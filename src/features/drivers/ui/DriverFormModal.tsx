@@ -1,0 +1,140 @@
+import { useRef, useState } from 'react'
+import { checkDriverDraft } from '../../../domain/drivers.ts'
+import { buildDriverInviteSmsHref } from '../api/driverInviteSms.ts'
+import { formatInviteCode, generateInviteCode } from '../../../domain/drivers.ts'
+import { formatPhoneNumber } from '../../../domain/formatPhone.ts'
+import ClearableInput from '../../../shared/ui/ClearableInput.tsx'
+import TemporalInput from '../../../shared/ui/TemporalInput.tsx'
+import FieldError, { focusField, invalidProps } from '../../../shared/ui/FieldError.tsx'
+import './driver-connection.css'
+import ModalShell from '../../../shared/ui/ModalShell.tsx'
+import { useToast } from '../../../shared/hooks/useToast.ts'
+import type { DriverRecord } from '../../../domain/driverTypes.ts'
+import type { DriverDraft } from '../../../domain/drivers.ts'
+import type { CarLike } from '../../../domain/financeTypes.ts'
+
+export type DriverProblem = NonNullable<ReturnType<typeof checkDriverDraft>>
+
+const INPUT_IDS = { name: 'drvName', phone: 'drvPhone', inviteCode: 'drvCode', vehicleNumber: 'drvCar', startDate: 'drvStart', endDate: 'drvEnd' }
+
+function valueOf(draft: DriverDraft, field: DriverProblem['field']) {
+  return String(draft[field] ?? '')
+}
+
+type DriverFormModalProps<T extends DriverDraft> = {
+  draft: T
+  setDraft: (next: T) => void
+  editingId?: string|null
+  drivers: Array<DriverRecord>
+  assignableCars: Array<CarLike>
+  cars?: Array<CarLike>
+  ownerDisplayName?: string
+  required?: boolean
+  onCancel: () => void
+  onSave: () => void|Promise<void>
+}
+
+export default function DriverFormModal<T extends DriverDraft>({ draft, setDraft, editingId, drivers, assignableCars, cars = [], ownerDisplayName, required = false, onCancel, onSave }: DriverFormModalProps<T>) {
+  const showToast = useToast()
+  const [problem, setProblem] = useState<(DriverProblem & { value: string })|null>(null)
+  const shown = problem && valueOf(draft, problem.field) === problem.value ? problem : null
+
+  const [saving, setSaving] = useState(false)
+  const busyRef = useRef(false)
+
+  async function handleSave() {
+    if (busyRef.current) return
+    const found = checkDriverDraft(draft, { editingId, items: drivers, cars, required })
+    if (!found) {
+      setProblem(null)
+      busyRef.current = true
+      setSaving(true)
+      try { await onSave() } finally { busyRef.current = false; setSaving(false) }
+      return
+    }
+    setProblem({ ...found, value: valueOf(draft, found.field) })
+    focusField(INPUT_IDS[found.field])
+  }
+
+  function dateInvalid(field: 'startDate'|'endDate', inputId: string) {
+    const props = invalidProps(shown, field, inputId)
+    return { invalid: Boolean(props['aria-invalid']), describedBy: props['aria-describedby'] }
+  }
+
+  function sendInviteSms() {
+    const result = buildDriverInviteSmsHref({
+      name: draft.name,
+      phone: draft.phone,
+      inviteCode: draft.inviteCode,
+      vehicleNumber: draft.vehicleNumber,
+      ownerDisplayName,
+      userAgent: navigator.userAgent,
+    })
+    if ('error' in result) {
+      showToast?.(result.error)
+      return
+    }
+    window.location.href = result.href
+  }
+
+  const linked = drivers.find((d) => d.id === editingId)?.status === 'linked'
+  const requiredMark = required ? ' (필수)' : ''
+
+  return (
+    <ModalShell onClose={onCancel} closeOnOverlay={false} closeOnEscape={false} contentClassName="modal-content client-modal driver-form-modal" label="기사 초대">
+      <div className="modal-title">{editingId ? '초대 수정' : '기사 초대'}</div>
+      <div className="form-group">
+        <label htmlFor="drvName">기사 이름</label>
+        <ClearableInput id="drvName" className="input-box" value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} {...invalidProps(shown, 'name', 'drvName')} />
+        <FieldError problem={shown} field="name" inputId="drvName" />
+      </div>
+      <div className="form-group">
+        <label htmlFor="drvPhone">기사 전화번호</label>
+        <ClearableInput id="drvPhone" className="input-box" type="tel" placeholder="010-0000-0000" value={draft.phone} onChange={(e) => setDraft({ ...draft, phone: formatPhoneNumber(e.target.value) })} {...invalidProps(shown, 'phone', 'drvPhone')} />
+        <FieldError problem={shown} field="phone" inputId="drvPhone" />
+      </div>
+      <div className="form-group">
+        <label htmlFor="drvCode">초대 코드</label>
+        <div className="driver-code-row">
+          <input id="drvCode" className="input-box" readOnly disabled={linked} value={formatInviteCode(draft.inviteCode)} {...invalidProps(shown, 'inviteCode', 'drvCode')} />
+          <button type="button" className="theme-toggle-btn" disabled={linked} onClick={() => setDraft({ ...draft, inviteCode: generateInviteCode(drivers) })}>코드 생성</button>
+          <button type="button" className="theme-toggle-btn" disabled={linked} onClick={sendInviteSms}>문자 보내기</button>
+        </div>
+        <FieldError problem={shown} field="inviteCode" inputId="drvCode" />
+        {linked && (
+          <p className="driver-invite-note">
+            초대 코드는 한 번만 사용할 수 있습니다.<br />
+            연동을 해제한 뒤 다시 연결하려면 새 초대 코드를 발급해 주세요.
+          </p>
+        )}
+      </div>
+      <div className="form-group">
+        <label htmlFor="drvCar">배정 차량{requiredMark}</label>
+        <ClearableInput id="drvCar" className="input-box driver-car-input" list="drvCarOptions" placeholder="차량번호" value={draft.vehicleNumber} onChange={(e) => setDraft({ ...draft, vehicleNumber: e.target.value })} {...invalidProps(shown, 'vehicleNumber', 'drvCar')} />
+        <FieldError problem={shown} field="vehicleNumber" inputId="drvCar" />
+        <datalist id="drvCarOptions">
+          {assignableCars.map((car, index) => (
+            <option key={String(car.id || car.number || `car-${index}`)} value={car.number} />
+          ))}
+        </datalist>
+      </div>
+      <div className="personal-inline-fields">
+        <div className="form-group">
+          <label htmlFor="drvStart">계약 시작일{requiredMark}</label>
+          <TemporalInput type="date" id="drvStart" value={draft.startDate || ''} onChange={(e) => setDraft({ ...draft, startDate: e.target.value })} {...dateInvalid('startDate', 'drvStart')} />
+          <FieldError problem={shown} field="startDate" inputId="drvStart" />
+        </div>
+        <div className="form-group">
+          <label htmlFor="drvEnd">계약 종료일</label>
+          <TemporalInput type="date" id="drvEnd" clearable value={draft.endDate || ''} onChange={(e) => setDraft({ ...draft, endDate: e.target.value })} {...dateInvalid('endDate', 'drvEnd')} />
+          <FieldError problem={shown} field="endDate" inputId="drvEnd" />
+        </div>
+      </div>
+      <p className="car-type-hint">한 차량은 한 기사에게만 배정할 수 있습니다. 종료일이 없으면 계속 배정됩니다. 메인 차량은 배정할 수 없습니다.</p>
+      <div className="modal-btns">
+        <button type="button" className="modal-btn cancel" onClick={onCancel}>취소</button>
+        <button type="button" className="modal-btn confirm" disabled={saving} onClick={handleSave}>{saving ? '저장 중…' : '저장'}</button>
+      </div>
+    </ModalShell>
+  )
+}

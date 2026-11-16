@@ -20,7 +20,7 @@ const { act } = React
 
 const { default: MyPage } = await import('../features/account/ui/MyPage.tsx')
 const { default: SideMenu } = await import('./shell/SideMenu.tsx')
-const { default: CarListPage } = await import('../features/cars/ui/CarListPage.jsx')
+const { default: CarListPage } = await import('../features/cars/ui/CarListPage.tsx')
 const { commitBatch } = await import('../data/store/app-store.ts')
 
 describe('Step 9 ② 1차: 계정별 화면 권한 정리 UI 검증', () => {

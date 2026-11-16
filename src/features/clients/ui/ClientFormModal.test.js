@@ -12,7 +12,7 @@ globalThis.IS_REACT_ACT_ENVIRONMENT = true
 const React = await import('react')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
-const { default: ClientFormModal } = await import('./ClientFormModal.jsx')
+const { default: ClientFormModal } = await import('./ClientFormModal.tsx')
 
 const EMPTY = { companyName: '', managerName: '', phone: '', bizNumber: '', paymentTerm: 'next_month_end', paymentTermValue: '', commEnabled: false, commType: 'percent', commValue: '' }
 

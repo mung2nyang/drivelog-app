@@ -1,0 +1,56 @@
+import { useMemo } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+import { getShortCarNum } from '../../../domain/cars.ts'
+import { resolveDriverManagementContext } from '../../../domain/driverManagementContext.ts'
+import { useOwnerCars, useOwnerDrivers } from '../../../data/store/ownerDataHooks.ts'
+import { toLinkedDriverLink } from './linkedDriverLink.ts'
+import PageHeader from '../../../shared/ui/PageHeader.tsx'
+import ScopedClientsList from '../../clients/ui/ScopedClientsList.tsx'
+import '../../clients/ui/client-management.css'
+import './linked-driver.css'
+import { useSession } from '../../../data/cloud/sessionContext.ts'
+
+export default function LinkedDriverClientsPage({ onBack, onOpenMenu }: { onBack?: () => void, onOpenMenu?: (() => void) }) {
+  const { ownerKey } = useSession()
+  const navigate = useNavigate()
+  const { linkId: rawLinkId, logId: rawLogId } = useParams()
+  const linkId = decodeURIComponent(rawLinkId || '')
+  const logId = decodeURIComponent(rawLogId || '')
+  const drivers = useOwnerDrivers(ownerKey)
+  const cars = useOwnerCars(ownerKey)
+
+  const ctx = useMemo(
+    () => resolveDriverManagementContext({ linkId, logId }, drivers, cars),
+    [linkId, logId, drivers, cars],
+  )
+  const link = ctx.driver ? toLinkedDriverLink(ctx.driver) : null
+  const unlinked = ctx.mode === 'unlinked'
+  const scopeKey = (unlinked ? ctx.plate : (ctx.car?.number || '')) || ''
+
+  function handleBack() {
+    if (onBack) onBack()
+    else navigate(-1)
+  }
+
+  const title = unlinked
+    ? (ctx.plate ? `${ctx.car?.driverName || getShortCarNum(ctx.plate)} 담당 거래처` : '거래처')
+    : `${link?.driverName || '기사'}님의 거래처`
+
+  if (ctx.notFound) {
+    return (
+      <div className="page client-management-page">
+        <PageHeader title={unlinked ? title : '기사 거래처'} onBack={handleBack} onOpenMenu={onOpenMenu} />
+        <div className="linked-driver-empty">
+          {unlinked ? '차량 정보를 찾을 수 없습니다.' : '연동된 기사 정보를 찾을 수 없습니다.'}
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="page client-management-page">
+      <PageHeader title={title} onBack={handleBack} onOpenMenu={onOpenMenu} />
+      <ScopedClientsList scopeKey={scopeKey} listId="linkedDriverClientsListContainer" />
+    </div>
+  )
+}

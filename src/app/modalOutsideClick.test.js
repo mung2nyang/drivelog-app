@@ -14,16 +14,16 @@ const React = await import('react')
 const { withSession } = await import('../testSupport/withSession.ts')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
-const { default: CarFormModal } = await import('../features/cars/ui/CarFormModal.jsx')
-const { default: ClientFormModal } = await import('../features/clients/ui/ClientFormModal.jsx')
+const { default: CarFormModal } = await import('../features/cars/ui/CarFormModal.tsx')
+const { default: ClientFormModal } = await import('../features/clients/ui/ClientFormModal.tsx')
 const { default: ExpenseFormModal } = await import('../features/expenses/ui/ExpenseFormModal.tsx')
-const { default: DriverFormModal } = await import('../features/drivers/ui/DriverFormModal.jsx')
+const { default: DriverFormModal } = await import('../features/drivers/ui/DriverFormModal.tsx')
 const { default: TaxInvoiceDraftModal } = await import('../features/documents/ui/TaxInvoiceDraftModal.tsx')
 const { default: ConfirmModal } = await import('../shared/ui/ConfirmModal.tsx')
 const { default: InviteRedeemModal } = await import('../features/account/ui/InviteRedeemModal.tsx')
 const { default: FixedRouteClientModal } = await import('../features/settings/ui/FixedRouteClientModal.tsx')
 
-/** @type {import('../features/cars/ui/CarFormModal.jsx').CarFormDraft} */
+/** @type {import('../features/cars/ui/CarFormModal.tsx').CarFormDraft} */
 const CAR_DRAFT = {
   number: '12가3456', tonnage: '', type: 'sub', driverName: '', driverPhone: '',
   driverPayMode: 'revenue', driverSalaryAmount: '', commEnabled: false, commType: 'percent', commission: '',

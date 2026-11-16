@@ -12,10 +12,10 @@ Reflect.set(globalThis, 'IS_REACT_ACT_ENVIRONMENT', true)
 const React = await import('react')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
-const { default: CarDriverIncomeFields } = await import('./CarDriverIncomeFields.jsx')
-const { default: CarFormModal } = await import('./CarFormModal.jsx')
+const { default: CarDriverIncomeFields } = await import('./CarDriverIncomeFields.tsx')
+const { default: CarFormModal } = await import('./CarFormModal.tsx')
 
-/** @typedef {import('./CarFormModal.jsx').CarFormDraft} CarFormDraft */
+/** @typedef {import('./CarFormModal.tsx').CarFormDraft} CarFormDraft */
 /** @typedef {{ draft: CarFormDraft, setDraft: import('react').Dispatch<import('react').SetStateAction<CarFormDraft>> }} HarnessProps */
 
 /** @type {CarFormDraft} */

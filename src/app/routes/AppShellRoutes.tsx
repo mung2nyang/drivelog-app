@@ -1,5 +1,5 @@
 import { Navigate, Route, Routes, useSearchParams, type NavigateOptions, type To } from 'react-router-dom'
-import HomePage from '../../features/home/ui/HomePage.jsx'
+import HomePage from '../../features/home/ui/HomePage.tsx'
 import ComingSoonRoute from './ComingSoonRoute.tsx'
 import MainPageRoute from './MainPageRoute.tsx'
 import {

@@ -12,7 +12,7 @@ mock.module('../cloud/supabaseClient.ts', { namedExports: { supabase: fakeSupaba
 const {
   formatInviteCode, generateInviteCode, INVITE_CODE_PATTERN, normalizeInviteCode, pickInviteCodeFromText, upsertDriver,
 } = await import('../../domain/drivers.ts')
-const { buildDriverInviteSmsHref } = await import('../../features/drivers/api/driverInviteSms.js')
+const { buildDriverInviteSmsHref } = await import('../../features/drivers/api/driverInviteSms.ts')
 const { redeemDriverInviteCode } = await import('./driverLinkRpc.ts')
 
 const draft = { name: '박기사', phone: '010-3333-4444', vehicleNumber: '', startDate: '', endDate: '' }

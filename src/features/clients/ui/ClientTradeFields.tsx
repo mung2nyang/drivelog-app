@@ -1,0 +1,66 @@
+import { formatPercentInput } from '../../../domain/money.ts'
+import CurrencyInput from '../../../shared/ui/CurrencyInput.tsx'
+import FieldError, { invalidProps } from '../../../shared/ui/FieldError.tsx'
+import type { ClientDraft } from '../../../domain/clientTypes.ts'
+import type { FieldProblem } from '../../../shared/ui/FieldError.tsx'
+import type { Dispatch, SetStateAction } from 'react'
+
+type ClientTradeFieldsProps = {
+  draft: ClientDraft
+  setDraft: Dispatch<SetStateAction<ClientDraft>>
+  problem?: FieldProblem|null
+}
+
+export default function ClientTradeFields({ draft, setDraft, problem = null }: ClientTradeFieldsProps) {
+  const commInvalid = invalidProps(problem, 'commValue', 'clientCommValue')
+  function setCommType(nextType: 'percent'|'direct') {
+    setDraft({
+      ...draft,
+      commType: nextType,
+      commValue: draft.commType === nextType ? draft.commValue : '',
+    })
+  }
+
+  return (
+    <>
+      <div className="setting-item">
+        <div className="car-option-copy">
+          <label htmlFor="clientCommToggle">수수료 적용</label>
+        </div>
+        <label className="switch">
+          <input
+            id="clientCommToggle"
+            type="checkbox"
+            checked={!!draft.commEnabled}
+            onChange={(e) => setDraft({ ...draft, commEnabled: e.target.checked })}
+          />
+          <span className="slider"></span>
+        </label>
+      </div>
+      {draft.commEnabled && (
+        <div className="car-commission-value client-commission-value">
+          <div className="car-commission-type" role="group" aria-label="수수료 방식">
+            <button type="button" className={draft.commType === 'percent' ? 'active' : ''} aria-pressed={draft.commType === 'percent'} onClick={() => setCommType('percent')}>퍼센트</button>
+            <button type="button" className={draft.commType === 'direct' ? 'active' : ''} aria-pressed={draft.commType === 'direct'} onClick={() => setCommType('direct')}>금액</button>
+          </div>
+          <span className="car-commission-input">
+            {draft.commType === 'direct' ? (
+              <CurrencyInput id="clientCommValue" placeholder="0" value={String(draft.commValue || '')} onValueChange={(commValue) => setDraft({ ...draft, commValue })} {...commInvalid} />
+            ) : (
+              <input
+                id="clientCommValue"
+                inputMode="decimal"
+                placeholder="0"
+                value={String(draft.commValue || '')}
+                onChange={(e) => setDraft({ ...draft, commValue: formatPercentInput(e.target.value) })}
+                {...commInvalid}
+              />
+            )}
+            <b>{draft.commType === 'direct' ? '원' : '%'}</b>
+          </span>
+        </div>
+      )}
+      {draft.commEnabled && <FieldError problem={problem} field="commValue" inputId="clientCommValue" />}
+    </>
+  )
+}

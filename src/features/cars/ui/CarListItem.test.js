@@ -12,7 +12,7 @@ globalThis.IS_REACT_ACT_ENVIRONMENT = true
 const React = await import('react')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
-const { default: CarListItem } = await import('./CarListItem.jsx')
+const { default: CarListItem } = await import('./CarListItem.tsx')
 
 const SUB = { type: 'sub', number: '12가3456', tonnage: '5톤', driverPayMode: 'revenue', commEnabled: true }
 

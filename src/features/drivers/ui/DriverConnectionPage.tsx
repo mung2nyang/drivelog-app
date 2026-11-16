@@ -1,0 +1,184 @@
+import { useState } from 'react'
+import { getCloudUserId, isCloudSession } from '../../../data/cloud/cloudSession.ts'
+import {
+  requestDriverDeletion,
+  requestDriverInviteSave,
+  requestDriverStatusChange,
+} from '../../../data/sync/directMutationActions.ts'
+import { saveDrivers } from '../../../data/sync/driversSave.ts'
+import { countByStatus, formatInviteCode, generateInviteCode, upsertDriver } from '../../../domain/drivers.ts'
+import { requestDriverUnlinkAction } from '../../../data/sync/driverUnlink.ts'
+import { useOwnerCars, useOwnerDrivers, useOwnerProfile } from '../../../data/store/ownerDataHooks.ts'
+import DriverUnlinkControls from './DriverUnlinkControls.tsx'
+import DriverFormModal from './DriverFormModal.tsx'
+import PageHeader from '../../../shared/ui/PageHeader.tsx'
+import './driver-connection.css'
+import { useToast } from '../../../shared/hooks/useToast.ts'
+import { useSession } from '../../../data/cloud/sessionContext.ts'
+import type { UnlinkAction } from '../../../data/sync/driverUnlink.ts'
+import type { CarRecord } from '../../../data/sync/syncTypes.ts'
+import type { DriverRecord } from '../../../domain/driverTypes.ts'
+import type { NavigateOptions, To } from 'react-router-dom'
+
+const emptyDraft = { name: '', phone: '', inviteCode: '', vehicleNumber: '', startDate: '', endDate: '' }
+
+export default function DriverConnectionPage({ onBack, navigate }: { onBack: () => void, navigate?: (to: To | number, options?: NavigateOptions) => void }) {
+  const { ownerKey, session } = useSession()
+  const showToast = useToast()
+  const drivers = useOwnerDrivers(ownerKey)
+  const cars = useOwnerCars(ownerKey)
+  const profile = useOwnerProfile(ownerKey)
+  const [modalOpen, setModalOpen] = useState(false)
+  const [editingId, setEditingId] = useState<string|null>(null)
+  const [draft, setDraft] = useState(emptyDraft)
+
+  const counts = countByStatus(drivers)
+  const cloud = isCloudSession(session)
+  const assignableCars = cars.filter((car) => car.type !== 'main')
+  const cloudUserId = getCloudUserId() ?? ''
+
+  function openAdd() {
+    setEditingId(null)
+    setDraft({ ...emptyDraft, inviteCode: generateInviteCode(drivers) })
+    setModalOpen(true)
+  }
+
+  function openEdit(driver: DriverRecord) {
+    setEditingId(driver.id)
+    setDraft({
+      name: driver.name || '', phone: driver.phone || '', inviteCode: driver.inviteCode || '',
+      vehicleNumber: driver.vehicleNumber || '', startDate: driver.startDate || '', endDate: driver.endDate || '',
+    })
+    setModalOpen(true)
+  }
+
+  async function save() {
+    const result = upsertDriver(drivers, draft, editingId, cars)
+    if (result.error) {
+      showToast?.(result.error)
+      return
+    }
+    if (!cloud) {
+      saveDrivers(ownerKey, result.items)
+      setModalOpen(false)
+      showToast?.(editingId ? '초대를 수정했습니다.' : '초대를 저장했습니다.')
+      return
+    }
+    const saveResult = await requestDriverInviteSave({
+      ownerKey,
+      userId: cloudUserId,
+      items: result.items,
+      editingId,
+      cars: cars as CarRecord[],
+      previousItems: drivers,
+    })
+    if (saveResult.blocked) {
+      showToast?.(saveResult.blocked)
+      return
+    }
+    setModalOpen(false)
+    if (saveResult.toast) showToast?.(saveResult.toast)
+  }
+
+  async function changeStatus(id: string, status: 'pending'|'linked') {
+    const result = await requestDriverStatusChange({ ownerKey, userId: cloudUserId, drivers, driverId: id, status, cloud })
+    if (result.toast) showToast?.(result.toast)
+  }
+
+  async function unlink(id: string, action: UnlinkAction) {
+    const result = await requestDriverUnlinkAction({ ownerKey, drivers, driverId: id, action })
+    if (result.toast) showToast?.(result.toast)
+  }
+
+  async function remove(id: string) {
+    const result = await requestDriverDeletion({ ownerKey, userId: cloudUserId, drivers, driverId: id, cloud })
+    if (result.toast) showToast?.(result.toast)
+  }
+
+  return (
+    <div className="page driver-connection-page">
+      <PageHeader title="기사 연동 관리" onBack={onBack} />
+
+      <section className="driver-summary-card">
+        <div className="driver-section-heading">
+          <div>
+            <h3>기사 연결 현황</h3>
+            <p>기사 연동 상태와 차량 계약 기간을 관리합니다.</p>
+            {!cloud && <p>기사를 초대하려면 로그인한 뒤 배정 차량과 계약 시작일을 입력하세요.</p>}
+          </div>
+        </div>
+        <div className="driver-summary-counts">
+          <div><span>연동 중</span><strong>{counts.linked}</strong></div>
+          <div><span>초대 대기</span><strong>{counts.pending}</strong></div>
+        </div>
+      </section>
+
+      {drivers.length === 0 && <div className="empty-state">초대된 기사가 없습니다.</div>}
+      {drivers.map((driver) => (
+        <div key={driver.id} className="driver-connection-card">
+          <div className="driver-connection-card-head">
+            <strong>{driver.name}</strong>
+            <span className={`management-badge ${driver.status === 'linked' ? 'main' : ''}`}>
+              {driver.status === 'linked' ? '연동 중' : '초대 대기'}
+            </span>
+          </div>
+          <div className="car-sub-text">
+            {[driver.phone, driver.status !== 'linked' && `초대 코드 ${formatInviteCode(driver.inviteCode)}`].filter(Boolean).join(', ')}
+          </div>
+
+          <div className="driver-assignment-grid">
+            <div>
+              <span>배정 차량</span>
+              <strong>{driver.vehicleNumber || '차량 미지정'}</strong>
+            </div>
+            <div>
+              <span>계약기간</span>
+              <strong>{driver.startDate || '-'}{driver.endDate ? ` ~ ${driver.endDate}` : ' ~ 종료일 미정'}</strong>
+            </div>
+          </div>
+
+          <div className="driver-card-actions">
+            {driver.status === 'linked' ? (
+              <>
+                <button
+                  type="button"
+                  className="driver-card-action-btn primary"
+                  onClick={() => navigate?.(`/app/drivers/${encodeURIComponent(driver.id)}`)}
+                >
+                  기사 관리
+                </button>
+                <button type="button" className="driver-card-action-btn" onClick={() => openEdit(driver)}>수정</button>
+                <DriverUnlinkControls driver={driver} meId={cloudUserId} counterpartLabel="기사" onAction={(action) => { void unlink(driver.id, action) }} />
+              </>
+            ) : (
+              <>
+                <button type="button" className="driver-card-action-btn" onClick={() => openEdit(driver)}>초대 수정</button>
+                {!cloud && <button type="button" className="driver-card-action-btn primary" onClick={() => changeStatus(driver.id, 'linked')}>연동 완료</button>}
+                <button type="button" className="driver-card-action-btn danger" onClick={() => remove(driver.id)}>초대 취소</button>
+              </>
+            )}
+          </div>
+        </div>
+      ))}
+
+      {cloud && (
+        <button type="button" className="management-add-fab" onClick={openAdd}>+ 초대</button>
+      )}
+
+      {modalOpen && (
+        <DriverFormModal
+          draft={draft}
+          setDraft={setDraft}
+          editingId={editingId}
+          drivers={drivers}
+          assignableCars={assignableCars}
+          cars={cars}
+          ownerDisplayName={profile.bizName || profile.name || '운송사'}
+          required={cloud}
+          onCancel={() => setModalOpen(false)}
+          onSave={save}
+        />
+      )}
+    </div>
+  )
+}

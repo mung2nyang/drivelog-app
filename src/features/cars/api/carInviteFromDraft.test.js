@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { saveInviteAfterVehicle, todayIsoDate } from './carInviteFromDraft.js'
+import { saveInviteAfterVehicle, todayIsoDate } from './carInviteFromDraft.ts'
 
-/** @type {import('./carInviteFromDraft.js').CarInviteDraft} */
+/** @type {import('./carInviteFromDraft.ts').CarInviteDraft} */
 const baseDraft = {
   type: 'sub',
   number: '12가3456',

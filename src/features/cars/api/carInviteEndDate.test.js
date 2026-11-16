@@ -12,7 +12,7 @@ mock.module('../../../data/sync/requestDriverInviteSave.ts', {
   },
 })
 
-const { saveInviteAfterVehicle } = await import('./carInviteFromDraft.js')
+const { saveInviteAfterVehicle } = await import('./carInviteFromDraft.ts')
 
 const car = { id: 'car-1', type: /** @type {'sub'} */ ('sub'), number: '12가3456', supabaseId: 'veh-1' }
 

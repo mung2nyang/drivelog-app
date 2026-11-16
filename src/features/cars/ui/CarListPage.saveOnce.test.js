@@ -31,7 +31,7 @@ mock.module('../../../data/sync/vehicleMutations.ts', {
       : { failed: false, toast: '차량을 저장했습니다.', saved: { number: draft.number }, renamedFrom: null })),
   },
 })
-mock.module('../api/carInviteFromDraft.js', {
+mock.module('../api/carInviteFromDraft.ts', {
   namedExports: {
     todayIsoDate: () => '2026-10-28',
     saveInviteAfterVehicle: async () => ({ toast: null, saved: false }),
@@ -55,7 +55,7 @@ const { withToast } = await import('../../../testSupport/withToast.ts')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
 const { MemoryRouter } = await import('react-router-dom')
-const { default: CarListPage } = await import('./CarListPage.jsx')
+const { default: CarListPage } = await import('./CarListPage.tsx')
 const { commitCars, commitDrivers } = await import('../../../data/store/commitHelpers.ts')
 const { beginSessionEpoch, endCloudSession } = await import('../../../data/cloud/cloudSession.ts')
 

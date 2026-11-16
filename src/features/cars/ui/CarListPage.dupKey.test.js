@@ -15,7 +15,7 @@ const { withSession } = await import('../../../testSupport/withSession.ts')
 const { createRoot } = await import('react-dom/client')
 const { MemoryRouter } = await import('react-router-dom')
 const { act } = React
-const { default: CarListPage } = await import('./CarListPage.jsx')
+const { default: CarListPage } = await import('./CarListPage.tsx')
 const { commitCars } = await import('../../../data/store/commitHelpers.ts')
 
 test('같은 차량 id가 두 번 커밋돼도 목록 key 경고가 나지 않는다', async () => {

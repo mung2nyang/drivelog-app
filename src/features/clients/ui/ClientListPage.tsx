@@ -1,0 +1,113 @@
+import { useState } from 'react'
+import ConfirmModal from '../../../shared/ui/ConfirmModal.tsx'
+import PageHeader from '../../../shared/ui/PageHeader.tsx'
+import ClientFormModal from './ClientFormModal.tsx'
+import ClientListItem from './ClientListItem.tsx'
+import { useClientReorder } from '../hooks/useClientReorder.ts'
+import useAssistantClient from '../hooks/useAssistantClient.ts'
+import { requestClientSave } from '../../../data/sync/clientMutations.ts'
+import { requestClientDeletion } from '../../../data/sync/directMutationActions.ts'
+import { getCloudUserId } from '../../../data/cloud/cloudSession.ts'
+import { useOwnerClients } from '../../../data/store/ownerDataHooks.ts'
+import './client-management.css'
+import { useToast } from '../../../shared/hooks/useToast.ts'
+import { useSession } from '../../../data/cloud/sessionContext.ts'
+import type { ClientDraft, ClientLike } from '../../../domain/clientTypes.ts'
+
+const emptyDraft: ClientDraft = {
+  companyName: '', managerName: '', phone: '', bizNumber: '', taxRepresentative: '',
+  taxEmail: '', taxAddress: '', taxBizType: '', taxBizItem: '',
+  paymentTerm: 'next_month_end', paymentTermValue: '', isPinned: false,
+  commEnabled: false, commType: 'percent', commValue: '',
+  fixedRouteLinked: false, fixedUnitPrice: '', palletOn: false, palletPrice: '',
+}
+
+export default function ClientListPage({ onBack, onOpenMenu }: { onBack?: () => void, onOpenMenu?: (() => void) }) {
+  const { ownerKey } = useSession()
+  const showToast = useToast()
+  const clients = useOwnerClients(ownerKey)
+  const [modalOpen, setModalOpen] = useState(false)
+  const [editingId, setEditingId] = useState<string|null>(null)
+  const [draft, setDraft] = useState(emptyDraft)
+  const [pendingDelete, setPendingDelete] = useState<ClientLike|null>(null)
+  const reorder = useClientReorder(ownerKey, clients)
+  const visibleClients = clients.filter((client) => !client.scopedToVehicleNumber)
+
+  function openAdd(fields?: Partial<ClientDraft>) {
+    setEditingId(null)
+    setDraft({ ...emptyDraft, ...fields })
+    setModalOpen(true)
+  }
+  useAssistantClient(openAdd)
+
+  function openEdit(client: ClientLike) {
+    setEditingId(client.id)
+    setDraft({
+      companyName: client.companyName || '',
+      managerName: client.managerName || '',
+      phone: client.phone || '',
+      bizNumber: client.bizNumber || '',
+      taxRepresentative: client.taxRepresentative || client.managerName || '',
+      taxEmail: client.taxEmail || '',
+      taxAddress: client.taxAddress || '',
+      taxBizType: client.taxBizType || '',
+      taxBizItem: client.taxBizItem || '',
+      paymentTerm: client.paymentTerm || 'next_month_end',
+      paymentTermValue: client.paymentTermValue || '',
+      isPinned: !!client.isPinned,
+      commEnabled: !!client.commEnabled,
+      commType: client.commType === 'direct' ? 'direct' : 'percent',
+      commValue: String(client.commValue || ''),
+      fixedRouteLinked: !!client.fixedRouteLinked,
+      fixedUnitPrice: String(client.fixedUnitPrice || ''),
+      palletOn: !!client.palletOn,
+      palletPrice: String(client.palletPrice || ''),
+    })
+    setModalOpen(true)
+  }
+
+  async function save() {
+    const result = await requestClientSave({ ownerKey, userId: getCloudUserId(), clients, draft, editingId })
+    if (result.toast) showToast?.(result.toast)
+    if (result.failed) return
+    setModalOpen(false)
+  }
+
+  async function confirmRemove() {
+    const client = pendingDelete
+    if (!client?.id) return
+    const result = await requestClientDeletion({ ownerKey, userId: getCloudUserId(), clients, clientId: client.id })
+    if (result.toast) showToast?.(result.toast)
+    if (result.failed || result.closeModal === false) return
+    setPendingDelete(null)
+  }
+
+  return (
+    <div className="page client-management-page">
+      <PageHeader title="거래처" onBack={onBack} onOpenMenu={onOpenMenu} />
+      <div className="client-list" id="clientListContainer">
+        {visibleClients.length === 0 && <div className="empty-state">등록된 거래처가 없습니다.</div>}
+        {visibleClients.map((client) => (
+          <ClientListItem
+            key={client.id}
+            client={client}
+            dragging={reorder.dragId === client.id}
+            onDragStart={() => reorder.onDragStart(client.id)}
+            onDragOver={(event) => event.preventDefault()}
+            onDrop={() => reorder.onDrop(client.id)}
+            onDragEnd={reorder.onDragEnd}
+            onEdit={() => openEdit(client)}
+            onDelete={() => setPendingDelete(client)}
+          />
+        ))}
+      </div>
+      <button type="button" className="management-add-fab" onClick={() => openAdd()}>+ 추가</button>
+      {modalOpen && (
+        <ClientFormModal draft={draft} setDraft={setDraft} editingId={editingId} onCancel={() => setModalOpen(false)} onSave={save} clients={clients} />
+      )}
+      {pendingDelete && (
+        <ConfirmModal title="이 거래처를 삭제하시겠습니까?" confirmLabel="삭제" danger onCancel={() => setPendingDelete(null)} onConfirm={confirmRemove} />
+      )}
+    </div>
+  )
+}

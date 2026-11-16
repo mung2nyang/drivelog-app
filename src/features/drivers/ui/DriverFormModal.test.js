@@ -12,7 +12,7 @@ globalThis.IS_REACT_ACT_ENVIRONMENT = true
 const React = await import('react')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
-const { default: DriverFormModal } = await import('./DriverFormModal.jsx')
+const { default: DriverFormModal } = await import('./DriverFormModal.tsx')
 
 const FILLED = { name: '김기사', phone: '010-1234-5678', inviteCode: 'ABCDE23456', vehicleNumber: '', startDate: '', endDate: '' }
 

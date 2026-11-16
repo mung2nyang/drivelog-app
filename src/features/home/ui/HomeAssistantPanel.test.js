@@ -39,7 +39,7 @@ const { SERVER_SAVE_FAIL } = await import('../../../shared/utils/failureMessages
 const { readOwnerSettings } = await import('../../../data/store/ownerDataHooks.ts')
 const { normalizeSettings } = await import('../../../domain/practiceSettings.ts')
 const { todayWorkLogSelection } = await import('../../../domain/calendar.ts')
-const { default: HomeAssistantBar } = await import('./HomeAssistantBar.jsx')
+const { default: HomeAssistantBar } = await import('./HomeAssistantBar.tsx')
 const { UnbiseoProvider } = await import('../hooks/unbiseoContext.ts')
 
 const calls = []

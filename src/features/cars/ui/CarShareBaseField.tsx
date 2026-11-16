@@ -1,0 +1,25 @@
+import AppDropdown from '../../../shared/ui/AppDropdown.tsx'
+
+const OPTIONS = [
+  { value: 'gross', label: '운송료 전체' },
+  { value: 'afterClientCommission', label: '거래처 수수료 뗀 뒤' },
+]
+
+export default function CarShareBaseField({ value, onChange }: { value: string|undefined, onChange: (next: 'gross'|'afterClientCommission') => void }) {
+  const current = value === 'afterClientCommission' ? 'afterClientCommission' : 'gross'
+  return (
+    <div className="form-group car-share-base-field">
+      <label htmlFor="newCarShareBase">기사 몫 기준</label>
+      <p className="car-settlement-mode-guide">기사 몫(%)을 어느 금액에서 계산할지 고릅니다.</p>
+      <AppDropdown
+        id="newCarShareBase"
+        label="기사 몫 기준"
+        value={current}
+        options={OPTIONS}
+        onChange={(next) => onChange(next === 'afterClientCommission' ? 'afterClientCommission' : 'gross')}
+        className="app-dropdown-boxed"
+      />
+      <p className="car-settlement-mode-guide">예: 운송료가 100만 원이고 거래처 수수료가 10만 원일 때, 기사 몫이 운송료 전체 기준 30%이면 30만 원, 수수료 차감 후 기준 30%이면 27만 원입니다.</p>
+    </div>
+  )
+}

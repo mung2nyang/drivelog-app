@@ -12,7 +12,7 @@ Reflect.set(globalThis, 'IS_REACT_ACT_ENVIRONMENT', true)
 const React = await import('react')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
-const { default: SettlementSummaryCard } = await import('./SettlementSummaryCard.jsx')
+const { default: SettlementSummaryCard } = await import('./SettlementSummaryCard.tsx')
 
 /** @param {Parameters<typeof SettlementSummaryCard>[0]['detail']} detail */
 async function render(detail) {

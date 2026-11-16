@@ -16,8 +16,8 @@ const { withToast } = await import('../../../testSupport/withToast.ts')
 const { createRoot } = await import('react-dom/client')
 const { MemoryRouter, Routes, Route } = await import('react-router-dom')
 const { act } = React
-const { default: OwnerScopedClientsView } = await import('./OwnerScopedClientsView.jsx')
-const { default: LinkedDriverClientsPage } = await import('../../drivers/ui/LinkedDriverClientsPage.jsx')
+const { default: OwnerScopedClientsView } = await import('./OwnerScopedClientsView.tsx')
+const { default: LinkedDriverClientsPage } = await import('../../drivers/ui/LinkedDriverClientsPage.tsx')
 const { replaceOwnerState } = await import('../../../data/store/owner-state.ts')
 const { getState } = await import('../../../data/store/app-store.ts')
 

@@ -18,8 +18,8 @@ const { withSession } = await import('../../../testSupport/withSession.ts')
 const { withToast } = await import('../../../testSupport/withToast.ts')
 const { commitClients } = await import('../../../data/store/commitHelpers.ts')
 const { readOwnerClients } = await import('../../../data/store/ownerDataHooks.ts')
-const { default: ClientListPage } = await import('./ClientListPage.jsx')
-const { default: ScopedClientsList } = await import('./ScopedClientsList.jsx')
+const { default: ClientListPage } = await import('./ClientListPage.tsx')
+const { default: ScopedClientsList } = await import('./ScopedClientsList.tsx')
 
 const HEARD = { name: '한진', manager: '김철수', phone: '01012345678', paymentTerm: 'after_days', paymentTermValue: 30, commType: 'percent', commValue: 5 }
 

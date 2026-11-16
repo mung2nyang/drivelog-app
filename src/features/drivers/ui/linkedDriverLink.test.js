@@ -1,7 +1,7 @@
 // @ts-check
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { toLinkedDriverLink } from './linkedDriverLink.js'
+import { toLinkedDriverLink } from './linkedDriverLink.ts'
 
 test('DriverRecord startDate/endDate → assignmentStart/End', () => {
   const link = toLinkedDriverLink({

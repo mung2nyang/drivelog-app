@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import ClientFormModal from '../../clients/ui/ClientFormModal.jsx'
+import ClientFormModal from '../../clients/ui/ClientFormModal.tsx'
 import { getCloudUserId } from '../../../data/cloud/cloudSession.ts'
 import { requestClientSave } from '../../../data/sync/clientMutations.ts'
 import './call-client-quick-add.css'

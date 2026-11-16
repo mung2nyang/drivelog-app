@@ -8,7 +8,7 @@ import { getReceivableItems } from '../../../domain/finance.ts'
 import { readOwnerDrivers, readOwnerSettings } from '../../../data/store/ownerDataHooks.ts'
 import { getLastBackupAt } from '../../../data/sync/guestBackup.ts'
 import { isCloudSession } from '../../../data/cloud/cloudSession.ts'
-import { listFailedDayLogDates } from '../../../data/sync/failedDayLogDates.ts'
+import { getFailedDayLogPatch, listFailedDayLogDates } from '../../../data/sync/failedDayLogDates.ts'
 import { readDismissedIds } from './dismissNotice.ts'
 import type { AppSession } from '../../../data/cloud/cloudSession.ts'
 import type { JsonValue } from '../../../domain/jsonTypes.ts'
@@ -33,7 +33,9 @@ export function collectNotifications(ownerKey: string = 'guest', session: AppSes
       kind: SAVE_FAILED_KIND,
       page: logId === 'main' ? `day/${dateKey}` : `logs/${logId}/day/${dateKey}`,
       title: `${Number(dateKey.slice(5, 7))}월 ${Number(dateKey.slice(8, 10))}일 운행일지${car}를 저장하지 못했습니다.`,
-      body: '일지를 확인한 후 저장이 안 된 내용이 있으면 다시 입력해 주세요.',
+      body: getFailedDayLogPatch(ownerKey, logId, dateKey)
+        ? '일지를 열면 저장하지 못한 내용을 불러와 다시 저장합니다.'
+        : '일지를 확인한 후 저장이 안 된 내용이 있으면 다시 입력해 주세요.',
       dateLabel: '',
       noDismiss: true,
     })

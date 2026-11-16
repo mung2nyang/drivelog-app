@@ -17,7 +17,7 @@ const { beginSessionEpoch, endCloudSession } = await import('../../../data/cloud
 const { setHydration } = await import('../../../data/store/app-store.ts')
 const { commitCars, commitWorkData } = await import('../../../data/store/commitHelpers.ts')
 const { readOwnerWorkData } = await import('../../../data/store/ownerDataHooks.ts')
-const { addFailedDayLogDate, listFailedDayLogDates } = await import('../../../data/sync/failedDayLogDates.ts')
+const { addFailedDayLogDate, getFailedDayLogPatch, listFailedDayLogDates } = await import('../../../data/sync/failedDayLogDates.ts')
 const { hasBusyDayDraft } = await import('../../../data/sync/dayDraftActivity.ts')
 
 const DK = '2026-10-21'
@@ -234,6 +234,95 @@ test('F-3 그 날짜 일지를 열면 그 날짜만 지운다', async () => {
   const view = await mount('own-f3')
   try {
     assert.deepEqual(listFailedDayLogDates('own-f3'), [{ logId: 'main', dateKey: '2026-10-20' }])
+  } finally {
+    await view.unmount()
+    endCloudSession()
+  }
+})
+
+const RESTORED = '저장하지 못했던 내용을 불러와 다시 저장합니다.'
+
+/** @param {boolean} fail */
+function serverSaves(fail) {
+  /** @type {Array<number>} */
+  const fixedCounts = []
+  handlers.rpc = {
+    save_day_log: (args) => {
+      fixedCounts.push(Number(/** @type {{ fixed_count?: number }} */ (args && typeof args === 'object' && !Array.isArray(args) ? args.p_log : {}).fixed_count))
+      if (fail) throw new Error('network down')
+      return { data: 9100 + fixedCounts.length, error: null }
+    },
+  }
+  return fixedCounts
+}
+
+test('F-4 서버 저장 실패 → 화면 닫기 → 다시 열면 쓴 내용이 채워지고 안내 1회, 바로 저장 성공 → 목록에서 빠짐', async () => {
+  beginLoggedIn('u-f4', 'own-f4')
+  serverSaves(true)
+  const originalError = console.error
+  console.error = () => {}
+  try {
+    const first = await mount('own-f4')
+    await first.edit(4)
+    await act(async () => { await wait(700) })
+    await first.unmount()
+    await wait(50)
+    assert.equal(getFailedDayLogPatch('own-f4', 'main', DK)?.fixedCount, 4, '쓴 내용이 휴대폰에 남음')
+    assert.equal(readOwnerWorkData('own-f4')[DK], undefined, '앱 안 기록은 서버 실패라 안 바뀜')
+
+    const saved = serverSaves(false)
+    const again = await mount('own-f4')
+    try {
+      assert.equal(again.latest.current?.draft.fixedCount, 4)
+      assert.deepEqual(again.toasts.filter((m) => m === RESTORED), [RESTORED])
+      await act(async () => { await wait(100) })
+      assert.deepEqual(saved, [4], '열자마자 다시 저장 1회')
+      assert.equal(again.latest.current?.autoSaveStatus, 'saved')
+      assert.deepEqual(listFailedDayLogDates('own-f4'), [])
+      assert.equal(readOwnerWorkData('own-f4')[DK]?.fixedCount, 4)
+    } finally { await again.unmount() }
+  } finally {
+    console.error = originalError
+    endCloudSession()
+  }
+})
+
+test('F-5 다시 열어도 또 실패하면 그 내용으로 다시 남는다(열 때 바로 빼지 않음)', async () => {
+  beginLoggedIn('u-f5', 'own-f5')
+  serverSaves(true)
+  const originalError = console.error
+  console.error = () => {}
+  try {
+    const first = await mount('own-f5')
+    await first.edit(3)
+    await act(async () => { await wait(700) })
+    await first.unmount()
+    await wait(50)
+    const again = await mount('own-f5')
+    try {
+      assert.deepEqual(listFailedDayLogDates('own-f5'), [{ logId: 'main', dateKey: DK }], '열자마자 목록에서 빼지 않음')
+      await act(async () => { await wait(100) })
+      assert.equal(again.latest.current?.autoSaveStatus, 'failed')
+      assert.equal(getFailedDayLogPatch('own-f5', 'main', DK)?.fixedCount, 3)
+    } finally { await again.unmount() }
+  } finally {
+    console.error = originalError
+    endCloudSession()
+  }
+})
+
+test('F-6 내용 없는 옛 항목은 지금처럼: 열면 목록에서 빠지고 화면은 서버 내용, 안내·저장 없음', async () => {
+  beginLoggedIn('u-f6', 'own-f6')
+  commitWorkData('own-f6', { [DK]: { isOff: false, fixedCount: 2, palletCount: 0, callDetails: [], fixedRouteCounts: {} } })
+  const saved = serverSaves(false)
+  addFailedDayLogDate('own-f6', 'main', DK)
+  const view = await mount('own-f6')
+  try {
+    await act(async () => { await wait(100) })
+    assert.equal(view.latest.current?.draft.fixedCount, 2)
+    assert.deepEqual(listFailedDayLogDates('own-f6'), [])
+    assert.deepEqual(view.toasts, [])
+    assert.deepEqual(saved, [])
   } finally {
     await view.unmount()
     endCloudSession()

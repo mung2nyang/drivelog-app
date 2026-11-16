@@ -3,21 +3,25 @@ import { backfillCallDetailIds } from '../../../domain/day-record.ts'
 import { pendingOwnerForLog } from '../../../data/sync/pendingLogOwner.ts'
 import { getUnsafeRegistrationPatch } from '../../../data/sync/durableWriteGuard.ts'
 import { getPendingDayWrite } from '../../../data/sync/pendingWorkDataWrites.ts'
+import { getFailedDayLogPatch } from '../../../data/sync/failedDayLogDates.ts'
 import { shouldCommitDayLogToCloud } from '../../../data/sync/mainDayLogRouting.ts'
 import { readOwnerLogWorkData } from '../../../data/store/ownerDataHooks.ts'
 import { createDayDraftSaver } from './dayDraftLifecycle.ts'
 import { dayLogReducer, initDayLogState } from './day-log-reducer.ts'
 import { useToast } from '../../../shared/hooks/useToast.ts'
 
+const RESTORED_TOAST = '저장하지 못했던 내용을 불러와 다시 저장합니다.'
+
 export function useDayDraft(ownerKey: string, dateKey: string, logId: string = 'main') {
   const showToast = useToast()
   const [idMigration] = useState(() => {
     const stored = readOwnerLogWorkData(ownerKey, logId)[dateKey]
     const pendingOwner = pendingOwnerForLog(ownerKey, logId)
+    const restored = shouldCommitDayLogToCloud(ownerKey, logId) ? getFailedDayLogPatch(ownerKey, logId, dateKey) : undefined
     const queued = shouldCommitDayLogToCloud(ownerKey, logId)
-      ? null
+      ? restored
       : (getPendingDayWrite(pendingOwner, dateKey) || getUnsafeRegistrationPatch(pendingOwner, dateKey))
-    return backfillCallDetailIds(queued ? { ...stored, ...queued } : stored)
+    return { ...backfillCallDetailIds(queued ? { ...stored, ...queued } : stored), restored: !!restored }
   })
   const [state, dispatch] = useReducer(
     dayLogReducer,
@@ -27,7 +31,7 @@ export function useDayDraft(ownerKey: string, dateKey: string, logId: string = '
   const [autoSaveStatus, setAutoSaveStatus] = useState<'idle'|'pending'|'saved'|'failed'>('idle')
 
   const initialDraftRef = useRef(state.draft)
-  const [saver] = useState(() => createDayDraftSaver({ ownerKey, logId, dateKey, draft: state.draft, setAutoSaveStatus }))
+  const [saver] = useState(() => createDayDraftSaver({ ownerKey, logId, dateKey, draft: state.draft, setAutoSaveStatus, keepFailedEntry: idMigration.restored }))
 
   useLayoutEffect(() => saver.setDraft(state.draft), [saver, state.draft])
   useEffect(() => saver.mount(), [saver])
@@ -40,8 +44,15 @@ export function useDayDraft(ownerKey: string, dateKey: string, logId: string = '
   }, [state.draft, saver])
 
   useEffect(() => {
-    if (idMigration.changed) saver.migrated()
-  }, [idMigration.changed, saver])
+    if (idMigration.changed || idMigration.restored) saver.migrated()
+  }, [idMigration.changed, idMigration.restored, saver])
+
+  const restoredNotified = useRef(false)
+  useEffect(() => {
+    if (!idMigration.restored || restoredNotified.current) return
+    restoredNotified.current = true
+    showToast?.(RESTORED_TOAST)
+  }, [idMigration.restored, showToast])
 
   useEffect(() => () => saver.close(), [saver])
 

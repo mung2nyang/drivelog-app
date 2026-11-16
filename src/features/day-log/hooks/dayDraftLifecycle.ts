@@ -38,9 +38,10 @@ type DayDraftSaverOptions = {
   dateKey: string
   draft: DayDraft
   setAutoSaveStatus: SetAutoSaveState
+  keepFailedEntry?: boolean
 }
 
-export function createDayDraftSaver({ ownerKey, logId, dateKey, draft: initialDraft, setAutoSaveStatus }: DayDraftSaverOptions) {
+export function createDayDraftSaver({ ownerKey, logId, dateKey, draft: initialDraft, setAutoSaveStatus, keepFailedEntry = false }: DayDraftSaverOptions) {
   const pendingOwner = pendingOwnerForLog(ownerKey, logId)
   const progress: SaveProgress = { hasPending: false, draftRev: 0, mounted: true }
   let timer: ReturnType<typeof setTimeout>|null = null
@@ -50,7 +51,7 @@ export function createDayDraftSaver({ ownerKey, logId, dateKey, draft: initialDr
   let toast: ((message: string) => void) | undefined
   let latestDraft = initialDraft
   const failHead = `${Number(dateKey.slice(5, 7))}월 ${Number(dateKey.slice(8, 10))}일 운행일지 `
-  removeFailedDayLogDate(ownerKey, logId, dateKey)
+  if (!keepFailedEntry) removeFailedDayLogDate(ownerKey, logId, dateKey)
 
   function markSaved(patch: EffectivePatch) {
     progress.hasPending = false
@@ -80,7 +81,7 @@ export function createDayDraftSaver({ ownerKey, logId, dateKey, draft: initialDr
       markSaved(patch)
       return
     }
-    addFailedDayLogDate(ownerKey, logId, dateKey)
+    addFailedDayLogDate(ownerKey, logId, dateKey, patch)
     if (result.toast) toast?.(result.toast === SERVER_SAVE_FAIL ? failHead + result.toast : result.toast)
     if (!progress.mounted) return
     setAutoSaveStatus('failed')

@@ -5,7 +5,7 @@ import assert from 'node:assert/strict'
 import { afterEach, beforeEach, describe, mock, test } from 'node:test'
 import { normalizeSettings } from '../../../domain/practiceSettings.ts'
 
-const { collectNotifications } = await import('./notifications.js')
+const { collectNotifications } = await import('./notifications.ts')
 const { markBackupDone } = await import('../../../data/sync/guestBackup.ts')
 const { commitSettings } = await import('../../../data/store/commitHelpers.ts')
 

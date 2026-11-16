@@ -13,7 +13,7 @@ Reflect.set(globalThis, 'IS_REACT_ACT_ENVIRONMENT', true)
 const React = await import('react')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
-const { default: RunCountChips } = await import('./RunCountChips.jsx')
+const { default: RunCountChips } = await import('./RunCountChips.tsx')
 
 /** @typedef {import('../../../domain/financeTypes.ts').FinanceSettings} FinanceSettings */
 

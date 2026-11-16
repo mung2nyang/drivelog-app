@@ -1,7 +1,6 @@
-// @ts-check
 import { useState } from 'react'
 import { BIZ_NUMBER_PLACEHOLDER, formatBizNumber, formatPhoneNumber } from '../../../domain/formatPhone.ts'
-import { requestAccountWithdrawal } from '../api/accountWithdrawal.js'
+import { requestAccountWithdrawal } from '../api/accountWithdrawal.ts'
 import { useHydrationLock } from '../../../data/store/useHydrationLock.ts'
 import { useOwnerDrivers, useOwnerProfile } from '../../../data/store/ownerDataHooks.ts'
 import ConfirmModal from '../../../shared/ui/ConfirmModal.tsx'
@@ -9,25 +8,27 @@ import EmployerLinkCard from '../../drivers/ui/EmployerLinkCard.jsx'
 import PageHeader from '../../../shared/ui/PageHeader.tsx'
 import BizNumberHint from '../../../shared/ui/BizNumberHint.tsx'
 import ClearableInput from '../../../shared/ui/ClearableInput.tsx'
-import { usePersonalInfoDraft } from '../hooks/usePersonalInfoDraft.js'
+import { usePersonalInfoDraft } from '../hooks/usePersonalInfoDraft.ts'
 import './PersonalInfoPage.css'
 import { useToast } from '../../../shared/hooks/useToast.ts'
 import { useSession } from '../../../data/cloud/sessionContext.ts'
+import type { LocalProfile } from '../../../data/hydrate/hydrateMergeTypes.ts'
+import type { AppSession } from '../../../data/sync/syncTypes.ts'
 
-/** @typedef {null|'first'|'second'} WithdrawStep */
+export type WithdrawStep = null|'first'|'second'
 
 const WITHDRAW_MSG_1 = '모든 운행 기록, 거래처 정보, 정산 데이터가 영구 삭제되며 복구할 수 없습니다.'
 const WITHDRAW_MSG_2 = '탈퇴 후에는 계정을 복구할 수 없습니다. 계속 진행할까요?'
 const WITHDRAW_LINKED_MSG = '연동을 먼저 해제해야 탈퇴할 수 있습니다.'
 
-/**
- * @param {Object} props
- * @param {() => void} [props.onBack]
- * @param {() => void} [props.onGoAuth]
- * @param {(() => void)} [props.onOpenMenu]
- * @param {(next: import('../../../data/sync/syncTypes.ts').AppSession) => void} [props.onUnlinked]
- */
-export default function PersonalInfoPage({ onBack, onGoAuth, onOpenMenu, onUnlinked }) {
+type PersonalInfoPageProps = {
+  onBack?: () => void
+  onGoAuth?: () => void
+  onOpenMenu?: (() => void)
+  onUnlinked?: (next: AppSession) => void
+}
+
+export default function PersonalInfoPage({ onBack, onGoAuth, onOpenMenu, onUnlinked }: PersonalInfoPageProps) {
   const { ownerKey, session } = useSession()
   const showToast = useToast()
   const locked = useHydrationLock()
@@ -36,12 +37,11 @@ export default function PersonalInfoPage({ onBack, onGoAuth, onOpenMenu, onUnlin
   const sessionName = session?.name && session.name !== '비회원' ? session.name : ''
   const sessionPhone = session?.phone || ''
   const guest = !!session?.guestMode
-  const [withdrawStep, setWithdrawStep] = useState(/** @type {WithdrawStep} */ (null))
+  const [withdrawStep, setWithdrawStep] = useState<WithdrawStep>(null)
   const [withdrawBusy, setWithdrawBusy] = useState(false)
 
   const { get, set, flush } = usePersonalInfoDraft({ ownerKey, profile })
-  /** @param {keyof import('../../../data/hydrate/hydrateMergeTypes.ts').LocalProfile} field @param {string} value */
-  function update(field, value) { set(field, value) }
+  function update(field: keyof LocalProfile, value: string) { set(field, value) }
 
   const employed = session?.accountType === 'employed_driver'
   const linked = employed || drivers.some((driver) => driver.status === 'linked')

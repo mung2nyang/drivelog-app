@@ -1,23 +1,21 @@
-// @ts-check
 import { useRef, useState } from 'react'
 import { assetPath } from '../../../shared/utils/assetPath.ts'
 import { tonnageDigits, tonnageValue } from '../../../domain/formatPhone.ts'
 import ClearableInput from '../../../shared/ui/ClearableInput.tsx'
 import CarFuelKindField from '../../../shared/ui/CarFuelKindField.tsx'
-
-/** @typedef {import('../../../data/sync/onboardingFinish.ts').OnboardingWizard} OnboardingWizard */
+import type { OnboardingWizard } from '../../../data/sync/onboardingFinish.ts'
 
 const BANNER = assetPath('/images/banner_image.png')
 const STEP_SEQUENCE = [1, 2, 3, 4]
 
-/**
- * @param {Object} props
- * @param {string} [props.accountType]
- * @param {(wizard: OnboardingWizard) => void|Promise<void>} props.onFinish
- */
-export default function OnboardingPage({ accountType: _accountType, onFinish }) {
+type OnboardingPageProps = {
+  accountType?: string
+  onFinish: (wizard: OnboardingWizard) => void|Promise<void>
+}
+
+export default function OnboardingPage({ accountType: _accountType, onFinish }: OnboardingPageProps) {
   const [stepIndex, setStepIndex] = useState(0)
-  const [wizard, setWizard] = useState(/** @type {OnboardingWizard} */ ({
+  const [wizard, setWizard] = useState<OnboardingWizard>({
     workStyle: null,
     paymentOn: null,
     timeOn: false,
@@ -27,7 +25,7 @@ export default function OnboardingPage({ accountType: _accountType, onFinish }) 
     carNumber: '',
     carTonnage: '',
     carFuelKind: '',
-  }))
+  })
 
   const step = STEP_SEQUENCE[stepIndex]
   const isLast = stepIndex === STEP_SEQUENCE.length - 1

@@ -1,14 +1,9 @@
-// @ts-check
 import { useState } from 'react'
 import { getSupabaseAuthErrorMessage, signInWithGoogle } from '../../../data/cloud/supabaseClient.ts'
-import AuthIntroView from './AuthIntroView.jsx'
+import AuthIntroView from './AuthIntroView.tsx'
 import { useToast } from '../../../shared/hooks/useToast.ts'
 
-/**
- * @param {Object} props
- * @param {() => void} [props.onGuest]
- */
-export default function AuthPage({ onGuest }) {
+export default function AuthPage({ onGuest }: { onGuest?: () => void }) {
   const showToast = useToast()
   const [busy, setBusy] = useState(false)
 

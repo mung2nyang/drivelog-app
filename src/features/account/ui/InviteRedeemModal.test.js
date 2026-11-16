@@ -14,7 +14,7 @@ const React = await import('react')
 const { act } = React
 const { createRoot } = await import('react-dom/client')
 const { withSession } = await import('../../../testSupport/withSession.ts')
-const { default: InviteRedeemModal } = await import('./InviteRedeemModal.jsx')
+const { default: InviteRedeemModal } = await import('./InviteRedeemModal.tsx')
 
 test('설명 옆 (i)를 누르면 배정 차량, 사업자 정보, 설정, 해제 안내가 펼쳐진다', async () => {
   const container = document.createElement('div')

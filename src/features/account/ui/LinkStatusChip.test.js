@@ -14,7 +14,7 @@ const React = await import('react')
 const { withSession } = await import('../../../testSupport/withSession.ts')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
-const { default: MyPage } = await import('./MyPage.jsx')
+const { default: MyPage } = await import('./MyPage.tsx')
 const { replaceOwnerState } = await import('../../../data/store/owner-state.ts')
 
 const OWNER = 'cloud:driver-85'

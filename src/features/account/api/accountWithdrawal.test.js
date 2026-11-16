@@ -6,7 +6,7 @@ import { createFakeSupabase } from '../../../testSupport/fakeSupabaseClient.ts'
 const { fakeSupabase, handlers, resetHandlers, countOf } = createFakeSupabase()
 mock.module('../../../data/cloud/supabaseClient.ts', { namedExports: { supabase: fakeSupabase } })
 
-const { requestAccountWithdrawal } = await import('./accountWithdrawal.js')
+const { requestAccountWithdrawal } = await import('./accountWithdrawal.ts')
 
 describe('requestAccountWithdrawal', () => {
   test('RPC 성공 시 ok:true와 성공 토스트', async () => {

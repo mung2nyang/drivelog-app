@@ -14,7 +14,7 @@ const React = await import('react')
 const { withSession } = await import('../../../testSupport/withSession.ts')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
-const { default: MyPage } = await import('./MyPage.jsx')
+const { default: MyPage } = await import('./MyPage.tsx')
 
 /** @param {import('../../../data/sync/syncTypes.ts').AppSession|null} session */
 async function render(session) {

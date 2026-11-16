@@ -1,36 +1,29 @@
-// @ts-check
-/** @typedef {import('../../../domain/jsonTypes.ts').JsonValue} JsonValue */
 import { useRef, useState } from 'react'
-import { buildMemberBackupData, memberBackupBlockedReason } from '../api/memberBackup.js'
-import { addInspectionPicks, applyMemberRestore, planMemberRestore } from '../api/memberRestore.js'
-import { describeRestoreCounts } from '../api/memberRestoreRecords.js'
+import { buildMemberBackupData, memberBackupBlockedReason } from '../api/memberBackup.ts'
+import { addInspectionPicks, applyMemberRestore, planMemberRestore } from '../api/memberRestore.ts'
+import { describeRestoreCounts } from '../api/memberRestoreRecords.ts'
 import ModalShell from '../../../shared/ui/ModalShell.tsx'
 import { useToast } from '../../../shared/hooks/useToast.ts'
 import { saveFileToDevice } from '../../../shared/utils/saveFile.ts'
 import { useSession } from '../../../data/cloud/sessionContext.ts'
+import type { JsonValue } from '../../../domain/jsonTypes.ts'
+import type { RestorePlan } from '../api/memberRestore.ts'
+import type { ChangeEvent } from 'react'
 
-/** @typedef {import('../api/memberRestore.js').RestorePlan} RestorePlan */
-
-const TEXT_STYLE = { wordBreak: /** @type {const} */ ('keep-all'), textAlign: /** @type {const} */ ('left') }
+const TEXT_STYLE = { wordBreak: 'keep-all' as const, textAlign: 'left' as const }
 const SUB_TEXT_STYLE = { ...TEXT_STYLE, marginTop: 10, color: 'var(--sub-text-color)', fontSize: 'var(--fs-2)' }
 
-/** @param {Record<string, JsonValue|undefined>} data */
-function saveJsonFile(data) {
+function saveJsonFile(data: Record<string, JsonValue|undefined>) {
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json;charset=utf-8' })
   return saveFileToDevice(blob, `운송내역_백업_${new Date().toISOString().slice(0, 10)}.json`)
 }
 
-/**
- * @param {Object} props
- * @param {() => void} props.onClose
- * @param {boolean} [props.employed]
- */
-export default function DataDownloadModal({ onClose, employed = false }) {
+export default function DataDownloadModal({ onClose, employed = false }: { onClose: () => void, employed?: boolean }) {
   const { ownerKey } = useSession()
   const showToast = useToast()
   const [busy, setBusy] = useState(false)
-  const [plan, setPlan] = useState(/** @type {RestorePlan|null} */ (null))
-  const fileInputRef = useRef(/** @type {HTMLInputElement|null} */ (null))
+  const [plan, setPlan] = useState<RestorePlan|null>(null)
+  const fileInputRef = useRef<HTMLInputElement|null>(null)
 
   async function download() {
     if (busy) return
@@ -51,8 +44,7 @@ export default function DataDownloadModal({ onClose, employed = false }) {
     }
   }
 
-  /** @param {import('react').ChangeEvent<HTMLInputElement>} event */
-  async function pickFile(event) {
+  async function pickFile(event: ChangeEvent<HTMLInputElement>) {
     const input = event.target
     const file = input.files?.[0]
     if (!file) return

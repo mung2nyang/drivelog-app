@@ -16,7 +16,7 @@ reactActEnv.IS_REACT_ACT_ENVIRONMENT = true
 let withdrawResult = { ok: true, toast: '탈퇴가 완료되었습니다.' }
 let withdrawCalls = 0
 
-mock.module('../api/accountWithdrawal.js', {
+mock.module('../api/accountWithdrawal.ts', {
   namedExports: {
     requestAccountWithdrawal: async () => {
       withdrawCalls += 1
@@ -30,7 +30,7 @@ const { withSession } = await import('../../../testSupport/withSession.ts')
 const { withToast } = await import('../../../testSupport/withToast.ts')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
-const { default: PersonalInfoPage } = await import('./PersonalInfoPage.jsx')
+const { default: PersonalInfoPage } = await import('./PersonalInfoPage.tsx')
 
 /** @param {ParentNode} root @param {string} text */
 function findButtonByText(root, text) {

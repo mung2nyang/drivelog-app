@@ -15,7 +15,7 @@ const { withSession } = await import('../../../testSupport/withSession.ts')
 const { withToast } = await import('../../../testSupport/withToast.ts')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
-const { default: PersonalInfoPage } = await import('./PersonalInfoPage.jsx')
+const { default: PersonalInfoPage } = await import('./PersonalInfoPage.tsx')
 const { commitDrivers } = await import('../../../data/store/commitHelpers.ts')
 
 const LINKED_MSG = '연동을 먼저 해제해야 탈퇴할 수 있습니다.'

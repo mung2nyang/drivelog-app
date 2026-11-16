@@ -14,8 +14,8 @@ const React = await import('react')
 const { withSession } = await import('../../../testSupport/withSession.ts')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
-const { default: PersonalInfoPage } = await import('./PersonalInfoPage.jsx')
-const { default: MyPage } = await import('./MyPage.jsx')
+const { default: PersonalInfoPage } = await import('./PersonalInfoPage.tsx')
+const { default: MyPage } = await import('./MyPage.tsx')
 const { commitProfile } = await import('../../../data/store/commitHelpers.ts')
 const { EMPTY_PROFILE } = await import('../../../data/sync/profileSave.ts')
 

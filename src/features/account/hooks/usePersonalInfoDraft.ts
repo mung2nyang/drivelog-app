@@ -1,21 +1,19 @@
-// @ts-check
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { saveProfile } from '../../../data/sync/profileSave.ts'
 import { SERVER_SAVE_FAIL } from '../../../shared/utils/failureMessages.ts'
 import { useToast } from '../../../shared/hooks/useToast.ts'
+import type { LocalProfile } from '../../../data/hydrate/hydrateMergeTypes.ts'
 
-/** @typedef {import('../../../data/hydrate/hydrateMergeTypes.ts').LocalProfile} LocalProfile */
-/** @typedef {Partial<Record<keyof LocalProfile, string>>} ProfileDraft */
+export type ProfileDraft = Partial<Record<keyof LocalProfile, string>>
 
 export const SAVE_DELAY_MS = 700
 const SAVE_FAIL_TOAST = SERVER_SAVE_FAIL
 
-/** @param {{ ownerKey: string, profile: LocalProfile }} params */
-export function usePersonalInfoDraft({ ownerKey, profile }) {
+export function usePersonalInfoDraft({ ownerKey, profile }: { ownerKey: string, profile: LocalProfile }) {
   const showToast = useToast()
-  const [draft, setDraft] = useState(/** @type {ProfileDraft} */ ({}))
-  const dirtyRef = useRef(/** @type {ProfileDraft} */ ({}))
-  const timerRef = useRef(/** @type {ReturnType<typeof setTimeout>|null} */ (null))
+  const [draft, setDraft] = useState<ProfileDraft>({})
+  const dirtyRef = useRef<ProfileDraft>({})
+  const timerRef = useRef<ReturnType<typeof setTimeout>|null>(null)
   const savingRef = useRef(false)
   const mountedRef = useRef(true)
   const latest = useRef({ ownerKey, profile, showToast })
@@ -29,10 +27,9 @@ export function usePersonalInfoDraft({ ownerKey, profile }) {
     const { ownerKey: owner, profile: base, showToast: toast } = latest.current
     try {
       await saveProfile(owner, { ...base, ...snapshot })
-      /** @type {ProfileDraft} */
-      const rest = {}
+      const rest: ProfileDraft = {}
       for (const [key, value] of Object.entries(dirtyRef.current)) {
-        if (snapshot[/** @type {keyof LocalProfile} */ (key)] !== value) Object.assign(rest, { [key]: value })
+        if (snapshot[key as keyof LocalProfile] !== value) Object.assign(rest, { [key]: value })
       }
       dirtyRef.current = rest
     } catch (error) {
@@ -55,15 +52,14 @@ export function usePersonalInfoDraft({ ownerKey, profile }) {
     }
   }, [flush])
 
-  const set = useCallback((/** @type {keyof LocalProfile} */ field, /** @type {string} */ value) => {
+  const set = useCallback((field: keyof LocalProfile, value: string) => {
     dirtyRef.current = { ...dirtyRef.current, [field]: value }
     setDraft(dirtyRef.current)
     if (timerRef.current) clearTimeout(timerRef.current)
     timerRef.current = setTimeout(() => { void flush() }, SAVE_DELAY_MS)
   }, [flush])
 
-  /** @param {keyof LocalProfile} field */
-  const get = (field) => draft[field] ?? profile[field] ?? ''
+  const get = (field: keyof LocalProfile) => draft[field] ?? profile[field] ?? ''
 
   return { get, set, flush }
 }

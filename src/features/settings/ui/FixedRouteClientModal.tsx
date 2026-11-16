@@ -1,4 +1,3 @@
-// @ts-check
 import { useState } from 'react'
 import { createPortal } from 'react-dom'
 import AppDropdown from '../../../shared/ui/AppDropdown.tsx'
@@ -12,17 +11,16 @@ import ModalShell from '../../../shared/ui/ModalShell.tsx'
 import FieldError, { focusField } from '../../../shared/ui/FieldError.tsx'
 import { useToast } from '../../../shared/hooks/useToast.ts'
 import { useSession } from '../../../data/cloud/sessionContext.ts'
+import type { ClientDraft, ClientLike } from '../../../domain/clientTypes.ts'
 
-/** @typedef {import('../../../domain/clientTypes.ts').ClientLike} ClientLike */
+type FixedRouteClientModalProps = {
+  clients: Array<ClientLike>
+  candidates: Array<ClientLike>
+  linked: ClientLike|null
+  onClose: () => void
+}
 
-/**
- * @param {Object} props
- * @param {Array<ClientLike>} props.clients
- * @param {Array<ClientLike>} props.candidates
- * @param {ClientLike|null} props.linked
- * @param {() => void} props.onClose
- */
-export default function FixedRouteClientModal({ clients, candidates, linked, onClose }) {
+export default function FixedRouteClientModal({ clients, candidates, linked, onClose }: FixedRouteClientModalProps) {
   const { ownerKey } = useSession()
   const showToast = useToast()
   const [selectedId, setSelectedId] = useState(linked?.id || '')
@@ -36,8 +34,7 @@ export default function FixedRouteClientModal({ clients, candidates, linked, onC
     ? { field: 'client', message: '거래처를 선택해 주세요.' }
     : null
 
-  /** @param {string} id */
-  function pick(id) {
+  function pick(id: string) {
     const client = candidates.find((item) => item.id === id)
     setSelectedId(id)
     setPrice(formatCurrencyInput(client?.fixedUnitPrice ?? ''))
@@ -45,8 +42,7 @@ export default function FixedRouteClientModal({ clients, candidates, linked, onC
     setPalletPrice(formatCurrencyInput(client?.palletPrice ?? ''))
   }
 
-  /** @param {ClientLike} target @param {import('../../../domain/clientTypes.ts').ClientDraft} draft */
-  async function submit(target, draft) {
+  async function submit(target: ClientLike, draft: ClientDraft) {
     if (saving) return
     setSaving(true)
     try {

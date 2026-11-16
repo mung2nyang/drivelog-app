@@ -1,5 +1,3 @@
-// @ts-check
-/** @typedef {import('../../../data/sync/syncTypes.ts').AppSession} AppSession */
 import { useState } from 'react'
 import { redeemDriverInviteCode } from '../../../data/sync/driverLinkRpc.ts'
 import { pickInviteCodeFromText } from '../../../domain/drivers.ts'
@@ -11,19 +9,18 @@ import './InviteRedeemModal.css'
 import ModalShell from '../../../shared/ui/ModalShell.tsx'
 import { useToast } from '../../../shared/hooks/useToast.ts'
 import { useSession } from '../../../data/cloud/sessionContext.ts'
+import type { AppSession } from '../../../data/sync/syncTypes.ts'
 
 const LINKED_INFO = `일지는 차주님이 배정한 차량으로 기록되고, 계약기간 안 날짜만 기록할 수 있습니다.
 개인정보의 사업자 정보와 정산 계좌는 차주님이 입력한 값이 보이고, 고칠 수 없습니다.
 앱 설정은 기사님 것 그대로입니다.
 해제는 마이페이지 → 개인정보에서 요청하고, 차주님이 동의하거나 3일이 지나면 해제됩니다. 연동 중에는 탈퇴할 수 없습니다.`
 
-/** @param {string} value */
-function pickCodeFromPaste(value) {
+function pickCodeFromPaste(value: string) {
   return value.length > 11 ? pickInviteCodeFromText(value) ?? value : value
 }
 
-/** @param {{ onClose: () => void, onLinked: (session: AppSession) => void }} props */
-export default function InviteRedeemModal({ onClose, onLinked }) {
+export default function InviteRedeemModal({ onClose, onLinked }: { onClose: () => void, onLinked: (session: AppSession) => void }) {
   const { session } = useSession()
   const showToast = useToast()
   const [code, setCode] = useState('')

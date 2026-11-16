@@ -1,5 +1,3 @@
-// @ts-check
-/** @typedef {import('../../../domain/jsonTypes.ts').JsonValue} JsonValue */
 import { supabase } from '../../../data/cloud/supabaseClient.ts'
 import {
   assertCloudWriteReady,
@@ -8,22 +6,16 @@ import {
 } from '../../../data/cloud/cloudSession.ts'
 import { StaleSessionError } from '../../../data/sync/saveErrors.ts'
 import { SERVER_SAVE_FAIL, SESSION_CHANGED_FAIL } from '../../../shared/utils/failureMessages.ts'
+import type { JsonValue } from '../../../domain/jsonTypes.ts'
 
 const SUCCESS_TOAST = '문의가 접수되었습니다.'
 const SAVE_FAIL_TOAST = SERVER_SAVE_FAIL
 const SESSION_CHANGED_TOAST = SESSION_CHANGED_FAIL
 const LOGIN_REQUIRED_TOAST = '로그인이 필요합니다.'
 
-/**
- * @typedef {{ id: string, type: string|null, title: string|null, content: string|null,
- *   answer: string|null, created_at: string|null, answeredAt: string|null, answerSeenAt: string|null }} SupportInquiryRow
- */
+export type SupportInquiryRow = { id: string, type: string|null, title: string|null, content: string|null, answer: string|null, created_at: string|null, answeredAt: string|null, answerSeenAt: string|null }
 
-/**
- * @param {JsonValue|undefined} row
- * @returns {SupportInquiryRow|null}
- */
-function normalizeInquiryRow(row) {
+function normalizeInquiryRow(row: JsonValue|undefined): SupportInquiryRow|null {
   if (!row || typeof row !== 'object') return null
   const id = 'id' in row ? row.id : null
   if (id == null) return null
@@ -37,11 +29,7 @@ function normalizeInquiryRow(row) {
   return { id: String(id), type, title, content, answer, created_at: createdAt, answeredAt, answerSeenAt }
 }
 
-/**
- * @param {string} userId
- * @returns {Promise<Array<SupportInquiryRow>>}
- */
-export async function fetchMyInquiries(userId) {
+export async function fetchMyInquiries(userId: string): Promise<Array<SupportInquiryRow>> {
   if (!userId) throw new Error(LOGIN_REQUIRED_TOAST)
   const captured = captureSession()
   const { data, error } = await supabase
@@ -52,8 +40,7 @@ export async function fetchMyInquiries(userId) {
   assertSessionStillCurrent(captured)
   if (error) throw new Error(error.message || '문의 목록 조회에 실패했습니다.')
   const rows = Array.isArray(data) ? data : []
-  /** @type {Array<SupportInquiryRow>} */
-  const out = []
+  const out: Array<SupportInquiryRow> = []
   for (const row of rows) {
     const normalized = normalizeInquiryRow(row)
     if (normalized) out.push(normalized)
@@ -61,11 +48,7 @@ export async function fetchMyInquiries(userId) {
   return out
 }
 
-/**
- * @param {{ userId?: string|null, type: string, title: string, content: string }} params
- * @returns {Promise<{ ok: boolean, toast: string }>}
- */
-export async function requestSupportInquirySave({ userId, type, title, content }) {
+export async function requestSupportInquirySave({ userId, type, title, content }: { userId?: string|null, type: string, title: string, content: string }): Promise<{ ok: boolean, toast: string }> {
   if (!userId) return { ok: false, toast: LOGIN_REQUIRED_TOAST }
 
   try {

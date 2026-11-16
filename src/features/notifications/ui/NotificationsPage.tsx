@@ -1,7 +1,6 @@
-// @ts-check
 import { isCloudSession } from '../../../data/cloud/cloudSession.ts'
 import { dismissNotice } from '../api/dismissNotice.ts'
-import useNotifications from '../hooks/useNotifications.js'
+import useNotifications from '../hooks/useNotifications.ts'
 import { savePracticeSettings } from '../../../data/sync/settingsSave.ts'
 import { useOwnerSettings } from '../../../data/store/ownerDataHooks.ts'
 import PageHeader from '../../../shared/ui/PageHeader.tsx'
@@ -11,18 +10,18 @@ import { useToast } from '../../../shared/hooks/useToast.ts'
 import { useSession } from '../../../data/cloud/sessionContext.ts'
 import { useIsAdmin } from '../../../data/cloud/adminRole.ts'
 
-/** @typedef {ReturnType<typeof useNotifications>[number]} NotificationItem */
+export type NotificationItem = ReturnType<typeof useNotifications>[number]
 
 const SAVE_FAIL = SERVER_SAVE_FAIL
 const DISMISS_FAIL = '알림을 닫지 못했습니다. 잠시 뒤 다시 시도해 주세요.'
 
-/**
- * @param {Object} props
- * @param {() => void} props.onBack
- * @param {() => void} [props.onOpenMenu]
- * @param {(page: string) => void} props.onOpenPage
- */
-export default function NotificationsPage({ onBack, onOpenMenu, onOpenPage }) {
+type NotificationsPageProps = {
+  onBack: () => void
+  onOpenMenu?: () => void
+  onOpenPage: (page: string) => void
+}
+
+export default function NotificationsPage({ onBack, onOpenMenu, onOpenPage }: NotificationsPageProps) {
   const { ownerKey, session } = useSession()
   const showToast = useToast()
   const settings = useOwnerSettings(ownerKey)
@@ -39,8 +38,7 @@ export default function NotificationsPage({ onBack, onOpenMenu, onOpenPage }) {
     ...(adminRole === 'admin' ? [{ kind: 'adminInquiry', label: '새 문의' }] : []),
   ]
 
-  /** @param {string} kind @param {boolean} on */
-  async function toggle(kind, on) {
+  async function toggle(kind: string, on: boolean) {
     try {
       await savePracticeSettings(ownerKey, (current) => {
         const now = current.notifOff || []
@@ -51,8 +49,7 @@ export default function NotificationsPage({ onBack, onOpenMenu, onOpenPage }) {
     }
   }
 
-  /** @param {NotificationItem} item */
-  function dismiss(item) {
+  function dismiss(item: NotificationItem) {
     dismissNotice(ownerKey, item).catch(() => showToast?.(DISMISS_FAIL))
   }
 
@@ -84,7 +81,7 @@ export default function NotificationsPage({ onBack, onOpenMenu, onOpenPage }) {
 
       <div className="notif-list">
         {items.length === 0 && <div className="empty-state">알림이 없습니다.</div>}
-        {items.map((/** @type {NotificationItem} */ item) => (
+        {items.map((item: NotificationItem) => (
           <article key={item.id} className="notif-item">
             <button type="button" className="notif-item-copy" onClick={() => onOpenPage(item.page)}>
               <strong>{item.title}</strong>

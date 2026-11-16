@@ -15,12 +15,12 @@ const { withSession } = await import('../../../testSupport/withSession.ts')
 const { withToast } = await import('../../../testSupport/withToast.ts')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
-const { default: PersonalInfoPage } = await import('./PersonalInfoPage.jsx')
+const { default: PersonalInfoPage } = await import('./PersonalInfoPage.tsx')
 const { commitProfile } = await import('../../../data/store/commitHelpers.ts')
 const { getState, setHydration } = await import('../../../data/store/app-store.ts')
 const { beginSessionEpoch, endCloudSession } = await import('../../../data/cloud/cloudSession.ts')
 const { EMPTY_PROFILE } = await import('../../../data/sync/profileSave.ts')
-const { SAVE_DELAY_MS } = await import('../hooks/usePersonalInfoDraft.js')
+const { SAVE_DELAY_MS } = await import('../hooks/usePersonalInfoDraft.ts')
 
 const SERVER_DELAY_MS = 150
 

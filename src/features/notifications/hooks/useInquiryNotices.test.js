@@ -18,7 +18,7 @@ const React = await import('react')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
 const { withSession } = await import('../../../testSupport/withSession.ts')
-const { default: NotificationsPage } = await import('../ui/NotificationsPage.jsx')
+const { default: NotificationsPage } = await import('../ui/NotificationsPage.tsx')
 
 const ANSWER_AT = '2026-10-22T03:00:00Z'
 

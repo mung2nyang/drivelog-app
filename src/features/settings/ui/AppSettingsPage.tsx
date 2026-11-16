@@ -1,4 +1,3 @@
-// @ts-check
 import { useParams } from 'react-router-dom'
 import { useOwnerCars, useOwnerDrivers, useOwnerSettings } from '../../../data/store/ownerDataHooks.ts'
 import { applyTheme, phoneTheme, savePracticeSettings, settingsTheme } from '../../../data/sync/settingsSave.ts'
@@ -6,24 +5,18 @@ import { defaultCarSettings } from '../../../domain/practiceSettings.ts'
 import { resolveDriverOrPlateLabel } from '../../../domain/driverManagementContext.ts'
 import { useHydrationLock } from '../../../data/store/useHydrationLock.ts'
 import SwitchRow from '../../../shared/ui/SwitchRow.tsx'
-import FixedRouteBlock from './FixedRouteBlock.jsx'
+import FixedRouteBlock from './FixedRouteBlock.tsx'
 import PageHeader from '../../../shared/ui/PageHeader.tsx'
-import AppSettingsBackupSection from './AppSettingsBackupSection.jsx'
+import AppSettingsBackupSection from './AppSettingsBackupSection.tsx'
 import './app-settings.css'
 import './app-settings-groups.css'
 import { SERVER_SAVE_FAIL } from '../../../shared/utils/failureMessages.ts'
 import { useToast } from '../../../shared/hooks/useToast.ts'
 import { useSession } from '../../../data/cloud/sessionContext.ts'
+import type { SettingsPatch } from '../../../data/sync/settingsSave.ts'
+import type { FinanceSettings, SubCarPracticeSettings } from '../../../domain/financeTypes.ts'
 
-/** @typedef {import('../../../domain/financeTypes.ts').FinanceSettings} FinanceSettings */
-/** @typedef {import('../../../domain/financeTypes.ts').SubCarPracticeSettings} SubCarPracticeSettings */
-
-/**
- * @param {Object} props
- * @param {() => void} [props.onBack]
- * @param {(() => void)} [props.onOpenMenu]
- */
-export default function AppSettingsPage({ onBack, onOpenMenu }) {
+export default function AppSettingsPage({ onBack, onOpenMenu }: { onBack?: () => void, onOpenMenu?: (() => void) }) {
   const { ownerKey, session } = useSession()
   const showToast = useToast()
   const locked = useHydrationLock()
@@ -37,8 +30,7 @@ export default function AppSettingsPage({ onBack, onOpenMenu }) {
   const carSettings = logId ? (settings.subCarSettings?.[logId] || defaultCarSettings(fixedOn)) : defaultCarSettings()
   const clientScopeKey = logId || (session?.linkedOwnerId ? (cars[0]?.number || 'main') : '')
 
-  /** @param {import('../../../data/sync/settingsSave.ts').SettingsPatch} nextPatch */
-  async function patch(nextPatch) {
+  async function patch(nextPatch: SettingsPatch) {
     try {
       const next = await savePracticeSettings(ownerKey, nextPatch)
       applyTheme(settingsTheme(next, phoneTheme()))
@@ -48,8 +40,7 @@ export default function AppSettingsPage({ onBack, onOpenMenu }) {
     }
   }
 
-  /** @param {Partial<SubCarPracticeSettings>} nextPatch */
-  function patchActive(nextPatch) {
+  function patchActive(nextPatch: Partial<SubCarPracticeSettings>) {
     if (!logId) return patch(nextPatch)
     return patch((current) => ({
       subCarSettings: { ...(current.subCarSettings || {}), [logId]: { ...(current.subCarSettings?.[logId] || defaultCarSettings(current.subFixedOn ?? true)), ...nextPatch } },
@@ -57,8 +48,7 @@ export default function AppSettingsPage({ onBack, onOpenMenu }) {
   }
 
   const themeChoice = settings.themeFollowPhone === false ? (settings.theme === 'dark' ? 'dark' : 'light') : 'phone'
-  /** @type {Array<{ id: string, value: string, label: string, patch: import('../../../domain/financeTypes.ts').FinanceSettings }>} */
-  const themeOptions = [
+  const themeOptions: Array<{ id: string, value: string, label: string, patch: FinanceSettings }> = [
     { id: 'theme-phone', value: 'phone', label: '휴대폰 설정', patch: { themeFollowPhone: true } },
     { id: 'theme-light', value: 'light', label: '라이트', patch: { themeFollowPhone: false, theme: 'light' } },
     { id: 'theme-dark', value: 'dark', label: '다크', patch: { themeFollowPhone: false, theme: 'dark' } },
@@ -66,13 +56,13 @@ export default function AppSettingsPage({ onBack, onOpenMenu }) {
   const activeSettings = logId ? carSettings : settings
   const detailChipRows = [
     [
-      { id: 'timeToggle', label: '운행 시간', checked: !!activeSettings.timeOn, onChange: (/** @type {boolean} */ v) => patchActive({ timeOn: v }) },
-      { id: 'distanceToggle', label: '계기판', checked: !!activeSettings.distanceOn, onChange: (/** @type {boolean} */ v) => patchActive({ distanceOn: v }) },
-      { id: 'cargoTonnageToggle', label: '화물 톤수', checked: !!activeSettings.cargoTonnageOn, onChange: (/** @type {boolean} */ v) => patchActive({ cargoTonnageOn: v }) },
+      { id: 'timeToggle', label: '운행 시간', checked: !!activeSettings.timeOn, onChange: (v: boolean) => patchActive({ timeOn: v }) },
+      { id: 'distanceToggle', label: '계기판', checked: !!activeSettings.distanceOn, onChange: (v: boolean) => patchActive({ distanceOn: v }) },
+      { id: 'cargoTonnageToggle', label: '화물 톤수', checked: !!activeSettings.cargoTonnageOn, onChange: (v: boolean) => patchActive({ cargoTonnageOn: v }) },
     ],
     [
-      { id: 'platformToggle', label: '플랫폼', checked: !!activeSettings.platformOn, onChange: (/** @type {boolean} */ v) => patchActive({ platformOn: v }) },
-      ...(!logId ? [{ id: 'paymentToggle', label: '결제/수금', checked: !!settings.paymentOn, onChange: (/** @type {boolean} */ v) => patch({ paymentOn: v }) }] : []),
+      { id: 'platformToggle', label: '플랫폼', checked: !!activeSettings.platformOn, onChange: (v: boolean) => patchActive({ platformOn: v }) },
+      ...(!logId ? [{ id: 'paymentToggle', label: '결제/수금', checked: !!settings.paymentOn, onChange: (v: boolean) => patch({ paymentOn: v }) }] : []),
     ],
   ]
 

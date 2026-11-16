@@ -1,4 +1,3 @@
-// @ts-check
 import { useState } from 'react'
 import { assetPath } from '../../../shared/utils/assetPath.ts'
 import { formatPhoneNumber } from '../../../domain/formatPhone.ts'
@@ -7,12 +6,12 @@ import './welcome-profile.css'
 
 const BANNER = assetPath('/images/banner_image.png')
 
-/**
- * @param {Object} props
- * @param {string} [props.initialName]
- * @param {(fields: { name: string, phone: string }) => Promise<boolean>} props.onSubmit
- */
-export default function WelcomeProfileView({ initialName = '', onSubmit }) {
+type WelcomeProfileViewProps = {
+  initialName?: string
+  onSubmit: (fields: { name: string, phone: string }) => Promise<boolean>
+}
+
+export default function WelcomeProfileView({ initialName = '', onSubmit }: WelcomeProfileViewProps) {
   const [name, setName] = useState(initialName)
   const [phone, setPhone] = useState('')
   const [busy, setBusy] = useState(false)

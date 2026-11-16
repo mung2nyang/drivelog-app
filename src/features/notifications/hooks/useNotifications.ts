@@ -1,6 +1,5 @@
-// @ts-check
 import { useMemo, useSyncExternalStore } from 'react'
-import { collectNotifications } from '../api/notifications.js'
+import { collectNotifications } from '../api/notifications.ts'
 import { buildInquiryNoticeItems } from '../api/inquiryNoticeItems.ts'
 import { readDismissedIds } from '../api/dismissNotice.ts'
 import useInquiryNotices from './useInquiryNotices.ts'
@@ -13,13 +12,9 @@ import {
   useOwnerSettings,
   useOwnerWorkDataByLogId,
 } from '../../../data/store/ownerDataHooks.ts'
+import type { AppSession } from '../../../data/sync/syncTypes.ts'
 
-/**
- * @param {string} ownerKey
- * @param {import('../../../data/sync/syncTypes.ts').AppSession|null} [session]
- * @param {string} [refreshKey]
- */
-export default function useNotifications(ownerKey, session = null, refreshKey = '') {
+export default function useNotifications(ownerKey: string, session: AppSession|null = null, refreshKey: string = '') {
   const workDataByLogId = useOwnerWorkDataByLogId(ownerKey)
   const settings = useOwnerSettings(ownerKey)
   const drivers = useOwnerDrivers(ownerKey)

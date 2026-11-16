@@ -1,5 +1,3 @@
-// @ts-check
-/** @typedef {import('../../../domain/jsonTypes.ts').JsonValue} JsonValue */
 import {
   readOwnerCars,
   readOwnerClients,
@@ -12,29 +10,21 @@ import {
 } from '../../../data/store/ownerDataHooks.ts'
 import { getCloudOwnerKey, isHydrationReady } from '../../../data/cloud/cloudSession.ts'
 import { fetchVehiclesDailyInspections } from '../../../data/sync/dailyInspections.ts'
+import type { JsonValue } from '../../../domain/jsonTypes.ts'
 
-/**
- * @param {string} ownerKey
- * @returns {string|null}
- */
-export function memberBackupBlockedReason(ownerKey) {
+export function memberBackupBlockedReason(ownerKey: string): string|null {
   if (!ownerKey || getCloudOwnerKey() !== ownerKey || !isHydrationReady()) {
     return '기록을 아직 불러오는 중입니다. 잠시 후 다시 시도해 주세요.'
   }
   return null
 }
 
-/**
- * @param {string} ownerKey
- * @returns {Promise<Record<string, JsonValue>>}
- */
-export async function buildMemberBackupData(ownerKey) {
+export async function buildMemberBackupData(ownerKey: string): Promise<Record<string, JsonValue>> {
   const cars = readOwnerCars(ownerKey)
   const workLogs = readOwnerWorkDataByLogId(ownerKey)
   const vehicleIds = cars.map((car) => car?.supabaseId).filter((id) => id != null && id !== '')
-  const byVehicleId = await fetchVehiclesDailyInspections(/** @type {Array<string|number>} */ (vehicleIds))
-  /** @type {Record<string, JsonValue>} */
-  const dailyInspections = {}
+  const byVehicleId = await fetchVehiclesDailyInspections(vehicleIds as Array<string|number>)
+  const dailyInspections: Record<string, JsonValue> = {}
   for (const car of cars) {
     const id = car?.supabaseId
     if (id == null || !byVehicleId[String(id)]) continue

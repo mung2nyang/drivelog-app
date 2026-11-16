@@ -1,17 +1,12 @@
-// @ts-check
 import { useState } from 'react'
-import FixedRouteClientModal from './FixedRouteClientModal.jsx'
+import FixedRouteClientModal from './FixedRouteClientModal.tsx'
 import { fixedRouteCandidates } from '../../../domain/clientDraft.ts'
 import { getFixedRouteClient } from '../../../domain/clients.ts'
 import { formatCurrencyInput } from '../../../domain/money.ts'
 import { useOwnerClients } from '../../../data/store/ownerDataHooks.ts'
 import { useSession } from '../../../data/cloud/sessionContext.ts'
 
-/**
- * @param {Object} props
- * @param {string} props.scopeKey
- */
-export default function FixedRouteClientLink({ scopeKey }) {
+export default function FixedRouteClientLink({ scopeKey }: { scopeKey: string }) {
   const { ownerKey } = useSession()
   const clients = useOwnerClients(ownerKey)
   const candidates = fixedRouteCandidates(clients, scopeKey)

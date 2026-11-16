@@ -1,34 +1,27 @@
-// @ts-check
 import { readOwnerCars } from '../../../data/store/ownerDataHooks.ts'
 import { isPlainObject } from '../../../data/store/persistDomainRecords.ts'
 import { isValidCalendarDateKey } from '../../../domain/dateKey.ts'
 import { sanitizeInspectionItems } from '../../../domain/dailyInspectionItems.ts'
 import { fetchVehiclesDailyInspections, saveDailyInspection } from '../../../data/sync/dailyInspections.ts'
-import { isOwnUnlinkedCar } from './memberRestoreRecords.js'
+import { isOwnUnlinkedCar } from './memberRestoreRecords.ts'
 import { SERVER_SAVE_FAIL } from '../../../shared/utils/failureMessages.ts'
+import type { DailyInspection } from '../../../data/sync/dailyInspections.ts'
+import type { JsonValue } from '../../../domain/jsonTypes.ts'
 
-/** @typedef {import('../../../domain/jsonTypes.ts').JsonValue} JsonValue */
-/** @typedef {import('../../../data/sync/dailyInspections.ts').DailyInspection} DailyInspection */
-/** @typedef {DailyInspection & { vehicleId: string|number, workDate: string }} InspectionPick */
+export type InspectionPick = DailyInspection & { vehicleId: string|number, workDate: string }
 
 const INVALID_FILE = '파일 내용이 올바르지 않습니다.'
 const FETCH_FAIL = '점검표를 확인하지 못했습니다. 잠시 후 다시 시도해 주세요.'
 const SAVE_FAIL = SERVER_SAVE_FAIL
 
-/**
- * @param {JsonValue} parsed
- * @returns {Record<string, Record<string, DailyInspection>>|null}
- */
-function readFileInspections(parsed) {
+function readFileInspections(parsed: JsonValue): Record<string, Record<string, DailyInspection>>|null {
   if (!isPlainObject(parsed) || !('dailyInspections' in parsed)) return {}
   const byPlate = parsed.dailyInspections
   if (!isPlainObject(byPlate)) return null
-  /** @type {Record<string, Record<string, DailyInspection>>} */
-  const out = {}
+  const out: Record<string, Record<string, DailyInspection>> = {}
   for (const [plate, byDate] of Object.entries(byPlate)) {
     if (!isPlainObject(byDate)) return null
-    /** @type {Record<string, DailyInspection>} */
-    const days = {}
+    const days: Record<string, DailyInspection> = {}
     for (const [workDate, row] of Object.entries(byDate)) {
       if (!isValidCalendarDateKey(workDate) || !isPlainObject(row) || !isPlainObject(row.items)) return null
       if (typeof row.actionNote !== 'string' || typeof row.inspectorName !== 'string') return null
@@ -39,8 +32,7 @@ function readFileInspections(parsed) {
   return out
 }
 
-/** @param {string} ownerKey @param {string} plate @returns {string|number|null} */
-function vehicleIdFor(ownerKey, plate) {
+function vehicleIdFor(ownerKey: string, plate: string): string|number|null {
   if (!isOwnUnlinkedCar(ownerKey, plate)) return null
   const cars = readOwnerCars(ownerKey)
   const car = plate === 'main'
@@ -49,15 +41,10 @@ function vehicleIdFor(ownerKey, plate) {
   return car?.supabaseId ?? null
 }
 
-/**
- * @param {string} ownerKey @param {JsonValue} parsed
- * @returns {Promise<{ ok: true, picks: InspectionPick[], skipped: number } | { ok: false, error: string }>}
- */
-export async function pickInspections(ownerKey, parsed) {
+export async function pickInspections(ownerKey: string, parsed: JsonValue): Promise<{ ok: true, picks: InspectionPick[], skipped: number } | { ok: false, error: string }> {
   const fileInspections = readFileInspections(parsed)
   if (!fileInspections) return { ok: false, error: INVALID_FILE }
-  /** @type {Array<{ vehicleId: string|number, days: Record<string, DailyInspection> }>} */
-  const targets = []
+  const targets: Array<{ vehicleId: string|number, days: Record<string, DailyInspection> }> = []
   let skipped = 0
   for (const [plate, days] of Object.entries(fileInspections)) {
     if (Object.keys(days).length === 0) continue
@@ -66,16 +53,14 @@ export async function pickInspections(ownerKey, parsed) {
     else targets.push({ vehicleId, days })
   }
   if (targets.length === 0) return { ok: true, picks: [], skipped }
-  /** @type {Record<string, Record<string, DailyInspection>>} */
-  let existing
+  let existing: Record<string, Record<string, DailyInspection>>
   try {
     existing = await fetchVehiclesDailyInspections(targets.map((target) => target.vehicleId))
   } catch (error) {
     console.error('[memberRestoreInspections] 점검표 확인 실패:', error)
     return { ok: false, error: FETCH_FAIL }
   }
-  /** @type {InspectionPick[]} */
-  const picks = []
+  const picks: InspectionPick[] = []
   for (const { vehicleId, days } of targets) {
     const onServer = existing[String(vehicleId)] || {}
     for (const workDate of Object.keys(days).sort()) {
@@ -85,11 +70,7 @@ export async function pickInspections(ownerKey, parsed) {
   return { ok: true, picks, skipped }
 }
 
-/**
- * @param {InspectionPick[]} picks
- * @returns {Promise<{ ok: boolean, count: number, toast: string|null }>}
- */
-export async function restoreInspections(picks) {
+export async function restoreInspections(picks: InspectionPick[]): Promise<{ ok: boolean, count: number, toast: string|null }> {
   let count = 0
   for (const pick of picks) {
     try {

@@ -49,7 +49,7 @@ mock.module('../../../data/sync/expensesSave.ts', {
 })
 mock.module('../../../data/sync/invoicesSave.ts', { namedExports: { saveInvoices: async () => {} } })
 
-const { describeRestoreCounts, pickMemberRecords, restoreClients, restoreExpenses } = await import('./memberRestoreRecords.js')
+const { describeRestoreCounts, pickMemberRecords, restoreClients, restoreExpenses } = await import('./memberRestoreRecords.ts')
 
 function reset() {
   clients = [{ id: 'cl-1', companyName: '한빛물류', fixedRouteLinked: true }]

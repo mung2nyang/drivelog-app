@@ -1,10 +1,8 @@
-// @ts-check
 import { useState } from 'react'
 import PageHeader from '../../../shared/ui/PageHeader.tsx'
 import './customer-center.css'
 
-/** @type {Array<{ title: string, date: string, body: string }>} */
-const NOTICES = [
+const NOTICES: Array<{ title: string, date: string, body: string }> = [
   {
     title: '운비서 하루 이용 횟수 안내',
     date: '2026.11.04',
@@ -12,16 +10,10 @@ const NOTICES = [
   },
 ]
 
-/**
- * @param {Object} props
- * @param {() => void} [props.onBack]
- * @param {(() => void)} [props.onOpenMenu]
- */
-export default function NoticePage({ onBack, onOpenMenu }) {
-  const [openIndex, setOpenIndex] = useState(/** @type {number|null} */ (null))
+export default function NoticePage({ onBack, onOpenMenu }: { onBack?: () => void, onOpenMenu?: (() => void) }) {
+  const [openIndex, setOpenIndex] = useState<number|null>(null)
 
-  /** @param {number} index */
-  function toggle(index) {
+  function toggle(index: number) {
     setOpenIndex((prev) => (prev === index ? null : index))
   }
 

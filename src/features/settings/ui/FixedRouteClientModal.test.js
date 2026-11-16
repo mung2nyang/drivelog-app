@@ -15,7 +15,7 @@ const { withSession } = await import('../../../testSupport/withSession.ts')
 const { withToast } = await import('../../../testSupport/withToast.ts')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
-const { default: FixedRouteClientModal } = await import('./FixedRouteClientModal.jsx')
+const { default: FixedRouteClientModal } = await import('./FixedRouteClientModal.tsx')
 
 test('거래처를 안 고르고 저장 → 단추 표시·문구·커서, 알림 없음, 고르면 사라짐', async () => {
   /** @type {Array<string>} */

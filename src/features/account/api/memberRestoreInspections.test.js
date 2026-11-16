@@ -20,7 +20,7 @@ let failOnSave = 0
 mock.module('../../../data/store/ownerDataHooks.ts', {
   namedExports: { readOwnerCars: () => cars, readOwnerDrivers: () => drivers },
 })
-mock.module('./memberRestoreRecords.js', {
+mock.module('./memberRestoreRecords.ts', {
   namedExports: {
     isOwnUnlinkedCar: (/** @type {string} */ _owner, /** @type {string} */ plate) => plate === 'main' || plate === '34나5678',
   },
@@ -39,7 +39,7 @@ mock.module('../../../data/sync/dailyInspections.ts', {
   },
 })
 
-const { pickInspections, restoreInspections } = await import('./memberRestoreInspections.js')
+const { pickInspections, restoreInspections } = await import('./memberRestoreInspections.ts')
 
 /** @param {string} name */
 const sheet = (name) => ({ items: { plateGlassMirror: 'good', lamps: 'bad', wipers: 'weird' }, actionNote: '전조등 교체', inspectorName: name })

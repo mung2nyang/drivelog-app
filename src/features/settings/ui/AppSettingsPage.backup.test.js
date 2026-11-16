@@ -16,7 +16,7 @@ const React = await import('react')
 const { withSession } = await import('../../../testSupport/withSession.ts')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
-const { default: AppSettingsPage } = await import('./AppSettingsPage.jsx')
+const { default: AppSettingsPage } = await import('./AppSettingsPage.tsx')
 
 test('AppSettingsPage 백업 섹션: 게스트 세션에서만 노출되고 비게스트 세션에서는 숨겨진다', async () => {
   const container = document.createElement('div')

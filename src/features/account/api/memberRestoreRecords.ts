@@ -1,4 +1,3 @@
-// @ts-check
 import { readOwnerCars, readOwnerClients, readOwnerDrivers, readOwnerExpenses, readOwnerInvoices } from '../../../data/store/ownerDataHooks.ts'
 import { isPersistedClient, isPersistedExpense, isPlainObject } from '../../../data/store/persistDomainRecords.ts'
 import { isPersistedInvoice } from '../../../data/store/persistDomainInvoice.ts'
@@ -8,15 +7,14 @@ import { getCloudUserId } from '../../../data/cloud/cloudSession.ts'
 import { saveExpenses } from '../../../data/sync/expensesSave.ts'
 import { saveInvoices } from '../../../data/sync/invoicesSave.ts'
 import { SERVER_SAVE_FAIL } from '../../../shared/utils/failureMessages.ts'
+import type { ClientLike } from '../../../domain/clientTypes.ts'
+import type { ExpenseItem } from '../../../domain/expenseTypes.ts'
+import type { InvoiceLike } from '../../../domain/financeTaxInvoiceEntries.ts'
+import type { JsonValue } from '../../../domain/jsonTypes.ts'
 
-/** @typedef {import('../../../domain/jsonTypes.ts').JsonValue} JsonValue */
-/** @typedef {import('../../../domain/clientTypes.ts').ClientLike} ClientLike */
-/** @typedef {import('../../../domain/expenseTypes.ts').ExpenseItem} ExpenseItem */
-/** @typedef {import('../../../domain/financeTaxInvoiceEntries.ts').InvoiceLike} InvoiceLike */
-/** @typedef {{ clients: ClientLike[], expenses: ExpenseItem[], invoices: InvoiceLike[], skippedItems: number }} RecordPicks */
+export type RecordPicks = { clients: ClientLike[], expenses: ExpenseItem[], invoices: InvoiceLike[], skippedItems: number }
 
-/** @param {string} ownerKey @param {string} plate */
-export function isOwnUnlinkedCar(ownerKey, plate) {
+export function isOwnUnlinkedCar(ownerKey: string, plate: string) {
   const cars = readOwnerCars(ownerKey)
   const car = plate === 'main'
     ? cars.find((item) => item.type === 'main')
@@ -28,37 +26,29 @@ export function isOwnUnlinkedCar(ownerKey, plate) {
   ))
 }
 
-/** @param {string} name */
-function nameKey(name) {
+function nameKey(name: string) {
   return String(name || '').trim()
 }
 
-/**
- * @param {JsonValue} parsed @param {string} key @param {(item: JsonValue) => boolean} check
- * @returns {JsonValue[]|null}
- */
-function readList(parsed, key, check) {
+function readList(parsed: JsonValue, key: string, check: (item: JsonValue) => boolean): JsonValue[]|null {
   if (!isPlainObject(parsed) || !(key in parsed)) return []
   const list = parsed[key]
   if (!Array.isArray(list) || !list.every(check)) return null
   return list
 }
 
-/** 회원 지출은 서브 차량 번호(vehicleNumber)를 달고 있어 그 칸만 따로 본다. @param {JsonValue} item */
-function isRestorableExpense(item) {
+function isRestorableExpense(item: JsonValue) {
   if (!isPlainObject(item)) return false
   const { vehicleNumber, ...rest } = item
   if (vehicleNumber !== undefined && typeof vehicleNumber !== 'string') return false
   return isPersistedExpense(rest) && isValidCalendarDateKey(String(item.date))
 }
 
-/** @param {ClientLike[]} current @param {ClientLike[]} picked */
-function newClientsAgainst(current, picked) {
+function newClientsAgainst(current: ClientLike[], picked: ClientLike[]) {
   const names = new Set(current.map((item) => nameKey(item.companyName)))
   const ids = new Set(current.map((item) => item.id))
   const linkedScopes = new Set(current.filter((item) => item.fixedRouteLinked).map((item) => nameKey(item.scopedToVehicleNumber || '')))
-  /** @type {ClientLike[]} */
-  const out = []
+  const out: ClientLike[] = []
   for (const { supabaseId: _old, ...client } of picked) {
     const key = nameKey(client.companyName)
     if (!key || names.has(key) || ids.has(client.id)) continue
@@ -72,36 +62,27 @@ function newClientsAgainst(current, picked) {
   return out
 }
 
-/**
- * @template {{ id: string }} T
- * @param {T[]} current @param {T[]} picked
- */
-function newById(current, picked) {
+function newById<T extends { id: string }>(current: T[], picked: T[]) {
   const ids = new Set(current.map((item) => item.id))
   return picked.filter((item) => !ids.has(item.id))
 }
 
-/**
- * @param {string} ownerKey @param {JsonValue} parsed
- * @returns {RecordPicks|null}
- */
-export function pickMemberRecords(ownerKey, parsed) {
+export function pickMemberRecords(ownerKey: string, parsed: JsonValue): RecordPicks|null {
   const clients = readList(parsed, 'clients', isPersistedClient)
   const expenses = readList(parsed, 'expenses', isRestorableExpense)
   const invoices = readList(parsed, 'invoices', isPersistedInvoice)
   if (!clients || !expenses || !invoices) return null
   let skippedItems = 0
-  /** @param {string} plate */
-  const usable = (plate) => {
+  const usable = (plate: string) => {
     const ok = isOwnUnlinkedCar(ownerKey, plate)
     if (!ok) skippedItems += 1
     return ok
   }
-  const fileClients = /** @type {ClientLike[]} */ (clients).filter((item) => (
+  const fileClients = (clients as ClientLike[]).filter((item) => (
     !nameKey(item.scopedToVehicleNumber || '') || usable(nameKey(item.scopedToVehicleNumber || ''))
   ))
-  const fileExpenses = /** @type {ExpenseItem[]} */ (expenses).filter((item) => usable(nameKey(item.vehicleNumber || '') || 'main'))
-  const fileInvoices = /** @type {InvoiceLike[]} */ (invoices).filter((item) => (
+  const fileExpenses = (expenses as ExpenseItem[]).filter((item) => usable(nameKey(item.vehicleNumber || '') || 'main'))
+  const fileInvoices = (invoices as InvoiceLike[]).filter((item) => (
     usable(nameKey(item.carNumber || (item.vehicleNumbers || [])[0] || '') || 'main')
   ))
   return {
@@ -112,13 +93,12 @@ export function pickMemberRecords(ownerKey, parsed) {
   }
 }
 
-/** @typedef {{ ok: boolean, count: number, toast: string|null }} StepResult */
+export type StepResult = { ok: boolean, count: number, toast: string|null }
 
 const SAVE_FAIL = SERVER_SAVE_FAIL
 
-/** 저장 직전 Store를 다시 읽어 그 사이 생긴 거래처는 뺀다. @param {string} ownerKey @param {ClientLike[]} picked @returns {Promise<StepResult>} */
-export async function restoreClients(ownerKey, picked) {
-  const previous = /** @type {ClientLike[]} */ (readOwnerClients(ownerKey))
+export async function restoreClients(ownerKey: string, picked: ClientLike[]): Promise<StepResult> {
+  const previous = readOwnerClients(ownerKey)
   const add = newClientsAgainst(previous, picked)
   if (add.length === 0) return { ok: true, count: 0, toast: null }
   const res = await saveClientsToCloud({
@@ -127,9 +107,8 @@ export async function restoreClients(ownerKey, picked) {
   return res.failed ? { ok: false, count: 0, toast: res.toast } : { ok: true, count: add.length, toast: null }
 }
 
-/** @param {string} ownerKey @param {ExpenseItem[]} picked @returns {Promise<StepResult>} */
-export async function restoreExpenses(ownerKey, picked) {
-  const previous = /** @type {ExpenseItem[]} */ (readOwnerExpenses(ownerKey))
+export async function restoreExpenses(ownerKey: string, picked: ExpenseItem[]): Promise<StepResult> {
+  const previous = readOwnerExpenses(ownerKey)
   const add = newById(previous, picked)
   if (add.length === 0) return { ok: true, count: 0, toast: null }
   try {
@@ -141,9 +120,8 @@ export async function restoreExpenses(ownerKey, picked) {
   }
 }
 
-/** @param {string} ownerKey @param {InvoiceLike[]} picked @returns {Promise<StepResult>} */
-export async function restoreInvoices(ownerKey, picked) {
-  const previous = /** @type {InvoiceLike[]} */ (readOwnerInvoices(ownerKey))
+export async function restoreInvoices(ownerKey: string, picked: InvoiceLike[]): Promise<StepResult> {
+  const previous = readOwnerInvoices(ownerKey)
   const add = newById(previous, picked)
   if (add.length === 0) return { ok: true, count: 0, toast: null }
   try {
@@ -155,8 +133,7 @@ export async function restoreInvoices(ownerKey, picked) {
   }
 }
 
-/** @param {{ days: number, clients: number, expenses: number, invoices: number, inspections?: number }} counts */
-export function describeRestoreCounts(counts) {
+export function describeRestoreCounts(counts: { days: number, clients: number, expenses: number, invoices: number, inspections?: number }) {
   return [
     counts.days ? `일지 ${counts.days}일` : '',
     counts.clients ? `거래처 ${counts.clients}곳` : '',

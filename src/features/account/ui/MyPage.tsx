@@ -1,17 +1,15 @@
-// @ts-check
 import { useState } from 'react'
 import { useOwnerDrivers, useOwnerProfile } from '../../../data/store/ownerDataHooks.ts'
 import { isCloudSession } from '../../../data/cloud/cloudSession.ts'
-import InviteRedeemModal from './InviteRedeemModal.jsx'
-import DataDownloadModal from './DataDownloadModal.jsx'
+import InviteRedeemModal from './InviteRedeemModal.tsx'
+import DataDownloadModal from './DataDownloadModal.tsx'
 import PageHeader from '../../../shared/ui/PageHeader.tsx'
-import LinkStatusChip from './LinkStatusChip.jsx'
+import LinkStatusChip from './LinkStatusChip.tsx'
 import AdminEntryLink from './AdminEntryLink.tsx'
 import './mypage.css'
 import './mypage-shortcuts.css'
 import { useSession } from '../../../data/cloud/sessionContext.ts'
-
-/** @typedef {import('../../../data/sync/syncTypes.ts').AppSession} AppSession */
+import type { AppSession } from '../../../data/sync/syncTypes.ts'
 
 function PersonIcon() {
   return (
@@ -86,13 +84,13 @@ const SHORTCUTS = [
   },
 ]
 
-/**
- * @param {Object} props
- * @param {(page: string, label?: string) => void} props.onOpen
- * @param {(() => void)} [props.onOpenMenu]
- * @param {(session: AppSession) => void} [props.onLinked]
- */
-export default function MyPage({ onOpen, onOpenMenu, onLinked }) {
+type MyPageProps = {
+  onOpen: (page: string, label?: string) => void
+  onOpenMenu?: (() => void)
+  onLinked?: (session: AppSession) => void
+}
+
+export default function MyPage({ onOpen, onOpenMenu, onLinked }: MyPageProps) {
   const { ownerKey, session } = useSession()
   const [inviteOpen, setInviteOpen] = useState(false)
   const [downloadOpen, setDownloadOpen] = useState(false)

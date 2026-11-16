@@ -1,8 +1,8 @@
-// @ts-check
 import { useRef, useState } from 'react'
 import { applyGuestBackupData, buildGuestBackupData, getLastBackupAt, markBackupDone } from '../../../data/sync/guestBackup.ts'
 import { useToast } from '../../../shared/hooks/useToast.ts'
 import { saveFileToDevice } from '../../../shared/utils/saveFile.ts'
+import type { ChangeEvent } from 'react'
 
 const BACKUP_UPLOAD_ICON = (
   <svg className="inline-icon sm" viewBox="0 0 24 24" aria-hidden="true">
@@ -20,8 +20,7 @@ const BACKUP_DOWNLOAD_ICON = (
   </svg>
 )
 
-/** @param {string|null} iso */
-function formatBackupStatus(iso) {
+function formatBackupStatus(iso: string|null) {
   if (!iso) return '아직 백업한 적 없음'
   const date = new Date(iso)
   if (Number.isNaN(date.getTime())) return '아직 백업한 적 없음'
@@ -30,7 +29,7 @@ function formatBackupStatus(iso) {
 
 export default function AppSettingsBackupSection() {
   const showToast = useToast()
-  const fileInputRef = useRef(/** @type {HTMLInputElement|null} */ (null))
+  const fileInputRef = useRef<HTMLInputElement|null>(null)
   const [lastBackupAt, setLastBackupAt] = useState(() => getLastBackupAt())
 
   async function handleExport() {
@@ -47,8 +46,7 @@ export default function AppSettingsBackupSection() {
     }
   }
 
-  /** @param {import('react').ChangeEvent<HTMLInputElement>} e */
-  async function handleImport(e) {
+  async function handleImport(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
     try {

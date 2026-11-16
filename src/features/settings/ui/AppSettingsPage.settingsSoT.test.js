@@ -14,7 +14,7 @@ const React = await import('react')
 const { withSession } = await import('../../../testSupport/withSession.ts')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
-const { default: AppSettingsPage } = await import('./AppSettingsPage.jsx')
+const { default: AppSettingsPage } = await import('./AppSettingsPage.tsx')
 const { commitSettings } = await import('../../../data/store/commitHelpers.ts')
 const { normalizeSettings } = await import('../../../domain/practiceSettings.ts')
 

@@ -49,7 +49,7 @@ mock.module('../../../data/sync/dailyInspections.ts', {
 mock.module('../../../data/sync/invoicesSave.ts', {
   namedExports: { saveInvoices: async () => { order.push('invoices') } },
 })
-mock.module('./memberBackup.js', {
+mock.module('./memberBackup.ts', {
   namedExports: { memberBackupBlockedReason: () => (ready ? null : '기록을 아직 불러오는 중입니다.') },
 })
 mock.module('../../../data/sync/dayLogCloudCommit.ts', {
@@ -63,7 +63,7 @@ mock.module('../../../data/sync/dayLogCloudCommit.ts', {
   },
 })
 
-const { addInspectionPicks, applyMemberRestore, planMemberRestore } = await import('./memberRestore.js')
+const { addInspectionPicks, applyMemberRestore, planMemberRestore } = await import('./memberRestore.ts')
 
 const MAIN = { id: 'c-main', type: 'main', number: '12가3456', supabaseId: 'v-main' }
 const SUB = { id: 'c-sub', type: 'sub', number: '34나5678', supabaseId: 'v-sub' }

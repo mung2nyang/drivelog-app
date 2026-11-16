@@ -12,7 +12,7 @@ globalThis.IS_REACT_ACT_ENVIRONMENT = true
 const React = await import('react')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
-const { default: NoticePage } = await import('./NoticePage.jsx')
+const { default: NoticePage } = await import('./NoticePage.tsx')
 
 test('운비서 하루 이용 횟수 공지가 제목(날짜)로 보이고, 누르면 본문(20번·리셋)이 펼쳐진다', async () => {
   const container = document.createElement('div')

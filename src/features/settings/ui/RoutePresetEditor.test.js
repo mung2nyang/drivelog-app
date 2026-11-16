@@ -12,7 +12,7 @@ Reflect.set(globalThis, 'IS_REACT_ACT_ENVIRONMENT', true)
 const React = await import('react')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
-const { default: RoutePresetEditor } = await import('./RoutePresetEditor.jsx')
+const { default: RoutePresetEditor } = await import('./RoutePresetEditor.tsx')
 const { normalizeSettings } = await import('../../../domain/practiceSettings.ts')
 
 /** @param {import('react').ReactElement} element */

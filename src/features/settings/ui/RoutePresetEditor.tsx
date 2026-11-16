@@ -1,29 +1,27 @@
-// @ts-check
 import { useState } from 'react'
 import { addFixedRoutePreset, checkRoutePreset, FIXED_ROUTE_PRESET_MAX, removeFixedRoutePreset } from '../../../domain/practiceSettings.ts'
 import FieldError, { focusField, invalidProps } from '../../../shared/ui/FieldError.tsx'
 import { useToast } from '../../../shared/hooks/useToast.ts'
+import type { SettingsPatch } from '../../../data/sync/settingsSave.ts'
+import type { FinanceSettings } from '../../../domain/financeTypes.ts'
 
-/** @typedef {import('../../../domain/financeTypes.ts').FinanceSettings} FinanceSettings */
+type RoutePresetEditorProps = {
+  scope: 'main'|'sub'
+  settings: FinanceSettings
+  onPatch: (patch: SettingsPatch) => void|Promise<void>
+}
 
-/**
- * @param {Object} props
- * @param {'main'|'sub'} props.scope
- * @param {FinanceSettings} props.settings
- * @param {(patch: import('../../../data/sync/settingsSave.ts').SettingsPatch) => void|Promise<void>} props.onPatch
- */
-export default function RoutePresetEditor({ scope, settings, onPatch }) {
+export default function RoutePresetEditor({ scope, settings, onPatch }: RoutePresetEditorProps) {
   const showToast = useToast()
   const [loadLoc, setLoadLoc] = useState('')
   const [unloadLoc, setUnloadLoc] = useState('')
   const key = scope === 'sub' ? 'subFixedRoutePresets' : 'fixedRoutePresets'
   const presets = settings[key] || []
   const ids = { loadLoc: `routePresetLoad-${scope}`, unloadLoc: `routePresetUnload-${scope}` }
-  const [problem, setProblem] = useState(/** @type {ReturnType<typeof checkRoutePreset>} */ (null))
+  const [problem, setProblem] = useState<ReturnType<typeof checkRoutePreset>>(null)
   const shown = problem && checkRoutePreset(loadLoc, unloadLoc)?.field === problem.field ? problem : null
 
-  /** @param {(current: FinanceSettings) => FinanceSettings} change */
-  function patchPresets(change) {
+  function patchPresets(change: (current: FinanceSettings) => FinanceSettings) {
     onPatch((current) => ({ [key]: change(current)[key] }))
   }
 

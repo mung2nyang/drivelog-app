@@ -37,7 +37,7 @@ mock.module('../../../data/sync/dailyInspections.ts', {
   },
 })
 
-const { buildMemberBackupData, memberBackupBlockedReason } = await import('./memberBackup.js')
+const { buildMemberBackupData, memberBackupBlockedReason } = await import('./memberBackup.ts')
 
 test('비회원 백업과 같은 칸 + 점검표는 서버 id가 있는 차량만 읽어 차량 번호(메인은 main)로 담는다', async () => {
   const data = await buildMemberBackupData('owner-1')

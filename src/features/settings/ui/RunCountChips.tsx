@@ -1,28 +1,27 @@
-// @ts-check
 import { useEffect, useRef, useState } from 'react'
 import ConfirmModal from '../../../shared/ui/ConfirmModal.tsx'
 import { addRunCountPreset, removeRunCountPreset, replaceRunCountPreset, RUN_COUNT_PRESET_MAX } from '../../../domain/practiceSettings.ts'
 import { useToast } from '../../../shared/hooks/useToast.ts'
-
-/** @typedef {import('../../../domain/financeTypes.ts').FinanceSettings} FinanceSettings */
+import type { SettingsPatch } from '../../../data/sync/settingsSave.ts'
+import type { FinanceSettings } from '../../../domain/financeTypes.ts'
 
 const LONG_PRESS_MS = 600
 const MOVE_TOLERANCE_PX = 10
 
-/**
- * @param {Object} props
- * @param {'main'|'sub'} props.scope
- * @param {FinanceSettings} props.settings
- * @param {(patch: import('../../../data/sync/settingsSave.ts').SettingsPatch) => void|Promise<void>} props.onPatch
- */
-export default function RunCountChips({ scope, settings, onPatch }) {
+type RunCountChipsProps = {
+  scope: 'main'|'sub'
+  settings: FinanceSettings
+  onPatch: (patch: SettingsPatch) => void|Promise<void>
+}
+
+export default function RunCountChips({ scope, settings, onPatch }: RunCountChipsProps) {
   const showToast = useToast()
   const key = scope === 'sub' ? 'subRunCountPresets' : 'runCountPresets'
   const presets = settings[key] || []
-  const [pendingIndex, setPendingIndex] = useState(/** @type {number|null} */ (null))
-  const [editingIndex, setEditingIndex] = useState(/** @type {number|null} */ (null))
-  const inputs = useRef(/** @type {Array<HTMLInputElement|null>} */ ([]))
-  const press = useRef(/** @type {{ timer: ReturnType<typeof setTimeout>|null, x: number, y: number }|null} */ (null))
+  const [pendingIndex, setPendingIndex] = useState<number|null>(null)
+  const [editingIndex, setEditingIndex] = useState<number|null>(null)
+  const inputs = useRef<Array<HTMLInputElement|null>>([])
+  const press = useRef<{ timer: ReturnType<typeof setTimeout>|null, x: number, y: number }|null>(null)
   const pointerActive = useRef(false)
 
   function cancelPress() {
@@ -34,8 +33,7 @@ export default function RunCountChips({ scope, settings, onPatch }) {
     if (editingIndex !== null) inputs.current[editingIndex]?.focus()
   }, [editingIndex])
 
-  /** @param {number} index @param {{ clientX: number, clientY: number }} event */
-  function startPress(index, event) {
+  function startPress(index: number, event: { clientX: number, clientY: number }) {
     cancelPress()
     pointerActive.current = true
     const timer = presets.length <= 1 ? null : setTimeout(() => {
@@ -45,8 +43,7 @@ export default function RunCountChips({ scope, settings, onPatch }) {
     press.current = { timer, x: event.clientX || 0, y: event.clientY || 0 }
   }
 
-  /** 길게 누르기 전에 밀지 않고 떼면 고치기 시작. @param {number} index */
-  function endPress(index) {
+  function endPress(index: number) {
     const tapped = press.current !== null
     cancelPress()
     pointerActive.current = false
@@ -58,14 +55,12 @@ export default function RunCountChips({ scope, settings, onPatch }) {
     pointerActive.current = false
   }
 
-  /** @param {{ clientX: number, clientY: number }} event */
-  function movePress(event) {
+  function movePress(event: { clientX: number, clientY: number }) {
     const start = press.current
     if (start && Math.hypot((event.clientX || 0) - start.x, (event.clientY || 0) - start.y) > MOVE_TOLERANCE_PX) cancelPress()
   }
 
-  /** @param {(current: FinanceSettings) => FinanceSettings} change */
-  function patchPresets(change) {
+  function patchPresets(change: (current: FinanceSettings) => FinanceSettings) {
     onPatch((current) => ({ [key]: change(current)[key] }))
   }
 

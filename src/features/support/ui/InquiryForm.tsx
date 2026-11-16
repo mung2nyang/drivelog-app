@@ -1,25 +1,20 @@
-// @ts-check
 import { useState } from 'react'
-import { requestSupportInquirySave } from '../api/supportInquiryMutations.js'
+import { requestSupportInquirySave } from '../api/supportInquiryMutations.ts'
 import AppDropdown from '../../../shared/ui/AppDropdown.tsx'
 import ClearableInput from '../../../shared/ui/ClearableInput.tsx'
 import { useToast } from '../../../shared/hooks/useToast.ts'
+import type { FormEvent } from 'react'
 
 const INQUIRY_TYPES = ['문의', '기능 건의', '오류 신고']
 
-/**
- * @param {Object} props
- * @param {string} props.userId
- */
-export default function InquiryForm({ userId }) {
+export default function InquiryForm({ userId }: { userId: string }) {
   const showToast = useToast()
   const [type, setType] = useState(INQUIRY_TYPES[0])
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
   const [busy, setBusy] = useState(false)
 
-  /** @param {import('react').FormEvent<HTMLFormElement>} event */
-  async function onSubmit(event) {
+  async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     if (busy) return
     setBusy(true)

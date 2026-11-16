@@ -1,5 +1,3 @@
-// @ts-check
-/** @typedef {import('../../../domain/jsonTypes.ts').JsonValue} JsonValue */
 import { todayKey } from '../../../domain/expenses.ts'
 import { todayWorkLogSelection } from '../../../domain/calendar.ts'
 import { formatWon } from '../../../domain/money.ts'
@@ -12,26 +10,20 @@ import { getLastBackupAt } from '../../../data/sync/guestBackup.ts'
 import { isCloudSession } from '../../../data/cloud/cloudSession.ts'
 import { listFailedDayLogDates } from '../../../data/sync/failedDayLogDates.ts'
 import { readDismissedIds } from './dismissNotice.ts'
-
-/** @typedef {import('../../../domain/financeReceivables.ts').ReceivableItemLike} ReceivableItemLike */
+import type { AppSession } from '../../../data/cloud/cloudSession.ts'
+import type { JsonValue } from '../../../domain/jsonTypes.ts'
 
 export const DAILY_INSPECTION_NOTICE_ID = 'daily-inspection-required'
 const SAVE_FAILED_KIND = 'saveFailed'
 
-/** 'YYYY-MM-DD…' → 'MM.DD'(알림 날짜 줄). 모양이 아니면 빈 글자. @param {JsonValue|undefined} value */
-function shortDate(value) {
+function shortDate(value: JsonValue|undefined) {
   const match = typeof value === 'string' ? /^\d{4}-(\d{2})-(\d{2})/.exec(value) : null
   return match ? `${match[1]}.${match[2]}` : ''
 }
 
-/**
- * @param {string} [ownerKey]
- * @param {import('../../../data/cloud/cloudSession.ts').AppSession|null} [session]
- */
-export function collectNotifications(ownerKey = 'guest', session = null) {
+export function collectNotifications(ownerKey: string = 'guest', session: AppSession|null = null) {
   const dismissed = new Set(readDismissedIds(ownerKey))
-  /** @type {Array<{ id: string, kind: string, page: string, title: string, body: string, dateLabel: string, actionLabel?: string, dismissLabel?: string, noDismiss?: boolean }>} */
-  const items = []
+  const items: Array<{ id: string, kind: string, page: string, title: string, body: string, dateLabel: string, actionLabel?: string, dismissLabel?: string, noDismiss?: boolean }> = []
 
   const failed = [...listFailedDayLogDates(ownerKey)].sort((a, b) => a.dateKey.localeCompare(b.dateKey) || a.logId.localeCompare(b.logId))
   failed.forEach(({ logId, dateKey }) => {
@@ -49,9 +41,7 @@ export function collectNotifications(ownerKey = 'guest', session = null) {
   const settings = buildFinanceSettings(ownerKey)
   const workDataByLogId = loadWorkDataByLogId(ownerKey)
 
-  const overdues = /** @type {Array<ReceivableItemLike>} */ (
-    overdueItems(getReceivableItems(settings, workDataByLogId))
-  )
+  const overdues = overdueItems(getReceivableItems(settings, workDataByLogId))
   overdues.forEach((item) => {
     const id = `overdue:${item.logId}:${item.dateKey}:${item.detailId}`
     if (dismissed.has(id)) return
@@ -85,11 +75,10 @@ export function collectNotifications(ownerKey = 'guest', session = null) {
   if (new Date().getHours() >= TODAY_LOG_REMINDER_HOUR) {
     const dateKey = todayKey()
     const todayId = `today:${dateKey}`
-    const workMap = /** @type {Record<string, JsonValue|undefined>} */ (workDataByLogId.main || {})
+    const workMap = (workDataByLogId.main || {}) as Record<string, JsonValue|undefined>
     const todayRecord = workMap[dateKey]
-    /** @type {{ isOff?: JsonValue, callDetails?: JsonValue, fixedCount?: JsonValue, palletCount?: JsonValue }|null} */
-    const record = (todayRecord && typeof todayRecord === 'object' && !Array.isArray(todayRecord))
-      ? /** @type {{ isOff?: JsonValue, callDetails?: JsonValue, fixedCount?: JsonValue, palletCount?: JsonValue }} */ (todayRecord)
+    const record: { isOff?: JsonValue, callDetails?: JsonValue, fixedCount?: JsonValue, palletCount?: JsonValue }|null = (todayRecord && typeof todayRecord === 'object' && !Array.isArray(todayRecord))
+      ? todayRecord as { isOff?: JsonValue, callDetails?: JsonValue, fixedCount?: JsonValue, palletCount?: JsonValue }
       : null
     const hasEntry = !!record && (
       !!record.isOff

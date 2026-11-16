@@ -3,7 +3,7 @@ import '../../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 
-const { collectNotifications } = await import('./notifications.js')
+const { collectNotifications } = await import('./notifications.ts')
 const { dismissNotice } = await import('./dismissNotice.ts')
 const { addFailedDayLogDate } = await import('../../../data/sync/failedDayLogDates.ts')
 const { commitSettings } = await import('../../../data/store/commitHelpers.ts')

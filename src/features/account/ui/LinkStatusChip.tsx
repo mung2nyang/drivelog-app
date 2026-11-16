@@ -1,11 +1,10 @@
-// @ts-check
 import { useId, useState } from 'react'
 import { useOwnerDrivers, useOwnerProfile } from '../../../data/store/ownerDataHooks.ts'
 import ModalShell from '../../../shared/ui/ModalShell.tsx'
 import { useSession } from '../../../data/cloud/sessionContext.ts'
+import type { ReactNode } from 'react'
 
-/** @param {{ employed: boolean, onOpenProfile: () => void, children: import('react').ReactNode }} props */
-export default function LinkStatusChip({ employed, onOpenProfile, children }) {
+export default function LinkStatusChip({ employed, onOpenProfile, children }: { employed: boolean, onOpenProfile: () => void, children: ReactNode }) {
   const { ownerKey } = useSession()
   const drivers = useOwnerDrivers(ownerKey)
   const profile = useOwnerProfile(ownerKey)

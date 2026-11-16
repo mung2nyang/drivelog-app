@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import AuthPage from '../../features/account/ui/AuthPage.jsx'
+import AuthPage from '../../features/account/ui/AuthPage.tsx'
 import LoadingScreen from '../shell/LoadingScreen.tsx'
 import { useSession } from '../../data/cloud/sessionContext.ts'
 

@@ -14,7 +14,7 @@ const React = await import('react')
 const { withSession } = await import('../../../testSupport/withSession.ts')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
-const { default: PersonalInfoPage } = await import('./PersonalInfoPage.jsx')
+const { default: PersonalInfoPage } = await import('./PersonalInfoPage.tsx')
 
 const OWNER_FIELDS = ['bizName', 'bizRepresentative', 'bizNumber', 'bizAddress', 'bizType', 'bizItem', 'bizEmail', 'bankName', 'accountNumber', 'accountHolder']
 const SELF_FIELDS = ['userName', 'userPhone']

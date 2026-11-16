@@ -27,7 +27,7 @@ const React = await import('react')
 const { withToast } = await import('../../../testSupport/withToast.ts')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
-const { default: AppSettingsBackupSection } = await import('./AppSettingsBackupSection.jsx')
+const { default: AppSettingsBackupSection } = await import('./AppSettingsBackupSection.tsx')
 
 async function render() {
   /** @type {string[]} */

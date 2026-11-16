@@ -1,21 +1,15 @@
-// @ts-check
 import { useEffect, useState } from 'react'
-import { fetchMyInquiries } from '../api/supportInquiryMutations.js'
+import { fetchMyInquiries } from '../api/supportInquiryMutations.ts'
 import { markShownAnswersSeen } from '../../../data/cloud/inquiryNotices.ts'
 import { SkeletonLines } from '../../../shared/ui/Skeleton.tsx'
 import { useToast } from '../../../shared/hooks/useToast.ts'
-
-/** @typedef {import('../api/supportInquiryMutations.js').SupportInquiryRow} SupportInquiryRow */
+import type { SupportInquiryRow } from '../api/supportInquiryMutations.ts'
 
 const FETCH_FAIL_TOAST = '문의 목록을 불러오지 못했습니다.'
 
-/**
- * @param {Object} props
- * @param {string} props.userId
- */
-export default function MyInquiriesList({ userId }) {
+export default function MyInquiriesList({ userId }: { userId: string }) {
   const showToast = useToast()
-  const [result, setResult] = useState(/** @type {{ key: string, items: Array<SupportInquiryRow> }|null} */ (null))
+  const [result, setResult] = useState<{ key: string, items: Array<SupportInquiryRow> }|null>(null)
 
   useEffect(() => {
     let cancelled = false

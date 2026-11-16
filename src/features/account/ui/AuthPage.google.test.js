@@ -24,7 +24,7 @@ const React = await import('react')
 const { withToast } = await import('../../../testSupport/withToast.ts')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
-const { default: AuthPage } = await import('./AuthPage.jsx')
+const { default: AuthPage } = await import('./AuthPage.tsx')
 
 async function render() {
   /** @type {string[]} */

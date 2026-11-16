@@ -1,13 +1,12 @@
-// @ts-check
 import { useState } from 'react'
 import { isCloudSession } from '../../../data/cloud/cloudSession.ts'
 import PageHeader from '../../../shared/ui/PageHeader.tsx'
-import InquiryForm from './InquiryForm.jsx'
-import MyInquiriesList from './MyInquiriesList.jsx'
+import InquiryForm from './InquiryForm.tsx'
+import MyInquiriesList from './MyInquiriesList.tsx'
 import './customer-center.css'
 import { useSession } from '../../../data/cloud/sessionContext.ts'
 
-/** @typedef {'faq'|'inquiry'|'myInquiries'} SupportTab */
+export type SupportTab = 'faq'|'inquiry'|'myInquiries'
 
 const FAQ_ITEMS = [
   {
@@ -52,11 +51,7 @@ const FAQ_ITEMS = [
   },
 ]
 
-/**
- * @param {Object} props
- * @param {() => void} [props.onGoAuth]
- */
-function GuestLoginPrompt({ onGoAuth }) {
+function GuestLoginPrompt({ onGoAuth }: { onGoAuth?: () => void }) {
   return (
     <div className="support-panel-empty">
       <p>로그인 후 이용해 주세요.</p>
@@ -65,22 +60,21 @@ function GuestLoginPrompt({ onGoAuth }) {
   )
 }
 
-/**
- * @param {Object} props
- * @param {() => void} [props.onBack]
- * @param {() => void} [props.onGoAuth]
- * @param {(() => void)} [props.onOpenMenu]
- * @param {SupportTab} [props.initialTab]
- */
-export default function CustomerCenterPage({ onBack, onGoAuth, onOpenMenu, initialTab = 'faq' }) {
+type CustomerCenterPageProps = {
+  onBack?: () => void
+  onGoAuth?: () => void
+  onOpenMenu?: (() => void)
+  initialTab?: SupportTab
+}
+
+export default function CustomerCenterPage({ onBack, onGoAuth, onOpenMenu, initialTab = 'faq' }: CustomerCenterPageProps) {
   const { session } = useSession()
   const [tab, setTab] = useState(initialTab)
-  const [openFaq, setOpenFaq] = useState(/** @type {number|null} */ (null))
+  const [openFaq, setOpenFaq] = useState<number|null>(null)
   const cloud = isCloudSession(session)
   const userId = cloud ? session?.userId : null
 
-  /** @param {number} index */
-  function toggleFaq(index) {
+  function toggleFaq(index: number) {
     setOpenFaq((prev) => (prev === index ? null : index))
   }
 

@@ -1,19 +1,18 @@
-// @ts-check
 import SwitchRow from '../../../shared/ui/SwitchRow.tsx'
-import RoutePresetEditor from './RoutePresetEditor.jsx'
-import RunCountChips from './RunCountChips.jsx'
-import FixedRouteClientLink from './FixedRouteClientLink.jsx'
+import RoutePresetEditor from './RoutePresetEditor.tsx'
+import RunCountChips from './RunCountChips.tsx'
+import FixedRouteClientLink from './FixedRouteClientLink.tsx'
+import type { SettingsPatch } from '../../../data/sync/settingsSave.ts'
+import type { FinanceSettings } from '../../../domain/financeTypes.ts'
 
-/** @typedef {import('../../../domain/financeTypes.ts').FinanceSettings} FinanceSettings */
+type FixedRouteBlockProps = {
+  scope: 'main'|'sub'
+  clientScopeKey: string
+  settings: FinanceSettings
+  onPatch: (patch: SettingsPatch) => void|Promise<void>
+}
 
-/**
- * @param {Object} props
- * @param {'main'|'sub'} props.scope
- * @param {string} props.clientScopeKey
- * @param {FinanceSettings} props.settings
- * @param {(patch: import('../../../data/sync/settingsSave.ts').SettingsPatch) => void|Promise<void>} props.onPatch
- */
-export default function FixedRouteBlock({ scope, clientScopeKey, settings, onPatch }) {
+export default function FixedRouteBlock({ scope, clientScopeKey, settings, onPatch }: FixedRouteBlockProps) {
   const isSub = scope === 'sub'
   const fixedOn = isSub ? settings.subFixedOn : settings.fixedOn
   const routeOn = isSub ? settings.subFixedRouteOn : settings.fixedRouteOn

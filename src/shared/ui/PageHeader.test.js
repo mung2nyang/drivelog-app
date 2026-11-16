@@ -15,7 +15,7 @@ const { withSession } = await import('../../testSupport/withSession.ts')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
 const { default: PageHeader } = await import('./PageHeader.tsx')
-const { default: MyPage } = await import('../../features/account/ui/MyPage.jsx')
+const { default: MyPage } = await import('../../features/account/ui/MyPage.tsx')
 const { default: RevenuePage } = await import('../../features/revenue/ui/RevenuePage.tsx')
 
 /** @param {import('react').ReactElement} element */

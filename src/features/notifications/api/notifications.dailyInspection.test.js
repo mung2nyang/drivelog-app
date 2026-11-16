@@ -5,7 +5,7 @@ import assert from 'node:assert/strict'
 import { beforeEach, test } from 'node:test'
 import { normalizeCarSettings, normalizeSettings } from '../../../domain/practiceSettings.ts'
 
-const { collectNotifications, DAILY_INSPECTION_NOTICE_ID } = await import('./notifications.js')
+const { collectNotifications, DAILY_INSPECTION_NOTICE_ID } = await import('./notifications.ts')
 const { dismissNotice } = await import('./dismissNotice.ts')
 const { commitSettings } = await import('../../../data/store/commitHelpers.ts')
 const { readOwnerSettings } = await import('../../../data/store/ownerDataHooks.ts')

@@ -1,4 +1,3 @@
-// @ts-check
 import { useState } from 'react'
 import {
   getDefaultMessageTemplatePatterns,
@@ -15,11 +14,7 @@ import './message-settings.css'
 import { useToast } from '../../../shared/hooks/useToast.ts'
 import { SERVER_SAVE_FAIL } from '../../../shared/utils/failureMessages.ts'
 
-/**
- * @param {Object} props
- * @param {() => void} [props.onBack]
- */
-export default function MessageSettingsPage({ onBack }) {
+export default function MessageSettingsPage({ onBack }: { onBack?: () => void }) {
   const showToast = useToast()
   const { ownerKey } = useSession()
   const settings = useOwnerSettings(ownerKey)
@@ -30,7 +25,7 @@ export default function MessageSettingsPage({ onBack }) {
   const [reportShare, setReportShare] = useState(getReportShareMessagePattern(settings))
   const [problemId, setProblemId] = useState('')
   const values = { msgUnpaid: unpaid, msgPaymentRequest: paymentRequest, msgTripComplete: tripComplete, msgReportShare: reportShare }
-  const emptyId = Object.keys(values).find((id) => !values[/** @type {keyof typeof values} */ (id)].trim()) || ''
+  const emptyId = Object.keys(values).find((id) => !values[id as keyof typeof values].trim()) || ''
   const shown = problemId && problemId === emptyId ? { field: problemId, message: '문구를 입력해 주세요.' } : null
 
   async function handleSave() {

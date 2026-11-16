@@ -1,4 +1,3 @@
-// @ts-check
 import { assetPath } from '../../../shared/utils/assetPath.ts'
 import './auth-intro.css'
 
@@ -17,13 +16,7 @@ function GoogleLogo() {
   )
 }
 
-/**
- * @param {Object} props
- * @param {() => void} [props.onGuest]
- * @param {() => void} [props.onGoogle]
- * @param {boolean} [props.busy]
- */
-export default function AuthIntroView({ onGuest, onGoogle, busy = false }) {
+export default function AuthIntroView({ onGuest, onGoogle, busy = false }: { onGuest?: () => void, onGoogle?: () => void, busy?: boolean }) {
   return (
     <div className="account-flow-page">
       <div className="auth-view auth-intro-view">

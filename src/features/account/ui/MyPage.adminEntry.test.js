@@ -17,7 +17,7 @@ const React = await import('react')
 const { withSession } = await import('../../../testSupport/withSession.ts')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
-const { default: MyPage } = await import('./MyPage.jsx')
+const { default: MyPage } = await import('./MyPage.tsx')
 
 const CLOUD = { userId: 'u-1', name: '홍길동', phone: '', accountType: 'owner' }
 

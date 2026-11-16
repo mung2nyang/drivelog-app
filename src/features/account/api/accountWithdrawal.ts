@@ -1,11 +1,9 @@
-// @ts-check
 import { supabase } from '../../../data/cloud/supabaseClient.ts'
 
 const SUCCESS_TOAST = '탈퇴가 완료되었습니다.'
 const FAIL_TOAST = '탈퇴 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.'
 
-/** @returns {Promise<{ ok: boolean, toast: string }>} */
-export async function requestAccountWithdrawal() {
+export async function requestAccountWithdrawal(): Promise<{ ok: boolean, toast: string }> {
   try {
     const { error } = await supabase.rpc('delete_own_account')
     if (error) throw error

@@ -274,3 +274,30 @@ test('22-C: 연동 기사 계정은 점검표를 고르지 않는다(일지만, 
   await applyMemberRestore('o-1', plan)
   assert.ok(!order.includes('inspections'))
 })
+
+test('비회원 [백업 저장하기] 파일 모양 그대로 넣어도 계정에 없는 날이 계획에 잡힌다', () => {
+  reset()
+  const guestFile = {
+    backupType: 'react_practice_backup',
+    version: 1,
+    createdAt: '2026-11-16T00:00:00.000Z',
+    cars: [{ id: 'g-main', type: 'main', number: '12가3456' }],
+    clients: [],
+    settings: {},
+    expenses: [],
+    invoices: [],
+    drivers: [],
+    profile: {},
+    dismissedNotifications: [],
+    workDataDeletedDates: {},
+    workData: { '2026-11-02': { fixedCount: 2 } },
+    workLogs: { main: { '2026-10-01': { fixedCount: 1 }, '2026-11-02': { fixedCount: 2 } }, '34나5678': { '2026-11-03': { fixedCount: 3 } } },
+  }
+  const plan = planMemberRestore('o-1', guestFile)
+  assert.ok(plan.ok)
+  assert.deepEqual(plan.targets, [
+    { logId: 'main', records: { '2026-11-02': { fixedCount: 2 } } },
+    { logId: '34나5678', records: { '2026-11-03': { fixedCount: 3 } } },
+  ])
+  assert.equal(plan.skipped, 0)
+})

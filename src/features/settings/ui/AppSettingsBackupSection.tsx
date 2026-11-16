@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react'
-import { applyGuestBackupData, buildGuestBackupData, getLastBackupAt, markBackupDone } from '../../../data/sync/guestBackup.ts'
+import { applyGuestBackupData, getLastBackupAt } from '../../../data/sync/guestBackup.ts'
 import { useToast } from '../../../shared/hooks/useToast.ts'
-import { saveFileToDevice } from '../../../shared/utils/saveFile.ts'
+import { saveGuestBackupFile } from '../api/guestBackupFile.ts'
 import type { ChangeEvent } from 'react'
 
 const BACKUP_UPLOAD_ICON = (
@@ -34,10 +34,7 @@ export default function AppSettingsBackupSection() {
 
   async function handleExport() {
     try {
-      const data = buildGuestBackupData()
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json;charset=utf-8' })
-      const hint = await saveFileToDevice(blob, `운송내역_백업_${new Date().toISOString().slice(0, 10)}.json`)
-      markBackupDone()
+      const hint = await saveGuestBackupFile()
       setLastBackupAt(getLastBackupAt())
       showToast?.(`백업 파일을 저장했습니다.${hint}`)
     } catch (error) {

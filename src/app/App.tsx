@@ -1,7 +1,9 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import OnboardingPage from '../features/account/ui/OnboardingPage.tsx'
 import WelcomeProfileView from '../features/account/ui/WelcomeProfileView.tsx'
+import GuestLoginBackupModal from '../features/settings/ui/GuestLoginBackupModal.tsx'
+import { guestHasRecords } from '../features/settings/api/guestBackupFile.ts'
 import BootRetryScreen from './shell/BootRetryScreen.tsx'
 import LoadFailScreen from './shell/LoadFailScreen.tsx'
 import PageLoadErrorBoundary from './shell/PageLoadErrorBoundary.tsx'
@@ -56,6 +58,7 @@ export default function App() {
     handleLogout,
   } = useAppSession()
   const sessionValue = useMemo(() => ({ session, ownerKey }), [session, ownerKey])
+  const [guestLoginOpen, setGuestLoginOpen] = useState(false)
   useAppBackButton(showToast)
   useDeviceNotices(ownerKey, session, booting)
   useServerPush(session, booting)
@@ -144,7 +147,10 @@ export default function App() {
             <RequireSession booting={booting}>
               <AppShell
                 onBackToAuth={() => handleLogout()}
-                onGoAuth={() => handleLogout({ signOut: true })}
+                onGoAuth={() => {
+                  if (session?.guestMode && guestHasRecords()) setGuestLoginOpen(true)
+                  else void handleLogout({ signOut: true })
+                }}
                 onSessionUpdate={(next: AppSession) => setSession(next)}
               />
             </RequireSession>
@@ -156,6 +162,15 @@ export default function App() {
       </PageLoadErrorBoundary>
 
 
+      {guestLoginOpen && (
+        <GuestLoginBackupModal
+          onClose={() => setGuestLoginOpen(false)}
+          onLogin={() => {
+            setGuestLoginOpen(false)
+            void handleLogout({ signOut: true })
+          }}
+        />
+      )}
       <ToastMessage message={toast} />
     </SessionProvider>
     </ToastProvider>

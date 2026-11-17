@@ -21,7 +21,7 @@ describe('removeDayLogOnServer — 서버 함수 remove_day_log 한 번(지출�
 
   test('그 날짜로 서버 함수 1회만 부르고 표에 직접 쓰지 않는다', async () => {
     await removeDayLogOnServer(700, '2026-10-10')
-    assert.deepEqual(rpcArgs, [{ p_vehicle_id: 700, p_work_date: '2026-10-10' }])
+    assert.deepEqual(rpcArgs, [{ p_vehicle_id: 700, p_work_date: '2026-10-10', p_expected_updated_at: null }])
     assert.equal(countOf('transport_details', 'delete'), 0)
     assert.equal(countOf('daily_logs', 'delete'), 0)
     assert.equal(countOf('daily_logs', 'update'), 0)

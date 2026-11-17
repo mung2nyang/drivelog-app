@@ -1,4 +1,5 @@
 import { findMainCar, mergeWorkDataFromRows } from './hydrateMerge.ts'
+import { rememberDayLogVersions } from '../sync/dayLogVersions.ts'
 import type { DayRecordLike } from '../../domain/dayRecordTypes.ts'
 import type { CarLike } from '../../domain/financeTypes.ts'
 import type { DailyLogRow, DetailRow, SupabaseQueryError } from './hydrateMergeTypes.ts'
@@ -32,6 +33,7 @@ export async function mergeVehicleDayLogsFromServer({ cars, mainTombstoneKeys, f
       ['daily_logs:' + logId]: dailyRes.error,
       ['transport_details:' + logId]: transportRes.error,
     })
+    rememberDayLogVersions((car.supabaseId) as number | string, dailyRes.data)
     const deletedKeys = logId === 'main' ? mainTombstoneKeys : []
     workLogs[logId] = mergeWorkDataFromRows(
       {},

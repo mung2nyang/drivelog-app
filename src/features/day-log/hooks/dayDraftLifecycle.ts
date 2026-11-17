@@ -4,7 +4,9 @@ import { clearUnsafeRegistrationFailure, markUnsafeRegistrationFailure } from '.
 import { clearPendingDayWrite, registerPendingDayWrite } from '../../../data/sync/pendingWorkDataWrites.ts'
 import { saveLogWorkDataWithTombstoneCheck } from '../../../data/sync/workDataSave.ts'
 import { commitMainDayLogToCloud } from '../../../data/sync/dayLogCloudCommit.ts'
-import { hasNoCloudVehicle, shouldCommitDayLogToCloud } from '../../../data/sync/mainDayLogRouting.ts'
+import type { DayLogCloudResult } from '../../../data/sync/dayLogCloudCommit.ts'
+import { hasNoCloudVehicle, shouldCommitDayLogToCloud, vehicleSupabaseIdForLog } from '../../../data/sync/mainDayLogRouting.ts'
+import { dayLogVersion } from '../../../data/sync/dayLogVersions.ts'
 import { readOwnerLogWorkData } from '../../../data/store/ownerDataHooks.ts'
 import { pruneDayDraft, registerDayDraft, releaseDayDraft } from '../../../data/sync/dayDraftActivity.ts'
 import { addFailedDayLogDate, removeFailedDayLogDate } from '../../../data/sync/failedDayLogDates.ts'
@@ -50,7 +52,9 @@ export function createDayDraftSaver({ ownerKey, logId, dateKey, draft: initialDr
   let activity: symbol|null = null
   let toast: ((message: string) => void) | undefined
   let latestDraft = initialDraft
-  const failHead = `${Number(dateKey.slice(5, 7))}월 ${Number(dateKey.slice(8, 10))}일 운행일지 `
+  let locked = false
+  const dayLabel = `${Number(dateKey.slice(5, 7))}월 ${Number(dateKey.slice(8, 10))}일 운행일지`
+  const failHead = `${dayLabel} `
   if (!keepFailedEntry) removeFailedDayLogDate(ownerKey, logId, dateKey)
 
   function markSaved(patch: EffectivePatch) {
@@ -74,14 +78,36 @@ export function createDayDraftSaver({ ownerKey, logId, dateKey, draft: initialDr
     markSaved(patch)
   }
 
-  function settleCloud(result: { ok: boolean, toast: string|null }, attemptRev: number, patch: EffectivePatch) {
+  function knownBase() {
+    const vehicleId = vehicleSupabaseIdForLog(ownerKey, logId)
+    return vehicleId == null ? null : dayLogVersion(vehicleId, dateKey)
+  }
+
+  function settleConflict(reloaded: boolean) {
+    locked = true
+    again = false
+    if (timer) {
+      clearTimeout(timer)
+      timer = null
+    }
+    removeFailedDayLogDate(ownerKey, logId, dateKey)
+    addFailedDayLogDate(ownerKey, logId, dateKey)
+    toast?.(`${dayLabel}는 다른 기기에서 먼저 고쳐 저장하지 못했습니다. ${reloaded ? '일지를 닫았다가 다시 열면 최신 내용이 보입니다.' : '앱을 다시 켜서 최신 내용을 확인해 주세요.'}`)
+    if (progress.mounted) setAutoSaveStatus('failed')
+  }
+
+  function settleCloud(result: Omit<DayLogCloudResult, 'cloud'>, attemptRev: number, patch: EffectivePatch) {
     if (result.ok) {
       if (attemptRev !== progress.draftRev) return
       removeFailedDayLogDate(ownerKey, logId, dateKey)
       markSaved(patch)
       return
     }
-    addFailedDayLogDate(ownerKey, logId, dateKey, patch)
+    if (result.conflict) {
+      settleConflict(!!result.reloaded)
+      return
+    }
+    addFailedDayLogDate(ownerKey, logId, dateKey, patch, knownBase())
     if (result.toast) toast?.(result.toast === SERVER_SAVE_FAIL ? failHead + result.toast : result.toast)
     if (!progress.mounted) return
     setAutoSaveStatus('failed')
@@ -93,6 +119,7 @@ export function createDayDraftSaver({ ownerKey, logId, dateKey, draft: initialDr
       clearTimeout(timer)
       timer = null
     }
+    if (locked) return
     const draft = latestDraft
     const latest = readOwnerLogWorkData(ownerKey, logId)
     const patch = structuredClone({
@@ -133,6 +160,10 @@ export function createDayDraftSaver({ ownerKey, logId, dateKey, draft: initialDr
     },
     edited() {
       progress.draftRev += 1
+      if (locked) {
+        if (progress.mounted) setAutoSaveStatus('failed')
+        return
+      }
       setAutoSaveStatus('pending')
       progress.hasPending = true
       if (timer) clearTimeout(timer)

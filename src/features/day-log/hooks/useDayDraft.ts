@@ -3,8 +3,9 @@ import { backfillCallDetailIds } from '../../../domain/day-record.ts'
 import { pendingOwnerForLog } from '../../../data/sync/pendingLogOwner.ts'
 import { getUnsafeRegistrationPatch } from '../../../data/sync/durableWriteGuard.ts'
 import { getPendingDayWrite } from '../../../data/sync/pendingWorkDataWrites.ts'
-import { getFailedDayLogPatch } from '../../../data/sync/failedDayLogDates.ts'
-import { shouldCommitDayLogToCloud } from '../../../data/sync/mainDayLogRouting.ts'
+import { getFailedDayLogBase, getFailedDayLogPatch } from '../../../data/sync/failedDayLogDates.ts'
+import { shouldCommitDayLogToCloud, vehicleSupabaseIdForLog } from '../../../data/sync/mainDayLogRouting.ts'
+import { setDayLogVersion } from '../../../data/sync/dayLogVersions.ts'
 import { readOwnerLogWorkData } from '../../../data/store/ownerDataHooks.ts'
 import { createDayDraftSaver } from './dayDraftLifecycle.ts'
 import { dayLogReducer, initDayLogState } from './day-log-reducer.ts'
@@ -18,6 +19,9 @@ export function useDayDraft(ownerKey: string, dateKey: string, logId: string = '
     const stored = readOwnerLogWorkData(ownerKey, logId)[dateKey]
     const pendingOwner = pendingOwnerForLog(ownerKey, logId)
     const restored = shouldCommitDayLogToCloud(ownerKey, logId) ? getFailedDayLogPatch(ownerKey, logId, dateKey) : undefined
+    const base = restored ? getFailedDayLogBase(ownerKey, logId, dateKey) : undefined
+    const vehicleId = base === undefined ? null : vehicleSupabaseIdForLog(ownerKey, logId)
+    if (vehicleId != null) setDayLogVersion(vehicleId, dateKey, base)
     const queued = shouldCommitDayLogToCloud(ownerKey, logId)
       ? restored
       : (getPendingDayWrite(pendingOwner, dateKey) || getUnsafeRegistrationPatch(pendingOwner, dateKey))

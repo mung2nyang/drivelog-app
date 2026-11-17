@@ -205,6 +205,7 @@ describe('로드맵 69 — 그날 콜 상세는 서버 함수 한 번으로 교�
         { user_id: 'u1', vehicle_id: 700, client_id: null, work_date: DK, sequence: 0, load_loc: '부산', unload_loc: '대구', fare_amount: 10000, vat_exempt: true, payment_status: '수금 완료', payment_due_date: '2026-10-20', payments: [], commission_snapshot: null, raw: callDetails[0] },
         { user_id: 'u1', vehicle_id: 700, client_id: null, work_date: DK, sequence: 1, load_loc: null, unload_loc: null, fare_amount: 20000, vat_exempt: false, payment_status: '미수', payment_due_date: null, payments: [], commission_snapshot: null, raw: callDetails[1] },
       ],
+      p_expected_updated_at: null,
     }])
     assert.equal(getState().workLogs['dlc-69a']?.main?.[DK]?.callDetails?.length, 2)
     endCloudSession()
@@ -233,7 +234,7 @@ describe('로드맵 69 — 그날 콜 상세는 서버 함수 한 번으로 교�
     const r = await commitMainDayLogToCloud({ ownerKey: 'dlc-69c', logId: 'main', dateKey: DK, previousData: { [DK]: { fixedCount: 1, callDetails: [{ id: 'old' }] } }, nextData: { [DK]: { fixedCount: 1, callDetails: [] } } })
 
     assert.deepEqual(r, { cloud: true, ok: true, toast: null })
-    assert.deepEqual(calls, [{ p_log: { user_id: 'u1', vehicle_id: 700, work_date: DK, is_off: false, fixed_count: 1, pallet_count: 0, raw: { fixedCount: 1 } }, p_rows: [] }])
+    assert.deepEqual(calls, [{ p_log: { user_id: 'u1', vehicle_id: 700, work_date: DK, is_off: false, fixed_count: 1, pallet_count: 0, raw: { fixedCount: 1 } }, p_rows: [], p_expected_updated_at: null }])
     assert.equal(countOf('transport_details', 'delete'), 0)
     endCloudSession()
   })

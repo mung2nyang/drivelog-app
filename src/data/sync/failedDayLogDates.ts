@@ -4,7 +4,7 @@ import type { JsonValue } from '../../domain/jsonTypes.ts'
 import type { EffectivePatch } from './pendingWorkDataWritesTypes.ts'
 
 export type FailedDayLogDate = { logId: string, dateKey: string }
-type StoredEntry = FailedDayLogDate & { patch?: EffectivePatch }
+type StoredEntry = FailedDayLogDate & { patch?: EffectivePatch, base?: string | null }
 type Stored = Record<string, Array<StoredEntry>>
 
 const STORAGE_KEY = 'drivelogFailedDayLogDates'
@@ -13,9 +13,10 @@ let version = 0
 
 function toEntry(value: JsonValue): StoredEntry | null {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return null
-  const { logId, dateKey, patch } = value
+  const { logId, dateKey, patch, base } = value
   if (typeof logId !== 'string' || logId === '' || typeof dateKey !== 'string' || !isValidCalendarDateKey(dateKey)) return null
-  return patch !== undefined && isValidPatch(patch) ? { logId, dateKey, patch } : { logId, dateKey }
+  if (patch === undefined || !isValidPatch(patch)) return { logId, dateKey }
+  return typeof base === 'string' || base === null ? { logId, dateKey, patch, base } : { logId, dateKey, patch }
 }
 
 function readAll(): Stored | null {
@@ -53,11 +54,15 @@ export function getFailedDayLogPatch(ownerKey: string, logId: string, dateKey: s
   return readAll()?.[ownerKey]?.find((item) => isSame(item, logId, dateKey))?.patch
 }
 
-export function addFailedDayLogDate(ownerKey: string, logId: string, dateKey: string, patch?: EffectivePatch) {
+export function getFailedDayLogBase(ownerKey: string, logId: string, dateKey: string): string | null | undefined {
+  return readAll()?.[ownerKey]?.find((item) => isSame(item, logId, dateKey))?.base
+}
+
+export function addFailedDayLogDate(ownerKey: string, logId: string, dateKey: string, patch?: EffectivePatch, base?: string | null) {
   const all = readAll()
   if (!all) return
   const list = all[ownerKey] || []
-  const entry: StoredEntry = patch ? { logId, dateKey, patch } : { logId, dateKey }
+  const entry: StoredEntry = !patch ? { logId, dateKey } : base === undefined ? { logId, dateKey, patch } : { logId, dateKey, patch, base }
   const index = list.findIndex((item) => isSame(item, logId, dateKey))
   if (index >= 0 && !patch) return
   const next = index >= 0 ? list.map((item, i) => (i === index ? entry : item)) : [...list, entry]

@@ -1,7 +1,7 @@
 import '../../testSupport/setupDom.ts'
 import assert from 'node:assert/strict'
 import { beforeEach, mock, test } from 'node:test'
-import { addFailedDayLogDate, getFailedDayLogPatch, listFailedDayLogDates, removeFailedDayLogDate, subscribeFailedDayLogDates } from './failedDayLogDates.ts'
+import { addFailedDayLogDate, getFailedDayLogBase, getFailedDayLogPatch, listFailedDayLogDates, removeFailedDayLogDate, subscribeFailedDayLogDates } from './failedDayLogDates.ts'
 
 const KEY = 'drivelogFailedDayLogDates'
 beforeEach(() => { localStorage.removeItem(KEY) })
@@ -117,4 +117,27 @@ test('목록 원문이 통째로 깨졌으면 더하기·지우기가 덮어쓰�
     assert.equal(localStorage.getItem(KEY), raw, raw)
     assert.equal(getFailedDayLogPatch('own-s', 'main', '2026-11-04'), undefined)
   }
+})
+
+test('실패 때 알던 시각은 내용과 같이 남고, 내용 없이 더하면 시각도 없음', () => {
+  addFailedDayLogDate('own-t', 'main', '2026-11-05', patchOf(1), 'v-1')
+  addFailedDayLogDate('own-t', 'main', '2026-11-06', patchOf(1), null)
+  addFailedDayLogDate('own-t', 'main', '2026-11-07', patchOf(1))
+  addFailedDayLogDate('own-t', 'main', '2026-11-08')
+  assert.equal(getFailedDayLogBase('own-t', 'main', '2026-11-05'), 'v-1')
+  assert.equal(getFailedDayLogBase('own-t', 'main', '2026-11-06'), null, '그날이 서버에 없던 때')
+  assert.equal(getFailedDayLogBase('own-t', 'main', '2026-11-07'), undefined, '시각 없이 보관한 옛 항목')
+  assert.equal(getFailedDayLogBase('own-t', 'main', '2026-11-08'), undefined)
+  addFailedDayLogDate('own-t', 'main', '2026-11-05', patchOf(2), 'v-2')
+  assert.equal(getFailedDayLogBase('own-t', 'main', '2026-11-05'), 'v-2', '다시 실패하면 마지막 시각')
+})
+
+test('손상된 시각은 버리고 내용은 남는다, 내용이 손상되면 시각도 안 씀', () => {
+  localStorage.setItem(KEY, JSON.stringify({ 'own-u': [
+    { logId: 'main', dateKey: '2026-11-10', patch: patchOf(1), base: 3 },
+    { logId: 'main', dateKey: '2026-11-11', patch: { fixedCount: -1 }, base: 'v' },
+  ] }))
+  assert.equal(getFailedDayLogPatch('own-u', 'main', '2026-11-10')?.fixedCount, 1)
+  assert.equal(getFailedDayLogBase('own-u', 'main', '2026-11-10'), undefined)
+  assert.equal(getFailedDayLogBase('own-u', 'main', '2026-11-11'), undefined)
 })

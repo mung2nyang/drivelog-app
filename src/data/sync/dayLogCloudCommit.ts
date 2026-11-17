@@ -16,10 +16,14 @@ import { shouldCommitDayLogToCloud, vehicleSupabaseIdForLog } from './mainDayLog
 import { parseEntityNumber } from '../cloud/cloudStorage.ts'
 import { removeDayLogOnServer } from './dailyLogRemoval.ts'
 import { dailyLogRow } from './syncWorkData.ts'
-import { SERVER_SAVE_FAIL, SESSION_CHANGED_FAIL } from '../../shared/utils/failureMessages.ts'
+import { DAY_LOG_CONFLICT_FAIL, DAY_LOG_CONFLICT_RELOADED_FAIL, SERVER_SAVE_FAIL, SESSION_CHANGED_FAIL } from '../../shared/utils/failureMessages.ts'
+import { dayLogVersion, setDayLogVersion } from './dayLogVersions.ts'
+import { reloadDayLogFromServer } from './dayLogReload.ts'
 
 const SAVE_FAIL_TOAST = SERVER_SAVE_FAIL
 const SESSION_CHANGED_TOAST = SESSION_CHANGED_FAIL
+
+export type DayLogCloudResult = { cloud: true, ok: boolean, toast: string | null, conflict?: boolean, reloaded?: boolean }
 
 function partialFailToast(successCount: number, failCount: number) {
   return `일부만 저장되었습니다. (성공 ${successCount}건, 실패 ${failCount}건) 화면에 남은 항목을 다시 시도해 주세요.`
@@ -59,11 +63,13 @@ async function writeDayKeyToServer(userId: string, vehicleId: number | string, o
   const hadBefore = !!previousData[dateKey]
   const record = nextData[dateKey]
   if (record) {
-    const { error } = await supabase.rpc('save_day_log', {
+    const { data, error } = await supabase.rpc('save_day_log', {
       p_log: dailyLogRow(userId, vehicleId, dateKey, record),
       p_rows: transportDetailRows(userId, vehicleId, dateKey, record, clientIdByName(ownerKey)),
+      p_expected_updated_at: dayLogVersion(vehicleId, dateKey),
     })
     if (error) throw error
+    setDayLogVersion(vehicleId, dateKey, data)
     assertSessionStillCurrent(captured)
   } else if (hadBefore) {
     await removeDayLogOnServer(vehicleId, dateKey)
@@ -93,7 +99,7 @@ export function changedDayLogDateKeys(previousData: Record<string, DayRecordLike
 }
 
 export async function commitMainDayLogToCloud({ ownerKey, logId, dateKey, previousData, nextData }: { ownerKey: string, logId: string, dateKey: string,
-  previousData: Record<string, DayRecordLike>, nextData: Record<string, DayRecordLike> }): Promise<{ cloud: false } | { cloud: true, ok: boolean, toast: string | null }> {
+  previousData: Record<string, DayRecordLike>, nextData: Record<string, DayRecordLike> }): Promise<{ cloud: false } | DayLogCloudResult> {
   if (!shouldCommitDayLogToCloud(ownerKey, logId)) return { cloud: false }
   const userId = (getCloudUserId()) as string
   const vehicleId = vehicleSupabaseIdForLog(ownerKey, logId)
@@ -113,6 +119,10 @@ export async function commitMainDayLogToCloud({ ownerKey, logId, dateKey, previo
     return { cloud: true, ok: true, toast: null }
   } catch (error) {
     if (error instanceof StaleSessionError) return { cloud: true, ok: false, toast: SESSION_CHANGED_TOAST }
+    if (error && typeof error === 'object' && 'code' in error && error.code === 'DL409') {
+      const reloaded = await reloadDayLogFromServer(ownerKey, logId, vehicleId, dateKey, captured)
+      return { cloud: true, ok: false, toast: reloaded ? DAY_LOG_CONFLICT_RELOADED_FAIL : DAY_LOG_CONFLICT_FAIL, conflict: true, reloaded }
+    }
     console.error('[commitMainDayLogToCloud] 일지 저장 실패:', error)
     return { cloud: true, ok: false, toast: SAVE_FAIL_TOAST }
   }

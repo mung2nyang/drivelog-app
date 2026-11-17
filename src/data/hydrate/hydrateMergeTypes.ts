@@ -23,6 +23,6 @@ export type ClientRow = { id: string | number, raw?: RawClientBackup | null, com
 
 export type DriverLinkRow = { id: string | number, invite_code?: string, vehicle_id?: string | number, assignment_start?: string, assignment_end?: string, status?: string, driver_name?: string | null, unlink_requested_by?: string | null, unlink_requested_at?: string | null }
 
-export type DailyLogRow = { work_date: string, raw?: JsonRecord | null, is_off?: boolean, fixed_count?: number }
+export type DailyLogRow = { work_date: string, raw?: JsonRecord | null, is_off?: boolean, fixed_count?: number, updated_at?: string | null }
 export type DetailRow = { work_date: string, raw?: JsonRecord | null }
 export type MergedDayRecord = { isOff: boolean, fixedCount: number, callDetails: Array<JsonRecord>, fuelItems?: Array<JsonRecord>, maintItems?: Array<JsonRecord>, miscItems?: Array<JsonRecord>, assignedVehicleNumber?: string }

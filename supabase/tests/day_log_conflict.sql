@@ -1,7 +1,7 @@
--- 일지 겹침 시험(pgTAP): 알던 고친 시각이 다르면 저장·지우기 거절, 맞으면 그대로, 옛 함수로 고쳐도 시각이 바뀜.
+-- 일지 겹침 시험(pgTAP): 알던 고친 시각이 다르면 저장·지우기 거절, 맞으면 그대로, 표를 직접 고쳐도 시각이 바뀜, 옛 2개짜리 함수 없음.
 -- 임시 사용자·차량만 만들고 끝에 되돌린다. CI에서 supabase test db로 돈다.
 begin;
-select plan(26);
+select plan(28);
 set local statement_timeout = '30s';
 set local lock_timeout = '3s';
 
@@ -53,10 +53,10 @@ select is(pg_temp.call_count('2026-01-01'), 1, '낡은 기준: 콜 그대로');
 select throws_ok($$ select public.save_day_log(pg_temp.log('2026-01-01', 3), '[]'::jsonb, null) $$,
   'DL409', null, '기준 없음, 콜 있는 날: 거절');
 
-select lives_ok($$ select public.save_day_log(pg_temp.log('2026-01-01', 4), pg_temp.calls('2026-01-01', 1)) $$, '옛 함수로 저장');
-select ok(pg_temp.at('2026-01-01') > pg_temp.saved('v2'), '옛 함수로 고쳐도 시각이 바뀜');
+select lives_ok($$ update public.daily_logs set fixed_count = 4 where vehicle_id = pg_temp.id('car_a') and work_date = '2026-01-01' $$, '표를 직접 고침');
+select ok(pg_temp.at('2026-01-01') > pg_temp.saved('v2'), '표를 직접 고쳐도 시각이 바뀜');
 select throws_ok($$ select public.save_day_log(pg_temp.log('2026-01-01', 5), '[]'::jsonb, pg_temp.saved('v2')) $$,
-  'DL409', null, '옛 함수가 고친 뒤 그 전 기준: 거절');
+  'DL409', null, '직접 고친 뒤 그 전 기준: 거절');
 
 insert into public.daily_logs(id, user_id, vehicle_id, work_date, raw)
   values (pg_temp.id('log_d2'), auth.uid(), pg_temp.id('car_a'), '2026-01-02', '{}');
@@ -96,6 +96,9 @@ select is(
    where n.nspname = 'public' and p.proname in ('lock_unchanged_day_log', 'save_day_log', 'remove_day_log')
      and pg_get_function_identity_arguments(p.oid) like '%timestamp with time zone'),
   true, '새 함수 3개: 부르는 사람 권한, 비회원 실행 불가, 로그인 사용자 실행 가능');
+
+select hasnt_function('public', 'save_day_log', array['jsonb', 'jsonb'], '옛 2개짜리 저장 함수 없음');
+select hasnt_function('public', 'remove_day_log', array['uuid', 'date'], '옛 2개짜리 지우기 함수 없음');
 
 select * from finish();
 rollback;

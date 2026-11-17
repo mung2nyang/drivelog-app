@@ -120,10 +120,9 @@ export function flattenLinkedDriverTrips(data: Record<string, DayRecordLike>, mo
       })
     })
 
-    const fixedCount = Number(record.fixedCount || record.count || 0)
-    const storedFare = parseCurrencyValue(record.fare || record.fixedFare || record.totalFare)
-    const fixedFare = storedFare > 0 ? storedFare : computeFixedRouteFare(record, fixedRouteOpts)
-    const palletFare = storedFare > 0 || !fixedRouteOpts.subFixedOn || !fixedRouteOpts.activePalletOn ? 0 : getPalletCount(record) * fixedRouteOpts.palletUnitPrice
+    const fixedCount = Number(record.fixedCount || 0)
+    const fixedFare = computeFixedRouteFare(record, fixedRouteOpts)
+    const palletFare = !fixedRouteOpts.subFixedOn || !fixedRouteOpts.activePalletOn ? 0 : getPalletCount(record) * fixedRouteOpts.palletUnitPrice
     if (fixedCount > 0 || fixedFare > 0) {
       trips.push({ type: 'fixed', dateKey, client: '', loadLoc: '', unloadLoc: '', fare: fixedFare, vatExempt: false, fixedCount, palletFare })
     }

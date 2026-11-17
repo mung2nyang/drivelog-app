@@ -94,9 +94,8 @@ export function getMonthlyDriverTotals(data: Record<string, DayRecordLike>, mont
       insuranceAmount += parseCurrencyValue((detail as { insuranceFee?: string | number }).insuranceFee)
       if (callCountsAsTrip(detail)) count += 1
     })
-    const storedFare = parseCurrencyValue(record.fare || record.fixedFare || record.totalFare)
-    grossAmount += storedFare > 0 ? storedFare : computeFixedRouteFare(record, fixedRouteOpts)
-    count += Number(record.fixedCount || record.count || 0)
+    grossAmount += computeFixedRouteFare(record, fixedRouteOpts)
+    count += Number(record.fixedCount || 0)
   })
   return { grossAmount, insuranceAmount, count }
 }

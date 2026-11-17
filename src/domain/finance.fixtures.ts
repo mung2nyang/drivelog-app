@@ -122,7 +122,6 @@ export const FIXTURE_WORK: WorkDataByLogId = {
         { id: 'trp-fixture-sub12-1', client: '대한', fare: 200000, insuranceFee: '3,000', workDate: '2026-05-12' },
       ],
       fixedCount: 1,
-      fare: 250000,
     },
     '2026-04-01': {
       callDetails: [{ id: 'trp-fixture-sub12-2', client: '대한', fare: 999999 }],

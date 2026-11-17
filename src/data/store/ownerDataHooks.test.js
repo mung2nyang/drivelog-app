@@ -30,7 +30,7 @@ describe('Step 9 slice C — readOwnerWorkDataByLogId', () => {
     assert.ok(byLogId.main)
     assert.ok(byLogId[subNumber])
     assert.ok(byLogId['부산33나1111'])
-    assert.equal(byLogId[subNumber]['2026-05-12']?.fare, 250000)
+    assert.equal(byLogId[subNumber]['2026-05-12']?.fixedCount, 1)
 
     const mainOnly = { main: byLogId.main }
     for (const scope of ['all', 'driver']) {

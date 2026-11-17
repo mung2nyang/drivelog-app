@@ -130,10 +130,9 @@ describe('readLogWorkData — 키 부재와 실패를 구분한다', () => {
       '2026-08-01': { isOff: false, fuelItems: [{ type: '주유', cost: { n: 1 } }] },
     }))
     assert.equal(readLogWorkData(OWNER, 'nested-cost').kind, 'schema')
-    localStorage.setItem(storageKeyForLog(OWNER, 'bad-fare'), JSON.stringify({ '2026-08-01': { fare: 'oops' } }))
-    assert.equal(readLogWorkData(OWNER, 'bad-fare').kind, 'schema')
-    localStorage.setItem(storageKeyForLog(OWNER, 'ok-fare'), JSON.stringify({ '2026-08-01': { fare: '1,000' } }))
-    assert.equal(readLogWorkData(OWNER, 'ok-fare').kind, 'value')
+    localStorage.setItem(storageKeyForLog(OWNER, 'old-fare'), JSON.stringify({ '2026-08-01': { fare: 'oops', count: 2 }, '2026-08-02': { fixedCount: 1, totalFare: '1,000' } }))
+    const oldFare = readLogWorkData(OWNER, 'old-fare')
+    assert.deepEqual(oldFare.ok && oldFare.value, { '2026-08-02': { fixedCount: 1 } }, '옛 하루 운임·횟수 칸은 버리고 그날 나머지는 읽음')
     localStorage.setItem(storageKeyForLog(OWNER, 'empty-day'), JSON.stringify({ '2026-08-01': {} }))
     assert.equal(readLogWorkData(OWNER, 'empty-day').kind, 'schema')
     localStorage.setItem(storageKeyForLog(OWNER, 'legacy-off'), JSON.stringify({ '2026-08-01': 'off' }))

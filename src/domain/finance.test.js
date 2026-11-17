@@ -4,6 +4,7 @@ import { calculatePaymentDueDate } from './clients.ts'
 import { isDateWithinAssignment } from './drivers.ts'
 import {
   calculateDriverVehicleCommission,
+  flattenLinkedDriverTrips,
   getCallDetailCommissionAmount,
   getDetailPaymentSummary,
   getLinkedDriverClientInvoiceGroups,
@@ -93,7 +94,7 @@ describe('같은 운행 픽스처 — 확정 금액', () => {
     const car = FIXTURE_SETTINGS.cars[1]
     const link = FIXTURE_SETTINGS.driverLinks[0]
     const data = FIXTURE_WORK['서울12가3456']
-    const ours = getLinkedDriverSettlementDetail(data, MONTH_KEY, link, car)
+    const ours = getLinkedDriverSettlementDetail(data, MONTH_KEY, link, car, FIXTURE_SETTINGS)
     assert.equal(ours.totalFare, 450000)
     assert.equal(ours.tripCount, 2)
     assert.equal(ours.commissionAmount, 67500)
@@ -143,9 +144,20 @@ describe('같은 운행 픽스처 — 확정 금액', () => {
 
   test('할당 기간 밖은 기사 정산에 안 넣음', () => {
     const link = FIXTURE_SETTINGS.driverLinks[0]
-    const ours = getMonthlyDriverTotals(FIXTURE_WORK['서울12가3456'], MONTH_KEY, link)
+    const ours = getMonthlyDriverTotals(FIXTURE_WORK['서울12가3456'], MONTH_KEY, link, FIXTURE_SETTINGS)
     same(ours, { grossAmount: 450000, insuranceAmount: 3000, count: 2 })
     assert.equal(ours.grossAmount < 999999, true)
+  })
+
+  test('옛 하루 운임·횟수 칸은 기사 정산·운행 목록 계산에 안 씀', () => {
+    const link = FIXTURE_SETTINGS.driverLinks[0]
+    const data = /** @type {Record<string, import('./dayRecordTypes.ts').DayRecordLike>} */ ({
+      '2026-05-12': { fixedCount: 1, fare: 999000, fixedFare: 999000, totalFare: 999000, callDetails: [{ id: 'old-1', client: '대한', fare: 200000, workDate: '2026-05-12' }] },
+      '2026-05-13': { isOff: false, count: 4 },
+    })
+    same(getMonthlyDriverTotals(data, MONTH_KEY, link, FIXTURE_SETTINGS), { grossAmount: 450000, insuranceAmount: 0, count: 2 })
+    const fixedTrips = flattenLinkedDriverTrips(data, MONTH_KEY, link, FIXTURE_SETTINGS).filter((trip) => trip.type === 'fixed')
+    assert.deepEqual(fixedTrips.map((trip) => [trip.dateKey, trip.fare, trip.fixedCount]), [['2026-05-12', 250000, 1]])
   })
 
   test('fare 필드 없는 실제 고정노선 기록 — settings 없으면 0, 있으면 단가×횟수로 잡힘', () => {

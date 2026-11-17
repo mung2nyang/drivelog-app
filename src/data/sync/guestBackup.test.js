@@ -177,13 +177,13 @@ describe('guestBackup — 게스트 데이터 내보내기/가져오기', () => 
 
   /** @param {import('../../domain/jsonTypes.ts').JsonValue} file */
   function assertRejectedUnchanged(file) {
-    replaceOwnerState('guest', { cars: [{ id: 'car-1', number: '11가1111', type: 'main' }], workLogs: { main: { '2026-09-01': { count: 1 } } } })
+    replaceOwnerState('guest', { cars: [{ id: 'car-1', number: '11가1111', type: 'main' }], workLogs: { main: { '2026-09-01': { fixedCount: 1 } } } })
     const before = storageSnapshot()
     const res = applyGuestBackupData(file)
     assert.deepEqual(res, { ok: false, error: '백업 파일이 손상되었거나 운행일지 백업 파일이 아닙니다.' })
     assert.deepEqual(storageSnapshot(), before)
     assert.equal(getState().cars.guest?.[0]?.number, '11가1111')
-    assert.equal(getState().workLogs.guest?.main?.['2026-09-01']?.count, 1)
+    assert.equal(getState().workLogs.guest?.main?.['2026-09-01']?.fixedCount, 1)
     assert.equal(initializeOwnerFromPersist('guest'), true)
   }
 
@@ -193,13 +193,13 @@ describe('guestBackup — 게스트 데이터 내보내기/가져오기', () => 
   })
 
   test('68: 하루 기록에 정해진 칸 밖 내용·틀린 콜 상세가 있으면 거절', () => {
-    assertRejectedUnchanged({ workData: { '2026-05-01': { count: 2, memo: '옛 메모' } } })
+    assertRejectedUnchanged({ workData: { '2026-05-01': { fixedCount: 2, memo: '옛 메모' } } })
     assertRejectedUnchanged({ workLogs: { main: { '2026-05-01': { callDetails: [{ fare: 'abc' }] } } } })
-    assertRejectedUnchanged({ workLogs: { main: { 'not-a-date': { count: 1 } } } })
+    assertRejectedUnchanged({ workLogs: { main: { 'not-a-date': { fixedCount: 1 } } } })
   })
 
   test('68: subWorkData 안쪽 일지가 틀리면 거절', () => {
-    assertRejectedUnchanged({ workData: {}, subWorkData: { '22나2222': { '2026-05-01': { count: -1 } } } })
+    assertRejectedUnchanged({ workData: {}, subWorkData: { '22나2222': { '2026-05-01': { fixedCount: -1 } } } })
     assertRejectedUnchanged({ workData: {}, subWorkData: { '22나2222': 'bad' } })
   })
 
@@ -212,28 +212,28 @@ describe('guestBackup — 게스트 데이터 내보내기/가져오기', () => 
     const res = applyGuestBackupData({
       cars: [{ id: 'car-1', number: '11가1111', type: 'main' }, { id: 'car-2', number: '22나2222', type: 'sub' }],
       workData: { '2026-05-01': 'off' },
-      subWorkData: { '22나2222': { '2026-05-02': { count: 3 } } },
+      subWorkData: { '22나2222': { '2026-05-02': { fixedCount: 3 } } },
     })
     assert.deepEqual(res, { ok: true })
     assert.deepEqual(JSON.parse(localStorage.getItem('reactPracticeWorkData:guest') || 'null'), { '2026-05-01': { isOff: true } })
     assert.equal(initializeOwnerFromPersist('guest'), true)
-    assert.equal(getState().workLogs.guest?.['22나2222']?.['2026-05-02']?.count, 3)
+    assert.equal(getState().workLogs.guest?.['22나2222']?.['2026-05-02']?.fixedCount, 3)
   })
 
   test('68-1: 백업에 없는 기사 차량의 옛 일지 키는 복원 때 지워짐', () => {
     replaceOwnerState('guest', {
       cars: [{ id: 'car-3', number: '33다3333', type: 'sub' }],
-      workLogs: { main: {}, '33다3333': { '2026-04-01': { count: 1 } } },
-    }, { extraWrites: [{ key: 'reactPracticeWorkData:guest:log:33다3333', value: { '2026-04-01': { count: 1 } } }] })
+      workLogs: { main: {}, '33다3333': { '2026-04-01': { fixedCount: 1 } } },
+    }, { extraWrites: [{ key: 'reactPracticeWorkData:guest:log:33다3333', value: { '2026-04-01': { fixedCount: 1 } } }] })
     assert.ok(localStorage.getItem('reactPracticeWorkData:guest:log:33다3333'))
 
     const res = applyGuestBackupData({
       cars: [{ id: 'car-2', number: '22나2222', type: 'sub' }],
-      workLogs: { main: {}, '22나2222': { '2026-05-02': { count: 3 } } },
+      workLogs: { main: {}, '22나2222': { '2026-05-02': { fixedCount: 3 } } },
     })
     assert.deepEqual(res, { ok: true })
     assert.equal(localStorage.getItem('reactPracticeWorkData:guest:log:33다3333'), null)
-    assert.deepEqual(JSON.parse(localStorage.getItem('reactPracticeWorkData:guest:log:22나2222') || 'null'), { '2026-05-02': { count: 3 } })
+    assert.deepEqual(JSON.parse(localStorage.getItem('reactPracticeWorkData:guest:log:22나2222') || 'null'), { '2026-05-02': { fixedCount: 3 } })
   })
   /** 기기에 닫은 알림·빈 날 삭제 목록을 심는다. @param {Array<string>} ids @param {Record<string, string>} tombstones */
   function seedMarks(ids, tombstones) {

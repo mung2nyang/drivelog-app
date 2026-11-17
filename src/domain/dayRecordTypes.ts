@@ -7,10 +7,6 @@ export type DayRecordLike = {
   palletCount?: number
   callDetails?: Array<CallDetailLike>
   fixedRouteCounts?: Record<string, number>
-  fare?: number | string
-  fixedFare?: number | string
-  totalFare?: number | string
-  count?: number
   dailyDistance?: number
   fuelItems?: Array<JsonRecord>
   maintItems?: Array<JsonRecord>

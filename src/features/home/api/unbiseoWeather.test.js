@@ -44,8 +44,8 @@ function fakeLocation(mode) {
   Object.defineProperty(globalThis, 'navigator', { value: mode === 'none' ? {} : { geolocation }, configurable: true })
 }
 
-const FIRST = { enableHighAccuracy: false, timeout: 10000, maximumAge: 600000 }
-const RETRY = { enableHighAccuracy: true, timeout: 15000, maximumAge: 600000 }
+const FIRST = { enableHighAccuracy: false, timeout: 5000, maximumAge: 600000 }
+const RETRY = { enableHighAccuracy: true, timeout: 7000, maximumAge: 600000 }
 
 beforeEach(() => { calls.length = 0; asked = []; reply = async () => ({ data: null, error: null }) })
 afterEach(() => { if (original) Object.defineProperty(globalThis, 'navigator', original) })
@@ -72,7 +72,7 @@ test('지역이 있으면 그 이름으로 — 위치를 묻지 않는다', asyn
   assert.deepEqual(asked, [])
 })
 
-test('지역이 없으면 휴대폰 위치 → 격자 번호만 보낸다(위도·경도 없음), 정확도 낮음·10초·10분 안 위치', async () => {
+test('지역이 없으면 휴대폰 위치 → 격자 번호만 보낸다(위도·경도 없음), 정확도 낮음·5초·10분 안 위치', async () => {
   fakeLocation('ok')
   reply = async () => ({ data: { kind: 'weather', weather: DAY }, error: null })
   assert.equal(await requestWeatherSentence({ date: TODAY, place: '' }, TODAY), '오늘 지금 있는 곳 날씨는 흐리고 비, 최저 18도, 최고 23도, 비 올 확률 60%예요. 비가 오니 우산 챙기세요.')
@@ -81,7 +81,7 @@ test('지역이 없으면 휴대폰 위치 → 격자 번호만 보낸다(위도
   assert.deepEqual(asked, [FIRST])
 })
 
-test('처음에 못 찾으면(시간 넘김·알 수 없음) 정확도 높음·15초로 한 번 더, 찾으면 격자 번호로', async () => {
+test('처음에 못 찾으면(시간 넘김·알 수 없음) 정확도 높음·7초로 한 번 더, 찾으면 격자 번호로', async () => {
   for (const first of /** @type {const} */ (['timeout', 'unavailable'])) {
     calls.length = 0
     asked = []

@@ -217,8 +217,8 @@ test('이미 그 날짜 일지: 입력 창이 열려 있으면 확인 창 먼저
     assert.equal(view.value('callLoadLoc'), '수원')
 
     await view.askDock('어제 평택 용인 15만')
-    await waitUntil(() => !!view.container.textContent?.includes('저장하지 않은 입력이 있습니다'))
-    assert.ok(view.container.textContent?.includes('저장하지 않은 입력이 있습니다'))
+    await waitUntil(() => !!view.container.textContent?.includes('입력 중인 내용'))
+    assert.ok(view.container.textContent?.includes('입력 중인 내용'))
     await view.click(view.button('계속 입력'))
     assert.equal(view.value('callLoadLoc'), '수원', '[계속 입력]이면 채우지 않음')
 
@@ -239,7 +239,7 @@ test('이미 그 날짜 일지, 열린 입력 칸 없음: 확인 없이 바로 �
     assert.equal(view.container.querySelector('#callLoadLoc'), null)
     await view.askDock('어제 평택 용인 15만')
     await view.waitForLoad('평택')
-    assert.ok(!view.container.textContent?.includes('저장하지 않은 입력이 있습니다'))
+    assert.ok(!view.container.textContent?.includes('입력 중인 내용'))
     assert.equal(view.value('callLoadLoc'), '평택')
   } finally { await view.cleanup() }
 })
@@ -304,7 +304,7 @@ test('고정 노선 [기록하기] → 그 날짜 일지 칩이 오르고, 같�
     await view.askDock('어제 평택 용인 고정 2번')
     await view.click(view.button('기록하기', view.dock() || undefined))
     await waitUntil(() => chipCount() === '4회')
-    assert.ok(!view.container.textContent?.includes('저장하지 않은 입력이 있습니다'), '확인 창 없음')
+    assert.ok(!view.container.textContent?.includes('입력 중인 내용'), '확인 창 없음')
     assert.equal(window.location.pathname, `/app/day/${DATE}`, '일지에 그대로')
   } finally { await view.cleanup() }
 })

@@ -41,7 +41,8 @@ export default function ScopedClientsList({ scopeKey, listId, notice }: { scopeK
       )}
       {scoped.pendingDelete && (
         <ConfirmModal
-          title="이 거래처를 삭제하시겠습니까?"
+          title="거래처 삭제"
+          message="이 거래처를 삭제할까요?"
           confirmLabel="삭제"
           danger
           onCancel={() => scoped.setPendingDelete(null)}

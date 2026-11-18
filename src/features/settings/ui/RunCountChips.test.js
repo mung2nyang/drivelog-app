@@ -66,7 +66,7 @@ test('길게 누르면 확인 창이 뜨고, 확인하면 그 버튼이 삭제�
   try {
     fire(chip(container, 1), 'pointerdown')
     await act(async () => { await wait(700) })
-    assert.ok((container.textContent ?? '').includes('2회 버튼을 삭제하시겠습니까?'))
+    assert.ok((container.textContent ?? '').includes('2회 버튼을 삭제할까요?'))
     const confirm = container.querySelector('.modal-btn.confirm')
     assert.ok(confirm)
     await act(async () => { /** @type {HTMLButtonElement} */ (confirm).click() })
@@ -122,7 +122,7 @@ test('길게 누르면 읽기 전용 그대로 삭제 창만 뜬다', async () =
     fire(chip(container, 2), 'pointerdown')
     await act(async () => { await wait(700) })
     fire(chip(container, 2), 'pointerup')
-    assert.ok((container.textContent ?? '').includes('3회 버튼을 삭제하시겠습니까?'))
+    assert.ok((container.textContent ?? '').includes('3회 버튼을 삭제할까요?'))
     assert.equal(/** @type {HTMLInputElement} */ (chip(container, 2)).readOnly, true)
   } finally { await cleanup() }
 })
@@ -156,7 +156,7 @@ test('길게 눌러 삭제 창이 뜨며 칸을 벗어나도 저장하지 않는
     await act(async () => { target.focus() })
     await act(async () => { await wait(700) })
     await act(async () => { target.blur() })
-    assert.ok((container.textContent ?? '').includes('3회 버튼을 삭제하시겠습니까?'))
+    assert.ok((container.textContent ?? '').includes('3회 버튼을 삭제할까요?'))
     assert.equal(patches.length, 0)
   } finally { await cleanup() }
 })

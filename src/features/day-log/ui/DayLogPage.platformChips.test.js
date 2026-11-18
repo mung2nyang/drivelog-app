@@ -161,7 +161,7 @@ test('칩을 길게 누르면 확인 창, [취소]면 그대로, [삭제]면 지
     await view.fire(view.button('+ 세부 내역 추가'))
     const input = /** @type {HTMLInputElement} */ (view.container.querySelector('#callPlatform'))
     await view.longPress('화물맨')
-    assert.ok(document.body.textContent?.includes("'화물맨' 칩을 삭제하시겠습니까?"))
+    assert.ok(document.body.textContent?.includes("'화물맨'을 플랫폼 목록에서 삭제할까요?"))
     await view.fire(view.chip('화물맨'))
     assert.equal(input.value, '', '길게 누른 뒤의 클릭은 고르기가 아니다')
     await view.fire(view.button('취소'))

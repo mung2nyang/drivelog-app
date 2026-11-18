@@ -34,8 +34,8 @@ export function bindInlinePanelActions(dispatch: (action: DayLogAction) => void,
     async confirmLeaveOpenPanel(): Promise<boolean> {
       if (!callPanel.callFormOpen && !expenseForm.modalOpen) return true
       return confirmDialog({
-        title: '저장하지 않은 입력이 있습니다',
-        message: '지금 나가면 입력한 내용이 사라집니다.',
+        title: '입력 중인 내용',
+        message: '지금 나가면 입력한 내용이 사라져요.',
         confirmLabel: '나가기',
         cancelLabel: '계속 입력',
         danger: true,

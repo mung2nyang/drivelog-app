@@ -150,7 +150,7 @@ describe('운송료 1,000만원 초과 저장 확인(로드맵 43-C)', () => {
 
   test('초과 + 취소 → 저장 안 함, 입력 창 그대로', async () => {
     const result = await clickSave('20,000,000', false)
-    assert.deepEqual(result.asked, ['운송료가 1,000만원을 넘습니다\n입력한 운송료는 20,000,000원입니다. 이 금액이 맞으면 저장해 주세요.'])
+    assert.deepEqual(result.asked, ['운송료 확인\n입력한 운송료는 20,000,000원이에요. 이 금액이 맞으면 저장해 주세요.'])
     assert.equal(result.saved, 0)
     assert.equal(result.stillOpen, true)
   })

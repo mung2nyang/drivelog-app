@@ -17,8 +17,8 @@ import type { AppSession } from '../../../data/sync/syncTypes.ts'
 
 export type WithdrawStep = null|'first'|'second'
 
-const WITHDRAW_MSG_1 = '모든 운행 기록, 거래처 정보, 정산 데이터가 영구 삭제되며 복구할 수 없습니다.'
-const WITHDRAW_MSG_2 = '탈퇴 후에는 계정을 복구할 수 없습니다. 계속 진행할까요?'
+const WITHDRAW_MSG_1 = '모든 운행 기록, 거래처 정보, 정산 데이터가 영구 삭제되며 복구할 수 없어요.'
+const WITHDRAW_MSG_2 = '탈퇴하면 계정을 복구할 수 없어요. 계속할까요?'
 const WITHDRAW_LINKED_MSG = '연동을 먼저 해제해야 탈퇴할 수 있습니다.'
 
 type PersonalInfoPageProps = {
@@ -174,7 +174,7 @@ export default function PersonalInfoPage({ onBack, onGoAuth, onOpenMenu, onUnlin
 
       {withdrawStep === 'first' && (
         <ConfirmModal
-          title="정말 탈퇴하시겠습니까?"
+          title="회원 탈퇴"
           message={WITHDRAW_MSG_1}
           confirmLabel="다음 단계"
           onCancel={() => setWithdrawStep(null)}

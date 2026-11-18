@@ -75,7 +75,7 @@ export default function TaxInvoiceEntryList({
       {excelItem && (
         <ConfirmModal
           title="엑셀 저장"
-          message="엑셀로 저장하시겠습니까?"
+          message="엑셀로 저장할까요?"
           confirmLabel="저장"
           onCancel={() => setExcelItem(null)}
           onConfirm={() => { setExcelItem(null); onExportExcel?.(excelItem) }}

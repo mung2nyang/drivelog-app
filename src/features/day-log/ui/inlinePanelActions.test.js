@@ -62,7 +62,7 @@ test('나가기 확인(로드맵 36): 세부·정비 입력 칸이 열려 있으
     answer = true
     assert.equal(await setup({ callFormOpen: true }).actions.confirmLeaveOpenPanel(), true, '나가기 → 나간다')
     assert.equal(asked.length, 3)
-    assert.equal(asked[0], '저장하지 않은 입력이 있습니다\n지금 나가면 입력한 내용이 사라집니다.')
+    assert.equal(asked[0], '입력 중인 내용\n지금 나가면 입력한 내용이 사라져요.')
     assert.equal(await setup({}).actions.confirmLeaveOpenPanel(), true, '닫혀 있으면 나간다')
     assert.equal(asked.length, 3, '닫혀 있으면 확인 창을 띄우지 않는다')
   } finally {

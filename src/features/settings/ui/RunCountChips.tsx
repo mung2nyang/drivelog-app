@@ -121,7 +121,8 @@ export default function RunCountChips({ scope, settings, onPatch }: RunCountChip
       </div>
       {pendingIndex !== null && (
         <ConfirmModal
-          title={`${presets[pendingIndex]}회 버튼을 삭제하시겠습니까?`}
+          title="횟수 버튼 삭제"
+          message={`${presets[pendingIndex]}회 버튼을 삭제할까요?`}
           confirmLabel="삭제"
           danger
           onCancel={() => setPendingIndex(null)}

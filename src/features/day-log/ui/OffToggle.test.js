@@ -37,8 +37,8 @@ test('75-4: 콜 1건 있는 날을 휴무로 → 확인 창, 취소면 바뀌지
   const { changes, asked } = await clickOff({ isOff: false, callCount: 1 }, false)
   assert.deepEqual(changes, [])
   assert.equal(asked.length, 1)
-  assert.match(asked[0], /휴무로 바꾸시겠습니까\?/)
-  assert.match(asked[0], /이날 콜 1건이 있습니다\. 휴무로 바꾸면 이 콜은 합계와 미수에서 빠집니다\./)
+  assert.match(asked[0], /휴무로 변경/)
+  assert.match(asked[0], /이날 콜 1건이 있어요\. 휴무로 바꾸면 이 콜은 합계와 미수에서 빠져요\./)
 })
 
 test('75-5: 확인하면 휴무로 바뀜', async () => {

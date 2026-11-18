@@ -86,8 +86,8 @@ export function useReceivablesActions({
     const items = groupItems(getReceivableItems(settings, workDataByLogId), clientName, monthKey)
     const amount = items.reduce((sum, item) => sum + item.remainingAmount, 0)
     const month = parseInt(monthKey.slice(5, 7), 10)
-    const ok = await confirm(`${clientName}의 ${month}월 미수금을 모두 입금 완료로 처리할까요?`, {
-      message: `미수 ${items.length}건, ${formatWon(amount)}입니다. 취소하려면 각 건을 하나씩 처리해야 합니다.`,
+    const ok = await confirm('입금 완료 처리', {
+      message: `${clientName}의 ${month}월 미수 ${items.length}건, ${formatWon(amount)}을 입금 완료로 처리할까요? 취소하려면 각 건을 하나씩 처리해야 해요.`,
       confirmLabel: '입금 완료',
     })
     if (!ok) return false
@@ -119,7 +119,7 @@ export function useReceivablesActions({
   }
 
   async function undoPayment(item: ReceivableItemLike) {
-    const ok = await confirm('가장 최근 입금 기록 1건을 취소하시겠습니까?', { confirmLabel: '입금 취소', danger: true })
+    const ok = await confirm('입금 취소', { message: '가장 최근 입금 기록 1건을 취소할까요?', confirmLabel: '입금 취소', danger: true })
     if (!ok) return
     applyPatch(item.logId, item.dateKey, item.detailId, (store, dateKey, detailId) => (
       undoLastPayment(store, dateKey, detailId)

@@ -23,8 +23,8 @@ const emptyDraft: CarFormDraft = {
   ...NEW_DRIVER_INCOME_DRAFT, driverShareBase: 'gross',
   inviteCode: '', inviteStartDate: '', inviteDriverId: null, connectMode: 'log',
 }
-const DELETE_CAR_CONFIRM = '이 차량의 운행 기록도 함께 지워지며 되돌릴 수 없습니다.'
-const DELETE_CAR_INVITE_CONFIRM = `${DELETE_CAR_CONFIRM} 기사에게 보낸 초대 코드도 더는 쓸 수 없습니다.`
+const DELETE_CAR_CONFIRM = '이 차량의 운행 기록도 함께 지워지며 되돌릴 수 없어요.'
+const DELETE_CAR_INVITE_CONFIRM = `${DELETE_CAR_CONFIRM} 기사에게 보낸 초대 코드도 더는 쓸 수 없어요.`
 const DISCONNECT_CONFIRM = '기사에게 해제 요청을 보냅니다. 기사가 동의하거나 3일이 지나면 해제되며, 운행 기록과 거래처 정보가 기사 계정으로 복사돼요.'
 
 export default function CarListPage({ onBack, onOpenMenu }: { onBack?: () => void, onOpenMenu?: (() => void) }) {
@@ -113,7 +113,7 @@ export default function CarListPage({ onBack, onOpenMenu }: { onBack?: () => voi
         />
       )}
       {actions.pendingDelete && (
-        <ConfirmModal title="이 차량을 삭제하시겠습니까?" message={deleteHasInvite ? DELETE_CAR_INVITE_CONFIRM : DELETE_CAR_CONFIRM} confirmLabel="삭제" danger onCancel={actions.cancelDelete} onConfirm={actions.confirmRemove} />
+        <ConfirmModal title="차량 삭제" message={deleteHasInvite ? DELETE_CAR_INVITE_CONFIRM : DELETE_CAR_CONFIRM} confirmLabel="삭제" danger onCancel={actions.cancelDelete} onConfirm={actions.confirmRemove} />
       )}
       {actions.pendingDisconnect && (
         <ConfirmModal

@@ -240,7 +240,7 @@ test('다 비우고 [저장] → 확인 창 [취소]면 수정 화면에 그대�
   try {
     await clearAll(view)
     await view.click('저장')
-    assert.deepEqual(asked, ['점검표를 지울까요?\n모든 항목을 비우면 10월 1일 점검표가 삭제됩니다. 삭제한 점검표는 복구할 수 없습니다.'])
+    assert.deepEqual(asked, ['점검표 지우기\n모든 항목을 비우면 10월 1일 점검표가 삭제돼요. 삭제한 점검표는 복구할 수 없어요.'])
     assert.deepEqual(deleted, [], '취소면 안 지움')
     assert.ok(document.body.querySelector('.di-choice'), '수정 화면 그대로')
     assert.deepEqual(view.toasts, [])
@@ -413,7 +413,7 @@ test('입력 중 뒤로가기는 [취소]와 같다 — 처음 입력이면 닫�
   }
 })
 
-test('"점검표를 지울까요?" 확인 창이 떠 있을 때 뒤로가기 → 확인 창만 닫히고 안 지워진다', async () => {
+test('"점검표 지우기" 확인 창이 떠 있을 때 뒤로가기 → 확인 창만 닫히고 안 지워진다', async () => {
   serverRecord = { items: allGoodItems(), actionNote: '', inspectorName: '김기사' }
   startAtDayLog()
   const hostBox = document.createElement('div')
@@ -424,9 +424,9 @@ test('"점검표를 지울까요?" 확인 창이 떠 있을 때 뒤로가기 →
   try {
     await clearAll(view)
     await view.click('저장')
-    assert.ok(view.text().includes('점검표를 지울까요?'), '확인 창')
+    assert.ok(view.text().includes('점검표 지우기'), '확인 창')
     await pressBack()
-    assert.equal(view.text().includes('점검표를 지울까요?'), false, '확인 창 닫힘')
+    assert.equal(view.text().includes('점검표 지우기'), false, '확인 창 닫힘')
     assert.ok(modalShown() && editingShown(), '수정 화면 그대로')
     assert.deepEqual(deleted, [])
     assert.ok(guardOnTop(), '기록 1장 다시 쌓임')

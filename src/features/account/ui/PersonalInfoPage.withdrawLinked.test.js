@@ -19,7 +19,7 @@ const { default: PersonalInfoPage } = await import('./PersonalInfoPage.tsx')
 const { commitDrivers } = await import('../../../data/store/commitHelpers.ts')
 
 const LINKED_MSG = '연동을 먼저 해제해야 탈퇴할 수 있습니다.'
-const CONFIRM_MSG = '정말 탈퇴하시겠습니까?'
+const CONFIRM_MSG = '정산 데이터가 영구 삭제되며 복구할 수 없어요.'
 
 /**
  * @param {string} ownerKey

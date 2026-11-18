@@ -80,7 +80,7 @@ test('콜이 있는 날을 휴무로: 휴무 단추와 같은 확인 창 — [�
   answer = false
   const keep = await render('dayoff-calls-keep', { from: 'home', assistantDayOff: { off: true } }, day)
   try {
-    assert.deepEqual(asked, ['휴무로 바꾸시겠습니까?\n이날 콜 1건이 있습니다. 휴무로 바꾸면 이 콜은 합계와 미수에서 빠집니다.'])
+    assert.deepEqual(asked, ['휴무로 변경\n이날 콜 1건이 있어요. 휴무로 바꾸면 이 콜은 합계와 미수에서 빠져요.'])
     assert.equal(keep.isOff(), false)
     assert.deepEqual(keep.toasts, [])
   } finally { await keep.cleanup() }

@@ -19,6 +19,8 @@
   font-size: var(--fs-4);
   margin: 0;
   white-space: pre-wrap;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
   line-height: 1.4;
   color: var(--text-color);
 }

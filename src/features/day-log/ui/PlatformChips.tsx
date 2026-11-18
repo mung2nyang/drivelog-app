@@ -70,7 +70,8 @@ export default function PlatformChips({ presets, selected, onSelect, onRemove }:
       </div>
       {pendingName !== null && (
         <ConfirmModal
-          title={`'${pendingName}' 칩을 삭제하시겠습니까?`}
+          title="플랫폼 삭제"
+          message={`'${pendingName}'을 플랫폼 목록에서 삭제할까요?`}
           confirmLabel="삭제"
           danger
           onCancel={() => setPendingName(null)}

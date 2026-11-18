@@ -14,7 +14,10 @@ type DayWeather = { sky: Sky | null, precip: Precip | null, min: number | null, 
 export const WEATHER_PAST = '과거 날씨는 안내하지 않아요.'
 export const WEATHER_TOO_FAR = '날씨는 모레까지 확인할 수 있어요.'
 export const NO_LOCATION = '위치 정보 사용을 허용하거나 지역명을 말해 주세요.'
+export const LOCATION_NOT_FOUND = '현재 위치를 찾지 못했어요. 잠시 뒤 다시 시도하거나 지역명을 말해 주세요.'
+const LOCATION_DENIED = 1
 const LOCATION_TIMEOUT_MS = 10000
+const LOCATION_RETRY_TIMEOUT_MS = 15000
 const LOCATION_MAX_AGE_MS = 600000
 const DAY_LABELS = ['오늘', '내일', '모레']
 const SKY_WORDS: { [sky in Sky]: [string, string] } = { clear: ['맑음', '맑고'], mostlyCloudy: ['구름 많음', '구름 많고'], cloudy: ['흐림', '흐리고'] }
@@ -34,16 +37,23 @@ export function weatherRangeSentence(date: string, today: string): string | null
   return days > 2 ? WEATHER_TOO_FAR : null
 }
 
-export function currentGrid(): Promise<KmaGrid | null> {
-  const geo = typeof navigator === 'undefined' ? undefined : navigator.geolocation
-  if (!geo) return Promise.resolve(null)
+type GridResult = KmaGrid | 'denied' | 'notFound'
+
+function askPosition(geo: Geolocation, enableHighAccuracy: boolean, timeout: number): Promise<GridResult> {
   return new Promise((resolve) => {
     geo.getCurrentPosition(
-      (position) => resolve(kmaGridOf(position.coords.latitude, position.coords.longitude)),
-      () => resolve(null),
-      { enableHighAccuracy: false, timeout: LOCATION_TIMEOUT_MS, maximumAge: LOCATION_MAX_AGE_MS },
+      (position) => resolve(kmaGridOf(position.coords.latitude, position.coords.longitude) ?? 'notFound'),
+      (error) => resolve(error.code === LOCATION_DENIED ? 'denied' : 'notFound'),
+      { enableHighAccuracy, timeout, maximumAge: LOCATION_MAX_AGE_MS },
     )
   })
+}
+
+export async function currentGrid(): Promise<GridResult> {
+  const geo = typeof navigator === 'undefined' ? undefined : navigator.geolocation
+  if (!geo) return 'denied'
+  const first = await askPosition(geo, false, LOCATION_TIMEOUT_MS)
+  return first === 'notFound' ? askPosition(geo, true, LOCATION_RETRY_TIMEOUT_MS) : first
 }
 
 function numberOf(value: JsonValue | undefined): number | null {
@@ -104,7 +114,8 @@ export async function requestWeatherSentence(weather: UnbiseoWeather, today: str
   const range = weatherRangeSentence(weather.date, today)
   if (range) return range
   const grid = weather.place ? null : await currentGrid()
-  if (!weather.place && !grid) return NO_LOCATION
+  if (grid === 'denied') return NO_LOCATION
+  if (grid === 'notFound') return LOCATION_NOT_FOUND
   const body = grid ? { date: weather.date, nx: grid.nx, ny: grid.ny } : { date: weather.date, place: weather.place }
   try {
     const { data, error } = await supabase.functions.invoke('unbiseo-weather', { body })

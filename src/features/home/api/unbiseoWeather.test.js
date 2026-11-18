@@ -20,7 +20,7 @@ mock.module('../../../data/cloud/supabaseClient.ts', {
   },
 })
 
-const { requestWeatherSentence, describeWeather, weatherRangeSentence, weatherTip, WEATHER_PAST, WEATHER_TOO_FAR, NO_LOCATION } = await import('./unbiseoWeather.ts')
+const { requestWeatherSentence, describeWeather, weatherRangeSentence, weatherTip, WEATHER_PAST, WEATHER_TOO_FAR, NO_LOCATION, LOCATION_NOT_FOUND } = await import('./unbiseoWeather.ts')
 const { LOGIN_NEEDED, TRY_LATER } = await import('./unbiseoParse.ts')
 
 const TODAY = '2026-10-24'
@@ -28,18 +28,24 @@ const original = Object.getOwnPropertyDescriptor(globalThis, 'navigator')
 /** @type {Array<{ enableHighAccuracy?: boolean, timeout?: number, maximumAge?: number }>} */
 let asked = []
 
-/** 가짜 휴대폰 위치 — 'ok'면 평택시청 근처 좌표, 그 밖은 실패 코드. @param {'ok'|'denied'|'timeout'|'none'} mode */
+/** @typedef {'ok'|'denied'|'unavailable'|'timeout'} Answer */
+/** 가짜 휴대폰 위치 — 묻는 차례마다 answers 하나씩(모자라면 마지막), 'ok'면 평택시청 근처 좌표. @param {'none'|Answer|Array<Answer>} mode */
 function fakeLocation(mode) {
+  const answers = Array.isArray(mode) ? mode : [mode]
   const geolocation = {
     /** @param {(position: { coords: { latitude: number, longitude: number } }) => void} ok @param {(error: { code: number }) => void} fail @param {{ enableHighAccuracy?: boolean, timeout?: number, maximumAge?: number }} options */
     getCurrentPosition(ok, fail, options) {
+      const answer = answers[Math.min(asked.length, answers.length - 1)]
       asked.push(options)
-      if (mode === 'ok') ok({ coords: { latitude: 36.9894388888888, longitude: 127.114655555555 } })
-      else fail({ code: mode === 'denied' ? 1 : 3 })
+      if (answer === 'ok') ok({ coords: { latitude: 36.9894388888888, longitude: 127.114655555555 } })
+      else fail({ code: answer === 'denied' ? 1 : answer === 'unavailable' ? 2 : 3 })
     },
   }
   Object.defineProperty(globalThis, 'navigator', { value: mode === 'none' ? {} : { geolocation }, configurable: true })
 }
+
+const FIRST = { enableHighAccuracy: false, timeout: 10000, maximumAge: 600000 }
+const RETRY = { enableHighAccuracy: true, timeout: 15000, maximumAge: 600000 }
 
 beforeEach(() => { calls.length = 0; asked = []; reply = async () => ({ data: null, error: null }) })
 afterEach(() => { if (original) Object.defineProperty(globalThis, 'navigator', original) })
@@ -72,13 +78,38 @@ test('지역이 없으면 휴대폰 위치 → 격자 번호만 보낸다(위도
   assert.equal(await requestWeatherSentence({ date: TODAY, place: '' }, TODAY), '오늘 지금 있는 곳 날씨는 흐리고 비, 최저 18도, 최고 23도, 비 올 확률 60%예요. 비가 오니 우산 챙기세요.')
   assert.deepEqual(calls, [{ name: 'unbiseo-weather', body: { date: TODAY, nx: 62, ny: 114 } }])
   assert.doesNotMatch(JSON.stringify(calls), /36\.9|127\.1|lat|lon/)
-  assert.deepEqual(asked, [{ enableHighAccuracy: false, timeout: 10000, maximumAge: 600000 }])
+  assert.deepEqual(asked, [FIRST])
 })
 
-test('위치를 못 쓰면(거절·시간 넘김·지원 안 함) 서버를 부르지 않고 한 문구', async () => {
-  for (const mode of /** @type {const} */ (['denied', 'timeout', 'none'])) {
+test('처음에 못 찾으면(시간 넘김·알 수 없음) 정확도 높음·15초로 한 번 더, 찾으면 격자 번호로', async () => {
+  for (const first of /** @type {const} */ (['timeout', 'unavailable'])) {
+    calls.length = 0
+    asked = []
+    fakeLocation([first, 'ok'])
+    reply = async () => ({ data: { kind: 'weather', weather: DAY }, error: null })
+    assert.ok((await requestWeatherSentence({ date: TODAY, place: '' }, TODAY)).startsWith('오늘 지금 있는 곳 날씨는'), first)
+    assert.deepEqual(asked, [FIRST, RETRY], first)
+    assert.deepEqual(calls, [{ name: 'unbiseo-weather', body: { date: TODAY, nx: 62, ny: 114 } }], first)
+  }
+})
+
+test('두 번 다 못 찾으면 서버를 부르지 않고 "못 찾음" 문구, 세 번째는 없음', async () => {
+  for (const mode of /** @type {const} */ ([['timeout', 'timeout'], ['unavailable', 'timeout'], ['timeout', 'unavailable']])) {
+    asked = []
     fakeLocation(mode)
-    assert.equal(await requestWeatherSentence({ date: TODAY, place: '' }, TODAY), NO_LOCATION, mode)
+    assert.equal(await requestWeatherSentence({ date: TODAY, place: '' }, TODAY), LOCATION_NOT_FOUND, mode.join())
+    assert.deepEqual(asked, [FIRST, RETRY], mode.join())
+  }
+  assert.equal(LOCATION_NOT_FOUND, '현재 위치를 찾지 못했어요. 잠시 뒤 다시 시도하거나 지역명을 말해 주세요.')
+  assert.deepEqual(calls, [])
+})
+
+test('권한 없음은 다시 묻지 않고, 두 번째에 거절돼도, 위치 기능이 없어도 "허용해 주세요" 문구', async () => {
+  for (const [mode, times] of /** @type {const} */ ([['denied', 1], [['timeout', 'denied'], 2], ['none', 0]])) {
+    asked = []
+    fakeLocation(mode)
+    assert.equal(await requestWeatherSentence({ date: TODAY, place: '' }, TODAY), NO_LOCATION, String(mode))
+    assert.equal(asked.length, times, String(mode))
   }
   assert.equal(NO_LOCATION, '위치 정보 사용을 허용하거나 지역명을 말해 주세요.')
   assert.deepEqual(calls, [])

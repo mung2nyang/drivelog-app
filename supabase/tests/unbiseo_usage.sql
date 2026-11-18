@@ -1,7 +1,7 @@
 -- 운비서 하루 횟수 시험(pgTAP): 한도는 서버 함수 안에 고정, 돌려주기는 관리자 열쇠만, 못 알아들음 돌려받기는 하루 20번까지.
 -- 임시 사용자만 만들고 끝에 되돌린다. CI에서 supabase test db로 돈다.
 begin;
-select plan(18);
+select plan(23);
 set local statement_timeout = '30s';
 set local lock_timeout = '3s';
 
@@ -18,7 +18,8 @@ create function pg_temp.uses(kind text) returns int language sql stable
 as $$ select coalesce((select u.uses from public.unbiseo_usage u where u.user_id = pg_temp.id('user_a')
   and u.used_on = (now() at time zone 'Asia/Seoul')::date and u.kind = $1), 0) $$;
 
-insert into auth.users(id) values (pg_temp.id('user_a'));
+insert into auth.users(id) values (pg_temp.id('user_a')), (pg_temp.id('admin'));
+insert into public.admin_users(user_id) values (pg_temp.id('admin'));
 
 select has_function('public', 'use_unbiseo', array['text'], '한도를 받지 않는 세기 함수');
 select hasnt_function('public', 'use_unbiseo', array['text', 'integer'], '한도를 받던 옛 세기 함수 없음');
@@ -35,6 +36,13 @@ select is(pg_temp.uses('weather'), 20, '날씨 횟수 20');
 select is((select count(*)::int from generate_series(1, 21) where public.use_unbiseo('parse')), 20, '말 읽기 하루 20번까지');
 select throws_ok($$ select public.use_unbiseo('parse_miss') $$, '22023', null, '세기: 모르는 종류 거절');
 select throws_ok($$ select public.return_unbiseo(pg_temp.id('user_a'), 'weather', false) $$, '42501', null, '로그인 회원이 돌려주기를 부르면 권한 없음');
+call pg_temp.act_as('admin');
+select is((select count(*)::int from generate_series(1, 25) where public.use_unbiseo('parse')), 25, '관리자: 말 읽기 21번째 이후도 통과');
+select is((select count(*)::int from generate_series(1, 25) where public.use_unbiseo('voice') and public.use_unbiseo('weather')), 25, '관리자: 목소리·날씨도 막히지 않음');
+select is((select u.uses from public.unbiseo_usage u where u.user_id = pg_temp.id('admin') and u.kind = 'parse'), 25, '관리자: 횟수는 계속 셈');
+call pg_temp.act_as('user_a');
+select throws_ok($$ insert into public.admin_users(user_id) values (pg_temp.id('user_a')) $$, '42501', null, '회원은 관리자 명단에 자기를 넣을 수 없음');
+select is(public.use_unbiseo('parse'), false, '회원은 관리자가 쓴 뒤에도 21번째 거절');
 call pg_temp.act_as(null);
 reset role;
 

@@ -174,6 +174,14 @@ Deno.test('점검표: AI 안내문에 "작성해줘·써줘"도 점검표, 불�
   assert.match(INSTRUCTION, /"엔진오일 점검 5만원" → expense, maint/)
 })
 
+Deno.test('정비 분류: 엔진오일은 엔진/미션, 갈아 끼우는 부품은 소모품', () => {
+  assert.match(INSTRUCTION, /엔진오일·미션오일처럼 엔진·변속기 정비는 엔진\/미션/)
+  assert.match(INSTRUCTION, /타이어·와이퍼·브레이크 패드·전구·필터처럼 갈아 끼우는 부품은 소모품/)
+  assert.match(INSTRUCTION, /"엔진오일 점검 5만원" → expense, maint, category 엔진\/미션/)
+  assert.match(INSTRUCTION, /name 엔진오일 교환, category 엔진\/미션/)
+  assert.doesNotMatch(INSTRUCTION, /엔진오일[^"]*", category 소모품|엔진오일 교환, category 소모품/)
+})
+
 Deno.test('휴무: 앞날 그대로 휴무로', () => {
   assert.deepEqual(read({ kind: 'dayOff', date: '2026-11-03', dayOffCancel: false }, '내일 휴무'), { kind: 'dayOff', dayOff: { date: '2026-11-03', off: true } })
 })

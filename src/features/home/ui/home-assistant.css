@@ -147,6 +147,8 @@
   font-size: var(--fs-4);
   font-weight: var(--fw-bold);
   line-height: 1.5;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
 }
 
 .home-assistant-enable {

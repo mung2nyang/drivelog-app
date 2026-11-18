@@ -3,7 +3,7 @@ import { handleRequest as parse } from '../unbiseo-parse/handler.ts'
 import { handleRequest as voice } from '../unbiseo-voice/handler.ts'
 import { handleRequest as weather } from '../unbiseo-weather/handler.ts'
 import { kstDate } from '../unbiseo-weather/kma.ts'
-import { callWith, LIMIT_URL, post, TOKEN, USER_URL } from './fakes.ts'
+import { callWith, LIMIT_URL, post, REFUND_URL, TOKEN, USER_URL } from './fakes.ts'
 import type { Answer, Handler } from './fakes.ts'
 
 const CHAT_URL = 'https://api.x.ai/v1/chat/completions'
@@ -107,14 +107,14 @@ flow('말 읽기: AI 500·연결 실패는 503', async () => {
     const { response, urls } = await callWith(parse, post(PARSE_BODY), { [CHAT_URL]: answer })
     assert.equal(response.status, 503)
     assert.deepEqual(await response.json(), TRY_LATER)
-    assert.deepEqual(urls, [USER_URL, LIMIT_URL, CHAT_URL])
+    assert.deepEqual(urls, [USER_URL, LIMIT_URL, CHAT_URL, REFUND_URL])
   }
 })
 
-flow('말 읽기: AI 키가 없으면 503, AI를 안 부름', async () => {
+flow('말 읽기: AI 키가 없으면 503, AI를 안 부르고 횟수를 돌려줌', async () => {
   const { response, urls } = await callWith(parse, post(PARSE_BODY), { [CHAT_URL]: chat(CALL) }, { XAI_API_KEY: null })
   assert.equal(response.status, 503)
-  assert.deepEqual(urls, [USER_URL, LIMIT_URL])
+  assert.deepEqual(urls, [USER_URL, LIMIT_URL, REFUND_URL])
 })
 
 flow('목소리: 소리를 받으면 200 octet-stream, 같은 바이트', async () => {
@@ -134,13 +134,13 @@ flow('목소리: AI 500·빈 소리는 503', async () => {
   }
 })
 
-flow('목소리: AI 키가 없으면 503, AI를 안 부름', async () => {
+flow('목소리: AI 키가 없으면 503, AI를 안 부르고 횟수를 돌려줌', async () => {
   const { response, urls } = await callWith(voice, post(VOICE_BODY), {}, { XAI_API_KEY: null })
   assert.equal(response.status, 503)
-  assert.deepEqual(urls, [USER_URL, LIMIT_URL])
+  assert.deepEqual(urls, [USER_URL, LIMIT_URL, REFUND_URL])
 })
 
-flow('날씨: 어제는 past, 3일 뒤는 tooFar, 없는 동네는 noPlace, 기상청을 안 부름', async () => {
+flow('날씨: 어제는 past, 3일 뒤는 tooFar, 없는 동네는 noPlace, 세지 않고 기상청을 안 부름', async () => {
   const cases: Array<[object, string]> = [
     [{ date: kstDate(Date.now(), -1), place: PLACE }, 'past'],
     [{ date: kstDate(Date.now(), 3), place: PLACE }, 'tooFar'],
@@ -158,8 +158,8 @@ flow('날씨: 내일 평택은 기상청에 격자 62·114로 묻고 요약을 �
   const { response, urls, requests } = await callWith(weather, post(WEATHER_BODY), { [KMA_URL]: kma() })
   assert.equal(response.status, 200)
   assert.deepEqual(await response.json(), { kind: 'weather', weather: { date: TOMORROW, sky: 'clear', precip: 'none', min: 8, max: 15, pop: 20 } })
-  assert.deepEqual(urls, [USER_URL, KMA_URL])
-  const query = new URL(requests[1].url).searchParams
+  assert.deepEqual(urls, [USER_URL, LIMIT_URL, KMA_URL])
+  const query = new URL(requests[2].url).searchParams
   assert.deepEqual([query.get('nx'), query.get('ny'), query.get('serviceKey')], ['62', '114', 'fake-kma-key'])
 })
 
@@ -171,10 +171,10 @@ flow('날씨: 기상청 오류 코드·500은 503', async () => {
   }
 })
 
-flow('날씨: 기상청 키가 없으면 503, 기상청을 안 부름', async () => {
+flow('날씨: 기상청 키가 없으면 503, 기상청을 안 부르고 횟수를 돌려줌', async () => {
   const { response, urls } = await callWith(weather, post(WEATHER_BODY), {}, { KMA_API_KEY: null })
   assert.equal(response.status, 503)
-  assert.deepEqual(urls, [USER_URL])
+  assert.deepEqual(urls, [USER_URL, LIMIT_URL, REFUND_URL])
 })
 
 flow('기록: 말한 문장·지역·키·토큰은 console에 안 남김', async () => {
@@ -188,7 +188,7 @@ flow('기록: 말한 문장·지역·키·토큰은 console에 안 남김', asyn
   ]
   for (const run of runs) assert.ok(run.logs, '기록이 모이지 않음')
   const logs = runs.map((run) => run.logs).join('\n')
-  for (const secret of [SAID, VOICE_BODY.text, PLACE, 'fake-xai-key', 'fake-kma-key', TOKEN]) {
+  for (const secret of [SAID, VOICE_BODY.text, PLACE, 'fake-xai-key', 'fake-kma-key', 'fake-service-key', TOKEN]) {
     assert.ok(!logs.includes(secret), `기록에 남음: ${secret}`)
   }
 })

@@ -13,14 +13,14 @@ const VOICE_BODY = { text: '오늘 매출은 30만 원이에요.' }
 const tts: Answer = () => new Response(new Uint8Array([1, 2, 3]))
 const USED_UP = { error: '오늘 운비서를 20번 모두 썼어요. 내일 다시 써 주세요.', limit: 20 }
 
-Deno.test('한도 안: 로그인 표로 오늘 말 읽기 1회(한도 20)를 센 뒤 AI를 불러 200', async () => {
+Deno.test('한도 안: 로그인 표로 오늘 말 읽기 1회를 센 뒤(한도는 서버가 정해 안 보냄) AI를 불러 200', async () => {
   const { response, urls, requests } = await callWith(parse, post(PARSE_BODY), { [LIMIT_URL]: () => Response.json(true), [CHAT_URL]: chat })
   assert.equal(response.status, 200)
   assert.deepEqual(urls, [USER_URL, LIMIT_URL, CHAT_URL])
   assert.equal(requests[1].method, 'POST')
   assert.equal(requests[1].headers.get('Authorization'), `Bearer ${TOKEN}`)
   assert.equal(requests[1].headers.get('apikey'), 'fake-anon-key')
-  assert.deepEqual(await requests[1].json(), { p_kind: 'parse', p_limit: 20 })
+  assert.deepEqual(await requests[1].json(), { p_kind: 'parse' })
 })
 
 Deno.test('한도 넘음: 429와 문구·한도, AI를 안 부름', async () => {
@@ -53,12 +53,12 @@ Deno.test('로그인 실패·입력이 틀리면 세지 않음', async () => {
   }
 })
 
-Deno.test('목소리 한도 안: 로그인 표로 오늘 목소리 1회(한도 20)를 센 뒤 xAI 목소리를 불러 200', async () => {
+Deno.test('목소리 한도 안: 로그인 표로 오늘 목소리 1회를 센 뒤(한도는 서버가 정해 안 보냄) xAI 목소리를 불러 200', async () => {
   const { response, urls, requests } = await callWith(voice, post(VOICE_BODY), { [LIMIT_URL]: () => Response.json(true), [TTS_URL]: tts })
   assert.equal(response.status, 200)
   assert.deepEqual(urls, [USER_URL, LIMIT_URL, TTS_URL])
   assert.equal(requests[1].headers.get('Authorization'), `Bearer ${TOKEN}`)
-  assert.deepEqual(await requests[1].json(), { p_kind: 'voice', p_limit: 20 })
+  assert.deepEqual(await requests[1].json(), { p_kind: 'voice' })
 })
 
 Deno.test('목소리 한도 넘음: 429와 말 읽기와 같은 문구·한도, xAI 목소리를 안 부름', async () => {

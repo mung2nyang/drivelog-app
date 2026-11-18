@@ -3,7 +3,7 @@ import type { JsonValue } from '../../../domain/jsonTypes.ts'
 import { supabase } from '../../../data/cloud/supabaseClient.ts'
 import { kmaGridOf } from './kmaGrid.ts'
 import type { KmaGrid } from './kmaGrid.ts'
-import { LOGIN_NEEDED, TRY_LATER } from './unbiseoParse.ts'
+import { LOGIN_NEEDED, TRY_LATER, usedUpMessage } from './unbiseoParse.ts'
 import type { UnbiseoWeather } from './unbiseoParse.ts'
 import { withParticle } from './unbiseoSentence.ts'
 
@@ -87,7 +87,9 @@ export async function requestWeatherSentence(weather: UnbiseoWeather, today: str
   const body = grid ? { date: weather.date, nx: grid.nx, ny: grid.ny } : { date: weather.date, place: weather.place }
   try {
     const { data, error } = await supabase.functions.invoke('unbiseo-weather', { body })
-    if (error) return error instanceof FunctionsHttpError && error.context instanceof Response && error.context.status === 401 ? LOGIN_NEEDED : TRY_LATER
+    const context = error instanceof FunctionsHttpError && error.context instanceof Response ? error.context : null
+    if (context?.status === 429) return await usedUpMessage(context)
+    if (error) return context?.status === 401 ? LOGIN_NEEDED : TRY_LATER
     return sentenceOf(data, weather, today)
   } catch {
     return TRY_LATER

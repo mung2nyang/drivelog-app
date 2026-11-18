@@ -58,18 +58,18 @@ async function countToday(req: Request): Promise<boolean | null> {
   if (!url || !key) return null
   const client = createClient(url, key, { auth: { persistSession: false }, global: { headers: { Authorization: `Bearer ${bearer(req)}` } } })
   try {
-    const { data, error } = await client.rpc('use_unbiseo', { p_kind: 'parse', p_limit: DAILY_LIMIT })
+    const { data, error } = await client.rpc('use_unbiseo', { p_kind: 'parse' })
     return error || typeof data !== 'boolean' ? null : data
   } catch {
     return null
   }
 }
 
-function publishableKey(): string | null {
-  const anon = Deno.env.get('SUPABASE_ANON_KEY')
-  if (anon) return anon
+function envKey(single: string, list: string): string | null {
+  const key = Deno.env.get(single)
+  if (key) return key
   try {
-    const keys: Json = JSON.parse(Deno.env.get('SUPABASE_PUBLISHABLE_KEYS') || 'null')
+    const keys: Json = JSON.parse(Deno.env.get(list) || 'null')
     const named = record(keys)?.default
     return typeof named === 'string' && named ? named : null
   } catch {
@@ -77,10 +77,34 @@ function publishableKey(): string | null {
   }
 }
 
+function publishableKey(): string | null {
+  return envKey('SUPABASE_ANON_KEY', 'SUPABASE_PUBLISHABLE_KEYS')
+}
+
+function secretKey(): string | null {
+  return envKey('SUPABASE_SERVICE_ROLE_KEY', 'SUPABASE_SECRET_KEYS')
+}
+
+async function giveBack(userId: string, miss: boolean) {
+  const url = Deno.env.get('SUPABASE_URL')
+  const key = secretKey()
+  if (!url || !key) {
+    console.error('[unbiseo-parse] give_back_failed no_key')
+    return
+  }
+  try {
+    const { error } = await createClient(url, key, { auth: { persistSession: false } }).rpc('return_unbiseo', { p_user: userId, p_kind: 'parse', p_miss: miss })
+    if (error) console.error('[unbiseo-parse] give_back_failed')
+  } catch {
+    console.error('[unbiseo-parse] give_back_failed')
+  }
+}
+
 export async function handleRequest(req: Request): Promise<Response> {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS })
   if (req.method !== 'POST') return reply(405, { error: '지원하지 않는 요청입니다.' })
-  if (!(await signedInUserId(req))) return reply(401, { error: '로그인이 필요합니다.' })
+  const userId = await signedInUserId(req)
+  if (!userId) return reply(401, { error: '로그인이 필요합니다.' })
   let body: Json
   try {
     body = await req.json()
@@ -100,11 +124,13 @@ export async function handleRequest(req: Request): Promise<Response> {
     const answer = raw === null ? null : readAiAnswer(raw, input)
     if (!answer) {
       console.error('[unbiseo-parse] not_understood')
+      await giveBack(userId, true)
       return reply(502, { error: NOT_UNDERSTOOD })
     }
     return reply(200, answer)
   } catch (error) {
     console.error('[unbiseo-parse]', error instanceof AiUnavailableError ? `ai_unavailable ${error.message}` : 'failed')
+    await giveBack(userId, false)
     return reply(503, { error: TRY_LATER })
   }
 }

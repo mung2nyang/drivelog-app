@@ -5,17 +5,21 @@ export type Outcome = { response: Response, urls: Array<string>, requests: Array
 export const TOKEN = 'fake-user-token'
 export const USER_URL = 'https://fake.supabase.test/auth/v1/user'
 export const LIMIT_URL = 'https://fake.supabase.test/rest/v1/rpc/use_unbiseo'
+export const REFUND_URL = 'https://fake.supabase.test/rest/v1/rpc/return_unbiseo'
+export const USER_ID = 'user-1'
 export const ENV: { [name: string]: string | null } = {
   SUPABASE_URL: 'https://fake.supabase.test',
   SUPABASE_ANON_KEY: 'fake-anon-key',
   SUPABASE_PUBLISHABLE_KEYS: null,
+  SUPABASE_SERVICE_ROLE_KEY: 'fake-service-key',
+  SUPABASE_SECRET_KEYS: null,
   XAI_API_KEY: 'fake-xai-key',
   KMA_API_KEY: 'fake-kma-key',
 }
 
 export function signedIn(request: Request): Response {
   return request.headers.get('Authorization') === `Bearer ${TOKEN}`
-    ? Response.json({ id: 'user-1', aud: 'authenticated', role: 'authenticated' })
+    ? Response.json({ id: USER_ID, aud: 'authenticated', role: 'authenticated' })
     : Response.json({ code: 401, msg: 'invalid JWT' }, { status: 401 })
 }
 
@@ -48,7 +52,7 @@ export async function callWith(handler: Handler, request: Request, answers: { [u
     const url = new URL(sent.url)
     urls.push(url.origin + url.pathname)
     requests.push(sent)
-    const answer = { [USER_URL]: signedIn, [LIMIT_URL]: () => Response.json(true), ...answers }[url.origin + url.pathname]
+    const answer = { [USER_URL]: signedIn, [LIMIT_URL]: () => Response.json(true), [REFUND_URL]: () => Response.json(true), ...answers }[url.origin + url.pathname]
     return answer ? Promise.resolve().then(() => answer(sent)) : Promise.reject(new TypeError(`가짜에 없는 주소: ${url.origin}${url.pathname}`))
   }
   console.log = keep

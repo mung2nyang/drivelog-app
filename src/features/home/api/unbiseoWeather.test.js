@@ -84,7 +84,7 @@ test('위치를 못 쓰면(거절·시간 넘김·지원 안 함) 서버를 부�
   assert.deepEqual(calls, [])
 })
 
-test('서버 답: 찾지 못함·지난·범위 밖·로그인·실패', async () => {
+test('서버 답: 찾지 못함·지난·범위 밖·로그인·한도 넘음·실패', async () => {
   fakeLocation('ok')
   const ask = (/** @type {string} */ place) => requestWeatherSentence({ date: TODAY, place }, TODAY)
   reply = async () => ({ data: { kind: 'noPlace' }, error: null })
@@ -97,6 +97,10 @@ test('서버 답: 찾지 못함·지난·범위 밖·로그인·실패', async (
   assert.equal(await ask('평택'), WEATHER_TOO_FAR)
   reply = async () => ({ data: null, error: new FunctionsHttpError(new Response('{}', { status: 401 })) })
   assert.equal(await ask('평택'), LOGIN_NEEDED)
+  reply = async () => ({ data: null, error: new FunctionsHttpError(new Response(JSON.stringify({ error: 'x', limit: 20 }), { status: 429 })) })
+  assert.equal(await ask('평택'), '오늘 운비서를 20번 모두 썼어요. 내일 다시 써 주세요.', '날씨 한도 넘음은 운비서 문구')
+  reply = async () => ({ data: null, error: new FunctionsHttpError(new Response('{}', { status: 429 })) })
+  assert.equal(await ask('평택'), '오늘 운비서를 모두 썼어요. 내일 다시 써 주세요.', '한도 숫자를 못 읽으면 숫자 없이')
   for (const status of [400, 503, 500]) {
     reply = async () => ({ data: null, error: new FunctionsHttpError(new Response('{}', { status })) })
     assert.equal(await ask('평택'), TRY_LATER, String(status))

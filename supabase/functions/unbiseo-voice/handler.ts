@@ -45,22 +45,45 @@ async function countToday(req: Request): Promise<boolean | null> {
   if (!url || !key) return null
   const client = createClient(url, key, { auth: { persistSession: false }, global: { headers: { Authorization: `Bearer ${bearer(req)}` } } })
   try {
-    const { data, error } = await client.rpc('use_unbiseo', { p_kind: 'voice', p_limit: DAILY_LIMIT })
+    const { data, error } = await client.rpc('use_unbiseo', { p_kind: 'voice' })
     return error || typeof data !== 'boolean' ? null : data
   } catch {
     return null
   }
 }
 
-function publishableKey(): string | null {
-  const anon = Deno.env.get('SUPABASE_ANON_KEY')
-  if (anon) return anon
+function envKey(single: string, list: string): string | null {
+  const key = Deno.env.get(single)
+  if (key) return key
   try {
-    const keys: Json = JSON.parse(Deno.env.get('SUPABASE_PUBLISHABLE_KEYS') || 'null')
+    const keys: Json = JSON.parse(Deno.env.get(list) || 'null')
     const named = keys && typeof keys === 'object' && !Array.isArray(keys) ? keys.default : null
     return typeof named === 'string' && named ? named : null
   } catch {
     return null
+  }
+}
+
+function publishableKey(): string | null {
+  return envKey('SUPABASE_ANON_KEY', 'SUPABASE_PUBLISHABLE_KEYS')
+}
+
+function secretKey(): string | null {
+  return envKey('SUPABASE_SERVICE_ROLE_KEY', 'SUPABASE_SECRET_KEYS')
+}
+
+async function giveBack(userId: string) {
+  const url = Deno.env.get('SUPABASE_URL')
+  const key = secretKey()
+  if (!url || !key) {
+    console.error('[unbiseo-voice] give_back_failed no_key')
+    return
+  }
+  try {
+    const { error } = await createClient(url, key, { auth: { persistSession: false } }).rpc('return_unbiseo', { p_user: userId, p_kind: 'voice', p_miss: false })
+    if (error) console.error('[unbiseo-voice] give_back_failed')
+  } catch {
+    console.error('[unbiseo-voice] give_back_failed')
   }
 }
 
@@ -89,7 +112,8 @@ async function askVoice(text: string): Promise<ArrayBuffer | null> {
 export async function handleRequest(req: Request): Promise<Response> {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS })
   if (req.method !== 'POST') return reply(405, { error: '지원하지 않는 요청입니다.' })
-  if (!(await signedInUserId(req))) return reply(401, { error: '로그인이 필요합니다.' })
+  const userId = await signedInUserId(req)
+  if (!userId) return reply(401, { error: '로그인이 필요합니다.' })
   let body: Json
   try {
     body = await req.json()
@@ -107,6 +131,9 @@ export async function handleRequest(req: Request): Promise<Response> {
   const startedAt = Date.now()
   const sound = await askVoice(text)
   console.log('[unbiseo-voice] tts', JSON.stringify({ chars: text.length, ms: Date.now() - startedAt, ok: !!sound, bytes: sound?.byteLength ?? 0 }))
-  if (!sound) return reply(503, { error: TRY_LATER })
+  if (!sound) {
+    await giveBack(userId)
+    return reply(503, { error: TRY_LATER })
+  }
   return new Response(sound, { status: 200, headers: { ...CORS, 'Content-Type': 'application/octet-stream' } })
 }

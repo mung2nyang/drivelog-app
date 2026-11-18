@@ -63,3 +63,42 @@ test('연동 중 카드 세 가지 상태: [해제 요청] / 요청 중·[요청
     endCloudSession()
   }
 })
+
+test('차주 [해제 요청]·[동의] 확인 창: 기사 계정으로 복사 안내, 취소하면 그대로', async () => {
+  const ownerKey = 'owner-unlink-confirm'
+  beginSessionEpoch(ownerKey, ownerKey)
+  commitDrivers(ownerKey, [
+    { id: 'd-none', name: '요청없음기사', status: 'linked', vehicleNumber: '11가1111', supabaseId: 'l1' },
+    { id: 'd-theirs', name: '기사요청기사', status: 'linked', vehicleNumber: '33가3333', supabaseId: 'l3', unlinkRequestedBy: 'driver-x', unlinkRequestedAt: '2026-10-01T03:00:00.000Z' },
+  ])
+  /** @type {Array<string>} */
+  const confirms = []
+  window.confirm = (/** @type {string} */ message) => { confirms.push(message); return false }
+  const container = document.createElement('div')
+  document.body.appendChild(container)
+  const root = createRoot(container)
+  try {
+    await act(async () => {
+      root.render(withSession(React.createElement(DriverConnectionPage, { onBack: () => {} }), { ownerKey, session: { userId: ownerKey, name: '차주', phone: '' } }))
+    })
+    const cards = [...container.querySelectorAll('.driver-connection-card')]
+    const byName = (/** @type {string} */ name) => cards.find((card) => card.textContent?.includes(name))
+    const press = async (/** @type {string} */ name, /** @type {string} */ label) => {
+      const button = [...(byName(name)?.querySelectorAll('button') || [])].find((el) => el.textContent?.trim() === label)
+      assert.ok(button instanceof window.HTMLButtonElement, `${label} 버튼이 있어야 한다`)
+      await act(async () => { button.click() })
+    }
+    await press('요청없음기사', '해제 요청')
+    await press('기사요청기사', '동의')
+    assert.deepEqual(confirms, [
+      '기사 연동 해제\n기사가 동의하거나 3일이 지나면 해제돼요. 해제 시 연동 기간의 운행 기록과 거래처 정보(상호, 담당자, 사업자번호, 전화번호)가 기사 계정으로 복사돼요.',
+      '연동 해제\n동의하면 바로 해제되며 되돌릴 수 없어요. 연동 기간의 운행 기록과 거래처 정보(상호, 담당자, 사업자번호, 전화번호)가 기사 계정으로 복사돼요.',
+    ])
+    assert.ok(buttons(/** @type {Element} */ (byName('요청없음기사'))).includes('해제 요청'))
+    assert.ok(buttons(/** @type {Element} */ (byName('기사요청기사'))).includes('동의'))
+  } finally {
+    await act(async () => { root.unmount() })
+    container.remove()
+    endCloudSession()
+  }
+})

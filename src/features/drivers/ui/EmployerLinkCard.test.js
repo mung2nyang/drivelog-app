@@ -13,6 +13,9 @@ mock.module('../../../data/cloud/supabaseClient.ts', { namedExports: { supabase:
 
 /** @type {Array<string>} */
 let flow = []
+/** @type {Array<string>} */
+let confirms = []
+let confirmAnswer = true
 const NEXT_SESSION = { userId: 'driver-1', name: '기사', phone: '', accountType: 'owner_driver', linkedOwnerId: null, guestMode: false }
 mock.module('../../../data/cloud/appSession.ts', {
   namedExports: {
@@ -86,6 +89,9 @@ function labels(container) {
 beforeEach(() => {
   resetHandlers()
   flow = []
+  confirms = []
+  confirmAnswer = true
+  window.confirm = (/** @type {string} */ message) => { confirms.push(message); return confirmAnswer }
   beginSessionEpoch(DRIVER, OWNER)
   setHydration({ status: 'ready', userId: DRIVER, ownerKey: OWNER })
 })
@@ -100,6 +106,7 @@ test('요청 없음: 연동 정보 + [해제 요청] → 요청 후 "차주 동�
     assert.ok(view.container.textContent?.includes('배정 차량 11가1111'))
     assert.deepEqual(labels(view.container), ['해제 요청'])
     await click(view.container, '해제 요청')
+    assert.deepEqual(confirms, ['차주 연동 해제\n차주가 동의하거나 3일이 지나면 해제돼요. 해제 시 연동 기간의 운행 기록과 거래처 정보(상호, 담당자, 사업자번호, 전화번호)가 내 계정으로 복사돼요.'])
     assert.ok(view.container.textContent?.includes('해제 요청 중 — 차주 동의 대기 (10월 4일에 자동으로 연동 해제)'))
     assert.deepEqual(labels(view.container), ['요청 취소'])
     assert.deepEqual(view.unlinked, [])
@@ -115,6 +122,7 @@ test('내 요청 [요청 취소] → 원래대로 [해제 요청]', async () => 
   const view = await renderCard()
   try {
     await click(view.container, '요청 취소')
+    assert.deepEqual(confirms, [], '요청 취소는 확인 창 없이 바로')
     assert.deepEqual(labels(view.container), ['해제 요청'])
     assert.deepEqual(view.toasts, ['해제 요청을 취소했습니다.'])
     assert.deepEqual(view.unlinked, [])
@@ -130,6 +138,7 @@ test('차주 요청 [동의] → 해제 확정: 내 계정 세션 재생성 → 
   try {
     assert.ok(view.container.textContent?.includes('차주가 해제를 요청했습니다 (10월 4일에 자동으로 연동 해제)'))
     await click(view.container, '동의')
+    assert.deepEqual(confirms, ['연동 해제\n동의하면 바로 해제되며 되돌릴 수 없어요. 연동 기간의 운행 기록과 거래처 정보(상호, 담당자, 사업자번호, 전화번호)가 내 계정으로 복사돼요.'])
     assert.deepEqual(flow, [`session:${DRIVER}`, `hydrate:${DRIVER}:${DRIVER}:false`])
     assert.deepEqual(view.unlinked, [NEXT_SESSION])
     assert.deepEqual(view.toasts, ['연동을 해제했습니다.'])
@@ -150,4 +159,34 @@ test('서버 함수 실패 → 실패 토스트, 화면 전환 없음', async ()
   } finally {
     await view.cleanup()
   }
+})
+
+test('확인 창에서 취소: 해제 요청·동의 모두 서버를 부르지 않고 그대로', async () => {
+  /** @type {Array<string>} */
+  const called = []
+  handlers.rpc = {
+    request_driver_unlink: () => { called.push('request'); return rpcRow('linked', DRIVER)() },
+    consent_driver_unlink: () => { called.push('consent'); return rpcRow('disconnected', '')() },
+  }
+  confirmAnswer = false
+  seedLink()
+  const first = await renderCard()
+  try {
+    await click(first.container, '해제 요청')
+    assert.deepEqual(labels(first.container), ['해제 요청'])
+  } finally {
+    await first.cleanup()
+  }
+  seedLink({ unlinkRequestedBy: OWNER, unlinkRequestedAt: REQUESTED_AT })
+  const second = await renderCard()
+  try {
+    await click(second.container, '동의')
+    assert.deepEqual(labels(second.container), ['동의'])
+    assert.deepEqual(second.unlinked, [])
+  } finally {
+    await second.cleanup()
+  }
+  assert.equal(confirms.length, 2)
+  assert.deepEqual(called, [])
+  assert.deepEqual(flow, [])
 })

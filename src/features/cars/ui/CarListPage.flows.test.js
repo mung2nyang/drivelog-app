@@ -119,7 +119,7 @@ test('연동 중 기사 차량을 운행일지로 바꿔 저장: 확인 창 → 
     await view.click(view.card('22나2222')?.querySelector('[title="수정"]'))
     await view.click(view.button('운행일지'))
     await view.click(view.button('저장'))
-    assert.ok(view.container.textContent?.includes('이 차량의 기사 연동을 해제하시겠습니까?'), '확인 창')
+    assert.ok(view.container.textContent?.includes('기사 연동 해제'), '확인 창')
     await view.click(view.button('연동 해제'))
     assert.deepEqual(calls, ['unlinkRequest'])
     assert.ok(view.toasts.includes('해제 요청을 보냈습니다.'))

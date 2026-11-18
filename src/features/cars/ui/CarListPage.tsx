@@ -25,7 +25,7 @@ const emptyDraft: CarFormDraft = {
 }
 const DELETE_CAR_CONFIRM = '이 차량의 운행 기록도 함께 지워지며 되돌릴 수 없습니다.'
 const DELETE_CAR_INVITE_CONFIRM = `${DELETE_CAR_CONFIRM} 기사에게 보낸 초대 코드도 더는 쓸 수 없습니다.`
-const DISCONNECT_CONFIRM = '연동 중인 기사에게 연동 해제 요청이 전달됩니다. 기사가 동의하거나 3일이 지나면 연동이 해제됩니다.'
+const DISCONNECT_CONFIRM = '기사에게 해제 요청을 보냅니다. 기사가 동의하거나 3일이 지나면 해제되며, 운행 기록과 거래처 정보가 기사 계정으로 복사돼요.'
 
 export default function CarListPage({ onBack, onOpenMenu }: { onBack?: () => void, onOpenMenu?: (() => void) }) {
   const { ownerKey, session } = useSession()
@@ -117,7 +117,7 @@ export default function CarListPage({ onBack, onOpenMenu }: { onBack?: () => voi
       )}
       {actions.pendingDisconnect && (
         <ConfirmModal
-          title="이 차량의 기사 연동을 해제하시겠습니까?"
+          title="기사 연동 해제"
           message={DISCONNECT_CONFIRM}
           confirmLabel="연동 해제"
           danger

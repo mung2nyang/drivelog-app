@@ -20,7 +20,7 @@ mock.module('../../../data/cloud/supabaseClient.ts', {
   },
 })
 
-const { requestWeatherSentence, describeWeather, weatherRangeSentence, WEATHER_PAST, WEATHER_TOO_FAR, NO_LOCATION } = await import('./unbiseoWeather.ts')
+const { requestWeatherSentence, describeWeather, weatherRangeSentence, weatherTip, WEATHER_PAST, WEATHER_TOO_FAR, NO_LOCATION } = await import('./unbiseoWeather.ts')
 const { LOGIN_NEEDED, TRY_LATER } = await import('./unbiseoParse.ts')
 
 const TODAY = '2026-10-24'
@@ -61,7 +61,7 @@ test('지난 날·모레 뒤는 위치도 서버도 쓰지 않고 바로 문장'
 test('지역이 있으면 그 이름으로 — 위치를 묻지 않는다', async () => {
   fakeLocation('ok')
   reply = async () => ({ data: { kind: 'weather', weather: { ...DAY, date: '2026-10-25' } }, error: null })
-  assert.equal(await requestWeatherSentence({ date: '2026-10-25', place: '평택' }, TODAY), '내일 평택 날씨는 흐리고 비, 최저 18도, 최고 23도, 비 올 확률 60%예요.')
+  assert.equal(await requestWeatherSentence({ date: '2026-10-25', place: '평택' }, TODAY), '내일 평택 날씨는 흐리고 비, 최저 18도, 최고 23도, 비 올 확률 60%예요. 비가 오니 우산 챙기세요.')
   assert.deepEqual(calls, [{ name: 'unbiseo-weather', body: { date: '2026-10-25', place: '평택' } }])
   assert.deepEqual(asked, [])
 })
@@ -69,7 +69,7 @@ test('지역이 있으면 그 이름으로 — 위치를 묻지 않는다', asyn
 test('지역이 없으면 휴대폰 위치 → 격자 번호만 보낸다(위도·경도 없음), 정확도 낮음·10초·10분 안 위치', async () => {
   fakeLocation('ok')
   reply = async () => ({ data: { kind: 'weather', weather: DAY }, error: null })
-  assert.equal(await requestWeatherSentence({ date: TODAY, place: '' }, TODAY), '오늘 지금 있는 곳 날씨는 흐리고 비, 최저 18도, 최고 23도, 비 올 확률 60%예요.')
+  assert.equal(await requestWeatherSentence({ date: TODAY, place: '' }, TODAY), '오늘 지금 있는 곳 날씨는 흐리고 비, 최저 18도, 최고 23도, 비 올 확률 60%예요. 비가 오니 우산 챙기세요.')
   assert.deepEqual(calls, [{ name: 'unbiseo-weather', body: { date: TODAY, nx: 62, ny: 114 } }])
   assert.doesNotMatch(JSON.stringify(calls), /36\.9|127\.1|lat|lon/)
   assert.deepEqual(asked, [{ enableHighAccuracy: false, timeout: 10000, maximumAge: 600000 }])
@@ -119,11 +119,11 @@ test('서버 답: 찾지 못함·지난·범위 밖·로그인·한도 넘음·�
 
 test('문장 모양: 하늘만·비눈만·기온 한쪽·빠진 칸은 뺀다, 받침에 따라 이에요·예요', () => {
   const at = (/** @type {object} */ day, place = '평택', date = TODAY) => describeWeather({ sky: null, precip: null, min: null, max: null, pop: null, ...day }, { date, place }, TODAY)
-  assert.equal(at({ sky: 'clear', min: 3, max: 12, pop: 0 }), '오늘 평택 날씨는 맑음, 최저 3도, 최고 12도, 비 올 확률 0%예요.')
-  assert.equal(at({ sky: 'mostlyCloudy', precip: 'shower', min: -2, max: 5 }, '평택', '2026-10-26'), '모레 평택 날씨는 구름 많고 소나기, 최저 -2도, 최고 5도예요.')
-  assert.equal(at({ sky: 'clear', precip: 'snow' }), '오늘 평택 날씨는 맑고 눈이에요.')
+  assert.equal(at({ sky: 'clear', min: 3, max: 12, pop: 0 }), '오늘 평택 날씨는 맑음, 최저 3도, 최고 12도, 비 올 확률 0%예요. 쌀쌀해요.')
+  assert.equal(at({ sky: 'mostlyCloudy', precip: 'shower', min: -2, max: 5 }, '평택', '2026-10-26'), '모레 평택 날씨는 구름 많고 소나기, 최저 -2도, 최고 5도예요. 추워요. 따뜻하게 입으세요. 비가 오니 우산 챙기세요.')
+  assert.equal(at({ sky: 'clear', precip: 'snow' }), '오늘 평택 날씨는 맑고 눈이에요. 눈길 운전 조심하세요.')
   assert.equal(at({ sky: 'clear' }), '오늘 평택 날씨는 맑음이에요.')
-  assert.equal(at({ precip: 'rainSnow', max: 4 }), '오늘 평택 날씨는 비나 눈, 최고 4도예요.')
+  assert.equal(at({ precip: 'rainSnow', max: 4 }), '오늘 평택 날씨는 비나 눈, 최고 4도예요. 쌀쌀해요. 눈길 운전 조심하세요.')
   assert.equal(at({ min: 7 }), '오늘 평택 날씨는 최저 7도예요.')
   assert.equal(at({}), TRY_LATER, '아무 칸도 없으면')
 })
@@ -131,5 +131,36 @@ test('문장 모양: 하늘만·비눈만·기온 한쪽·빠진 칸은 뺀다, 
 test('서버 칸이 이상하면 그 칸만 뺀다', async () => {
   fakeLocation('ok')
   reply = async () => ({ data: { kind: 'weather', weather: { sky: 'sunny', precip: 'hail', min: '3', max: 9, pop: 140 } }, error: null })
-  assert.equal(await requestWeatherSentence({ date: TODAY, place: '평택' }, TODAY), '오늘 평택 날씨는 최고 9도예요.')
+  assert.equal(await requestWeatherSentence({ date: TODAY, place: '평택' }, TODAY), '오늘 평택 날씨는 최고 9도예요. 쌀쌀해요.')
+})
+
+test('한마디: 기온은 위에서 처음 맞는 하나, 경계값 0도·12도·28도·33도·차이 10도', () => {
+  const tip = (/** @type {object} */ day) => weatherTip({ sky: null, precip: null, min: null, max: null, pop: 0, ...day })
+  assert.equal(tip({ min: -10, max: -3 }), '매우 추워요. 따뜻하게 입으세요.')
+  assert.equal(tip({ min: -9, max: -3 }), '추워요. 따뜻하게 입으세요.')
+  assert.equal(tip({ min: 0, max: 30 }), '추워요. 따뜻하게 입으세요.', '추운 줄이 먼저')
+  assert.equal(tip({ min: 1, max: 12 }), '쌀쌀해요.')
+  assert.equal(tip({ min: 20, max: 33 }), '무척 더워요. 물 자주 드세요.')
+  assert.equal(tip({ min: 20, max: 32 }), '더워요.')
+  assert.equal(tip({ min: 20, max: 28 }), '더워요.')
+  assert.equal(tip({ min: 13, max: 23 }), '아침저녁으로 쌀쌀해요.')
+  assert.equal(tip({ min: 14, max: 23 }), '다니기 좋은 날씨예요.')
+  assert.equal(tip({ max: 13 }), '', '최저를 모르면 좋은 날이라고 하지 않음')
+})
+
+test('한마디: 비·눈은 하나, 기온 말 뒤에, 비 올 확률 60%부터 우산', () => {
+  const tip = (/** @type {object} */ day) => weatherTip({ sky: null, precip: null, min: 14, max: 23, pop: 0, ...day })
+  assert.equal(tip({ precip: 'snow' }), '눈길 운전 조심하세요.')
+  assert.equal(tip({ precip: 'rainSnow', min: -1 }), '추워요. 따뜻하게 입으세요. 눈길 운전 조심하세요.')
+  assert.equal(tip({ precip: 'rain' }), '비가 오니 우산 챙기세요.')
+  assert.equal(tip({ precip: 'shower', max: 30 }), '더워요. 비가 오니 우산 챙기세요.')
+  assert.equal(tip({ pop: 60 }), '비가 올 수 있으니 우산 챙기세요.')
+  assert.equal(tip({ pop: 59 }), '다니기 좋은 날씨예요.')
+  assert.equal(tip({ pop: null }), '', '비 올 확률을 모르면 좋은 날이라고 하지 않음')
+  assert.equal(tip({ min: null, max: null, pop: 70 }), '비가 올 수 있으니 우산 챙기세요.', '기온을 몰라도 비 말은')
+})
+
+test('한마디: 좋은 날 문장 전체, 칸이 하나도 없으면 한마디 없이 실패 문구', () => {
+  assert.equal(describeWeather({ sky: 'clear', precip: null, min: 14, max: 23, pop: 10 }, { date: TODAY, place: '평택' }, TODAY), '오늘 평택 날씨는 맑음, 최저 14도, 최고 23도, 비 올 확률 10%예요. 다니기 좋은 날씨예요.')
+  assert.equal(describeWeather({ sky: null, precip: null, min: null, max: null, pop: null }, { date: TODAY, place: '평택' }, TODAY), TRY_LATER)
 })

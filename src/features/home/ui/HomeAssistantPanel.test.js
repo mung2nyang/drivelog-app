@@ -568,7 +568,7 @@ function weatherReplies() {
   return { release: async () => { await act(async () => { release(); await new Promise((resolve) => setTimeout(resolve, 0)) }) } }
 }
 const restoreInvoke = () => { supabase.functions = { invoke: async (name, options) => { calls.push({ name, body: options.body }); return reply() } } }
-const SAID = '오늘 평택 날씨는 흐리고 비, 최저 18도, 최고 23도, 비 올 확률 60%예요.'
+const SAID = '오늘 평택 날씨는 흐리고 비, 최저 18도, 최고 23도, 비 올 확률 60%예요. 비가 오니 우산 챙기세요.'
 
 test('날씨: 기다리는 동안 문구·입력 잠김, 받아 온 뒤 날씨 문장, 글로 보낸 답은 읽지 않음', async () => {
   const server = weatherReplies()

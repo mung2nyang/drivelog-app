@@ -57,6 +57,27 @@ function readDay(row: { [key: string]: JsonValue }): DayWeather {
   return { sky, precip, min: numberOf(row.min), max: numberOf(row.max), pop: pop !== null && pop >= 0 && pop <= 100 ? pop : null }
 }
 
+function temperatureTip({ min, max }: DayWeather): string {
+  if (min !== null && min <= -10) return '매우 추워요. 따뜻하게 입으세요.'
+  if (min !== null && min <= 0) return '추워요. 따뜻하게 입으세요.'
+  if (max !== null && max <= 12) return '쌀쌀해요.'
+  if (max !== null && max >= 33) return '무척 더워요. 물 자주 드세요.'
+  if (max !== null && max >= 28) return '더워요.'
+  return min !== null && max !== null && max - min >= 10 ? '아침저녁으로 쌀쌀해요.' : ''
+}
+
+function precipTip({ precip, pop }: DayWeather): string {
+  if (precip === 'snow' || precip === 'rainSnow') return '눈길 운전 조심하세요.'
+  if (precip === 'rain' || precip === 'shower') return '비가 오니 우산 챙기세요.'
+  return pop !== null && pop >= 60 ? '비가 올 수 있으니 우산 챙기세요.' : ''
+}
+
+export function weatherTip(day: DayWeather): string {
+  const tips = [temperatureTip(day), precipTip(day)].filter(Boolean)
+  if (tips.length) return tips.join(' ')
+  return day.min !== null && day.max !== null && day.pop !== null ? '다니기 좋은 날씨예요.' : ''
+}
+
 export function describeWeather(day: DayWeather, weather: UnbiseoWeather, today: string): string {
   const where = weather.place ? `${weather.place} 날씨는` : '지금 있는 곳 날씨는'
   const skyWord = day.sky ? SKY_WORDS[day.sky] : null
@@ -66,7 +87,7 @@ export function describeWeather(day: DayWeather, weather: UnbiseoWeather, today:
   const parts = [look, temps, day.pop === null ? '' : `비 올 확률 ${day.pop}%`].filter(Boolean)
   const head = `${DAY_LABELS[daysFrom(today, weather.date)] ?? ''} ${where}`.trim()
   if (!parts.length) return TRY_LATER
-  return `${head} ${withParticle(parts.join(', '), '이에요', '예요')}.`
+  return [`${head} ${withParticle(parts.join(', '), '이에요', '예요')}.`, weatherTip(day)].filter(Boolean).join(' ')
 }
 
 function sentenceOf(data: JsonValue | undefined, weather: UnbiseoWeather, today: string): string {

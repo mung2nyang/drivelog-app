@@ -7,9 +7,9 @@ export class AiUnavailableError extends Error {}
 
 export type ParseInput = { text: string, today: string, clientNames: Array<string>, routeNames: Array<string> }
 
-const INSTRUCTION = [
+export const INSTRUCTION = [
   '너는 화물차 기사의 운행일지 앱 비서다. 기사가 말한 한국어 문장 하나를 받아 종류와 칸을 JSON으로만 돌려준다.',
-  'kind: 운행은 call, 고정 노선 운행은 fixed, 기름값·수리비·타이어·통행료 같은 돈 쓴 일은 expense, 매출·기록·일지를 묻는 말은 question, 거래처를 새로 등록하는 말은 client, 거래처에 미수금 문자를 보내려는 말은 sms, 날씨를 묻는 말은 weather, 일상점검표를 모두 양호로 처리하라는 말은 inspection, 그날을 휴무로 하거나 휴무를 취소하려는 말은 dayOff, 그 밖(뉴스·인사·잡담)은 unknown.',
+  'kind: 운행은 call, 고정 노선 운행은 fixed, 기름값·수리비·타이어·통행료 같은 돈 쓴 일은 expense, 매출·기록·일지를 묻는 말은 question, 거래처를 새로 등록하는 말은 client, 거래처에 미수금 문자를 보내려는 말은 sms, 날씨를 묻는 말은 weather, 일상점검표를 작성하거나 모두 양호로 처리하라는 말은 inspection, 그날을 휴무로 하거나 휴무를 취소하려는 말은 dayOff, 그 밖(뉴스·인사·잡담)은 unknown.',
   '지명 두 개가 나오면 "에서"가 없어도 운행이다. 예: "어제 수원 화성 15만" → call, 수원→화성, 150000.',
   'fixed는 말에 "고정"이 들어 있을 때만이다 — 지명이 고정 노선 목록과 같아도 "고정"이 없으면 call. 예: "평택 용인 고정 2번 뛰었어" → fixed, fixedCount 2, fixedRoute 평택 → 용인. "오늘 고정 3번" → fixed, fixedCount 3, fixedRoute null. "평택 용인" → call.',
   'fixed일 때 date·fixedCount·fixedRoute만 채우고 나머지는 null. fixedCount는 횟수 정수(말하지 않았으면 null), fixedRoute는 고정 노선 목록의 이름 그대로 — 목록에 없거나 노선을 말하지 않았으면 null. fixed가 아니면 두 칸은 null.',
@@ -22,8 +22,8 @@ const INSTRUCTION = [
   'sms는 말에 "문자"가 들어 있을 때만이다 — "문자"가 없으면 미수금을 물어도 question. sms일 때 smsClient(거래처, client와 같은 규칙)·smsMonth("7월분"·"지난달"이면 아래 "달 표"의 YYYY-MM)·smsAll("전체"·"전부"·"남은 거 다"면 true)·smsTemplate만 채우고 나머지는 null.',
   'smsTemplate: "1번"·"문구 1번"·"첫 번째"는 1, "두 번째"는 2, "세 번째"는 3, 문구 이름 "미수금 안내"는 1·"입금 요청"은 2·"운행 완료"는 3, 말하지 않았으면 null.',
   '예: "한진에 미수금 문자 보내줘, 문구 1번으로" → sms, 한진, smsTemplate 1. "씨제이 7월분 미수금 문자" → sms, 씨제이, smsMonth 7월 값. "롯데에 입금 요청 문자" → sms, 롯데, smsTemplate 2. "한진 미수금 얼마 남았어" → question, unpaid.',
-  'inspection은 말에 "점검"이 들어 있고 점검표 전체를 모두·다·전부 양호(이상 없음)로 처리하라는 말일 때만이다 — 일부 항목이나 불량을 말하면 unknown. inspection일 때 date만 채우고 나머지는 null.',
-  '예: "오늘 점검표 모두 양호" → inspection, 오늘 날짜. "어제 일상점검 다 양호야" → inspection, 어제 날짜. "점검표 브레이크 불량" → unknown.',
+  'inspection은 말에 "점검"이 들어 있고 점검표를 작성·써·해·채워·처리해 달라는 말이거나 전체를 모두·다·전부 양호(이상 없음)로 처리하라는 말일 때만이다 — 일부 항목이나 불량을 말하면 unknown, 돈을 쓴 정비 말은 expense. inspection일 때 date만 채우고 나머지는 null.',
+  '예: "일상점검표 작성해줘" → inspection, 오늘 날짜. "어제 점검표 써줘" → inspection, 어제 날짜. "오늘 점검표 모두 양호" → inspection, 오늘 날짜. "어제 일상점검 다 양호야" → inspection, 어제 날짜. "점검표 브레이크 불량" → unknown. "엔진오일 점검 5만원" → expense, maint.',
   'dayOff는 말에 "휴무"나 "쉬"가 들어 있을 때만이다. dayOff일 때 date(아래 "날짜 표"의 YYYY-MM-DD — 내일·모레·글피 같은 앞날도 표에서 그대로, 날짜 말이 없으면 오늘)와 dayOffCancel(휴무를 취소하는 말이면 true, 휴무로 하는 말이면 false)만 채우고 나머지는 null. dayOff가 아니면 dayOffCancel은 null.',
   '예: "오늘 휴무" → dayOff, 오늘 날짜, dayOffCancel false. "내일 쉬어" → dayOff, 내일 날짜, false. "오늘 휴무 취소" → dayOff, 오늘 날짜, true. "휴게소에서 밥 먹었어" → unknown.',
   'call·expense·question·fixed·client·sms·inspection일 때만 나머지 칸을 채운다. date는 아래 "날짜 표"에서 그대로 골라 YYYY-MM-DD로 — 직접 계산하지 마라. 날짜 말이 없거나 내일·모레 같은 앞날이면 오늘.',

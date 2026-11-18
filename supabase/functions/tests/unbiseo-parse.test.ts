@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { readAiAnswer } from '../unbiseo-parse/answer.ts'
-import { dateTable, monthTable } from '../unbiseo-parse/grok.ts'
+import { INSTRUCTION, dateTable, monthTable } from '../unbiseo-parse/grok.ts'
 import { readInput } from '../unbiseo-parse/handler.ts'
 import type { ParseInput } from '../unbiseo-parse/grok.ts'
 
@@ -165,6 +165,13 @@ Deno.test('점검표: 말에 "점검"이 있으면 점검표, 앞날은 오늘�
 
 Deno.test('점검표: 말에 "점검"이 없으면 관계없음', () => {
   assert.deepEqual(read({ kind: 'inspection', date: TODAY }, '오늘 모두 양호'), { kind: 'unknown' })
+})
+
+Deno.test('점검표: AI 안내문에 "작성해줘·써줘"도 점검표, 불량은 unknown, 돈 쓴 정비 점검은 지출', () => {
+  assert.match(INSTRUCTION, /점검표를 작성·써·해·채워·처리해 달라는 말/)
+  assert.match(INSTRUCTION, /"일상점검표 작성해줘" → inspection, 오늘 날짜/)
+  assert.match(INSTRUCTION, /"점검표 브레이크 불량" → unknown/)
+  assert.match(INSTRUCTION, /"엔진오일 점검 5만원" → expense, maint/)
 })
 
 Deno.test('휴무: 앞날 그대로 휴무로', () => {

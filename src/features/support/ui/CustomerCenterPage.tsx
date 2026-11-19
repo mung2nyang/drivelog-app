@@ -83,7 +83,7 @@ export default function CustomerCenterPage({ onBack, onGoAuth, onOpenMenu, initi
   }
 
   return (
-    <div className="page customer-center-page">
+    <div className="page customer-center-page support-home-page">
       <PageHeader title="고객센터" onBack={onBack} onOpenMenu={onOpenMenu} />
 
       <div className="support-tabs" role="tablist">

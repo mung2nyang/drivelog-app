@@ -43,5 +43,7 @@
 .admin-answer-templates { display: flex; flex-wrap: wrap; gap: 6px; }
 .admin-answer-template { min-height: 36px; padding: 6px 12px; border: 1px solid var(--border-color); border-radius: 999px; background: var(--input-bg); color: var(--text-color); font: inherit; font-size: var(--fs-floor); font-weight: var(--fw-bold); cursor: pointer; }
 .admin-answer-template:disabled { opacity: 0.5; cursor: default; }
-.support-legal-links { display: flex; justify-content: center; flex-wrap: wrap; gap: 0 8px; margin-top: 24px; }
+.page-transition:has(> .support-home-page) { display: flex; flex-direction: column; }
+.support-home-page { display: flex; flex-direction: column; flex-grow: 1; padding-bottom: 0; }
+.support-legal-links { display: flex; justify-content: center; flex-wrap: wrap; gap: 0 8px; margin-top: auto; padding-top: 24px; }
 .support-legal-links a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 8px; color: var(--accent-soft-color); font-size: var(--fs-3); font-weight: var(--fw-semibold); text-decoration: none; }

@@ -163,6 +163,7 @@ test('삭제 → 빠지고 "내역을 삭제했습니다."', async () => {
   const view = await render('mf-del', [item('m1', 'maint', dateIn(0, 3), 10000, '엔진오일'), item('m2', 'maint', dateIn(0, 4), 2000, '와이퍼')])
   try {
     await view.click(view.container.querySelector('[title="삭제"]'))
+    await view.click(document.querySelector('.modal-btn.confirm.danger'))
     assert.equal(view.stored().length, 1)
     assert.ok(view.toasts.includes('내역을 삭제했습니다.'))
     assert.equal(view.titles().length, 1)
@@ -210,5 +211,20 @@ test('전기 차량이면 주유 추가 창이 "전기"로 열리고, 경유 차
     assert.ok((await openFuelAdd(other)).includes('주유'))
   } finally {
     await other.cleanup()
+  }
+})
+
+test('삭제 확인 창: 무엇을 지우는지 보이고, [취소]면 그대로', async () => {
+  const view = await render('mf-del-cancel', [item('m1', 'maint', dateIn(0, 3), 10000, '엔진오일')])
+  try {
+    await view.click(view.container.querySelector('[title="삭제"]'))
+    assert.equal(document.querySelector('[role="alertdialog"] .modal-title')?.textContent, '정비 내역 삭제')
+    assert.ok(document.querySelector('[role="alertdialog"]')?.textContent?.includes('엔진오일 10,000원 내역을 삭제할까요? 삭제하면 되돌릴 수 없어요.'))
+    await view.click(document.querySelector('.modal-btn.cancel'))
+    assert.equal(document.querySelector('[role="alertdialog"]'), null)
+    assert.equal(view.stored().length, 1)
+    assert.equal(view.toasts.includes('내역을 삭제했습니다.'), false)
+  } finally {
+    await view.cleanup()
   }
 })

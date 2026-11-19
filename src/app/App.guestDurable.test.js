@@ -593,6 +593,9 @@ test('재감사 3차 FAIL 지적 5번 — 비용 삭제 quota 초과: store/loca
     const errSpy = spyConsoleError('비용 삭제 실패:')
 
     await act(async () => { deleteBtn.dispatchEvent(new window.MouseEvent('click', { bubbles: true, cancelable: true })) })
+    const confirmBtn = document.querySelector('.modal-btn.confirm.danger')
+    assert.equal(confirmBtn?.textContent, '삭제', '삭제 확인 창이 떠야 한다')
+    await act(async () => { confirmBtn?.dispatchEvent(new window.MouseEvent('click', { bubbles: true, cancelable: true })) })
     unsubscribe()
 
     assert.deepEqual(getState().expenses[ownerKey], [e1], '실패한 삭제는 store에서 전혀 지워지면 안 된다(e1이 그대로 남아야 한다)')

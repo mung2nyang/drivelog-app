@@ -5,6 +5,8 @@ import { useOwnerCars, useOwnerExpenses } from '../../../data/store/ownerDataHoo
 import { useSession } from '../../../data/cloud/sessionContext.ts'
 import { defaultFuelTypeForLog } from '../../../domain/cars.ts'
 import { useToast } from '../../../shared/hooks/useToast.ts'
+import { confirmDialog } from '../../../shared/ui/confirmDialog.tsx'
+import { expenseDeleteText } from '../../../domain/deleteConfirmText.ts'
 import type { ExpenseDraft } from '../../../domain/expenseTypes.ts'
 import type { ExpenseItem } from '../ui/dayLogTypes.ts'
 
@@ -52,6 +54,8 @@ export function useExpenseForm(ownerKey: string, dateKey: string, logId: string 
   }
 
   async function remove(id: string) {
+    const item = expenses.find((entry) => entry.id === id)
+    if (!item || !(await confirmDialog(expenseDeleteText(item)))) return
     const message = await once(() => deleteExpense(ownerKey, id))
     if (message) showToast?.(message)
   }

@@ -1,9 +1,12 @@
+import { useEffect, useRef } from 'react'
 import { applyFixedRouteRun, getFixedRouteCounts } from '../../../domain/day-record.ts'
 import { removeCallDetail, upsertCallDetail } from '../../../domain/call-details.ts'
 import { getDetailPaymentSummary } from '../../../domain/finance.ts'
 import { togglePinnedLocation as togglePinnedLocationIn } from '../../../domain/locationShortcuts.ts'
 import { addPlatformPreset, removePlatformPreset } from '../../../domain/platformPresets.ts'
 import { chooseCallPaymentStatus, toggleCallPaymentStatus } from '../../../domain/payments.ts'
+import { confirmDialog } from '../../../shared/ui/confirmDialog.tsx'
+import { callDeleteText } from '../../../domain/deleteConfirmText.ts'
 import { savePracticeSettings } from '../../../data/sync/settingsSave.ts'
 import { useToast } from '../../../shared/hooks/useToast.ts'
 import { useSession } from '../../../data/cloud/sessionContext.ts'
@@ -23,6 +26,8 @@ type CallDetailActionOptions = {
 export default function useCallDetailActions(draft: DayDraft, dispatch: ReturnType<typeof useDayDraft>['dispatch'], { dateKey, clients, settings, editingCallId, isEmployedDriver = false }: CallDetailActionOptions) {
   const { ownerKey } = useSession()
   const showToast = useToast()
+  const draftRef = useRef(draft)
+  useEffect(() => { draftRef.current = draft })
 
   function patchDraft(patch: Partial<DayDraft>) { dispatch({ type: 'patchDraft', patch }) }
   function indexOfCall(id: string) { return draft.callDetails.findIndex((item) => item.id === id) }
@@ -56,8 +61,13 @@ export default function useCallDetailActions(draft: DayDraft, dispatch: ReturnTy
     void savePlatformPresets((current) => removePlatformPreset(current, name))
   }
 
-  function deleteCall(id: string) {
-    patchDraft({ callDetails: removeCallDetail(draft.callDetails, indexOfCall(id)) as Array<DayDraft['callDetails'][number]> })
+  async function deleteCall(id: string) {
+    const detail = draft.callDetails.find((item) => item.id === id)
+    if (!detail || !(await confirmDialog(callDeleteText(detail)))) return
+    const latest = draftRef.current.callDetails
+    const index = latest.findIndex((item) => item.id === id)
+    if (index < 0) return
+    patchDraft({ callDetails: removeCallDetail(latest, index) as Array<DayDraft['callDetails'][number]> })
   }
 
   async function togglePinnedLocation(location: string) {

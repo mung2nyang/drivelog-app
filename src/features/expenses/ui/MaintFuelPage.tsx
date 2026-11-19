@@ -3,6 +3,8 @@ import { useParams } from 'react-router-dom'
 import MonthNavigator from '../../../shared/ui/MonthNavigator.tsx'
 import ExpenseFormModal from './ExpenseFormModal.tsx'
 import MaintFuelDayList from './MaintFuelDayList.tsx'
+import ConfirmModal from '../../../shared/ui/ConfirmModal.tsx'
+import { expenseDeleteText } from '../../../domain/deleteConfirmText.ts'
 import PageHeader from '../../../shared/ui/PageHeader.tsx'
 import { resolveDriverOrPlateLabel } from '../../../domain/driverManagementContext.ts'
 import { defaultFuelTypeForLog } from '../../../domain/cars.ts'
@@ -31,6 +33,7 @@ export default function MaintFuelPage({ logId: logIdProp, onBack, onOpenMenu }: 
   const [editingId, setEditingId] = useState<string|null>(null)
   const [draft, setDraft] = useState<ExpenseDraft>(emptyExpenseDraft('maint'))
   const [saving, setSaving] = useState(false)
+  const [pendingDelete, setPendingDelete] = useState<ExpenseItem|null>(null)
   const busyRef = useRef(false)
   async function once<R>(run: () => Promise<R>): Promise<R|undefined> {
     if (busyRef.current) return undefined
@@ -80,6 +83,11 @@ export default function MaintFuelPage({ logId: logIdProp, onBack, onOpenMenu }: 
     showToast?.(message || '내역을 삭제했습니다.')
   }
 
+  function confirmRemove(id: string) {
+    setPendingDelete(null)
+    void remove(id)
+  }
+
   const monthLabelClass = kind === 'fuel' ? 'fuel-color' : kind === 'misc' ? 'misc-color' : undefined
 
   return (
@@ -107,9 +115,17 @@ export default function MaintFuelPage({ logId: logIdProp, onBack, onOpenMenu }: 
         </div>
       </div>
 
-      <MaintFuelDayList groups={groups} kind={kind} kindLabel={kindLabel} onEdit={openEdit} onDelete={remove} />
+      <MaintFuelDayList groups={groups} kind={kind} kindLabel={kindLabel} onEdit={openEdit} onDelete={(id) => setPendingDelete(items.find((item) => item.id === id) ?? null)} />
 
       <button type="button" className="management-add-fab" onClick={openAdd}>+ 추가</button>
+
+      {pendingDelete && (
+        <ConfirmModal
+          {...expenseDeleteText(pendingDelete)}
+          onCancel={() => setPendingDelete(null)}
+          onConfirm={() => confirmRemove(pendingDelete.id)}
+        />
+      )}
 
       {modalOpen && (
         <ExpenseFormModal

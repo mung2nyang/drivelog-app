@@ -27,6 +27,8 @@ const { BrowserRouter } = await import('react-router-dom')
 const { normalizeSettings } = await import('../../../domain/practiceSettings.ts')
 const { commitWorkData } = await import('../../../data/store/commitHelpers.ts')
 const { default: DayLogPage } = await import('./DayLogPage.tsx')
+const { ConfirmDialogHost } = await import('../../../shared/ui/confirmDialog.tsx')
+const { commitExpenses } = await import('../../../data/store/commitHelpers.ts')
 
 const DATE = '2026-10-17'
 const SETTINGS = normalizeSettings({
@@ -46,9 +48,11 @@ async function render(ownerKey, calls, clients = [], { settings = SETTINGS, isEm
   /** @param {typeof SETTINGS} next */
   const show = async (next) => {
     await act(async () => {
-      root.render(withToast(React.createElement(BrowserRouter, null, withSession(React.createElement(DayLogPage, {
-        month: 10, day: 17, dateKey: DATE, clients, settings: next, isEmployedDriver,
-      }), { ownerKey })), (/** @type {string} */ m) => { toasts.push(m) }))
+      root.render(withToast(React.createElement(React.Fragment, null,
+        React.createElement(BrowserRouter, null, withSession(React.createElement(DayLogPage, {
+          month: 10, day: 17, dateKey: DATE, clients, settings: next, isEmployedDriver,
+        }), { ownerKey })),
+        React.createElement(ConfirmDialogHost)), (/** @type {string} */ m) => { toasts.push(m) }))
     })
   }
   await show(settings)
@@ -122,6 +126,7 @@ test('콜 삭제 → 카드 0개', async () => {
   try {
     assert.equal(view.cards(), 1)
     await view.click(view.container.querySelector('[title="삭제"]'))
+    await view.click(view.container.querySelector('.modal-btn.confirm.danger'))
     assert.equal(view.cards(), 0)
   } finally {
     await view.cleanup()
@@ -254,6 +259,41 @@ test('결제 켠 차주가 넣는 콜은 지금처럼 미수', async () => {
     await view.type('#callFare', '30000')
     await view.click(view.button('저장'))
     assert.deepEqual([...view.container.querySelectorAll('.payment-toggle-btn')].map((el) => el.className), ['payment-toggle-btn unpaid'])
+  } finally {
+    await view.cleanup()
+  }
+})
+
+test('콜 휴지통 → "세부 내역 삭제" 창에 상차지 → 하차지, [취소]면 카드 그대로', async () => {
+  const view = await render('daylog-call-del-cancel', [SEED_CALL])
+  try {
+    await view.click(view.container.querySelector('[title="삭제"]'))
+    const dialog = view.container.querySelector('[role="alertdialog"]')
+    assert.equal(dialog?.querySelector('.modal-title')?.textContent, '세부 내역 삭제')
+    assert.ok(dialog?.textContent?.includes('부산 → 대구 내역을 삭제할까요? 삭제하면 되돌릴 수 없어요.'))
+    await view.click(view.container.querySelector('.modal-btn.cancel'))
+    assert.equal(view.container.querySelector('[role="alertdialog"]'), null)
+    assert.equal(view.cards(), 1)
+  } finally {
+    await view.cleanup()
+  }
+})
+
+test('지출 휴지통 → "주유 내역 삭제" 창, [취소]면 그대로, [삭제]면 빠짐', async () => {
+  const ownerKey = 'daylog-expense-del'
+  commitExpenses(ownerKey, [{ id: 'ex-1', kind: 'fuel', date: DATE, fuelType: '경유', liters: '40', cost: 60000, payment: '카드' }])
+  const view = await render(ownerKey, [])
+  const expenseDelete = () => view.container.querySelector('.maint-fuel-actions [title="삭제"]')
+  try {
+    await view.click(expenseDelete())
+    const dialog = view.container.querySelector('[role="alertdialog"]')
+    assert.equal(dialog?.querySelector('.modal-title')?.textContent, '주유 내역 삭제')
+    assert.ok(dialog?.textContent?.includes('경유 (40L) 60,000원 내역을 삭제할까요? 삭제하면 되돌릴 수 없어요.'))
+    await view.click(view.container.querySelector('.modal-btn.cancel'))
+    assert.ok(expenseDelete(), '취소면 지출 그대로')
+    await view.click(expenseDelete())
+    await view.click(view.container.querySelector('.modal-btn.confirm.danger'))
+    assert.equal(expenseDelete(), null, '삭제면 지출 빠짐')
   } finally {
     await view.cleanup()
   }

@@ -22,6 +22,16 @@ export const emptyDraft = {
   endOdometer: '',
 }
 
+export function autoDueDate(dateKey: string, clientName: string, clients: Array<ClientLike>) {
+  return dueDateForClient(dateKey, clients.find((entry) => entry.companyName === clientName))
+}
+
+export function nextAutoDueDate(currentDue: string, autoDue: string, name: string, clients: Array<ClientLike>, dateKey: string) {
+  const client = clients.find((entry) => entry.companyName === name)
+  if (!client || (currentDue && currentDue !== autoDue)) return null
+  return dueDateForClient(dateKey, client)
+}
+
 export function draftFromDetail(item: CallDetailLike, dateKey: string, clients: Array<ClientLike>) {
   const client = clients.find((entry) => entry.companyName === item.client)
   return {

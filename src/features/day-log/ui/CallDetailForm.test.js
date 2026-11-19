@@ -19,6 +19,7 @@ const React = await import('react')
 const { createRoot } = await import('react-dom/client')
 const { act } = React
 const { default: CallDetailForm } = await import('./CallDetailForm.tsx')
+const { nextAutoDueDate } = await import('./callDetailFormHelpers.ts')
 
 const noop = () => {}
 const PAYMENT_ON_SETTINGS = normalizeSettings({ paymentOn: true })
@@ -220,4 +221,42 @@ test('운비서 처음 값(prefill)은 새 입력으로 채운다 — 제목에 
     assert.equal(value('callFare'), '150,000')
     assert.equal(value('callClient'), '한진')
   } finally { await view.cleanup() }
+})
+
+describe('거래처를 바꿀 때 입금 예정일', () => {
+  const A = { id: 'a', companyName: '한진', paymentTerm: 'after_days', paymentTermValue: 10 }
+  const B = { id: 'b', companyName: '대한', paymentTerm: 'second_month_end' }
+
+  test('거래처 이름을 치는 중 맞는 거래처가 잠깐 없어져도 날짜가 그대로, 다른 거래처에 닿으면 그 조건으로', async () => {
+    const view = await mount({ clients: [A, B] })
+    try {
+      const client = /** @type {HTMLInputElement} */ (view.container.querySelector('#callClient'))
+      const due = () => /** @type {HTMLInputElement} */ (view.container.querySelector('#callPaymentDueDate')).value
+      assert.equal(due(), '2026-10-31')
+      for (const [text, expected] of [['한', '2026-10-31'], ['한진', '2026-10-07'], ['한진ㅇ', '2026-10-07'], ['한진', '2026-10-07'], ['한', '2026-10-07'], ['', '2026-10-07'], ['대한', '2026-11-30']]) {
+        await act(async () => { typeInto(client, text) })
+        assert.equal(due(), expected, text)
+      }
+    } finally { await view.cleanup() }
+  })
+
+  test('저장된 콜의 날짜가 거래처 조건과 다르면 거래처 오타를 고치거나 바꿔도 그대로', async () => {
+    const saved = { id: 'c1', client: '한진', loadLoc: '수원', unloadLoc: '화성', fare: 100000, paymentDueDate: '2026-12-15' }
+    const view = await mount({ clients: [A, B], value: saved })
+    try {
+      const client = /** @type {HTMLInputElement} */ (view.container.querySelector('#callClient'))
+      const due = () => /** @type {HTMLInputElement} */ (view.container.querySelector('#callPaymentDueDate')).value
+      for (const text of ['한진ㅇ', '한진', '대한']) {
+        await act(async () => { typeInto(client, text) })
+        assert.equal(due(), '2026-12-15', text)
+      }
+    } finally { await view.cleanup() }
+  })
+
+  test('직접 고른 날짜는 다른 거래처를 골라도 그대로, 앱이 채운 날짜면 새 거래처 조건으로', () => {
+    assert.equal(nextAutoDueDate('2026-12-15', '2026-10-07', '대한', [A, B], '2026-09-27'), null)
+    assert.equal(nextAutoDueDate('2026-10-07', '2026-10-07', '대한', [A, B], '2026-09-27'), '2026-11-30')
+    assert.equal(nextAutoDueDate('', '2026-10-07', '대한', [A, B], '2026-09-27'), '2026-11-30')
+    assert.equal(nextAutoDueDate('2026-10-07', '2026-10-07', '없는곳', [A, B], '2026-09-27'), null)
+  })
 })

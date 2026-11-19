@@ -3,7 +3,7 @@ import { dueDateForClient, getClientsForLog, getPaymentTermLabel, pinnedClients 
 import { parseCurrencyValue, vatOf } from '../../../domain/money.ts'
 import { checkCallDetailDraft } from '../../../domain/call-details.ts'
 import { normalizePlatformPresets } from '../../../domain/platformPresets.ts'
-import { confirmLargeFareSave, draftFromDetail, emptyDraft } from './callDetailFormHelpers.ts'
+import { autoDueDate, confirmLargeFareSave, draftFromDetail, emptyDraft, nextAutoDueDate } from './callDetailFormHelpers.ts'
 import LocationShortcuts from './LocationShortcuts.tsx'
 import CallClientQuickAdd from './CallClientQuickAdd.tsx'
 import CallOdometerFields from './CallOdometerFields.tsx'
@@ -44,6 +44,7 @@ export default function CallDetailForm({
   const { ownerKey } = useSession()
   const start = value || (prefill && { ...prefill, id: '', fare: prefill.fare ?? '' })
   const [draft, setDraft] = useState(() => (start ? draftFromDetail(start, dateKey, clients) : { ...emptyDraft, paymentDueDate: dueDateForClient(dateKey, null) }))
+  const [autoDue, setAutoDue] = useState(() => autoDueDate(dateKey, start?.client || '', clients))
   const [activeLocationTarget, setActiveLocationTarget] = useState<'load'|'unload'>('load')
 
   const scopeKey = clientScopeKey || logId
@@ -73,15 +74,16 @@ export default function CallDetailForm({
   }
 
   function applyClient(name: string) {
-    const client = clients.find((item) => item.companyName === name)
-    setDraft((prev) => ({ ...prev, client: name, paymentDueDate: dueDateForClient(dateKey, client) }))
+    const next = nextAutoDueDate(draft.paymentDueDate, autoDue, name, clients, dateKey)
+    setDraft({ ...draft, client: name, ...(next ? { paymentDueDate: next } : {}) })
+    if (next) setAutoDue(next)
   }
 
   return (
     <div className="modal-content call-detail-modal-content">
       <div className="modal-title call-detail-modal-title">{`${Number(dateKey.slice(8, 10))}일 운행일지 세부 내역${value ? ' 수정' : ' 입력'}`}</div>
       {!value && previousItem && (
-        <button type="button" className="call-detail-copy-prev-btn" onClick={() => setDraft(draftFromDetail(previousItem, dateKey, clients))}>
+        <button type="button" className="call-detail-copy-prev-btn" onClick={() => { setDraft(draftFromDetail(previousItem, dateKey, clients)); setAutoDue(autoDueDate(dateKey, previousItem.client || '', clients)) }}>
           ↺ 이전 내역 불러오기
         </button>
       )}

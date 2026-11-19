@@ -16,6 +16,7 @@ body:not(.account-flow-active) {
   min-height: calc(100dvh + 100px);
 }
 .page-transition { flex-grow: 1; }
+.page-transition:has(> .support-home-page) { display: flex; flex-direction: column; }
 
 .page { padding-bottom: 92px; }
 

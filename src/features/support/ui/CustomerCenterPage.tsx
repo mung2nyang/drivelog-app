@@ -5,8 +5,12 @@ import InquiryForm from './InquiryForm.tsx'
 import MyInquiriesList from './MyInquiriesList.tsx'
 import './customer-center.css'
 import { useSession } from '../../../data/cloud/sessionContext.ts'
+import { assetPath } from '../../../shared/utils/assetPath.ts'
 
 export type SupportTab = 'faq'|'inquiry'|'myInquiries'
+
+const TERMS_URL = assetPath('/terms.html')
+const PRIVACY_URL = assetPath('/privacy.html')
 
 const FAQ_ITEMS = [
   {
@@ -122,6 +126,11 @@ export default function CustomerCenterPage({ onBack, onGoAuth, onOpenMenu, initi
           {userId ? <MyInquiriesList userId={userId} /> : <GuestLoginPrompt onGoAuth={onGoAuth} />}
         </section>
       )}
+
+      <nav className="support-legal-links" aria-label="약관과 정책">
+        <a href={TERMS_URL} target="_blank" rel="noopener noreferrer">서비스 이용약관</a>
+        <a href={PRIVACY_URL} target="_blank" rel="noopener noreferrer">개인정보 처리방침</a>
+      </nav>
     </div>
   )
 }

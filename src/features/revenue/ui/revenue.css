@@ -154,3 +154,12 @@
 @media (prefers-reduced-motion: reduce) {
   .revenue-detail-head:not(:disabled):active { scale: none; opacity: 0.75; }
 }
+
+.revenue-tax-note {
+  margin: 20px 4px 0;
+  color: var(--sub-text-color);
+  font-size: var(--fs-3);
+  line-height: 1.5;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}

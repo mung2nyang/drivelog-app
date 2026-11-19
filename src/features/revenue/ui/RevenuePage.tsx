@@ -15,6 +15,7 @@ export default function RevenuePage({ onOpenMenu }: { onOpenMenu?: (() => void) 
       {isDriver
         ? <DriverRevenueView />
         : <OwnerRevenueView />}
+      {!isDriver && <p className="revenue-tax-note">매출과 정산 금액은 앱에 입력한 기록으로 계산해요. 세무 신고 전 실제 거래 내역과 맞는지 확인해 주세요.</p>}
     </div>
   )
 }

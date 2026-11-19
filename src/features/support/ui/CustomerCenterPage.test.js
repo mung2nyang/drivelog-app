@@ -300,3 +300,18 @@ test('로드맵 23-C — initialTab myInquiries(주소 ?tab=my)면 "나의 문�
     container.remove()
   }
 })
+
+test('고객센터 맨 아래(어느 탭이든)에 약관·처리방침 링크, 로그인 첫 화면과 같은 주소', async () => {
+  for (const tabLabel of ['FAQ', '1:1 문의/건의', '나의 문의/건의 확인']) {
+    const { container, root } = await openSupportTab({ guestMode: true, name: '비회원' }, tabLabel)
+    try {
+      const links = [...container.querySelectorAll('.support-legal-links a')]
+      assert.deepEqual(links.map((a) => a.textContent), ['서비스 이용약관', '개인정보 처리방침'], tabLabel)
+      assert.deepEqual(links.map((a) => a.getAttribute('href')), ['/terms.html', '/privacy.html'])
+      assert.ok(links.every((a) => a.getAttribute('target') === '_blank' && a.getAttribute('rel') === 'noopener noreferrer'))
+    } finally {
+      await act(async () => { root.unmount() })
+      container.remove()
+    }
+  }
+})

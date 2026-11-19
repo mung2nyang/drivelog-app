@@ -2,6 +2,7 @@ import { parseCurrencyValue } from '../../../domain/money.ts'
 import { commissionInfo, durationSuffix, formatCallTime } from './callDetailFormHelpers.ts'
 import { EditIcon, DeleteIcon, PhoneIcon, MessageIcon } from '../../../shared/ui/icons.tsx'
 import './call-detail-card.css'
+import './call-detail-card-payment.css'
 import { useToast } from '../../../shared/hooks/useToast.ts'
 import type { CallDetailLike, ClientLike, PaymentSummary, Settings } from './dayLogTypes.ts'
 
@@ -13,14 +14,16 @@ type CallDetailCardProps = {
   onEdit: () => void
   onDelete: () => void
   onTogglePayment: () => void
+  onChoosePayment: (choice: 'paid' | 'unpaid') => void
   onMessage: () => void
 }
 
-export default function CallDetailCard({ item, payment, settings, client, onEdit, onDelete, onTogglePayment, onMessage }: CallDetailCardProps) {
+export default function CallDetailCard({ item, payment, settings, client, onEdit, onDelete, onTogglePayment, onChoosePayment, onMessage }: CallDetailCardProps) {
   const showToast = useToast()
   const fare = parseCurrencyValue(item.fare)
+  const unchosen = payment.status === 'unchosen' && fare > 0
   const unpaid = payment.status !== 'paid'
-  const nothingToCollect = unpaid && payment.remainingAmount <= 0
+  const nothingToCollect = unpaid && payment.remainingAmount <= 0 && !unchosen
   const distance = parseFloat(item.distanceKm || '') || 0
   const specs = [
     settings.distanceOn && distance ? `운행거리 ${distance}km` : '',
@@ -62,7 +65,13 @@ export default function CallDetailCard({ item, payment, settings, client, onEdit
           {settings.paymentOn && item.receipt && <span className="detail-badge">{item.receipt}</span>}
           {item.vatExempt && <span className="detail-badge">면세</span>}
         </div>
-        {settings.paymentOn && !nothingToCollect && (
+        {settings.paymentOn && unchosen && (
+          <div className="detail-payment-actions">
+            <button type="button" className="payment-toggle-btn unchosen" onClick={() => onChoosePayment('unpaid')}>미수</button>
+            <button type="button" className="payment-toggle-btn unchosen" onClick={() => onChoosePayment('paid')}>수금</button>
+          </div>
+        )}
+        {settings.paymentOn && !unchosen && !nothingToCollect && (
           <div className="detail-payment-actions">
             {unpaid && (
               client?.phone

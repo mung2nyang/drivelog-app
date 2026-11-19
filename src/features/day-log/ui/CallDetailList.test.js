@@ -26,6 +26,7 @@ const baseProps = {
   onEdit: noop,
   onDelete: noop,
   onTogglePayment: noop,
+  onChoosePayment: noop,
   onMessage: noop,
   onAdd: noop,
 }

@@ -18,21 +18,28 @@ export function getDriverCarWorkData(car: CarLike, workDataByLogId: WorkDataByLo
   return logData(workDataByLogId, car?.number)
 }
 
-export function getDetailPaymentSummary(detail: CallDetailLike) {
+export const PAYMENT_UNCHOSEN = '선택 안 함'
+
+export type DetailPaymentStatus = 'paid' | 'partial' | 'unpaid' | 'unchosen'
+
+export function getDetailPaymentSummary(detail: CallDetailLike): { paidAmount: number, remainingAmount: number, status: DetailPaymentStatus } {
   const fare = parseCurrencyValue(detail?.fare)
+  const unchosen = detail?.paymentStatus === PAYMENT_UNCHOSEN
 
   if (!Array.isArray(detail?.payments)) {
+    if (unchosen) return { paidAmount: 0, remainingAmount: 0, status: 'unchosen' }
     const legacyPaid = (detail?.paymentStatus || '미수') !== '미수'
     return {
       paidAmount: legacyPaid ? fare : 0,
       remainingAmount: legacyPaid ? 0 : fare,
-      status: (legacyPaid ? 'paid' : 'unpaid') as 'paid' | 'unpaid',
+      status: legacyPaid ? 'paid' : 'unpaid',
     }
   }
 
   const paidAmount = detail.payments.reduce((sum, payment) => sum + (parseCurrencyValue(payment.amount) || 0), 0)
+  if (unchosen && paidAmount <= 0) return { paidAmount: 0, remainingAmount: 0, status: 'unchosen' }
   const remainingAmount = Math.max(fare - paidAmount, 0)
-  let status: 'paid' | 'partial' | 'unpaid' = 'unpaid'
+  let status: DetailPaymentStatus = 'unpaid'
   if (paidAmount > 0 && remainingAmount > 0) status = 'partial'
   else if (paidAmount > 0 && remainingAmount <= 0) status = 'paid'
 
@@ -41,7 +48,8 @@ export function getDetailPaymentSummary(detail: CallDetailLike) {
 
 export function syncDetailPaymentStatus(detail: CallDetailLike) {
   const summary = getDetailPaymentSummary(detail)
-  detail.paymentStatus = summary.status === 'paid' ? '수금 완료' : '미수'
+  if (summary.status === 'unchosen') detail.paymentStatus = PAYMENT_UNCHOSEN
+  else detail.paymentStatus = summary.status === 'paid' ? '수금 완료' : '미수'
   return summary
 }
 

@@ -35,19 +35,23 @@ const SETTINGS = normalizeSettings({
 })
 const SEED_CALL = { id: 'call-1', loadLoc: '부산', unloadLoc: '대구', client: '', fare: '50000' }
 
-/** @param {string} ownerKey @param {Array<typeof SEED_CALL>} calls @param {Array<object>} [clients] */
-async function render(ownerKey, calls, clients = []) {
+/** @param {string} ownerKey @param {Array<typeof SEED_CALL>} calls @param {Array<object>} [clients] @param {{ settings?: typeof SETTINGS, isEmployedDriver?: boolean }} [options] */
+async function render(ownerKey, calls, clients = [], { settings = SETTINGS, isEmployedDriver = false } = {}) {
   commitWorkData(ownerKey, calls.length ? { [DATE]: { callDetails: calls } } : {})
   window.history.replaceState(null, '', `/app/day/${DATE}`)
   const toasts = /** @type {Array<string>} */ ([])
   const container = document.createElement('div')
   document.body.appendChild(container)
   const root = createRoot(container)
-  await act(async () => {
-    root.render(withToast(React.createElement(BrowserRouter, null, withSession(React.createElement(DayLogPage, {
-      month: 10, day: 17, dateKey: DATE, clients, settings: SETTINGS,
-    }), { ownerKey })), (/** @type {string} */ m) => { toasts.push(m) }))
-  })
+  /** @param {typeof SETTINGS} next */
+  const show = async (next) => {
+    await act(async () => {
+      root.render(withToast(React.createElement(BrowserRouter, null, withSession(React.createElement(DayLogPage, {
+        month: 10, day: 17, dateKey: DATE, clients, settings: next, isEmployedDriver,
+      }), { ownerKey })), (/** @type {string} */ m) => { toasts.push(m) }))
+    })
+  }
+  await show(settings)
   /** @param {string} text */
   const button = (text) => [...container.querySelectorAll('button')].find((el) => el.textContent?.trim() === text)
   /** @param {Element|undefined|null} el */
@@ -66,7 +70,7 @@ async function render(ownerKey, calls, clients = []) {
   const cards = () => container.querySelectorAll('.call-detail-card-foot').length
   const text = () => container.textContent || ''
   return {
-    container, toasts, button, click, type, cards, text,
+    container, toasts, button, click, type, cards, text, show,
     async cleanup() { await act(async () => { root.unmount() }); container.remove() },
   }
 }
@@ -179,6 +183,77 @@ test('휴무를 켰다 끄면 노선 칩 횟수·파렛트·운행 횟수가 모
     assert.equal(input('#modalPalletCount'), '', '파렛트 빈 칸')
     assert.equal(input('#modalFixedCountInput'), '', '운행 횟수 0')
     assert.equal(view.container.querySelector('.day-fare-total')?.textContent || '', '', '합계 0원')
+  } finally {
+    await view.cleanup()
+  }
+})
+
+const PAYMENT_OFF = normalizeSettings({ callDetail: true, paymentOn: false })
+const PAYMENT_ON = normalizeSettings({ callDetail: true, paymentOn: true })
+
+/** @param {Awaited<ReturnType<typeof render>>} view */
+async function addCallWithPaymentOffThenTurnOn(view) {
+  await view.click(view.button('+ 세부 내역 추가'))
+  await view.type('#callFare', '30000')
+  await view.click(view.button('저장'))
+  assert.equal(view.container.querySelectorAll('.payment-toggle-btn').length, 0, '결제 꺼짐이면 결제 버튼 없음')
+  await view.show(PAYMENT_ON)
+  return [...view.container.querySelectorAll('.payment-toggle-btn')]
+}
+
+test('결제 끈 동안 넣은 콜 → 켜면 흐린 [미수] [수금] 두 버튼, 전화·문자 없음', async () => {
+  const view = await render('daylog-unchosen-buttons', [], [], { settings: PAYMENT_OFF })
+  try {
+    const buttons = await addCallWithPaymentOffThenTurnOn(view)
+    assert.deepEqual(buttons.map((el) => el.textContent), ['미수', '수금'])
+    assert.ok(buttons.every((el) => el.classList.contains('unchosen')))
+    assert.equal(view.container.querySelector('.call-phone-btn'), null)
+  } finally {
+    await view.cleanup()
+  }
+})
+
+test('[수금]을 고르면 "수금 처리했습니다."와 수금 한 버튼', async () => {
+  const view = await render('daylog-unchosen-paid', [], [], { settings: PAYMENT_OFF })
+  try {
+    const buttons = await addCallWithPaymentOffThenTurnOn(view)
+    await view.click(buttons[1])
+    assert.deepEqual([...view.container.querySelectorAll('.payment-toggle-btn')].map((el) => el.className), ['payment-toggle-btn paid'])
+    assert.equal(view.toasts.at(-1), '수금 처리했습니다.')
+  } finally {
+    await view.cleanup()
+  }
+})
+
+test('[미수]를 고르면 "미수로 표시했습니다."와 미수 한 버튼', async () => {
+  const view = await render('daylog-unchosen-unpaid', [], [], { settings: PAYMENT_OFF })
+  try {
+    const buttons = await addCallWithPaymentOffThenTurnOn(view)
+    await view.click(buttons[0])
+    assert.deepEqual([...view.container.querySelectorAll('.payment-toggle-btn')].map((el) => el.className), ['payment-toggle-btn unpaid'])
+    assert.equal(view.toasts.at(-1), '미수로 표시했습니다.')
+  } finally {
+    await view.cleanup()
+  }
+})
+
+test('직원 기사가 넣는 콜은 결제 설정과 상관없이 지금처럼 미수', async () => {
+  const view = await render('daylog-unchosen-driver', [], [], { settings: PAYMENT_OFF, isEmployedDriver: true })
+  try {
+    const buttons = await addCallWithPaymentOffThenTurnOn(view)
+    assert.deepEqual(buttons.map((el) => el.className), ['payment-toggle-btn unpaid'])
+  } finally {
+    await view.cleanup()
+  }
+})
+
+test('결제 켠 차주가 넣는 콜은 지금처럼 미수', async () => {
+  const view = await render('daylog-paid-owner-new', [], [], { settings: PAYMENT_ON })
+  try {
+    await view.click(view.button('+ 세부 내역 추가'))
+    await view.type('#callFare', '30000')
+    await view.click(view.button('저장'))
+    assert.deepEqual([...view.container.querySelectorAll('.payment-toggle-btn')].map((el) => el.className), ['payment-toggle-btn unpaid'])
   } finally {
     await view.cleanup()
   }

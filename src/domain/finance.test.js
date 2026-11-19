@@ -19,6 +19,9 @@ import {
 import { FIXTURE_EXPENSES, FIXTURE_SETTINGS, FIXTURE_WORK, MONTH_KEY } from './finance.fixtures.ts'
 import { parseCurrencyValue } from './money.ts'
 import { monthSettlementSummary } from './monthSettlement.ts'
+import { upsertCallDetail } from './call-details.ts'
+import { chooseCallPaymentStatus, toggleCallPaymentStatus } from './payments.ts'
+import { monthCallUnpaidTotal } from './day-record.ts'
 
 /** @template T @param {T} a @param {T} b */
 function same(a, b) {
@@ -491,5 +494,60 @@ describe('운행 거리 — 매출과 달력이 같은 규칙', () => {
 
   test('같은 자료로 달력 정산 카드 거리와 같다', () => {
     assert.equal(getOwnerMonthlyFinanceDetail('2026-09', 'owner', {}, { main: work }).distanceKm, monthSettlementSummary(work, 2026, 8).distanceKm)
+  })
+})
+
+describe('결제/수금 끈 동안 넣은 콜 — "선택 안 함"', () => {
+  const dateKey = '2026-11-19'
+  const draft = { fare: '50,000', loadLoc: '부산', unloadLoc: '대구' }
+  function unchosenWork() {
+    const { items } = upsertCallDetail([], draft, -1, dateKey, [], true)
+    return { [dateKey]: { callDetails: items } }
+  }
+
+  test('새 콜: 선택 안 함으로 시작할 때만 "선택 안 함", 아니면 "미수"', () => {
+    assert.equal(upsertCallDetail([], draft, -1, dateKey, [], true).items[0].paymentStatus, '선택 안 함')
+    assert.equal(upsertCallDetail([], draft, -1, dateKey, [], false).items[0].paymentStatus, '미수')
+    assert.equal(upsertCallDetail([], draft, -1, dateKey).items[0].paymentStatus, '미수')
+  })
+
+  test('고쳐 저장해도 결제 상태 그대로', () => {
+    const unchosen = upsertCallDetail([], draft, -1, dateKey, [], true).items
+    assert.equal(upsertCallDetail(unchosen, { ...draft, fare: '60,000' }, 0, dateKey, [], false).items[0].paymentStatus, '선택 안 함')
+    const unpaid = upsertCallDetail([], draft, -1, dateKey, [], false).items
+    assert.equal(upsertCallDetail(unpaid, { ...draft, fare: '60,000' }, 0, dateKey, [], true).items[0].paymentStatus, '미수')
+  })
+
+  test('판정: 남은 돈 0인 고르지 않음(입금 목록 없는 옛 꼴도)', () => {
+    same(getDetailPaymentSummary({ fare: '50,000', paymentStatus: '선택 안 함', payments: [] }), { paidAmount: 0, remainingAmount: 0, status: 'unchosen' })
+    same(getDetailPaymentSummary({ fare: '50,000', paymentStatus: '선택 안 함' }), { paidAmount: 0, remainingAmount: 0, status: 'unchosen' })
+  })
+
+  test('미수금 목록·달력 월 미수 합계에서 빠지고 매출에는 들어감', () => {
+    const work = unchosenWork()
+    assert.equal(getReceivableItems({ paymentOn: true }, { main: work }).length, 0)
+    assert.equal(monthCallUnpaidTotal(work, 2026, 10), 0)
+    assert.equal(getMonthlyFareRevenue('2026-11', {}, { main: work }).totalFare, 50000)
+  })
+
+  test('[미수]를 고르면 미수가 되어 미수금 목록에 나옴', () => {
+    const work = unchosenWork()
+    const id = work[dateKey].callDetails[0].id
+    const { data, error } = chooseCallPaymentStatus(work, dateKey, id, 'unpaid')
+    assert.equal(error, undefined)
+    assert.equal(data[dateKey].callDetails[0].paymentStatus, '미수')
+    assert.deepEqual(getReceivableItems({ paymentOn: true }, { main: data }).map((item) => item.remainingAmount), [50000])
+  })
+
+  test('[수금]을 고르면 운임 전액 입금된 수금, 뒤로는 미수↔수금만 오감', () => {
+    const work = unchosenWork()
+    const id = work[dateKey].callDetails[0].id
+    const { data } = chooseCallPaymentStatus(work, dateKey, id, 'paid')
+    const detail = data[dateKey].callDetails[0]
+    assert.equal(detail.paymentStatus, '수금 완료')
+    assert.equal(getDetailPaymentSummary(detail).paidAmount, 50000)
+    const back = toggleCallPaymentStatus(data, dateKey, id).data[dateKey].callDetails[0]
+    assert.equal(back.paymentStatus, '미수')
+    assert.equal(chooseCallPaymentStatus(data, dateKey, id, 'unpaid').error, '이미 처리된 내역입니다.')
   })
 })

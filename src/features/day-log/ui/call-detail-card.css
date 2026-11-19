@@ -77,44 +77,6 @@
   padding-top: 9px;
 }
 
-.work-log-page .call-detail-card .payment-toggle-btn {
-  min-width: 54px;
-  min-height: 44px;
-  padding-inline: 10px;
-  border-radius: 12px;
-  font-size: var(--fs-2);
-}
-
-.work-log-page .call-phone-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border: none;
-  border-radius: 12px;
-  background: var(--off-badge-bg);
-  color: var(--sunday-color);
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.work-log-page .call-phone-btn svg {
-  width: 20px;
-  height: 20px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.work-log-page .detail-message-btn {
-  border: 1px solid color-mix(in srgb, var(--primary-color) 34%, var(--border-color));
-  background: color-mix(in srgb, var(--primary-color) 11%, var(--card-bg));
-  color: var(--primary-color);
-}
-
 .call-detail-card {
   margin-bottom: 10px;
   padding: 12px;
@@ -150,38 +112,6 @@
   border: 1px solid var(--border-color);
   font-size: var(--fs-2);
   font-weight: var(--fw-bold);
-}
-
-.detail-payment-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  align-items: center;
-  justify-content: flex-end;
-}
-
-.payment-toggle-btn {
-  border: none;
-  min-width: 72px;
-  min-height: 36px;
-  padding: 6px 12px;
-  border-radius: 999px;
-  font: inherit;
-  font-size: var(--fs-2);
-  font-weight: var(--fw-bold);
-  cursor: pointer;
-}
-
-.payment-toggle-btn.unpaid {
-  background-color: var(--off-badge-bg);
-  color: var(--off-badge-text);
-  border: 1px solid var(--sunday-color);
-}
-
-.payment-toggle-btn.paid {
-  background-color: var(--hover-bg);
-  color: var(--primary-color);
-  border: 1px solid var(--primary-color);
 }
 
 .call-detail-route {

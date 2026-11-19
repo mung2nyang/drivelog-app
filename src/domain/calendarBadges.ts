@@ -35,7 +35,7 @@ export function dayWorkBadgeLabel(record: DayRecordLike | null | undefined, { in
 export function dayHasUnpaid(record: DayRecordLike | null | undefined, paymentOn: boolean): boolean {
   if (!paymentOn || isOffDay(record)) return false
   return getCallDetails(record).some(
-    (detail: CallDetailLike) => getDetailPaymentSummary(detail).status !== 'paid',
+    (detail: CallDetailLike) => !['paid', 'unchosen'].includes(getDetailPaymentSummary(detail).status),
   )
 }
 

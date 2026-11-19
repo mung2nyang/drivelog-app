@@ -3,7 +3,7 @@ import { removeCallDetail, upsertCallDetail } from '../../../domain/call-details
 import { getDetailPaymentSummary } from '../../../domain/finance.ts'
 import { togglePinnedLocation as togglePinnedLocationIn } from '../../../domain/locationShortcuts.ts'
 import { addPlatformPreset, removePlatformPreset } from '../../../domain/platformPresets.ts'
-import { toggleCallPaymentStatus } from '../../../domain/payments.ts'
+import { chooseCallPaymentStatus, toggleCallPaymentStatus } from '../../../domain/payments.ts'
 import { savePracticeSettings } from '../../../data/sync/settingsSave.ts'
 import { useToast } from '../../../shared/hooks/useToast.ts'
 import { useSession } from '../../../data/cloud/sessionContext.ts'
@@ -17,9 +17,10 @@ type CallDetailActionOptions = {
   clients: Array<ClientLike>
   settings: Settings
   editingCallId: string|null
+  isEmployedDriver?: boolean
 }
 
-export default function useCallDetailActions(draft: DayDraft, dispatch: ReturnType<typeof useDayDraft>['dispatch'], { dateKey, clients, settings, editingCallId }: CallDetailActionOptions) {
+export default function useCallDetailActions(draft: DayDraft, dispatch: ReturnType<typeof useDayDraft>['dispatch'], { dateKey, clients, settings, editingCallId, isEmployedDriver = false }: CallDetailActionOptions) {
   const { ownerKey } = useSession()
   const showToast = useToast()
 
@@ -34,7 +35,7 @@ export default function useCallDetailActions(draft: DayDraft, dispatch: ReturnTy
 
   function saveCall(formDraft: CallDetailDraft) {
     const editingIndex = editingCallId ? indexOfCall(editingCallId) : -1
-    const result = upsertCallDetail(draft.callDetails, formDraft, editingIndex, dateKey, clients)
+    const result = upsertCallDetail(draft.callDetails, formDraft, editingIndex, dateKey, clients, !settings.paymentOn && !isEmployedDriver)
     if (result.error) { showToast?.(result.error); return }
     patchDraft({ callDetails: result.items as Array<DayDraft['callDetails'][number]> })
     dispatch({ type: 'closeCallForm' })
@@ -80,5 +81,13 @@ export default function useCallDetailActions(draft: DayDraft, dispatch: ReturnTy
     showToast?.(unpaid ? '수금 처리했습니다.' : '수금을 취소했습니다.')
   }
 
-  return { patchDraft, runRoute, saveCall, deleteCall, togglePayment, togglePinnedLocation, removePlatform }
+  function choosePayment(id: string, choice: 'paid' | 'unpaid') {
+    const wrapped = { [dateKey]: { ...draft, callDetails: draft.callDetails } }
+    const result = chooseCallPaymentStatus(wrapped, dateKey, id, choice)
+    if (result.error) { showToast?.(result.error); return }
+    patchDraft({ callDetails: result.data[dateKey].callDetails })
+    showToast?.(choice === 'paid' ? '수금 처리했습니다.' : '미수로 표시했습니다.')
+  }
+
+  return { patchDraft, runRoute, saveCall, deleteCall, togglePayment, choosePayment, togglePinnedLocation, removePlatform }
 }

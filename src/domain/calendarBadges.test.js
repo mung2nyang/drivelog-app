@@ -109,6 +109,11 @@ describe('dayHasUnpaid — 달력 셀 미수 점', () => {
     assert.equal(dayHasUnpaid(paidData[dateKey], true), false)
   })
 
+  test('결제/수금 끈 동안 넣은 "선택 안 함" 콜만 있으면 false', () => {
+    const added = upsertCallDetail([], { fare: '80,000', client: '한진', vatExempt: false }, -1, dateKey, clients, true)
+    assert.equal(dayHasUnpaid(saveDayRecord({}, dateKey, { callDetails: added.items })[dateKey], true), false)
+  })
+
   test('콜상세가 없으면 false', () => {
     assert.equal(dayHasUnpaid({}, true), false)
     assert.equal(dayHasUnpaid(undefined, true), false)

@@ -1,5 +1,5 @@
 import { findCallDetailIndex } from './callDetailIds.ts'
-import { getDetailPaymentSummary, syncDetailPaymentStatus } from './finance.ts'
+import { getDetailPaymentSummary, syncDetailPaymentStatus, PAYMENT_UNCHOSEN } from './finance.ts'
 import { parseCurrencyValue } from './money.ts'
 import { getCallDetails } from './day-record.ts'
 import { generateLocalId } from './localId.ts'
@@ -26,7 +26,8 @@ function withCallDetail<T extends WorkDataMap>(data: T, dateKey: string, detailI
 function ensurePaymentList(detail: CallDetailLike): void {
   if (Array.isArray(detail.payments)) return
   detail.payments = []
-  if ((detail.paymentStatus || '미수') !== '미수') {
+  const status = detail.paymentStatus || '미수'
+  if (status !== '미수' && status !== PAYMENT_UNCHOSEN) {
     const fare = parseCurrencyValue(detail.fare)
     if (fare > 0) {
       detail.payments.push({ id: generateLocalId('pay'), amount: fare, paidAt: new Date().toISOString(), note: '(이전 기록)' })
@@ -92,7 +93,9 @@ export function toggleCallPaymentStatus<T extends WorkDataMap>(data: T, dateKey:
   const detailIndex = findCallDetailIndex(details, detailId)
   const detail = details[detailIndex]
   if (!detail) return { error: '세부 입력을 찾지 못했습니다.', data }
-  if (getDetailPaymentSummary(detail).status === 'paid') {
+  const status = getDetailPaymentSummary(detail).status
+  if (status === 'unchosen') return chooseCallPaymentStatus(data, dateKey, detailId, 'paid', paidAt)
+  if (status === 'paid') {
     return withCallDetail(data, dateKey, detailId, (item) => {
       item.payments = []
       syncDetailPaymentStatus(item)
@@ -100,4 +103,17 @@ export function toggleCallPaymentStatus<T extends WorkDataMap>(data: T, dateKey:
     })
   }
   return markReceivableItemPaid(data, dateKey, detailId, paidAt)
+}
+
+export function chooseCallPaymentStatus<T extends WorkDataMap>(data: T, dateKey: string, detailId: string, choice: 'paid' | 'unpaid', paidAt: Date | string = new Date()): PaymentMutationResult<T> {
+  return withCallDetail(data, dateKey, detailId, (detail) => {
+    if (getDetailPaymentSummary(detail).status !== 'unchosen') return '이미 처리된 내역입니다.'
+    const fare = parseCurrencyValue(detail.fare)
+    detail.paymentStatus = '미수'
+    detail.payments = choice === 'paid' && fare > 0
+      ? [{ id: generateLocalId('pay'), amount: fare, paidAt: paidAt instanceof Date ? paidAt.toISOString() : paidAt, note: '' }]
+      : []
+    syncDetailPaymentStatus(detail)
+    return null
+  })
 }

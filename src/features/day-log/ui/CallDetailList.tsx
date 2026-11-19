@@ -4,7 +4,7 @@ import { getDetailPaymentSummary } from '../../../domain/finance.ts'
 import { commissionInfo } from './callDetailFormHelpers.ts'
 import CallDetailCard from './CallDetailCard.tsx'
 import './call-detail-list.css'
-import type { CallDetailLike, ClientLike, PaymentSummary, Settings } from './dayLogTypes.ts'
+import type { CallDetailLike, ClientLike, Settings } from './dayLogTypes.ts'
 import type { ReactNode } from 'react'
 
 type CallDetailListProps = {
@@ -14,13 +14,14 @@ type CallDetailListProps = {
   onEdit: (id: string) => void
   onDelete: (id: string) => void
   onTogglePayment: (id: string) => void
+  onChoosePayment: (id: string, choice: 'paid' | 'unpaid') => void
   onMessage: (id: string) => void
   canAdd?: boolean
   onAdd: () => void
   children?: ReactNode
 }
 
-export default function CallDetailList({ details, settings, clients, canAdd = true, onEdit, onDelete, onTogglePayment, onMessage, onAdd, children }: CallDetailListProps) {
+export default function CallDetailList({ details, settings, clients, canAdd = true, onEdit, onDelete, onTogglePayment, onChoosePayment, onMessage, onAdd, children }: CallDetailListProps) {
   const callFare = callFareTotal({ isOff: false, callDetails: details })
   const callVat = callVatTotal({ isOff: false, callDetails: details })
   const totalDistance = details.reduce((sum, item) => sum + (parseFloat(item.distanceKm || '') || 0), 0)
@@ -40,12 +41,13 @@ export default function CallDetailList({ details, settings, clients, canAdd = tr
         <CallDetailCard
           key={item.id}
           item={item}
-          payment={getDetailPaymentSummary(item) as PaymentSummary}
+          payment={getDetailPaymentSummary(item)}
           settings={settings}
           client={clients.find((entry) => entry.companyName === item.client)}
           onEdit={() => onEdit(item.id)}
           onDelete={() => onDelete(item.id)}
           onTogglePayment={() => onTogglePayment(item.id)}
+          onChoosePayment={(choice) => onChoosePayment(item.id, choice)}
           onMessage={() => onMessage(item.id)}
         />
       ))}

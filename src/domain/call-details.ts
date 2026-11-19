@@ -1,5 +1,6 @@
 import { parseCurrencyValue } from './money.ts'
 import { generateLocalId } from './localId.ts'
+import { PAYMENT_UNCHOSEN } from './financeCore.ts'
 import type { CallDetailLike } from './callDetail.ts'
 import type { ClientLike } from './clients.ts'
 
@@ -27,7 +28,7 @@ export function checkCallDetailDraft(draft: CallDetailDraft): { field: 'loadLoc'
   return filled ? null : { field: 'loadLoc', message: '운임, 상차지, 하차지 중 하나를 입력해 주세요.' }
 }
 
-export function buildCallDetail(draft: CallDetailDraft, existing?: CallDetailLike | null, dateKey?: string, clients: Array<ClientLike> = []) {
+export function buildCallDetail(draft: CallDetailDraft, existing?: CallDetailLike | null, dateKey?: string, clients: Array<ClientLike> = [], startUnchosen = false) {
   const loadLoc = String(draft.loadLoc || '').trim()
   const unloadLoc = String(draft.unloadLoc || '').trim()
   const fareInput = String(draft.fare ?? '').trim()
@@ -55,7 +56,7 @@ export function buildCallDetail(draft: CallDetailDraft, existing?: CallDetailLik
       commissionSnapshot,
       remarks: String(draft.remarks || '').trim(),
       vatExempt: !!draft.vatExempt,
-      paymentStatus: existing?.paymentStatus || '미수',
+      paymentStatus: existing ? (existing.paymentStatus || '미수') : (startUnchosen ? PAYMENT_UNCHOSEN : '미수'),
       payments: Array.isArray(existing?.payments) ? existing.payments : [],
       paymentDueDate: String(draft.paymentDueDate || '').trim(),
       workDate: dateKey,
@@ -85,10 +86,10 @@ export function computeDistanceKm(startOdometer?: string, endOdometer?: string, 
   return String(fallback || '').trim()
 }
 
-export function upsertCallDetail(details: Array<CallDetailLike>, draft: CallDetailDraft, editingIndex: number, dateKey?: string, clients: Array<ClientLike> = []) {
+export function upsertCallDetail(details: Array<CallDetailLike>, draft: CallDetailDraft, editingIndex: number, dateKey?: string, clients: Array<ClientLike> = [], startUnchosen = false) {
   const list = [...(details || [])]
   const existing = editingIndex >= 0 ? list[editingIndex] : null
-  const result = buildCallDetail(draft, existing, dateKey, clients)
+  const result = buildCallDetail(draft, existing, dateKey, clients, startUnchosen)
   if (result.error) return { error: result.error, items: details }
 
   if (editingIndex >= 0) {

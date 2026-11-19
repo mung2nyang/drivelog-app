@@ -144,6 +144,6 @@ export function getOwnerMonthlyFinanceDetail(monthKey: string, scope = 'owner', 
       misc: { total: miscTotal, items: miscItems },
       salary: { total: salaryTotal, items: salaryItems },
     },
-    unpaid: { total: unpaidTotal, count: unpaidItems.length, items: unpaidItems },
+    unpaid: { shown: !!settings.paymentOn, total: unpaidTotal, count: unpaidItems.length, items: unpaidItems },
   }
 }

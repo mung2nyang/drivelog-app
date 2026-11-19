@@ -30,7 +30,7 @@ const calls = []
 supabase.functions = { invoke: async (/** @type {string} */ name) => { calls.push(name); return reply() } }
 
 before(() => {
-  commitSettings(OWNER, normalizeSettings({ fixedOn: true, subFixedOn: true }))
+  commitSettings(OWNER, normalizeSettings({ fixedOn: true, subFixedOn: true, paymentOn: true }))
   commitClients(OWNER, [...FIXTURE_SETTINGS.clients, { id: 'c-daehan', companyName: '대한', phone: '010-2222-3333' }])
   commitCars(OWNER, FIXTURE_SETTINGS.cars)
   Object.entries(FIXTURE_WORK).forEach(([logId, data]) => commitLogWorkData(OWNER, logId, data))

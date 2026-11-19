@@ -66,7 +66,7 @@ describe('OwnerMonthlyCards variant=driverSelf', () => {
         misc: { total: 0, items: [] },
         salary: { total: 0, items: [] },
       },
-      unpaid: { total: 0, count: 0, items: [] },
+      unpaid: { shown: true, total: 0, count: 0, items: [] },
     }
   }
 
@@ -88,6 +88,25 @@ describe('OwnerMonthlyCards variant=driverSelf', () => {
     } finally {
       root.unmount()
       container.remove()
+    }
+  })
+
+  test('결제/수금을 끄면 미수금 줄이 없고, 켜면 있다', async () => {
+    for (const shown of [false, true]) {
+      const detail = sampleDetail()
+      detail.unpaid = { shown, total: 30000, count: 1, items: [] }
+      const container = document.createElement('div')
+      document.body.appendChild(container)
+      const root = createRoot(container)
+      try {
+        await act(async () => {
+          root.render(React.createElement(OwnerMonthlyCards, { detail }))
+        })
+        assert.equal((container.textContent || '').includes('미수금(1건)'), shown)
+      } finally {
+        root.unmount()
+        container.remove()
+      }
     }
   })
 

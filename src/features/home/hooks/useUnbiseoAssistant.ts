@@ -18,8 +18,8 @@ import { INSPECTION_WAIT, WEATHER_WAIT, describeDayOff, describeExistingClient, 
 import { checkInspection, saveAllGood, savedSentence } from '../api/unbiseoInspection.ts'
 import type { UnbiseoInspectionSave } from '../api/unbiseoInspection.ts'
 import { requestWeatherSentence } from '../api/unbiseoWeather.ts'
-import { questionNumbers } from '../api/unbiseoNumbers.ts'
-import { describeQuestion } from '../api/unbiseoQuestion.ts'
+import { paymentTracked, questionNumbers } from '../api/unbiseoNumbers.ts'
+import { describeQuestion, PAYMENT_OFF } from '../api/unbiseoQuestion.ts'
 import useSpeechInput from './useSpeechInput.ts'
 import useSpeechOutput from './useSpeechOutput.ts'
 
@@ -108,7 +108,8 @@ export default function useUnbiseoAssistant() {
     const heardClient = result.kind === 'client' ? result.client : null
     const existing = !!heardClient && clients.some((client) => (client.companyName || '').trim() === heardClient.name)
     const sameDayOff = result.kind === 'dayOff' && dayOffAlready(owner, result.dayOff, isDriver)
-    const sentence = weatherSentence || checked?.sentence || (sameDayOff && result.kind === 'dayOff' ? describeDayOff(result.dayOff, today, true) : existing && heardClient ? describeExistingClient(heardClient.name) : describeResult(result, today, (question) => describeQuestion(question, today, isDriver, (asked) => questionNumbers(owner, asked, isDriver))))
+    const smsOff = result.kind === 'sms' && !paymentTracked(owner)
+    const sentence = weatherSentence || checked?.sentence || (smsOff ? PAYMENT_OFF : sameDayOff && result.kind === 'dayOff' ? describeDayOff(result.dayOff, today, true) : existing && heardClient ? describeExistingClient(heardClient.name) : describeResult(result, today, (question) => describeQuestion(question, today, isDriver, (asked) => questionNumbers(owner, asked, isDriver))))
     setAnswer({
       said: trimmed,
       sentence,
@@ -116,7 +117,7 @@ export default function useUnbiseoAssistant() {
       expense: result.kind === 'expense' ? result.expense : null,
       fixed: result.kind === 'fixed' ? result.fixed : null,
       client: existing ? null : heardClient,
-      sms: result.kind === 'sms' ? result.sms : null,
+      sms: result.kind === 'sms' && !smsOff ? result.sms : null,
       inspection: checked?.save ?? null,
       dayOff: result.kind === 'dayOff' && !sameDayOff ? result.dayOff : null,
     })

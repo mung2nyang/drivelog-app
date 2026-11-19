@@ -30,6 +30,15 @@ export default function ReceivablesListPage({ isEmployedDriver = false, onBack, 
     ownerKey, workDataByLogId, settings, confirm,
   })
 
+  if (!settings.paymentOn) {
+    return (
+      <div className="page receivables-page">
+        <PageHeader title="미수금/정산 관리" onBack={onBack} onOpenMenu={onOpenMenu} />
+        <div className="empty-state" role="status">결제/수금 관리가 꺼져 있어요. 앱 설정에서 켜면 미수금을 볼 수 있어요.</div>
+      </div>
+    )
+  }
+
   return (
     <div className="page receivables-page">
       {confirmDialog}

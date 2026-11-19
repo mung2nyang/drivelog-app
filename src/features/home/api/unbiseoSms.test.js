@@ -16,7 +16,7 @@ const OWNER = 'unbiseo-sms'
 const TODAY = '2026-10-23'
 
 before(() => {
-  commitSettings(OWNER, normalizeSettings({ fixedOn: true, subFixedOn: true }))
+  commitSettings(OWNER, normalizeSettings({ fixedOn: true, subFixedOn: true, paymentOn: true }))
   commitClients(OWNER, [...FIXTURE_SETTINGS.clients, { id: 'c-daehan', companyName: '대한', phone: '010-2222-3333' }])
   commitCars(OWNER, FIXTURE_SETTINGS.cars)
   Object.entries(FIXTURE_WORK).forEach(([logId, data]) => commitLogWorkData(OWNER, logId, data))
@@ -67,7 +67,7 @@ test('{운행구간}: 달 "5월분 3건"(다른 해는 연도), 전체 "전체 n
 })
 
 test('문구 = 계정 설정의 문구를 일지 문자 창 함수로 채움, {운송료}는 고른 건의 남은 합계', () => {
-  const base = normalizeSettings({ fixedOn: true, subFixedOn: true })
+  const base = normalizeSettings({ fixedOn: true, subFixedOn: true, paymentOn: true })
   const hanjin = smsClientItems(readSmsItems(OWNER), '한진').list
   const pick = /** @type {const} */ ({ kind: 'month', month: '2026-05' })
   assert.equal(smsBody(OWNER, 1, '한진', pick, hanjin, TODAY), '안녕하세요, 한진 담당자님. 5월분 3건 운송료 130,000원이 미수 상태입니다. 확인 부탁드립니다.')

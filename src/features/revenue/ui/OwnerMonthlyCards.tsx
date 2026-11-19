@@ -76,11 +76,13 @@ export default function OwnerMonthlyCards({ detail, scope, variant = 'owner' }: 
           <span>이번 달 부가가치세(공급가액의 10%)</span>
           <span className="summary-value">{won(detail.vatAmount)}</span>
         </div>
-        <RevenueDetailRow
-          label={`미수금(${detail.unpaid.count}건)`}
-          amount={detail.unpaid.total}
-          items={detail.unpaid.items.map((item) => ({ label: item.client, amount: item.remainingAmount }))}
-        />
+        {detail.unpaid.shown && (
+          <RevenueDetailRow
+            label={`미수금(${detail.unpaid.count}건)`}
+            amount={detail.unpaid.total}
+            items={detail.unpaid.items.map((item) => ({ label: item.client, amount: item.remainingAmount }))}
+          />
+        )}
       </div>
 
       <div className="summary-card revenue-net-card">

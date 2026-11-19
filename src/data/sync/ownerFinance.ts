@@ -76,8 +76,8 @@ export function buildFinanceSettings(ownerKey = 'guest') {
   const drivers = readOwnerDrivers(ownerKey)
   const clients = readOwnerClients(ownerKey)
   return {
-    paymentOn: true,
-    subPaymentOn: true,
+    paymentOn: !!practice.paymentOn,
+    subPaymentOn: !!practice.paymentOn,
     fixedOn: practice.fixedOn,
     subFixedOn: practice.subFixedOn,
     unitPrice: resolveFixedUnitPrice({ clients }),

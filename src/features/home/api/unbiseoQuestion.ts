@@ -3,12 +3,13 @@ import type { JsonValue } from '../../../domain/jsonTypes.ts'
 export type QuestionType = 'revenue' | 'netProfit' | 'expense' | 'unpaid' | 'trips' | 'other'
 export type QuestionPeriod = { unit: 'day', value: string } | { unit: 'month', value: string } | { unit: 'year', value: string } | { unit: 'all' } | { unit: 'unsupported' }
 export type UnbiseoQuestion = { type: QuestionType, period: QuestionPeriod, client: string, expenseType: 'maint' | 'fuel' | 'misc' | '' }
-export type QuestionNumbers = { amount: number, count: number, supply: number, withSub?: boolean }
+export type QuestionNumbers = { amount: number, count: number, supply: number, withSub?: boolean, paymentOff?: boolean }
 
 const TYPES: Array<QuestionType> = ['revenue', 'netProfit', 'expense', 'unpaid', 'trips', 'other']
 export const ASK_BY_MONTH = '월별 또는 연도별로 물어봐 주세요. 예: 이번 달 매출은 얼마야?'
 export const CANNOT_ANSWER = '아직 답변할 수 없는 질문이에요. 매출, 순이익, 지출, 미수금 또는 운행 횟수를 물어봐 주세요.'
 export const CLIENT_ONLY_SALES = '거래처별로는 매출과 미수금만 답할 수 있어요.'
+export const PAYMENT_OFF = '결제/수금 관리가 꺼져 있어 미수금을 확인할 수 없어요. 앱 설정에서 켜 주세요.'
 export const NET_PROFIT_BY_MONTH = '순이익은 월별 또는 연도별로 물어봐 주세요.'
 export const CLIENT_SALES_BY_MONTH = '거래처별 매출은 월별 또는 연도별로 물어봐 주세요.'
 
@@ -70,9 +71,10 @@ const EXPENSE_TOPIC = { '': '지출은', fuel: '주유비는', maint: '정비비
 export function describeQuestion(question: UnbiseoQuestion, today: string, isDriver: boolean, numbersFor: (question: UnbiseoQuestion) => QuestionNumbers): string {
   const notice = questionNotice(question)
   if (notice) return notice
-  const { amount, count, supply, withSub } = numbersFor(question)
+  const { amount, count, supply, withSub, paymentOff } = numbersFor(question)
   const label = periodLabel(question.period, today)
   if (question.type === 'unpaid') {
+    if (paymentOff) return PAYMENT_OFF
     const prefix = [question.client, label && `${label} 운행분`].filter(Boolean).join(' ')
     const head = prefix ? `${prefix} ` : ''
     return amount > 0 ? `${head}남은 미수금은 ${formatWon(amount)}입니다. ${withSub ? '기사 차량을 포함해 ' : ''}${count}건입니다.` : `${head}남은 미수금이 없습니다.`

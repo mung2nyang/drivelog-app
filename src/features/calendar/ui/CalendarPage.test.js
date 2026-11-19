@@ -301,7 +301,38 @@ test('슬라이스 B 회귀: logId 기본 main — 수수료·합계가 prop 생
   }
 })
 
-test('슬라이스 B: 서브 달력은 해당 차량 workData·subPaymentOn·수수료 숨김', async () => {
+test('서브 달력 미수 미니카드는 메인 결제/수금 스위치를 따른다', async () => {
+  const ownerKey = 'test-calendar-sub-payment'
+  const plate = '서울88가8888'
+  commitCars(ownerKey, [
+    { id: 'main-1', type: 'main', number: '서울00가0000' },
+    { id: 'sub-1', type: 'sub', number: plate, logEnabled: true },
+  ])
+  commitLogWorkData(ownerKey, plate, {
+    '2026-08-15': { isOff: false, callDetails: [{ id: 'sub-call-1', client: 'A', fare: 50000, payments: [] }] },
+  })
+  for (const paymentOn of [true, false]) {
+    commitSettings(ownerKey, normalizeSettings({ paymentOn }))
+    const container = document.createElement('div')
+    document.body.appendChild(container)
+    const root = createRoot(container)
+    try {
+      await act(async () => {
+        root.render(React.createElement(
+          MemoryRouter,
+          { initialEntries: [`/app/logs/${encodeURIComponent(plate)}?y=2026&m=7`] },
+          withSession(React.createElement(CalendarPage, { logId: plate, onSelectDay: () => {} }), { ownerKey }),
+        ))
+      })
+      assert.equal(!!container.querySelector('.unpaid-summary-card'), paymentOn, `paymentOn=${paymentOn}`)
+    } finally {
+      await act(async () => { root.unmount() })
+      container.remove()
+    }
+  }
+})
+
+test('슬라이스 B: 서브 달력은 해당 차량 workData·결제 끔·수수료 숨김', async () => {
   const ownerKey = 'test-calendar-sub-log'
   const plate = '서울99가9999'
   const dateKey = '2026-08-15'
@@ -313,8 +344,7 @@ test('슬라이스 B: 서브 달력은 해당 차량 workData·subPaymentOn·수
     { id: 'client-sub', companyName: '서브거래처', fixedRouteLinked: true, fixedUnitPrice: 20000 },
   ])
   commitSettings(ownerKey, normalizeSettings({
-    paymentOn: true,
-    subPaymentOn: false,
+    paymentOn: false,
     fixedOn: true,
     subFixedOn: true,
   }))
@@ -349,7 +379,7 @@ test('슬라이스 B: 서브 달력은 해당 차량 workData·subPaymentOn·수
     assert.equal(
       container.querySelector('.unpaid-summary-card'),
       null,
-      'subPaymentOn=false 이면 미수 미니카드 숨김',
+      '결제/수금 끔이면 서브 달력도 미수 미니카드 숨김',
     )
   } finally {
     await act(async () => { root.unmount() })

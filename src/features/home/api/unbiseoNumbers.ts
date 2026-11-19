@@ -20,12 +20,17 @@ function inPeriod(workDate: string, period: QuestionPeriod): boolean {
   return true
 }
 
+export function paymentTracked(ownerKey: string): boolean {
+  return !!readOwnerSettings(ownerKey).paymentOn
+}
+
 export function questionNumbers(ownerKey: string, question: UnbiseoQuestion, isDriver: boolean): QuestionNumbers {
   const settings = buildFinanceSettings(ownerKey)
   const workDataByLogId = readOwnerWorkDataByLogId(ownerKey)
   const months = monthsOf(question.period)
 
   if (question.type === 'unpaid') {
+    if (!settings.paymentOn) return { amount: 0, count: 0, supply: 0, paymentOff: true }
     const items = getReceivableItems(settings, workDataByLogId)
       .filter((item) => (!question.client || item.client === question.client) && inPeriod(item.workDate, question.period))
     const withSub = items.some((item) => item.logId !== 'main')

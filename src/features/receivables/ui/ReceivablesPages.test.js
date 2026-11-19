@@ -16,7 +16,8 @@ const { createRoot } = await import('react-dom/client')
 const { MemoryRouter, Route, Routes } = await import('react-router-dom')
 const { act } = React
 const { default: ReceivablesPage } = await import('./ReceivablesPage.tsx')
-const { commitCars, commitWorkData } = await import('../../../data/store/commitHelpers.ts')
+const { commitCars, commitSettings, commitWorkData } = await import('../../../data/store/commitHelpers.ts')
+const { normalizeSettings } = await import('../../../domain/practiceSettings.ts')
 
 /**
  * @param {string} ownerKey
@@ -48,8 +49,9 @@ async function renderAt(ownerKey, path, isEmployedDriver) {
   }
 }
 
-/** @param {string} ownerKey @param {Array<object>} cars */
-function seed(ownerKey, cars) {
+/** @param {string} ownerKey @param {Array<object>} cars @param {boolean} [paymentOn] */
+function seed(ownerKey, cars, paymentOn = true) {
+  commitSettings(ownerKey, normalizeSettings({ paymentOn }))
   commitCars(ownerKey, cars)
   commitWorkData(ownerKey, {
     '2026-09-03': { isOff: false, callDetails: [{ id: 'u1', client: 'A', fare: 100000, payments: [] }] },
@@ -92,6 +94,28 @@ test('연동 기사 계정: 자기 차가 "메인 차량"으로 안 보이게 �
     assert.deepEqual(detail.badges(), [])
   } finally {
     await detail.cleanup()
+  }
+})
+
+test('결제/수금을 끄면 목록 대신 꺼져 있다는 안내, 다시 켜면 미수 건 그대로', async () => {
+  const ownerKey = 'test-recv-payment-off'
+  seed(ownerKey, [{ id: 'c-main', type: 'main', number: '12가3456' }], false)
+  const off = await renderAt(ownerKey, '/app/receivables', false)
+  try {
+    const text = off.container.textContent || ''
+    assert.ok(text.includes('결제/수금 관리가 꺼져 있어요. 앱 설정에서 켜면 미수금을 볼 수 있어요.'), text.slice(0, 300))
+    assert.equal(off.container.querySelector('.receivable-group-card'), null)
+    assert.equal(off.container.querySelector('.receivable-tabs'), null)
+  } finally {
+    await off.cleanup()
+  }
+  commitSettings(ownerKey, normalizeSettings({ paymentOn: true }))
+  const on = await renderAt(ownerKey, '/app/receivables', false)
+  try {
+    assert.ok(on.container.querySelector('.receivable-group-card'), '켜면 미수 건이 다시 보여야 한다')
+    assert.equal((on.container.textContent || '').includes('꺼져 있어요'), false)
+  } finally {
+    await on.cleanup()
   }
 })
 

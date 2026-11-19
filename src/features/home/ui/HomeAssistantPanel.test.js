@@ -417,6 +417,31 @@ test('질문: 매출 화면과 같은 숫자의 답 문장, 버튼 없음 · 짧
   } finally { await view.cleanup() }
 })
 
+test('결제/수금 끔: 미수금 질문·미수금 문자는 꺼져 있다는 안내, 켜면 미수금 답', async () => {
+  const owner = 'u-assistant-payment-off'
+  const thisMonth = todayWorkLogSelection(new Date()).dateKey.slice(0, 7)
+  commitWorkData(owner, { [`${thisMonth}-01`]: { callDetails: [{ id: 'po-1', client: '한진', fare: '150,000', payments: [] }] } })
+  commitSettings(owner, normalizeSettings({ paymentOn: false }))
+  const off = '결제/수금 관리가 꺼져 있어 미수금을 확인할 수 없어요. 앱 설정에서 켜 주세요.'
+  const unpaid = async () => ({ data: { kind: 'question', question: { type: 'unpaid', period: { unit: 'all' }, client: '', expenseType: '' } }, error: null })
+  const view = await mount(owner, { ...CLOUD, userId: owner })
+  const result = () => view.container.querySelector('.home-assistant-result')?.textContent
+  try {
+    reply = unpaid
+    await view.type('미수금 얼마야')
+    await view.send()
+    assert.equal(result(), off)
+    reply = async () => ({ data: { kind: 'sms', sms: { client: '', month: '', all: false, template: null } }, error: null })
+    await view.send()
+    assert.equal(result(), off)
+    assert.equal(view.container.querySelector('.unbiseo-sms-choice'), null, '문자 고르기 단계 없음')
+    commitSettings(owner, normalizeSettings({ paymentOn: true }))
+    reply = unpaid
+    await view.send()
+    assert.equal(result(), '남은 미수금은 150,000원입니다. 1건입니다.')
+  } finally { await view.cleanup() }
+})
+
 test('연동 기사 질문: 기사 본인 매출 화면 이름(정산액)', async () => {
   const owner = 'u-assistant-question-driver'
   const thisMonth = todayWorkLogSelection(new Date()).dateKey.slice(0, 7)

@@ -42,7 +42,7 @@ export default function CalendarPage({
   const { workData, settings, inputMode, unitPrice, palletPrice, expenses, summary } = useMonthSettlement({
     ownerKey, logId, clientScopeKey, year, month,
   })
-  const paymentOn = isMain ? !!settings.paymentOn : !!settings.subPaymentOn
+  const paymentOn = !!settings.paymentOn
   const distanceOn = !!resolveLogSettings(settings, logId).distanceOn
 
   const cells = useMemo(() => buildCalendarCells(viewDate), [viewDate])

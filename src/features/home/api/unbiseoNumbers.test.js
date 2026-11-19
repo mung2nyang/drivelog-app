@@ -24,7 +24,7 @@ const YEAR_MONTHS = monthsOf(YEAR)
 const q = (fields) => ({ type: 'revenue', period: MAY, client: '', expenseType: '', ...fields })
 
 before(() => {
-  commitSettings(OWNER, normalizeSettings({ fixedOn: true, subFixedOn: true }))
+  commitSettings(OWNER, normalizeSettings({ fixedOn: true, subFixedOn: true, paymentOn: true }))
   commitClients(OWNER, FIXTURE_SETTINGS.clients)
   commitCars(OWNER, FIXTURE_SETTINGS.cars)
   commitDrivers(OWNER, [{ id: 'link-1', name: '김기사', phone: '', vehicleNumber: '서울12가3456', startDate: '2026-05-01', endDate: '2026-05-31', status: 'linked' }])

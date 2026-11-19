@@ -18,7 +18,7 @@ const emptyDraft: ClientDraft = {
 type CallClientQuickAddProps = {
   clients: Array<ClientLike>
   logId?: string
-  onClientAdded: (companyName: string) => void
+  onClientAdded: (companyName: string, client: ClientLike | null) => void
 }
 
 export default function CallClientQuickAdd({ clients, logId = 'main', onClientAdded }: CallClientQuickAddProps) {
@@ -48,7 +48,7 @@ export default function CallClientQuickAdd({ clients, logId = 'main', onClientAd
     if (result.failed) return
     setModalOpen(false)
     const name = String(result.saved?.companyName || draft.companyName || '').trim()
-    if (name) onClientAdded(name)
+    if (name) onClientAdded(name, result.saved ?? null)
   }
 
   return (

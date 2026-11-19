@@ -73,8 +73,8 @@ export default function CallDetailForm({
     if (await confirmLargeFareSave(draft.fare)) onSave(draft)
   }
 
-  function applyClient(name: string) {
-    const next = nextAutoDueDate(draft.paymentDueDate, autoDue, name, clients, dateKey)
+  function applyClient(name: string, added?: ClientLike | null) {
+    const next = nextAutoDueDate(draft.paymentDueDate, autoDue, name, added ? [added, ...clients] : clients, dateKey)
     setDraft({ ...draft, client: name, ...(next ? { paymentDueDate: next } : {}) })
     if (next) setAutoDue(next)
   }

@@ -41,9 +41,11 @@ function writeAll(next: Stored) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
   } catch {
+    return false
   }
   version += 1
   listeners.forEach((listener) => listener())
+  return true
 }
 
 export function listFailedDayLogDates(ownerKey: string): Array<FailedDayLogDate> {
@@ -60,13 +62,13 @@ export function getFailedDayLogBase(ownerKey: string, logId: string, dateKey: st
 
 export function addFailedDayLogDate(ownerKey: string, logId: string, dateKey: string, patch?: EffectivePatch, base?: string | null) {
   const all = readAll()
-  if (!all) return
+  if (!all) return false
   const list = all[ownerKey] || []
   const entry: StoredEntry = !patch ? { logId, dateKey } : base === undefined ? { logId, dateKey, patch } : { logId, dateKey, patch, base }
   const index = list.findIndex((item) => isSame(item, logId, dateKey))
-  if (index >= 0 && !patch) return
+  if (index >= 0 && !patch) return true
   const next = index >= 0 ? list.map((item, i) => (i === index ? entry : item)) : [...list, entry]
-  writeAll({ ...all, [ownerKey]: next })
+  return writeAll({ ...all, [ownerKey]: next })
 }
 
 export function removeFailedDayLogDate(ownerKey: string, logId: string, dateKey: string) {

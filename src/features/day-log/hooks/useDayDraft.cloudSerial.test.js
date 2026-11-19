@@ -209,6 +209,31 @@ test('F-1 서버 저장 실패 → 날짜가 목록에, 다음 저장 성공 →
   }
 })
 
+test('F-1b 서버 저장 실패 + 보관도 실패 → 실패 안내 하나에 보관 못 했다는 말이 붙는다', async () => {
+  beginLoggedIn('u-f1b', 'own-f1b')
+  holdUpserts({ gated: 0, failFirst: true })
+  const originalError = console.error
+  console.error = () => {}
+  const proto = Object.getPrototypeOf(localStorage)
+  const realSetItem = proto.setItem
+  const setItem = mock.method(proto, 'setItem', function (/** @type {string} */ key, /** @type {string} */ value) {
+    if (key === 'drivelogFailedDayLogDates') throw new Error('가득 참')
+    return realSetItem.call(this, key, value)
+  })
+  const view = await mount('own-f1b')
+  try {
+    await view.edit(1)
+    await act(async () => { await wait(700) })
+    assert.deepEqual(view.toasts, [`${FAIL_FAST} 휴대폰 저장 공간이 부족해 내용을 따로 보관하지 못했습니다. 앱을 끄면 사라질 수 있으니 네트워크를 확인하고 다시 저장해 주세요.`])
+    assert.deepEqual(listFailedDayLogDates('own-f1b'), [])
+  } finally {
+    setItem.mock.restore()
+    console.error = originalError
+    await view.unmount()
+    endCloudSession()
+  }
+})
+
 test('F-2 화면을 닫는 것만으로는 지우지 않는다(닫을 때 다시 저장도 실패)', async () => {
   beginLoggedIn('u-f2', 'own-f2')
   handlers.rpc = { save_day_log: () => { throw new Error('network down') } }

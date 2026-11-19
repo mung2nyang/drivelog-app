@@ -59,6 +59,23 @@ test('휴대폰 저장소를 못 써도 던지지 않는다', () => {
   }
 })
 
+test('휴대폰 저장소에 못 쓰면 실패를 돌려주고 구독자를 부르지 않는다', () => {
+  const listener = mock.fn()
+  const off = subscribeFailedDayLogDates(listener)
+  const setItem = mock.method(Object.getPrototypeOf(localStorage), 'setItem', () => { throw new Error('가득 참') })
+  try {
+    assert.equal(addFailedDayLogDate('own-q', 'main', '2026-10-22', { fixedCount: 1 }), false)
+    assert.equal(listener.mock.callCount(), 0)
+  } finally {
+    setItem.mock.restore()
+    off()
+  }
+  localStorage.setItem(KEY, '{')
+  assert.equal(addFailedDayLogDate('own-q', 'main', '2026-10-22', { fixedCount: 1 }), false)
+  localStorage.removeItem(KEY)
+  assert.equal(addFailedDayLogDate('own-q', 'main', '2026-10-22', { fixedCount: 1 }), true)
+})
+
 test('바뀔 때만 구독자를 부르고, 해제하면 안 부른다', () => {
   let calls = 0
   const stop = subscribeFailedDayLogDates(() => { calls += 1 })

@@ -10,7 +10,7 @@ import { dayLogVersion } from '../../../data/sync/dayLogVersions.ts'
 import { readOwnerLogWorkData } from '../../../data/store/ownerDataHooks.ts'
 import { pruneDayDraft, registerDayDraft, releaseDayDraft } from '../../../data/sync/dayDraftActivity.ts'
 import { addFailedDayLogDate, removeFailedDayLogDate } from '../../../data/sync/failedDayLogDates.ts'
-import { DEVICE_SAVE_FAIL, NO_VEHICLE_SAVE_FAIL, SERVER_SAVE_FAIL } from '../../../shared/utils/failureMessages.ts'
+import { DEVICE_SAVE_FAIL, FAILED_DRAFT_NOT_KEPT, NO_VEHICLE_SAVE_FAIL, SERVER_SAVE_FAIL } from '../../../shared/utils/failureMessages.ts'
 import type { EffectivePatch } from '../../../data/sync/pendingWorkDataWritesTypes.ts'
 import type { DayRecordLike } from '../../../domain/dayRecordTypes.ts'
 import type { DayDraft } from './day-log-reducer.ts'
@@ -107,8 +107,9 @@ export function createDayDraftSaver({ ownerKey, logId, dateKey, draft: initialDr
       settleConflict(!!result.reloaded)
       return
     }
-    addFailedDayLogDate(ownerKey, logId, dateKey, patch, knownBase())
-    if (result.toast) toast?.(result.toast === SERVER_SAVE_FAIL ? failHead + result.toast : result.toast)
+    const kept = addFailedDayLogDate(ownerKey, logId, dateKey, patch, knownBase())
+    const message = result.toast === SERVER_SAVE_FAIL ? failHead + result.toast : result.toast
+    if (message) toast?.(kept ? message : `${message} ${FAILED_DRAFT_NOT_KEPT}`)
     if (!progress.mounted) return
     setAutoSaveStatus('failed')
     markUnsafeRegistrationFailure(pendingOwner, dateKey, patch)

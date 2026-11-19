@@ -41,16 +41,20 @@ function floorTen(value: number) {
   return Math.floor(value / 10 + 1e-6) * 10
 }
 
-function currentRate(value: string | number | null | undefined, legacy: number, fallback: string) {
-  return parseFloat(String(value ?? '')) === legacy ? fallback : value
+function isRate(value: string | number | null | undefined, target: number) {
+  return parseFloat(String(value ?? '')) === target
 }
 
-function expenseRateOf(value: string | number | null | undefined) {
-  return currentRate(value, LEGACY_EXPENSE_RATE, DEFAULT_EXPENSE_RATE)
-}
-
-function insuranceRateOf(value: string | number | null | undefined) {
-  return currentRate(value, LEGACY_INSURANCE_RATE, DEFAULT_INSURANCE_RATE)
+export function withCurrentDefaultRates(cars: Array<CarLike>): Array<CarLike> {
+  let changed = false
+  const next = cars.map((car) => {
+    const expense = isRate(car?.expenseRate, LEGACY_EXPENSE_RATE)
+    const insurance = isRate(car?.insuranceRate, LEGACY_INSURANCE_RATE)
+    if (!expense && !insurance) return car
+    changed = true
+    return { ...car, ...(expense ? { expenseRate: DEFAULT_EXPENSE_RATE } : {}), ...(insurance ? { insuranceRate: DEFAULT_INSURANCE_RATE } : {}) }
+  })
+  return changed ? next : cars
 }
 
 function rateOf(value: string | number | null | undefined, fallback: string) {
@@ -75,8 +79,8 @@ export function driverIncomeDraftFromCar(car: CarLike): DriverIncomeFields {
     driverIncomeType: car.driverIncomeType === 'employee' ? 'employee' : 'business',
     insuranceOn: !!car.insuranceOn,
     withholdingOn: !!car.withholdingOn,
-    expenseRate: String(expenseRateOf(car.expenseRate) ?? DEFAULT_EXPENSE_RATE),
-    insuranceRate: String(insuranceRateOf(car.insuranceRate) ?? DEFAULT_INSURANCE_RATE),
+    expenseRate: String(car.expenseRate ?? DEFAULT_EXPENSE_RATE),
+    insuranceRate: String(car.insuranceRate ?? DEFAULT_INSURANCE_RATE),
     insuranceSplit: insuranceSplitOf(car),
   }
 }
@@ -87,8 +91,8 @@ export function getDriverSettlementAmount(car: CarLike | null | undefined, commi
 
 export function getDriverIncomeDeductions(car: CarLike | null | undefined, settlementAmount: number) {
   const amount = Math.max(0, Math.floor(Number(settlementAmount) || 0))
-  const insuranceBase = amount - floorWon(amount * rateOf(expenseRateOf(car?.expenseRate), DEFAULT_EXPENSE_RATE) / 100)
-  const insuranceRate = car?.insuranceOn ? rateOf(insuranceRateOf(car?.insuranceRate), DEFAULT_INSURANCE_RATE) : 0
+  const insuranceBase = amount - floorWon(amount * rateOf(car?.expenseRate, DEFAULT_EXPENSE_RATE) / 100)
+  const insuranceRate = car?.insuranceOn ? rateOf(car?.insuranceRate, DEFAULT_INSURANCE_RATE) : 0
   const split = insuranceSplitOf(car)
   const fullShare = floorTen(insuranceBase * insuranceRate / 100)
   const halfShare = floorTen(insuranceBase * insuranceRate / 200)

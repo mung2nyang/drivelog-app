@@ -4,7 +4,7 @@ import { describe, test } from 'node:test'
 import {
   DEFAULT_EXPENSE_RATE, DEFAULT_INSURANCE_RATE, NEW_DRIVER_INCOME_DRAFT,
   driverIncomeDraftFromCar, driverIncomeFieldsFromDraft, getDriverIncomeDeductions,
-  getDriverSettlementAmount, getDriverSettlementBreakdown, hasDriverInsuranceShare, insuranceSplitOf,
+  getDriverSettlementAmount, getDriverSettlementBreakdown, hasDriverInsuranceShare, insuranceSplitOf, withCurrentDefaultRates,
 } from './driverIncomeDeductions.ts'
 import { upsertCar } from './cars.ts'
 
@@ -100,11 +100,11 @@ describe('getDriverIncomeDeductions — 토글·요율·경계', () => {
     assert.equal(result.insuranceTotal, 630)
   })
 
-  test('예전 기본값(30.5·1.8)으로 저장된 차량은 지금 기본값으로 계산한다', () => {
-    const base = getDriverIncomeDeductions(BUSINESS_CAR, 200000)
-    assert.deepEqual(getDriverIncomeDeductions({ ...BUSINESS_CAR, expenseRate: '30.5', insuranceRate: '1.8' }, 200000), base)
-    assert.deepEqual(getDriverIncomeDeductions({ ...BUSINESS_CAR, expenseRate: 30.5, insuranceRate: 1.8 }, 200000), base)
-    assert.equal(getDriverIncomeDeductions({ ...BUSINESS_CAR, expenseRate: '30.3' }, 200000).insuranceBase, 200000 - 60600)
+  test('차주가 넣은 30.5·1.8은 그 값 그대로 계산한다', () => {
+    const result = getDriverIncomeDeductions({ ...BUSINESS_CAR, expenseRate: '30.5', insuranceRate: '1.8' }, 200000)
+    assert.equal(result.insuranceBase, 200000 - 61000)
+    assert.equal(result.insuranceTotal, 2500)
+    assert.equal(getDriverIncomeDeductions({ ...BUSINESS_CAR, expenseRate: 30.5 }, 200000).insuranceBase, 139000)
   })
 
   test('정산액이 0·음수·숫자 아님이면 전부 0', () => {
@@ -221,10 +221,19 @@ describe('차량 폼 draft ↔ 저장 필드', () => {
     })
   })
 
-  test('driverIncomeDraftFromCar: 예전 기본값(30.5·1.8)으로 저장된 차량은 폼에 지금 기본값으로 보인다', () => {
+  test('driverIncomeDraftFromCar: 저장된 30.5·1.8은 폼에도 그대로 보인다', () => {
     const draft = driverIncomeDraftFromCar({ number: 'a', insuranceOn: true, expenseRate: '30.5', insuranceRate: 1.8 })
-    assert.equal(draft.expenseRate, '49.9')
-    assert.equal(draft.insuranceRate, '1.76')
+    assert.equal(draft.expenseRate, '30.5')
+    assert.equal(draft.insuranceRate, '1.8')
+  })
+
+  test('withCurrentDefaultRates: 예전 기본값만 지금 기본값으로 바꾸고 바뀐 게 없으면 같은 배열', () => {
+    const cars = [{ id: 'a', expenseRate: '30.5', insuranceRate: 1.8 }, { id: 'b', expenseRate: '43.1', insuranceRate: '1.8' }, { id: 'c', expenseRate: '0' }]
+    assert.deepEqual(withCurrentDefaultRates(cars), [
+      { id: 'a', expenseRate: '49.9', insuranceRate: '1.76' }, { id: 'b', expenseRate: '43.1', insuranceRate: '1.76' }, { id: 'c', expenseRate: '0' },
+    ])
+    const untouched = [{ id: 'c', expenseRate: '0' }, { id: 'd' }]
+    assert.equal(withCurrentDefaultRates(untouched), untouched)
   })
 
   test('upsertCar: 기사차량은 새 필드를 저장하고 메인 차량에는 붙이지 않는다', () => {

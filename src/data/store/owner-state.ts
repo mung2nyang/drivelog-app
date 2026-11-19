@@ -1,9 +1,10 @@
-import { readLogWorkData } from './persist.ts'
+import { readLogWorkData, writeJsonKey } from './persist.ts'
 import { readPersistDomain } from './persistDomainRead.ts'
 import { commitBatch, getState } from './app-store.ts'
 import { CLOUD_MEMORY_ONLY_DOMAINS } from './batchWrites.ts'
 import { getCloudOwnerKey } from '../cloud/cloudSession.ts'
 import { dedupeCarsById } from '../../domain/cars.ts'
+import { withCurrentDefaultRates } from '../../domain/driverIncomeDeductions.ts'
 import type { PersistDomain } from './persist.ts'
 import type { BatchEntry, DriverExpensesReplace, DriverHistoryReplace } from './app-store.ts'
 import type { KeyedWrite } from './atomicPersist.ts'
@@ -15,6 +16,22 @@ import type { InvoiceLike } from '../../domain/financeTaxInvoiceEntries.ts'
 import type { DriverRecord } from '../../domain/driverTypes.ts'
 import type { LocalProfile as ProfileLike } from '../hydrate/hydrateMergeTypes.ts'
 import type { WorkDataTombstones } from '../../domain/workDataTombstones.ts'
+
+function rateDefaultsDoneKey(ownerKey: string) {
+  return `drivelogRateDefaultsDone:${ownerKey}`
+}
+
+function guestCarsWithCurrentRates(ownerKey: string, cars: Array<CarLike>): Array<CarLike> {
+  try {
+    if (localStorage.getItem(rateDefaultsDoneKey(ownerKey))) return cars
+    const next = withCurrentDefaultRates(cars)
+    if (next !== cars) writeJsonKey('cars', ownerKey, next)
+    localStorage.setItem(rateDefaultsDoneKey(ownerKey), '1')
+    return next
+  } catch {
+    return withCurrentDefaultRates(cars)
+  }
+}
 
 const SLICE_DOMAINS: Array<PersistDomain> = ['cars', 'clients', 'settings', 'expenses', 'invoices', 'drivers', 'profile', 'dismissedNotifications', 'workDataDeletedDates']
 
@@ -47,7 +64,8 @@ export function initializeOwnerFromPersist(ownerKey: string): boolean {
   if (!workRead.ok) return false
   entries.push({ domain: 'workData', ownerKey, value: workRead.value })
   const carsEntry = entries.find((entry) => entry.domain === 'cars')
-  const cars = Array.isArray(carsEntry?.value) ? (carsEntry.value) as Array<CarLike> : []
+  const cars = Array.isArray(carsEntry?.value) ? guestCarsWithCurrentRates(ownerKey, (carsEntry.value) as Array<CarLike>) : []
+  if (carsEntry && Array.isArray(carsEntry.value)) carsEntry.value = cars
   const extra: Record<string, Record<string, DayRecordLike>> = {}
   for (const car of cars) {
     if (car?.type !== 'sub' || !car.number || car.number === 'main') continue

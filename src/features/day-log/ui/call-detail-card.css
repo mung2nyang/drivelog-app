@@ -30,6 +30,8 @@
   font-size: var(--fs-4);
   font-weight: var(--fw-heavy);
   line-height: 1.35;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
 }
 
 .work-log-page .detail-meta-line {
@@ -37,6 +39,8 @@
   color: var(--sub-text-color);
   font-size: var(--fs-floor);
   line-height: 1.4;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
 }
 
 .work-log-page .commission-rate {

@@ -69,7 +69,10 @@
   font-size: var(--fs-floor);
   line-height: 1.4;
   text-align: left;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
 }
+.driver-form-modal .input-box:disabled { opacity: 0.6; cursor: default; }
 .driver-assignment-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;

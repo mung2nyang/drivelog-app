@@ -155,3 +155,62 @@ test('저장이 끝나고 창이 남으면 잠금이 풀려 다시 누르면 1�
     await view.cleanup()
   }
 })
+
+const LINKED_NOTE = '연동 중에는 배정 차량을 바꿀 수 없습니다. 다른 차량을 배정하려면 연동을 해제한 뒤 새로 초대해 주세요.'
+
+/** 기존 기사를 고치는 창을 그린다. @param {'linked'|'pending'} status */
+async function renderEditing(status) {
+  const driver = { id: 'drv1', status, ...FILLED, vehicleNumber: '77가7777', startDate: '2026-10-17' }
+  const saves = []
+  function Harness() {
+    const [draft, setDraft] = React.useState({ ...FILLED, vehicleNumber: '77가7777', startDate: '2026-10-17' })
+    return React.createElement(DriverFormModal, {
+      draft, setDraft, editingId: 'drv1', drivers: [driver], assignableCars: [], cars: [], required: true, onCancel() {}, onSave: () => saves.push(draft),
+    })
+  }
+  const container = document.createElement('div')
+  document.body.appendChild(container)
+  const root = createRoot(container)
+  await act(async () => { root.render(React.createElement(Harness)) })
+  const notes = () => [...container.querySelectorAll('.driver-invite-note')].map((el) => el.textContent?.trim())
+  return {
+    container,
+    saves,
+    notes,
+    carInput: /** @type {HTMLInputElement} */ (container.querySelector('#drvCar')),
+    async save() { await act(async () => { /** @type {HTMLButtonElement} */ (container.querySelector('.modal-btn.confirm')).click() }) },
+    async cleanup() { await act(async () => { root.unmount() }); container.remove() },
+  }
+}
+
+test('연동 중 기사 수정 창: 배정 차량 칸이 막히고 차량 번호와 안내가 보임', async () => {
+  const view = await renderEditing('linked')
+  try {
+    assert.equal(view.carInput.disabled, true)
+    assert.equal(view.carInput.value, '77가7777')
+    assert.ok(view.notes().includes(LINKED_NOTE))
+  } finally {
+    await view.cleanup()
+  }
+})
+
+test('연동 중 기사 수정 창: 차량 칸이 막혀도 저장은 됨', async () => {
+  const view = await renderEditing('linked')
+  try {
+    await view.save()
+    assert.equal(view.saves.length, 1)
+    assert.equal(view.saves[0].vehicleNumber, '77가7777')
+  } finally {
+    await view.cleanup()
+  }
+})
+
+test('초대 대기 기사 수정 창: 배정 차량 칸 열림, 차량 안내 없음', async () => {
+  const view = await renderEditing('pending')
+  try {
+    assert.equal(view.carInput.disabled, false)
+    assert.equal(view.notes().includes(LINKED_NOTE), false)
+  } finally {
+    await view.cleanup()
+  }
+})

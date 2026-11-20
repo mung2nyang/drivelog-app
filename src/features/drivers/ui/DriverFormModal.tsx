@@ -110,8 +110,13 @@ export default function DriverFormModal<T extends DriverDraft>({ draft, setDraft
       </div>
       <div className="form-group">
         <label htmlFor="drvCar">배정 차량{requiredMark}</label>
-        <ClearableInput id="drvCar" className="input-box driver-car-input" list="drvCarOptions" placeholder="차량번호" value={draft.vehicleNumber} onChange={(e) => setDraft({ ...draft, vehicleNumber: e.target.value })} {...invalidProps(shown, 'vehicleNumber', 'drvCar')} />
+        <ClearableInput id="drvCar" className="input-box driver-car-input" list="drvCarOptions" placeholder="차량번호" disabled={linked} value={draft.vehicleNumber} onChange={(e) => setDraft({ ...draft, vehicleNumber: e.target.value })} {...invalidProps(shown, 'vehicleNumber', 'drvCar')} />
         <FieldError problem={shown} field="vehicleNumber" inputId="drvCar" />
+        {linked && (
+          <p className="driver-invite-note">
+            연동 중에는 배정 차량을 바꿀 수 없습니다. 다른 차량을 배정하려면 연동을 해제한 뒤 새로 초대해 주세요.
+          </p>
+        )}
         <datalist id="drvCarOptions">
           {assignableCars.map((car, index) => (
             <option key={String(car.id || car.number || `car-${index}`)} value={car.number} />

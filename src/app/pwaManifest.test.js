@@ -30,9 +30,18 @@ test('설정 파일의 아이콘 그림이 실제로 있고 크기가 적힌 것
   }
 })
 
-test('index.html이 설정 파일·상태바 색·아이폰 아이콘을 연결한다', () => {
+test('아이콘 그림은 투명한 곳 없이 꽉 찬 네모다(스토어·카톡 흰 바탕에서 모서리가 비치지 않게)', () => {
+  for (const name of ['icon-192', 'icon-512', 'icon-maskable-512', 'apple-touch-icon']) {
+    const buf = readFileSync(`public/icons/${name}.png`)
+    assert.equal(buf[25], 2, `${name}: 투명 칸이 없는 RGB 그림`)
+    assert.equal(buf.includes(Buffer.from('tRNS')), false, `${name}: 투명색 지정 없음`)
+  }
+})
+
+test('index.html이 설정 파일·탭 아이콘·상태바 색·아이폰 아이콘을 연결한다', () => {
   const html = readFileSync('index.html', 'utf8')
   assert.match(html, /<link rel="manifest" href="\/manifest\.webmanifest" \/>/)
+  assert.match(html, /<link rel="icon" type="image\/png" href="\/icons\/icon-192\.png" \/>/)
   assert.match(html, /<meta name="theme-color" content="#eef1f5" \/>/)
   assert.match(html, /<link rel="apple-touch-icon" href="\/icons\/apple-touch-icon\.png" \/>/)
   assert.match(html, /setAttribute\('content', '#121212'\)/, '다크 테마면 상태바 색도 어둡게')

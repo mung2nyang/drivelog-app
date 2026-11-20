@@ -1,8 +1,8 @@
 // @ts-check
 import assert from 'node:assert/strict'
 import { describe, test } from 'node:test'
-import ExcelJS from 'exceljs'
-import { buildTaxInvoiceWorkbook } from './taxInvoiceExcelBuilder.ts'
+import { strFromU8, unzipSync } from 'fflate'
+import { buildTaxInvoiceExcelFileName } from './taxInvoiceExcel.ts'
 import { buildTaxInvoiceExcelBlob, buildTaxInvoiceSheets } from './taxInvoiceWorkbookData.ts'
 
 /** @type {import('../../../domain/financeTypes.ts').FinanceSettings} */
@@ -11,6 +11,8 @@ const settings = {
   bizType: '운송', bizItem: '화물', bizEmail: 'owner@example.com',
   cars: [{ id: 'car-1', type: 'main', number: '12가3456' }],
 }
+
+const profile = { bankName: '국민', accountNumber: '123-456', name: '홍길동' }
 
 /** @type {import('../../../domain/financeTaxInvoiceEntries.ts').InvoiceLike} */
 const salesItem = {
@@ -23,20 +25,10 @@ const salesItem = {
 
 /** @type {import('../../../domain/financeTaxInvoiceEntries.ts').InvoiceLike} */
 const exemptItem = {
-  id: 'sales|2026-06|c2',
-  flow: 'sales',
-  clientName: '면세거래처',
-  supplyAmount: 50000,
-  taxAmount: 0,
-  totalAmount: 50000,
-  carNumber: '99가9999',
+  id: 'sales|2026-06|c2', flow: 'sales', clientName: '면세거래처',
+  supplyAmount: 50000, taxAmount: 0, totalAmount: 50000, carNumber: '99가9999',
   supplierBiz: { name: '차량사업자', bizNumber: '999-88-77777', representative: '이대표', address: '', bizType: '', bizItem: '', email: '' },
 }
-
-const CASES = [
-  { label: '매출 계산서', item: salesItem, profile: { bankName: '국민', accountNumber: '123-456', name: '홍길동' }, monthKey: '2026-05' },
-  { label: '면세·차량 사업자·빈 값', item: exemptItem, profile: {}, monthKey: '2026-06' },
-]
 
 /** @typedef {import('write-excel-file/universal').CellObject} CellObject */
 
@@ -47,145 +39,102 @@ function cellObjectOf(raw) {
   return { value: raw }
 }
 
-/** @param {{ argb?: string } | undefined} color */
-const hex = (color) => (color?.argb ? `#${color.argb.slice(2)}` : undefined)
-/** @param {import('write-excel-file/universal').Value | import('exceljs').CellValue | undefined} value */
-const plain = (value) => (value === undefined || value === null ? '' : value)
-const SIDES = /** @type {const} */ (['left', 'right', 'top', 'bottom'])
+/** @param {import('../../../domain/financeTaxInvoiceEntries.ts').InvoiceLike} item @param {number} index */
+function sheetOf(item, index = 0) {
+  const sheet = buildTaxInvoiceSheets(item, settings, profile, '2026-05')[index]
+  const data = sheet.data.map((row) => row.map(cellObjectOf))
+  /** @param {string} address */
+  const at = (address) => data[Number(address.slice(1)) - 1][address.charCodeAt(0) - 65]
+  return { sheet, data, at }
+}
 
-/** @param {import('exceljs').Cell} cell */
-function oldLook(cell) {
-  const font = cell.font || {}
-  const fill = /** @type {{ fgColor?: { argb?: string } }} */ (cell.fill || {})
-  const align = cell.alignment || {}
-  return {
-    fontFamily: font.name, fontSize: font.size, bold: Boolean(font.bold), textColor: hex(font.color),
-    backgroundColor: hex(fill.fgColor),
-    align: align.horizontal, alignVertical: align.vertical === 'middle' ? 'center' : align.vertical, wrap: Boolean(align.wrapText),
-    format: cell.numFmt,
+/** @param {import('../../../domain/financeTaxInvoiceEntries.ts').InvoiceLike} item */
+async function filesOf(item) {
+  const created = new Date('2026-05-31T09:10:11.123Z')
+  const blob = await buildTaxInvoiceExcelBlob(item, settings, profile, '2026-05', created)
+  const files = unzipSync(new Uint8Array(await blob.arrayBuffer()))
+  /** @param {string} path */
+  return (path) => {
+    assert.ok(files[path], `${path} 파일이 없습니다`)
+    return strFromU8(files[path])
   }
 }
 
-/** @param {CellObject} cell */
-function newLook(cell) {
-  return {
-    fontFamily: cell.fontFamily, fontSize: cell.fontSize, bold: cell.fontWeight === 'bold', textColor: cell.textColor,
-    backgroundColor: cell.backgroundColor,
-    align: cell.align, alignVertical: cell.alignVertical, wrap: Boolean(cell.wrap),
-    format: cell.format,
-  }
-}
+describe('세금계산서 엑셀 자료', () => {
+  test('공급가액·세액·합계금액이 숫자로 정확한 칸에 들어간다', () => {
+    const { at } = sheetOf(salesItem)
+    assert.deepEqual([at('C9')?.value, at('E9')?.value, at('A18')?.value, at('F18')?.value], [100000, 10000, 110000, 110000])
+    assert.equal(at('C9')?.format, '#,##0')
+    assert.equal(at('H2')?.value, '일반 과세')
+    assert.equal(sheetOf(exemptItem).at('H2')?.value, '면세')
+  })
 
-/** @param {import('exceljs').Cell} cell @param {typeof SIDES[number]} side */
-function oldSide(cell, side) {
-  const line = cell.border?.[side]
-  return line ? `${line.style} ${hex(line.color)}` : 'none'
-}
+  test('공급자 = 차주(차량 사업자가 있으면 그쪽), 공급받는자 = 거래처', () => {
+    const { at } = sheetOf(salesItem)
+    assert.deepEqual([at('C3')?.value, at('C4')?.value, at('H3')?.value, at('H4')?.value], ['123-45-67890', '차주회사', '111-22-33333', '한진/물류'])
+    const exempt = sheetOf(exemptItem).at
+    assert.deepEqual([exempt('C3')?.value, exempt('C4')?.value], ['999-88-77777', '차량사업자'])
+    assert.equal(at('C10')?.value, '국민 123-456 / 홍길동 / 12가3456')
+  })
 
-/** @param {CellObject} cell @param {typeof SIDES[number]} side */
-function newSide(cell, side) {
-  return cell[`${side}BorderStyle`] ? `${cell[`${side}BorderStyle`]} ${cell[`${side}BorderColor`]}` : 'none'
-}
+  test('합친 칸 34개, 바깥 테두리, 줄 높이, 열 너비', () => {
+    const { sheet, data, at } = sheetOf(salesItem)
+    const merged = data.flat().filter((cell) => cell && ((cell.columnSpan || 1) > 1 || (cell.rowSpan || 1) > 1))
+    assert.equal(merged.length, 34)
+    assert.deepEqual([at('A1')?.columnSpan, at('A1')?.rowSpan, at('A19')?.columnSpan, at('A3')?.rowSpan], [5, 2, 10, 5])
+    assert.equal(at('B1'), null)
+    assert.deepEqual([at('A1')?.topBorderStyle, at('A1')?.topBorderColor, at('A1')?.leftBorderStyle], ['medium', '#365B9D', 'medium'])
+    assert.deepEqual([at('A19')?.bottomBorderStyle, at('A19')?.rightBorderStyle, at('A19')?.rightBorderColor], ['medium', 'medium', '#365B9D'])
+    assert.deepEqual([at('A3')?.topBorderColor, at('A3')?.bottomBorderColor, at('A3')?.backgroundColor], ['#FFD9D9', '#FFD9D9', '#FFD9D9'])
+    const heights = data.map((row) => row.find((cell) => cell)?.height)
+    assert.deepEqual(heights, [25, 25, 32, 32, 34, ...Array(13).fill(undefined), 24])
+    assert.deepEqual(sheet.columns?.map((column) => column.width), [5, 10, 18, 10, 14, 5, 10, 18, 10, 14])
+    assert.deepEqual([sheet.sheet, sheet.orientation, sheet.showGridLines], ['세금계산서', 'landscape', false])
+  })
 
-/** @param {Array<Array<CellObject | null>>} data */
-function mergesOf(data) {
-  /** @type {number[][]} */
-  const ranges = []
-  data.forEach((row, r) => row.forEach((cell, c) => {
-    if (cell && ((cell.columnSpan || 1) > 1 || (cell.rowSpan || 1) > 1)) ranges.push([r + 1, c + 1, r + (cell.rowSpan || 1), c + (cell.columnSpan || 1)])
-  }))
-  return ranges
-}
+  test('입력자료 장 2행이 머리줄 순서로 실제 값을 담는다', () => {
+    const { sheet, data } = sheetOf(salesItem, 1)
+    assert.equal(sheet.sheet, '입력자료')
+    assert.equal(sheet.stickyRowsCount, 1)
+    assert.deepEqual([data[0][0]?.value, data[0][0]?.backgroundColor, data[0][0]?.fontWeight], ['작성일자', '#365B9D', 'bold'])
+    const row = data[1].map((cell) => cell?.value)
+    assert.deepEqual([row[0], row[1], row[2], row[8], row[9], row[15], row[17], row[18], row[19]], ['2026-05-31', '123-45-67890', '차주회사', '111-22-33333', '한진/물류', '화물운송료', 100000, 10000, 110000])
+    assert.equal(data[1][17]?.format, '#,##0')
+  })
+})
 
-/** @param {string} range */
-function rangeOf(range) {
-  const [from, to] = range.split(':').map((address) => [Number(address.slice(1)), address.charCodeAt(0) - 64])
-  return [from[0], from[1], to[0], to[1]]
-}
+describe('세금계산서 엑셀 파일 속 인쇄·문서 정보', () => {
+  test('세금계산서 장만 한 장에 맞추고 여백·방향을 옛 파일과 같게', async () => {
+    const read = await filesOf(salesItem)
+    const sheet1 = read('xl/worksheets/sheet1.xml')
+    assert.match(sheet1, /<worksheet[^>]*><sheetPr><pageSetUpPr fitToPage="1"\/><\/sheetPr>/)
+    assert.match(sheet1, /<pageMargins left="0.25" right="0.25" top="0.35" bottom="0.35" header="0.1" footer="0.1"\/>/)
+    assert.match(sheet1, /<pageSetup [^>]*orientation="landscape"[^>]*fitToWidth="1" fitToHeight="1"\/>/)
+    assert.doesNotMatch(read('xl/worksheets/sheet2.xml'), /fitToPage|fitToWidth/)
+  })
 
-function bothBooks(/** @type {typeof CASES[number]} */ { item, profile, monthKey }) {
-  const oldBook = buildTaxInvoiceWorkbook(ExcelJS, item, settings, profile, monthKey)
-  const sheets = buildTaxInvoiceSheets(item, settings, profile, monthKey)
-  return { oldBook, sheets }
-}
+  test('인쇄 범위 A1:J19가 이름 목록 하나에 들어간다', async () => {
+    const workbook = (await filesOf(salesItem))('xl/workbook.xml')
+    assert.equal(workbook.match(/<definedNames/g)?.length, 1)
+    assert.match(workbook, /<definedNames><definedName name="_xlnm.Print_Area" localSheetId="0">'세금계산서'!\$A\$1:\$J\$19<\/definedName><\/definedNames>/)
+  })
 
-describe('새 엑셀 자료가 옛 exceljs 결과와 같다', () => {
-  for (const testCase of CASES) {
-    test(`세금계산서 장 — ${testCase.label}`, () => {
-      const { oldBook, sheets } = bothBooks(testCase)
-      const oldSheet = oldBook.getWorksheet('세금계산서')
-      assert.ok(oldSheet)
-      const sheet = sheets[0]
-      assert.equal(sheet.sheet, '세금계산서')
-      const data = sheet.data.map((row) => row.map(cellObjectOf))
+  test('문서 정보(작성자·주제·만든 날)와 기본 글꼴', async () => {
+    const read = await filesOf(salesItem)
+    const core = read('docProps/core.xml')
+    assert.match(core, /<dc:creator>차주회사<\/dc:creator>/)
+    assert.match(core, /<dc:subject>2026-05 화물운송료<\/dc:subject>/)
+    assert.match(core, /<dcterms:created xsi:type="dcterms:W3CDTF">2026-05-31T09:10:11Z<\/dcterms:created>/)
+    assert.match(read('[Content_Types].xml'), /PartName="\/docProps\/core.xml"/)
+    assert.match(read('_rels/.rels'), /Target="docProps\/core.xml"/)
+    assert.match(read('xl/styles.xml'), /<fonts count="\d+"><font><name val="맑은 고딕"\/><sz val="11"\/>/)
+  })
+})
 
-      const oldMerges = oldSheet.model.merges.map(rangeOf).sort()
-      const newMerges = mergesOf(data).sort()
-      assert.equal(oldMerges.length, 34)
-      assert.deepEqual(newMerges, oldMerges)
-
-      /** @param {number} r @param {number} c */
-      const ownerOf = (r, c) => newMerges.find(([r1, c1, r2, c2]) => r >= r1 && r <= r2 && c >= c1 && c <= c2)
-      for (let r = 1; r <= 19; r += 1) {
-        for (let c = 1; c <= 10; c += 1) {
-          const where = `${String.fromCharCode(64 + c)}${r}`
-          const oldCell = oldSheet.getCell(r, c)
-          const range = ownerOf(r, c)
-          const isMaster = !range || (range[0] === r && range[1] === c)
-          const shown = range ? data[range[0] - 1][range[1] - 1] : data[r - 1][c - 1]
-          assert.ok(shown, `${where} 칸 있음`)
-          if (isMaster) {
-            assert.deepEqual(plain(shown.value), plain(oldCell.value), `${where} 값`)
-            assert.deepEqual(newLook(shown), oldLook(oldCell), `${where} 꾸밈`)
-          } else {
-            assert.equal(data[r - 1][c - 1], null, `${where} 합친 칸 안쪽은 비움`)
-          }
-          for (const side of SIDES) {
-            const onEdge = !range
-              || (side === 'left' && c === range[1]) || (side === 'right' && c === range[3])
-              || (side === 'top' && r === range[0]) || (side === 'bottom' && r === range[2])
-            if (onEdge) assert.equal(newSide(shown, side), oldSide(oldCell, side), `${where} ${side} 테두리`)
-          }
-        }
-        const height = Math.max(0, ...data[r - 1].map((cell) => cell?.height || 0))
-        assert.equal(height, oldSheet.getRow(r).height || oldSheet.properties.defaultRowHeight, `${r}행 높이`)
-      }
-      assert.deepEqual(sheet.columns?.map((column) => column.width), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((c) => oldSheet.getColumn(c).width))
-      assert.equal(sheet.showGridLines, false)
-      assert.equal(oldSheet.views[0].showGridLines, false)
-      assert.equal(sheet.orientation, oldSheet.pageSetup.orientation)
-    })
-
-    test(`입력자료 장 — ${testCase.label}`, () => {
-      const { oldBook, sheets } = bothBooks(testCase)
-      const oldSheet = oldBook.getWorksheet('입력자료')
-      assert.ok(oldSheet)
-      const sheet = sheets[1]
-      assert.equal(sheet.sheet, '입력자료')
-      const data = sheet.data.map((row) => row.map(cellObjectOf))
-      assert.equal(data.length, 2)
-      for (let r = 1; r <= 2; r += 1) {
-        assert.equal(data[r - 1].length, 21)
-        for (let c = 1; c <= 21; c += 1) {
-          const oldCell = oldSheet.getCell(r, c)
-          const cell = data[r - 1][c - 1] || { value: undefined }
-          assert.deepEqual(plain(cell.value), plain(oldCell.value), `${r}행 ${c}열 값`)
-          assert.deepEqual(newLook(cell), oldLook(oldCell), `${r}행 ${c}열 꾸밈`)
-        }
-      }
-      assert.deepEqual(sheet.columns?.map((column) => column.width), oldSheet.columns.map((column) => column.width))
-      assert.equal(sheet.stickyRowsCount, 1)
-      const oldView = /** @type {{ state?: string, ySplit?: number }} */ (oldSheet.views[0])
-      assert.deepEqual([oldView.state, oldView.ySplit], ['frozen', sheet.stickyRowsCount])
-    })
-  }
-
-  test('새 부품으로 실제 엑셀 파일을 만든다', async () => {
-    for (const { item, profile, monthKey } of CASES) {
-      const blob = await buildTaxInvoiceExcelBlob(item, settings, profile, monthKey)
-      assert.ok(blob.size > 0)
-      const head = new Uint8Array(await blob.slice(0, 2).arrayBuffer())
-      assert.deepEqual([...head], [0x50, 0x4b])
-    }
+describe('buildTaxInvoiceExcelFileName', () => {
+  test('특수문자가 포함된 거래처명은 파일명에서 _ 로 치환된다', () => {
+    const name = buildTaxInvoiceExcelFileName('2026-05', salesItem)
+    assert.equal(name, '2026-05_한진_물류_매출 발행_계산서.xlsx')
+    assert.equal(name.includes('/'), false)
   })
 })

@@ -140,7 +140,8 @@ export function toSheetData(grid: TaxGrid): SheetData {
   }
   rows.forEach((row, index) => {
     const first = row.find((cell) => cell !== null)
-    if (first) first.height = grid.heights[index + 1] ?? 21
+    const height = grid.heights[index + 1]
+    if (first && height) first.height = height
   })
   return rows
 }

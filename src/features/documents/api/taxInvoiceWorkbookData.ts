@@ -1,5 +1,6 @@
 import { getTaxInvoiceFlowMeta, getTaxInvoiceSupplierBiz } from '../../../domain/financeTaxInvoiceEntries.ts'
 import { buildTaxInvoiceSheetData } from './taxInvoiceSheetData.ts'
+import { TAX_PRINT_SHEET, taxInvoicePrintFeature } from './taxInvoicePrintFeature.ts'
 import type { Sheet, SheetData } from 'write-excel-file/universal'
 import type { InvoiceLike } from '../../../domain/financeTaxInvoiceEntries.ts'
 import type { FinanceSettings } from '../../../domain/financeTypes.ts'
@@ -47,7 +48,7 @@ export function buildTaxInvoiceSheets(item: InvoiceLike, settings: FinanceSettin
   const uploadValues = [issueDate, supplier.bizNumber, supplier.name, supplier.representative, supplier.address, supplier.bizType, supplier.bizItem, supplier.email, buyer.bizNumber, buyer.name, buyer.representative, buyer.address, buyer.bizType, buyer.bizItem, buyer.email, itemName, 1, Number(item.supplyAmount), Number(item.taxAmount), Number(item.totalAmount), item.remark]
   return [
     {
-      sheet: '세금계산서',
+      sheet: TAX_PRINT_SHEET,
       data: buildTaxInvoiceSheetData({ item, settings, profile, supplier, buyer, issueDate }),
       columns: [5, 10, 18, 10, 14, 5, 10, 18, 10, 14].map((width) => ({ width })),
       orientation: 'landscape',
@@ -62,7 +63,12 @@ export function buildTaxInvoiceSheets(item: InvoiceLike, settings: FinanceSettin
   ]
 }
 
-export async function buildTaxInvoiceExcelBlob(item: InvoiceLike, settings: FinanceSettings, profile: TaxProfile, monthKey: string) {
+export function taxInvoiceDocumentInfo(item: InvoiceLike, settings: FinanceSettings, monthKey: string, created = new Date()) {
+  return { creator: settings.bizName || '운행일지', subject: `${monthKey} ${item.itemName || getTaxInvoiceFlowMeta().itemName}`, created }
+}
+
+export async function buildTaxInvoiceExcelBlob(item: InvoiceLike, settings: FinanceSettings, profile: TaxProfile, monthKey: string, created = new Date()) {
   const { default: writeXlsxFile } = await import('write-excel-file/universal')
-  return writeXlsxFile(buildTaxInvoiceSheets(item, settings, profile, monthKey)).toBlob()
+  const features = [taxInvoicePrintFeature(taxInvoiceDocumentInfo(item, settings, monthKey, created))]
+  return writeXlsxFile(buildTaxInvoiceSheets(item, settings, profile, monthKey), { fontFamily: '맑은 고딕', fontSize: 11, features }).toBlob()
 }

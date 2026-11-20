@@ -6,6 +6,7 @@ import { confirmReloadIfUnsaved } from '../data/sync/durableWriteGuard.ts'
 import { buzz } from './haptic.ts'
 import { isFailureMessage } from '../shared/utils/failureMessages.ts'
 import { supabase } from '../data/cloud/supabaseClient.ts'
+import { unregisterPushDevice } from '../data/cloud/pushDevices.ts'
 import { restoreSessionOnBoot } from './boot.ts'
 import { ownerKeyFromSession } from '../data/cloud/appSession.ts'
 import { initializeOwnerFromPersist } from '../data/store/owner-state.ts'
@@ -104,6 +105,7 @@ export function useAppSession() {
   async function handleLogout({ signOut = false } = {}) {
     if (!confirmReloadIfUnsaved()) return
     if (signOut) {
+      await unregisterPushDevice()
       try { await supabase.auth.signOut() } catch { }
     }
     endCloudSession()
